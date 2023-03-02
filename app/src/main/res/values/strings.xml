@@ -1,6 +1,17 @@
 <resources>
     <string name="app_name">shopping_list</string>
-    <string name="title_box">Карзины</string>
+    <string name="title_box">Наборы</string>
     <string name="title_products">Продукты</string>
     <string name="title_settings">Настройки</string>
+    <string name="submit">Добавить</string>
+    <string name="kit_products">Наборы продуктов</string>
+    <string name="products">Введенные продукты</string>
+    <string name="textview">TextView</string>
+
+    <string name="error401">Запрос к удаленному ресурсу закончился неудачей, с кодом HTTP 401: Пустой или неправильный токен.</string>
+    <string name="error402">Запрос к удаленному ресурсу закончился неудачей, с кодом HTTP 402: Превышен лимит запросов(или дневной, или общий).</string>
+    <string name="error404">Запрос к удаленному ресурсу закончился неудачей, с кодом HTTP 404: Фильм не найден.)</string>
+    <string name="error429">Запрос к удаленному ресурсу закончился неудачей, с кодом HTTP 429: Слишком много запросов. Общий лимит - 20 запросов в секунду.</string>
+    <string name="errorUser">Ошибка операции.</string>
+
 </resources>

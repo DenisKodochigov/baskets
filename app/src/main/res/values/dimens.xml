@@ -2,4 +2,8 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fb_button_plus_length">60dp</dimen>
+    <dimen name="fb_button_size">100dp</dimen>
+    <dimen name="viewer_image_button_corner">0</dimen>
+    <dimen name="viewer_image_button_corner_minus">-90</dimen>
 </resources>
