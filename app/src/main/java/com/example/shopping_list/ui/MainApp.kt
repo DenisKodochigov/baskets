@@ -44,10 +44,12 @@ fun MainApp() {
                         .border(
                             1.dp,
                             color = BorderBottomBar,
-                            shape = RoundedCornerShape(cornerRadius))
+                            shape = RoundedCornerShape(cornerRadius)
+                        )
                         .background(
                             color = BottomBackgroundColor,
-                            shape = RoundedCornerShape(cornerRadius)),
+                            shape = RoundedCornerShape(cornerRadius)
+                        ),
 //                    cutoutShape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
                 ){
                     BottomTabRow(
@@ -62,7 +64,8 @@ fun MainApp() {
                     onClick = { /* ... */ },
                     modifier = Modifier.border(2.dp, color = BorderBottomBar, shape = RoundedCornerShape(50.dp))    ,
                     backgroundColor = BottomBackgroundColor,
-                    contentColor = BorderBottomBar) {
+                    contentColor = BorderBottomBar
+                ) {
                     Icon(Icons.Filled.Add,"")
                 }
             },
@@ -75,6 +78,7 @@ fun MainApp() {
         }
     }
 }
+
 fun NavHostController.navigateSingleTopTo(route: String) =
     this.navigate(route) {
         launchSingleTop = true
@@ -86,7 +90,6 @@ fun NavHostController.navigateSingleTopTo(route: String) =
 private fun NavHostController.navigateToSingleAccount(accountType: String) {
     this.navigateSingleTopTo("${SingleAccount.route}/$accountType")
 }
-
 @Preview
 @Composable
 fun MainAppPreview(){

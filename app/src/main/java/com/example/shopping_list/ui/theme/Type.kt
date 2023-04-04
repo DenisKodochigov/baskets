@@ -24,29 +24,29 @@ val Typography = Typography(
     defaultFontFamily = ScanFontFamily,
     h1 = TextStyle(
         fontWeight = FontWeight.W100,
-        fontSize = 96.sp,
+        fontSize = 24.sp,
+        letterSpacing = 1.5.sp
     ),
     h2 = TextStyle(
         fontWeight = FontWeight.SemiBold,
-        fontSize = 44.sp,
-//        fontFamily = EczarFontFamily,
+        fontSize = 20.sp,
         letterSpacing = 1.5.sp
     ),
     h3 = TextStyle(
         fontWeight = FontWeight.W400,
-        fontSize = 14.sp
+        fontSize = 16.sp
     ),
     h4 = TextStyle(
         fontWeight = FontWeight.W700,
-        fontSize = 34.sp
+        fontSize = 12.sp
     ),
     h5 = TextStyle(
         fontWeight = FontWeight.W700,
-        fontSize = 24.sp
+        fontSize = 8.sp
     ),
     h6 = TextStyle(
         fontWeight = FontWeight.Normal,
-        fontSize = 18.sp,
+        fontSize = 6.sp,
         lineHeight = 20.sp,
 //        fontFamily = EczarFontFamily,
         letterSpacing = 3.sp

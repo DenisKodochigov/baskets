@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.shopping_list.R
 import com.example.shopping_list.data.UserData
 import com.example.shopping_list.ui.components.AccountRow
@@ -29,9 +30,7 @@ fun AccountsScreen(
         circleLabel = stringResource(R.string.total),
         rows = { account ->
             AccountRow(
-                modifier = Modifier.clickable {
-                    onAccountClick(account.name)
-                },
+                modifier = Modifier.clickable { onAccountClick(account.name) },
                 name = account.name,
                 number = account.number,
                 amount = account.balance,
@@ -63,4 +62,10 @@ fun SingleAccountScreen(
             color = row.color
         )
     }
+}
+
+@Preview
+@Composable
+fun SingleAccountScreenPreview(){
+    SingleAccountScreen()
 }

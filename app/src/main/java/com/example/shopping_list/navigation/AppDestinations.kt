@@ -18,6 +18,7 @@ package com.example.shopping_list.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -29,6 +30,7 @@ import androidx.navigation.navDeepLink
 interface ScreenDestination {
     val icon: ImageVector
     val route: String
+    val fabClick: @Composable () -> Unit
 }
 
 /**
@@ -37,16 +39,22 @@ interface ScreenDestination {
 object Overview : ScreenDestination {
     override val icon = Icons.Filled.ShoppingBasket
     override val route = "baskets"
+    override val fabClick: () -> Unit
+        get() = TODO("Not yet implemented")
 }
 
 object Accounts : ScreenDestination {
     override val icon = Icons.Filled.Dashboard
     override val route = "products"
+    override val fabClick: () -> Unit
+        get() = TODO("Not yet implemented")
 }
 
 object Bills : ScreenDestination {
     override val icon = Icons.Filled.Settings
     override val route = "settings"
+    override val fabClick: () -> Unit
+        get() = TODO("Not yet implemented")
 }
 
 object SingleAccount : ScreenDestination {
@@ -60,6 +68,8 @@ object SingleAccount : ScreenDestination {
         navArgument(accountTypeArg) { type = NavType.StringType })
     val deepLinks = listOf(
         navDeepLink { uriPattern = "App://$route/{$accountTypeArg}"})
+    override val fabClick: () -> Unit
+        get() = TODO("Not yet implemented")
 }
 
 // Screens to be displayed in the top AppTabRow
