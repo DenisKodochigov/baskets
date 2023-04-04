@@ -13,9 +13,8 @@ class ProviderDao {
         fun dataDao(): DataDao
     }
     fun getDataDao(appContext: Context): DataDao {
-        val hiltEntryPoint = EntryPointAccessors.fromApplication(
-            appContext, DataDaoEntryPoint::class.java
-        )
-        return hiltEntryPoint.dataDao()
+
+        return EntryPointAccessors.fromApplication(
+            appContext, DataDaoEntryPoint::class.java).dataDao()
     }
 }

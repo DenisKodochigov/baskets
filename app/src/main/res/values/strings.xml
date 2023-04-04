@@ -1,4 +1,6 @@
 <resources>
+
+    <string name="name_group">All</string>
     <string name="app_name">shopping_list</string>
     <string name="title_box">Наборы</string>
     <string name="title_products">Продукты</string>
@@ -13,5 +15,25 @@
     <string name="error404">Запрос к удаленному ресурсу закончился неудачей, с кодом HTTP 404: Фильм не найден.)</string>
     <string name="error429">Запрос к удаленному ресурсу закончился неудачей, с кодом HTTP 429: Слишком много запросов. Общий лимит - 20 запросов в секунду.</string>
     <string name="errorUser">Ошибка операции.</string>
-
+    <string name="new_name_box">New name box</string>
+    <string name="create_new_box">Create new box</string>
+    <string name="text_and_image_in_linear_layout">Text and image in linear layout</string>
+    <string name="text_about_something">Text about something</string>
+    <string name="some_element_for_example_recyclerview">Some element, for example RecyclerView</string>
+    <string name="first_line">First Line</string>
+    <string name="second_line">Second Line</string>
+    <string name="third_line">Third Line</string>
+    <string name="some_bigger_element_for_example_bigger_recyclerview">Some bigger element, for example bigger RecyclerView</string>
+    <string name="search_products">Search products</string>
+    <string name="add_product">New product</string>
+    <string name="new_product">Add product</string>
+    <string name="select_product">Select product</string>
+    <string name="add_group">Add group</string>
+    <string name="total">Total</string>
+    <string name="due">Due</string>
+    <string name="account_redacted">• • • • • </string>
+    <string name="accounts">Accounts</string>
+    <string name="bills">Bills</string>
+    <string name="sort">Sort</string>
+    <string name="see_all">SEE ALL</string>
 </resources>
