@@ -17,9 +17,7 @@ import com.example.shopping_list.ui.components.StatementBody
  * The Accounts screen.
  */
 @Composable
-fun AccountsScreen(
-    onAccountClick: (String) -> Unit = {},
-) {
+fun AccountsScreen(onAccountClick: (String) -> Unit = {}, ) {
     val amountsTotal = remember { UserData.accounts.map { account -> account.balance }.sum() }
     StatementBody(
         modifier = Modifier.semantics { contentDescription = "Accounts Screen" },
@@ -44,9 +42,8 @@ fun AccountsScreen(
  * Detail screen for a single account.
  */
 @Composable
-fun SingleAccountScreen(
-    accountType: String? = UserData.accounts.first().name
-) {
+fun SingleAccountScreen( accountType: String? = UserData.accounts.first().name) {
+
     val account = remember(accountType) { UserData.getAccount(accountType) }
     StatementBody(
         items = listOf(account),

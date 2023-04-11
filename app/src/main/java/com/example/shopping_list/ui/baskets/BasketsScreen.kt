@@ -1,66 +1,65 @@
 package com.example.shopping_list.ui.baskets
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.shopping_list.data.room.tables.BasketDB
+import com.example.shopping_list.ui.AppViewModel
+import com.example.shopping_list.ui.components.BasketsRow
 import com.example.shopping_list.ui.components.HeaderScreen
-import com.example.shopping_list.ui.theme.textBottomBar
 
 @Composable
-fun BasketsScreen(
-    onClickSeeAllAccounts: (String) -> Unit = {},
-    onClickSeeAllBills: (String) -> Unit = {},
-    onAccountClick: (String) -> Unit = {},
-) {
+//fun BasketsScreen(onBasketClick: (String) -> Unit = {}, viewModel: AppViewModel ) {
+fun BasketsScreen(onBasketClick: (String) -> Unit = {} ) {
+/** Flow new state screen  */
+    val viewModel = hiltViewModel<AppViewModel>()
+    val uiState by viewModel.stateBasketScreen.collectAsState()
 
-    HeaderScreen(text = "Baskets")
+    BasketsScreenLayout(
+        modifier = Modifier.semantics { contentDescription = "Baskets Screen" },
+        onBasketClick = onBasketClick,
+/** Send to screen new value  */
+        itemList = uiState.baskets,
+    )
+}
 
-    Row(
-        Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(14.dp)
-                .background(Color.Gray),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings",
-                modifier = Modifier.background(Color.Gray))
-            Text( "ICON 1111111111", color = Color.White, style = textBottomBar)
+@Composable
+ fun BasketsScreenLayout(
+    modifier: Modifier = Modifier,
+    itemList: List<BasketDB>,
+    onBasketClick: (String) -> Unit,
+ ){
+    Column( ){
+        HeaderScreen(text = "Baskets")
+//        var name by remember { mutableStateOf("") }
+
+        LazyColumn {
+            items(items = itemList){ item->
+                Row ( modifier = Modifier.clickable { onBasketClick(item.idBasket.toString()) }){
+                    Text(text = item.basketName.toString())
+                }
+            }
         }
-        Column(
-            modifier = Modifier
-                .padding(14.dp)
-                .background(Color.Blue),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings",
-                modifier = Modifier.background(Color.Blue))
-            Text( "ICON 2222222222", color = Color.White, style = textBottomBar)
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Column(
-            modifier = Modifier
-                .padding(14.dp)
-                .background(Color.Green),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings",
-                modifier = Modifier.background(Color.Green))
-            Text( "ICON 3333333333", color = Color.White, style = textBottomBar,)
+        itemList.forEach{ item ->
+            BasketsRow(modifier = modifier, name = item.basketName ?: "")
         }
     }
+    HeaderScreen(text = "Baskets")
+ }
 
-}
 @Preview
 @Composable
 fun BasketsScreenPreview(){
-    BasketsScreen()
+//    BasketsScreen()
 }

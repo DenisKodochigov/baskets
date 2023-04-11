@@ -18,21 +18,21 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.shopping_list.navigation.AppNavHost
-import com.example.shopping_list.navigation.Overview
-import com.example.shopping_list.navigation.SingleAccount
+import com.example.shopping_list.navigation.Baskets
 import com.example.shopping_list.navigation.appTabRowScreens
+import com.example.shopping_list.navigation.navigateSingleTopTo
 import com.example.shopping_list.ui.components.BottomTabRow
+import com.example.shopping_list.ui.theme.AppTheme
 import com.example.shopping_list.ui.theme.BorderBottomBar
 import com.example.shopping_list.ui.theme.BottomBackgroundColor
-import com.example.shopping_list.ui.theme.BottomSheetTheme
 
 @Composable
 fun MainApp() {
-    BottomSheetTheme {
+    AppTheme {
         val navController = rememberNavController()
         val currentBackStack by navController.currentBackStackEntryAsState()
         val currentDestination = currentBackStack?.destination
-        val currentScreen = appTabRowScreens.find { it.route == currentDestination?.route } ?: Overview
+        val currentScreen = appTabRowScreens.find { it.route == currentDestination?.route } ?: Baskets
         val cornerRadius = 20.dp
 
         Scaffold(
@@ -79,17 +79,6 @@ fun MainApp() {
     }
 }
 
-fun NavHostController.navigateSingleTopTo(route: String) =
-    this.navigate(route) {
-        launchSingleTop = true
-        restoreState = true
-        popUpTo(this@navigateSingleTopTo.graph.findStartDestination().id) {
-            saveState = true
-        }
-    }
-private fun NavHostController.navigateToSingleAccount(accountType: String) {
-    this.navigateSingleTopTo("${SingleAccount.route}/$accountType")
-}
 @Preview
 @Composable
 fun MainAppPreview(){

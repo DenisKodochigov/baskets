@@ -12,16 +12,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 
-/**A [MaterialTheme] for Rally.*/
 @Composable
-fun MainTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colors = DarkColorPalette, typography = Typography, content = content)
+fun AppTheme( darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+
+    val colors = if (darkTheme)  DarkColorPalette else LightColorPalette
+    MaterialTheme(
+        colors = colors,
+        typography = Typography,
+        shapes = Shapes,
+        content = content
+    )
 }
-/**A [MaterialTheme] for Rally.*/
-@Composable
-fun BottomSheetTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colors = BottomColorPalette, typography = Typography, content = content)
-}
+
 /** A theme overlay used for dialogs.*/
 @Composable
 fun DialogThemeOverlay(content: @Composable () -> Unit) {
@@ -34,7 +36,7 @@ fun DialogThemeOverlay(content: @Composable () -> Unit) {
 
     // Copy the current [Typography] and replace some text styles for this theme.
     val currentTypography = MaterialTheme.typography
-    val dialogTypography = currentTypography.copy(
+    val dialogTypography = Typography.copy(
         body2 = currentTypography.body1.copy(
             fontWeight = FontWeight.Normal,
             fontSize = 20.sp,
@@ -49,15 +51,3 @@ fun DialogThemeOverlay(content: @Composable () -> Unit) {
     MaterialTheme(colors = dialogColors, typography = dialogTypography, content = content)
 }
 
-@Composable
-fun GraphSudokuTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    MaterialTheme(
-        colors = if (darkTheme) DarkColorPalette else LightColorPalette,
-        typography = typography,
-        shapes = shapes,
-        content = content
-    )
-}

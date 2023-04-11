@@ -1,4 +1,4 @@
-//package com.example.shopping_list.archiv
+package com.example.shopping_list.archiv
 //
 //import android.os.Bundle
 //import androidx.appcompat.app.AppCompatActivity

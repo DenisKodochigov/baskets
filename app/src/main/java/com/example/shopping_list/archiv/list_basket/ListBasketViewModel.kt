@@ -1,3 +1,4 @@
+package com.example.shopping_list.archiv.list_basket
 //package com.example.shopping_list.ui.list_basket
 //
 //import androidx.lifecycle.ViewModel
@@ -16,7 +17,7 @@
 //@HiltViewModel
 //class ListBasketViewModel @Inject constructor(
 //    private val errorApp: ErrorApp,
-//    private val dataRepository: DataRepository): ViewModel() {
+//    private val dataRepository: DataRepository ): ViewModel() {
 //
 //    private var _items = MutableStateFlow(emptyList<BasketDB>())
 //    var items = _items.asStateFlow()

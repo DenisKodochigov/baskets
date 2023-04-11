@@ -36,4 +36,10 @@
     <string name="bills">Bills</string>
     <string name="sort">Sort</string>
     <string name="see_all">SEE ALL</string>
+
+    <string name="enter_your_word">enter your word</string>
+    <string name="congratulations">congratulations</string>
+    <string name="you_scored">you scored</string>
+    <string name="exit">exit</string>
+    <string name="play_again">playagain</string>
 </resources>
