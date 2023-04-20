@@ -1,65 +1,117 @@
 package com.example.shopping_list.ui.baskets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.shopping_list.data.room.tables.BasketDB
+import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.BasketsRow
 import com.example.shopping_list.ui.components.HeaderScreen
 
 @Composable
-//fun BasketsScreen(onBasketClick: (String) -> Unit = {}, viewModel: AppViewModel ) {
-fun BasketsScreen(onBasketClick: (String) -> Unit = {} ) {
-/** Flow new state screen  */
-    val viewModel = hiltViewModel<AppViewModel>()
+fun BasketsScreen(
+    onBasketClick: (Int) -> Unit,
+    viewModel: AppViewModel,
+    bottomSheetContent: MutableState <@Composable (() -> Unit)?>) {
+
+    viewModel.getListBasket()
     val uiState by viewModel.stateBasketScreen.collectAsState()
+    bottomSheetContent.value = { BottomSheetContentBasket(onAddClick = {viewModel.addBasket(it)}) }
 
     BasketsScreenLayout(
         modifier = Modifier.semantics { contentDescription = "Baskets Screen" },
         onBasketClick = onBasketClick,
-/** Send to screen new value  */
         itemList = uiState.baskets,
     )
 }
 
 @Composable
- fun BasketsScreenLayout(
+fun BasketsScreenLayout(
     modifier: Modifier = Modifier,
-    itemList: List<BasketDB>,
-    onBasketClick: (String) -> Unit,
- ){
+    itemList: List<Basket>,
+    onBasketClick: (Int) -> Unit,
+){
+    val listState = rememberLazyListState()
     Column( ){
         HeaderScreen(text = "Baskets")
-//        var name by remember { mutableStateOf("") }
-
-        LazyColumn {
+        LazyColumn (state = listState, modifier = Modifier.fillMaxSize().padding(vertical = 12.dp)) {
             items(items = itemList){ item->
-                Row ( modifier = Modifier.clickable { onBasketClick(item.idBasket.toString()) }){
-                    Text(text = item.basketName.toString())
+                Row ( modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, top = 2.dp, end = 24.dp, bottom = 2.dp)
+                    .background(Color.White)
+                    .clickable { onBasketClick(item.idBasket) }){
+                    Text(
+                        text = item.nameBasket,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                    )
                 }
             }
         }
         itemList.forEach{ item ->
-            BasketsRow(modifier = modifier, name = item.basketName ?: "")
+            BasketsRow(modifier = modifier, name = item.nameBasket)
         }
     }
-    HeaderScreen(text = "Baskets")
  }
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun BottomSheetContentBasket(onAddClick: (String) -> Unit){
+
+    var nameNewBasket by remember { mutableStateOf("")}
+    val pb = 0.dp
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    Column( Modifier.padding(16.dp).fillMaxWidth(1f)) {
+        OutlinedTextField(
+            value = nameNewBasket,
+            singleLine = true,
+            textStyle = TextStyle(fontSize =  20.sp),
+            label = { Text(text = "New name basket") },
+            onValueChange = { nameNewBasket = it},
+            modifier = Modifier
+                .padding(start = pb, top = pb, end = pb, bottom = pb )
+                .fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                onAddClick(nameNewBasket)
+                keyboardController?.hide()
+                nameNewBasket = ""
+            }) ,
+        )
+        Spacer(Modifier.width(36.dp))
+    }
+}
 
 @Preview
 @Composable
-fun BasketsScreenPreview(){
-//    BasketsScreen()
+fun BottomSheetContentBasketPreview(){
+    BottomSheetContentBasket {}
+}
+@Preview
+@Composable
+fun BasketsScreenLayoutPreview(){
+    BasketsScreenLayout(Modifier, listOf(BasketDB(nameBasket = "Fruicts"), BasketDB(nameBasket = "Auto"))) {}
 }

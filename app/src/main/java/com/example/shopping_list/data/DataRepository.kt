@@ -1,9 +1,8 @@
 package com.example.shopping_list.data
 
 import com.example.shopping_list.data.room.DataSourceDB
-import com.example.shopping_list.data.room.tables.BasketDB
 import com.example.shopping_list.data.room.tables.GroupWithProducts
-import com.example.shopping_list.data.room.tables.ProductDB
+import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.entity.Product
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -11,12 +10,12 @@ import javax.inject.Singleton
 @Singleton
 class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB) {
 
-    fun getListBasket(): List<BasketDB>{
-        return dataSourceDB.getBaskets()
+    fun getListBasket(): List<Basket>{
+        return dataSourceDB.getListBasket()
     }
 
-    fun getProducts(): List<Product>{
-        return emptyList<Product>()
+    fun getListProducts(basketId: Int): List<Product>{
+        return dataSourceDB.getListProducts(basketId)
     }
     fun getGroups(): List<String>{
         val list = mutableListOf<String>()
@@ -32,16 +31,19 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         }
         return list
     }
-    fun addBasket(basketName: String): Long{
+    fun addBasket(basketName: String): List<Basket>{
         return dataSourceDB.addBasket(basketName)
     }
-    fun getBasketProducts(basket:BasketDB): List<ProductDB>{
-        var listProduct = emptyList<ProductDB>()
-        dataSourceDB.getBasketProducts(basket).forEach { item->
-            listProduct = item.listProductDB
-        }
-        return listProduct
+    fun addProduct(productName: String): List<Product>{
+        return dataSourceDB.addProduct(productName, -1)
     }
+//    fun getBasketProducts(basket:BasketDB): List<ProductDB>{
+//        var listProduct = emptyList<ProductDB>()
+//        dataSourceDB.getBasketProducts(basket).forEach { item->
+//            listProduct = item.listProductDB
+//        }
+//        return listProduct
+//    }
     fun addGroup(groupName: String){
         dataSourceDB.addGroup(groupName)
     }

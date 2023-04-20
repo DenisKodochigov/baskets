@@ -1,14 +1,25 @@
 package com.example.shopping_list.data.room
 
 import com.example.shopping_list.data.room.tables.*
+import com.example.shopping_list.entity.Basket
+import com.example.shopping_list.entity.Product
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
-    fun getBaskets(): List<BasketDB>{
+    fun getListBasket(): List<Basket>{
         return dataDao.getListBasket()
+    }
+    fun getListProducts(basketId: Int): List<Product>{
+//        return if (basketId == -1) dataDao.getListProducts()
+//                else dataDao.getBasketWithProducts(basketId) as List<Product>
+        var listProduct = emptyList<Product>()
+        var listProd = emptyList<BasketWithProduct>()
+        if (basketId == -1) listProduct = dataDao.getListProducts()
+        else listProd = dataDao.getBasketWithProducts(basketId)
+        return listProduct
     }
     fun getGroups(): List<GroupDB>{
         return dataDao.getGroups()
@@ -16,28 +27,30 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     fun getUnits(): List<UnitDB>{
         return dataDao.getUnits()
     }
-    fun getBasket(basketName: String): Long{
+    fun getBasket(basketName: String): Long? {
         return dataDao.checkBasketFromName(basketName)
     }
 
-    fun addBasket(basketName: String):Long{
-        var idBasket = getBasket(basketName)
-        if (idBasket == 0L ) {
-            idBasket = dataDao.addBasket(BasketDB(basketName = basketName, selected = false))
+    fun addBasket(basketName: String): List<Basket> {
+        if (getBasket(basketName) == null ) {
+            dataDao.addBasket(BasketDB(nameBasket = basketName))
         }
-        return idBasket
+        return getListBasket()
     }
-
-    fun getBasketProducts(basket:BasketDB): List<BasketWithProduct>{
-//        return emptyList<ProductDB>()
-        return dataDao.getBasketWithProducts(basket.idBasket)
+    fun addProduct(productName: String, basketId: Int): List<Product> {
+        if (getProduct(productName) == null ) {
+            dataDao.addProduct(ProductDB(nameProduct = productName,))
+        }
+        return getListProducts(basketId)
     }
-
+    fun getProduct(productName: String): Long? {
+        return dataDao.checkProductFromName(productName)
+    }
     fun addGroup(groupName: String){
         dataDao.addGroup(GroupDB(nameGroup = groupName))
     }
 
     fun getGroupsWithProduct(): List<GroupWithProducts>{
-        return dataDao.getGroupsWithProducts()
+        return emptyList() //dataDao.getGroupsWithProducts()
     }
 }
