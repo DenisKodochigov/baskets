@@ -4,10 +4,14 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -25,8 +29,37 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.navigation.ScreenDestination
+import com.example.shopping_list.navigation.appTabRowScreens
+import com.example.shopping_list.ui.theme.BorderBottomBar
+import com.example.shopping_list.ui.theme.BackgroundBottomBar
 import com.example.shopping_list.ui.theme.textBottomBar
 import java.util.*
+
+@Composable
+fun BottomBarApp(currentScreen: ScreenDestination,
+                 onTabSelection:(ScreenDestination) -> Unit
+) {
+    val cornerRadius = 20.dp
+    BottomAppBar(
+        backgroundColor = Color.Transparent,
+        elevation = 0.dp,
+        modifier = Modifier
+            .border(
+                1.dp,
+                color = BorderBottomBar,
+                shape = RoundedCornerShape(cornerRadius)
+            )
+            .background(
+                color = BackgroundBottomBar,
+                shape = RoundedCornerShape(cornerRadius)
+            ),
+    ){
+        BottomTabRow(
+            allScreens = appTabRowScreens,
+            currentScreen = currentScreen,
+            onTabSelected = onTabSelection)
+    }
+}
 
 @Composable
 fun BottomTabRow(
@@ -53,7 +86,7 @@ private fun BottomTab(
     icon: ImageVector,
     onSelected: () -> Unit,
     selected: Boolean) {
-    
+
     val color = MaterialTheme.colors.onSurface
     val durationMillis = if (selected) TabFadeInAnimationDuration else TabFadeOutAnimationDuration
     val animSpec = remember {
@@ -63,8 +96,7 @@ private fun BottomTab(
     }
     val tabTintColor by animateColorAsState(
         targetValue = if (selected) color else color.copy(alpha = InactiveTabOpacity),
-        animationSpec = animSpec
-    )
+        animationSpec = animSpec )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -93,6 +125,7 @@ private fun BottomTab(
         }
     }
 }
+
 private val TabHeight = 56.dp
 private const val InactiveTabOpacity = 0.60f
 private const val TabFadeInAnimationDuration = 150

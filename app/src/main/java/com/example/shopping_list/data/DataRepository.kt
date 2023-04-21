@@ -1,7 +1,7 @@
 package com.example.shopping_list.data
 
 import com.example.shopping_list.data.room.DataSourceDB
-import com.example.shopping_list.data.room.tables.GroupWithProducts
+import com.example.shopping_list.data.room.tables.GroupWithArticle
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.entity.Product
 import javax.inject.Inject
@@ -47,7 +47,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     fun addGroup(groupName: String){
         dataSourceDB.addGroup(groupName)
     }
-    fun getGroupsWithProduct(): List<GroupWithProducts>{
+    fun getGroupsWithProduct(): List<GroupWithArticle>{
         return dataSourceDB.getGroupsWithProduct()
     }
 }

@@ -38,10 +38,11 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return getListBasket()
     }
     fun addProduct(productName: String, basketId: Int): List<Product> {
-        if (getProduct(productName) == null ) {
-            dataDao.addProduct(ProductDB(nameProduct = productName,))
-        }
-        return getListProducts(basketId)
+//        if (getProduct(productName) == null ) {
+//            dataDao.addProduct(ProductDB(nameProduct = productName,))
+//        }
+//        return getListProducts(basketId)
+        return emptyList()
     }
     fun getProduct(productName: String): Long? {
         return dataDao.checkProductFromName(productName)
@@ -50,7 +51,7 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         dataDao.addGroup(GroupDB(nameGroup = groupName))
     }
 
-    fun getGroupsWithProduct(): List<GroupWithProducts>{
+    fun getGroupsWithProduct(): List<GroupWithArticle>{
         return emptyList() //dataDao.getGroupsWithProducts()
     }
 }

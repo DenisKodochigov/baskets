@@ -1,4 +1,4 @@
-package com.example.shopping_list.data.room.tables
+package com.example.shopping_list.archiv
 
 import androidx.room.TypeConverter
 import com.example.shopping_list.entity.Product

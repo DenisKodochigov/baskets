@@ -1,4 +1,4 @@
-package com.example.shopping_list.ui.components
+package com.example.shopping_list.archiv
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

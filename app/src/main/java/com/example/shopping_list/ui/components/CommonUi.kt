@@ -61,5 +61,5 @@ fun BasketsRow(modifier: Modifier = Modifier, name: String,){
             )
         }
     }
-    RallyDivider()
+    com.example.shopping_list.archiv.RallyDivider()
 }

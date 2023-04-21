@@ -2,8 +2,6 @@ package com.example.shopping_list.data.room
 
 import androidx.room.*
 import com.example.shopping_list.data.room.tables.*
-import com.example.shopping_list.entity.Basket
-import com.example.shopping_list.entity.Product
 
 /* Data access object to query the database. */
 @Dao
@@ -14,12 +12,12 @@ interface DataDao {
 
     @Insert
     fun addProduct(product: ProductDB): Long
-
-    @Update
-    fun update(basket: BasketDB)
-
-    @Query("DELETE FROM basket WHERE idBasket = :id")
-    fun deleteByIdBasket(id:Int)
+//
+//    @Update
+//    fun update(basket: BasketDB)
+//
+//    @Query("DELETE FROM basket WHERE idBasket = :id")
+//    fun deleteByIdBasket(id:Int)
 
     @Query("SELECT idBasket FROM basket WHERE nameBasket = :basketName")
     fun checkBasketFromName(basketName: String): Long?
@@ -45,6 +43,7 @@ interface DataDao {
     @Transaction
     @Query("SELECT * FROM basket WHERE idBasket = :basket_id")
     fun getBasketWithProducts(basket_id: Int): List<BasketWithProduct>
+
 ////    @Transaction
 ////    @Query("SELECT * FROM Basket WHERE idBasket = :basket_id")
 ////    fun getBasketWithProducts(basket_id: Int): List<BasketWithProduct>
