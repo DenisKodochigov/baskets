@@ -16,9 +16,10 @@ import com.example.shopping_list.ui.settings.SettingsScreen
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    viewModel: AppViewModel,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>,
 ) {
-    val viewModel = hiltViewModel<AppViewModel>()
+
     NavHost(navController = navController, startDestination = Baskets.route, modifier = modifier){
 
         composable( route = Baskets.route) {
@@ -30,7 +31,7 @@ fun AppNavHost(
 
         composable( route = ProductsBasket.routeWithArgs, arguments = ProductsBasket.arguments )
         { navBackStackEntry ->
-            val basketId = navBackStackEntry.arguments?.getInt(ProductsBasket.basketIdArg)
+            val basketId = navBackStackEntry.arguments?.getLong(ProductsBasket.basketIdArg)
             if (basketId != null) {
                 ProductsScreen(
                     basketId = basketId,

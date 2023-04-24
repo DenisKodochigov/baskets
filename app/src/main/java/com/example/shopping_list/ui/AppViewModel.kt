@@ -1,9 +1,11 @@
 package com.example.shopping_list.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.ErrorApp
+import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.baskets.StateBasketScreen
 import com.example.shopping_list.ui.products.StateProductsScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,19 +37,19 @@ class AppViewModel @Inject constructor(
             )
         }
     }
-    fun getListProducts(basketId: Int) {
+    fun getListProducts(basketId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListProducts(basketId) }.fold(
                 onSuccess = { _stateProductsScreen.update { currentState ->
-                    currentState.copy(products = emptyList()) } },
+                    currentState.copy(products = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
     }
-    fun addBasket(basketName: String){
+    fun newBasket(basketName: String){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.addBasket(basketName)
+                dataRepository.newBasket(basketName)
             }.fold(
                 onSuccess = {_stateBasketScreen.update { currentState ->
                     currentState.copy(baskets = it) }},
@@ -55,14 +57,35 @@ class AppViewModel @Inject constructor(
             )
         }
     }
-    fun addProduct(productName: String){
+    fun newProduct(product: Product){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.addProduct(productName)
+                dataRepository.newProduct(product)
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
                     currentState.copy(products = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
+    fun newArticle(name: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.newArticle(name)
+            }.fold(
+                onSuccess = {_stateProductsScreen.update { currentState ->
+                    currentState.copy(articles = it) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+    fun getListArticle() {
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching { dataRepository.getListArticle() }.fold(
+                onSuccess = { _stateProductsScreen.update { currentState ->
+                    currentState.copy(articles = it) } },
+                onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
     }

@@ -38,13 +38,16 @@ public final class AppDatabase_Impl extends AppDatabase {
       @Override
       public void createAllTables(SupportSQLiteDatabase _db) {
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_basket` (`idBasket` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameBasket` TEXT NOT NULL, `fillBasket` INTEGER NOT NULL, `selected` INTEGER NOT NULL)");
+        _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_basket_nameBasket` ON `tb_basket` (`nameBasket`)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_product` (`idProduct` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `value` REAL NOT NULL, `basketId` INTEGER NOT NULL, `articleId` INTEGER NOT NULL, `selected` INTEGER NOT NULL)");
-        _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_article` (`idArticle` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameArticle` TEXT NOT NULL, `groupId` INTEGER NOT NULL, `unitId` INTEGER NOT NULL)");
+        _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_article` (`idArticle` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameArticle` TEXT NOT NULL, `groupId` INTEGER, `unitId` INTEGER)");
         _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_article_nameArticle` ON `tb_article` (`nameArticle`)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_group` (`idGroup` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameGroup` TEXT NOT NULL)");
+        _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_group_nameGroup` ON `tb_group` (`nameGroup`)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_unit` (`idUnit` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameUnit` TEXT NOT NULL)");
+        _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_unit_nameUnit` ON `tb_unit` (`nameUnit`)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        _db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b64edede5ae4c9a99466025512eafa94')");
+        _db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b51b93d1cfa52a19f0ffb4177e67981')");
       }
 
       @Override
@@ -98,7 +101,8 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsTbBasket.put("fillBasket", new TableInfo.Column("fillBasket", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbBasket.put("selected", new TableInfo.Column("selected", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysTbBasket = new HashSet<TableInfo.ForeignKey>(0);
-        final HashSet<TableInfo.Index> _indicesTbBasket = new HashSet<TableInfo.Index>(0);
+        final HashSet<TableInfo.Index> _indicesTbBasket = new HashSet<TableInfo.Index>(1);
+        _indicesTbBasket.add(new TableInfo.Index("index_tb_basket_nameBasket", true, Arrays.asList("nameBasket"), Arrays.asList("ASC")));
         final TableInfo _infoTbBasket = new TableInfo("tb_basket", _columnsTbBasket, _foreignKeysTbBasket, _indicesTbBasket);
         final TableInfo _existingTbBasket = TableInfo.read(_db, "tb_basket");
         if (! _infoTbBasket.equals(_existingTbBasket)) {
@@ -124,8 +128,8 @@ public final class AppDatabase_Impl extends AppDatabase {
         final HashMap<String, TableInfo.Column> _columnsTbArticle = new HashMap<String, TableInfo.Column>(4);
         _columnsTbArticle.put("idArticle", new TableInfo.Column("idArticle", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbArticle.put("nameArticle", new TableInfo.Column("nameArticle", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsTbArticle.put("groupId", new TableInfo.Column("groupId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsTbArticle.put("unitId", new TableInfo.Column("unitId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTbArticle.put("groupId", new TableInfo.Column("groupId", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTbArticle.put("unitId", new TableInfo.Column("unitId", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysTbArticle = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesTbArticle = new HashSet<TableInfo.Index>(1);
         _indicesTbArticle.add(new TableInfo.Index("index_tb_article_nameArticle", true, Arrays.asList("nameArticle"), Arrays.asList("ASC")));
@@ -140,7 +144,8 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsTbGroup.put("idGroup", new TableInfo.Column("idGroup", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbGroup.put("nameGroup", new TableInfo.Column("nameGroup", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysTbGroup = new HashSet<TableInfo.ForeignKey>(0);
-        final HashSet<TableInfo.Index> _indicesTbGroup = new HashSet<TableInfo.Index>(0);
+        final HashSet<TableInfo.Index> _indicesTbGroup = new HashSet<TableInfo.Index>(1);
+        _indicesTbGroup.add(new TableInfo.Index("index_tb_group_nameGroup", true, Arrays.asList("nameGroup"), Arrays.asList("ASC")));
         final TableInfo _infoTbGroup = new TableInfo("tb_group", _columnsTbGroup, _foreignKeysTbGroup, _indicesTbGroup);
         final TableInfo _existingTbGroup = TableInfo.read(_db, "tb_group");
         if (! _infoTbGroup.equals(_existingTbGroup)) {
@@ -152,7 +157,8 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsTbUnit.put("idUnit", new TableInfo.Column("idUnit", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbUnit.put("nameUnit", new TableInfo.Column("nameUnit", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysTbUnit = new HashSet<TableInfo.ForeignKey>(0);
-        final HashSet<TableInfo.Index> _indicesTbUnit = new HashSet<TableInfo.Index>(0);
+        final HashSet<TableInfo.Index> _indicesTbUnit = new HashSet<TableInfo.Index>(1);
+        _indicesTbUnit.add(new TableInfo.Index("index_tb_unit_nameUnit", true, Arrays.asList("nameUnit"), Arrays.asList("ASC")));
         final TableInfo _infoTbUnit = new TableInfo("tb_unit", _columnsTbUnit, _foreignKeysTbUnit, _indicesTbUnit);
         final TableInfo _existingTbUnit = TableInfo.read(_db, "tb_unit");
         if (! _infoTbUnit.equals(_existingTbUnit)) {
@@ -162,7 +168,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "b64edede5ae4c9a99466025512eafa94", "a6ae4dab3264dacd8d8ff8540262fa87");
+    }, "7b51b93d1cfa52a19f0ffb4177e67981", "079de7096faaccd736a100ae33e66c8a");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(configuration.context)
         .name(configuration.name)
         .callback(_openCallback)

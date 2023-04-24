@@ -10,9 +10,34 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     fun getListBasket(): List<Basket> = dataDao.getListBasket()
 
-    fun getListProducts(basketId: Int): List<Product>{
+    fun getBasket(basketName: String): Long? {
+        return dataDao.checkBasketFromName(basketName)
+    }
 
-        return if (basketId > -1) dataDao.getListProduct().map { item ->
+    fun newBasket(basketName: String): List<Basket> {
+        if (getBasket(basketName) == null ) {
+            dataDao.newBasket(BasketEntity(nameBasket = basketName))
+        }
+        return getListBasket()
+    }
+
+    fun newProduct(product: Product): List<Product> {
+        if (dataDao.checkProductInBasket(product.basketId, product.idProduct) == null) {
+            dataDao.newProduct(ProductEntity(
+                value = product.value,
+                basketId = product.basketId,
+                articleId = product.article.idArticle,))
+        }
+        return getListProducts(product.basketId)
+    }
+
+    fun getProduct(productName: String): Long? {
+        return dataDao.checkProductFromName(productName)
+    }
+
+    fun getListProducts(basketId: Long): List<Product>{
+
+        return if (basketId > 0) dataDao.getListProduct(basketId).map { item ->
             ProductEntity(
                 idProduct = item.product.idProduct,
                 value = item.product.value,
@@ -26,9 +51,27 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
                     unitA = item.article.unitA
                 )
             )
-        } else emptyList()
+        } else dataDao.getListProductAll().map { item ->
+            ProductEntity(
+                idProduct = item.product.idProduct,
+                value = item.product.value,
+                basketId = item.product.basketId,
+                selected = item.product.selected,
+                articleId = item.article.article.idArticle,
+                article = ArticleEntity(
+                    idArticle = item.article.article.idArticle,
+                    nameArticle = item.article.article.nameArticle,
+                    group = item.article.group,
+                    unitA = item.article.unitA
+                )
+            )
+        }
     }
 
+    fun newArticle(name: String): List<Article> {
+        dataDao.newArticle(ArticleEntity(nameArticle = name, groupId = 1, unitId = 1))
+        return getListArticle()
+    }
     fun getListArticle(): List<Article> = dataDao.getListArticle().map { item ->
             ArticleEntity(
                 idArticle = item.article.idArticle,
@@ -42,35 +85,13 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.getGroups()
     }
 
-    fun getUnits(): List<UnitA>{
-        return dataDao.getUnits()
-    }
-
-    fun getBasket(basketName: String): Long? {
-        return dataDao.checkBasketFromName(basketName)
-    }
-
-    fun addBasket(basketName: String): List<Basket> {
-//        if (getBasket(basketName) == null ) {
-//            dataDao.addBasket(BasketDB(nameBasket = basketName))
-//        }
-        return emptyList<Basket>() //getListBasket()
-    }
-    fun addProduct(name: String, basketId: Long): List<Product> {
-        if (getProduct(name) == null ) {
-            val id_article = dataDao.addArticle(ArticleEntity(nameArticle = name))
-            dataDao.addProduct(ProductEntity(articleId = id_article, basketId = basketId))
-        }
-//        return getListProducts(basketId)
-        return emptyList()
-    }
-    fun getProduct(productName: String): Long? {
-        return dataDao.checkProductFromName(productName)
-    }
     fun addGroup(groupName: String){
         dataDao.addGroup(GroupEntity(nameGroup = groupName))
     }
 
+    fun getUnits(): List<UnitA>{
+        return dataDao.getUnits()
+    }
 //    fun getGroupsWithProduct(): List<GroupWithArticle>{
 //        return emptyList() //dataDao.getGroupsWithProducts()
 //    }

@@ -25,7 +25,7 @@ object ProductsBasket : ScreenDestination {
     override val route = "products"
     const val basketIdArg = "basket_type"
     val routeWithArgs = "${route}/{$basketIdArg}"
-    val arguments = listOf(navArgument(basketIdArg) { type = NavType.IntType })
+    val arguments = listOf(navArgument(basketIdArg) { type = NavType.LongType })
 }
 
 object Products : ScreenDestination {

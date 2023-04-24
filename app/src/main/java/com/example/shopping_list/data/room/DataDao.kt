@@ -5,41 +5,56 @@ import com.example.shopping_list.data.room.tables.*
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
 
-/* Data access object to query the database. */
 @Dao
 interface DataDao {
 
-    @Insert
-    fun addBasket(basket: BasketEntity): Long
-
-    @Insert
-    fun addUnit(unit: UnitEntity): Long
-
-    @Insert
-    fun addArticle(article: ArticleEntity): Long
-
-    @Insert
-    fun addProduct(product: ProductEntity): Long
-
+/** Basket entity*/
     @Update
     fun update(basket: BasketEntity)
+
+    @Insert
+    fun newBasket(basket: BasketEntity): Long
+
+    @Query("SELECT idBasket FROM tb_basket WHERE nameBasket = :basketName")
+    fun checkBasketFromName(basketName: String): Long?
 
     @Query("DELETE FROM tb_basket WHERE idBasket = :id")
     fun deleteByIdBasket(id:Int)
 
-    @Query("SELECT idBasket FROM tb_basket WHERE nameBasket = :basketName")
-    fun checkBasketFromName(basketName: String): Long?
+    @Query("SELECT * FROM tb_basket")
+    fun getListBasket(): List<BasketEntity>
+
+/** Product entity*/
+
+    @Insert
+    fun newProduct(product: ProductEntity): Long
 
     @Query("SELECT idProduct FROM tb_product " +
             "JOIN tb_article ON tb_article.nameArticle = :name " +
             "WHERE tb_product.articleId = tb_article.idArticle")
     fun checkProductFromName(name: String): Long?
 
-    @Query("SELECT * FROM tb_basket")
-    fun getListBasket(): List<BasketEntity>
+    @Query("SELECT idProduct FROM tb_product " +
+            "WHERE idProduct = :productId AND basketId = :basketId")
+    fun checkProductInBasket(basketId:Long, productId: Long): Long?
 
-    @Query("SELECT * FROM tb_unit")
-    fun getUnits(): List<UnitEntity>
+    @Transaction
+    @Query("SELECT * FROM tb_product WHERE basketId = :basketId")
+    fun getListProduct(basketId: Long): List<ProductObj>
+
+    @Transaction
+    @Query("SELECT * FROM tb_product")
+    fun getListProductAll(): List<ProductObj>
+/** Article entity*/
+
+    @Insert
+    fun newArticle(article: ArticleEntity): Long
+
+    @Transaction
+    @Query("SELECT * FROM tb_article ")
+    fun getListArticle(): List<ArticleObj>
+
+/** Group entity*/
 
     @Query("SELECT * FROM tb_group")
     fun getGroups(): List<GroupEntity>
@@ -47,13 +62,12 @@ interface DataDao {
     @Insert
     fun addGroup(group: GroupEntity): Long
 
-    @Transaction
-    @Query("SELECT * FROM tb_article ")
-    fun getListArticle(): List<ArticleObj>
+/** Unit entity*/
+    @Insert
+    fun addUnit(unit: UnitEntity): Long
 
-    @Transaction
-    @Query("SELECT * FROM tb_product ")
-    fun getListProduct(): List<ProductObj>
+    @Query("SELECT * FROM tb_unit")
+    fun getUnits(): List<UnitEntity>
 
 //    @Query("SELECT * FROM basket JOIN products ON basket.productId = products.idProduct" +
 //            "JOIN article ON products.articleId = article.idArticle " +

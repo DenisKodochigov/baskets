@@ -12,8 +12,8 @@ import com.example.shopping_list.entity.UnitA
 data class ArticleEntity(
     @PrimaryKey(autoGenerate = true) override var idArticle: Long = 0,
     override var nameArticle: String = "",
-    var groupId: Long = -1,
-    var unitId: Long = -1,
-    @Ignore override var group: GroupArticle = GroupEntity(),
-    @Ignore override var unitA: UnitA = UnitEntity()
+    var groupId: Long? = null,
+    var unitId: Long? = null,
+    @Ignore override var group: GroupArticle? = null,
+    @Ignore override var unitA: UnitA? = null
 ): Article

@@ -34,13 +34,13 @@ public final class DataDao_Impl implements DataDao {
 
   private final EntityInsertionAdapter<BasketEntity> __insertionAdapterOfBasketEntity;
 
-  private final EntityInsertionAdapter<UnitEntity> __insertionAdapterOfUnitEntity;
+  private final EntityInsertionAdapter<ProductEntity> __insertionAdapterOfProductEntity;
 
   private final EntityInsertionAdapter<ArticleEntity> __insertionAdapterOfArticleEntity;
 
-  private final EntityInsertionAdapter<ProductEntity> __insertionAdapterOfProductEntity;
-
   private final EntityInsertionAdapter<GroupEntity> __insertionAdapterOfGroupEntity;
+
+  private final EntityInsertionAdapter<UnitEntity> __insertionAdapterOfUnitEntity;
 
   private final EntityDeletionOrUpdateAdapter<BasketEntity> __updateAdapterOfBasketEntity;
 
@@ -68,40 +68,6 @@ public final class DataDao_Impl implements DataDao {
         stmt.bindLong(4, _tmp_1);
       }
     };
-    this.__insertionAdapterOfUnitEntity = new EntityInsertionAdapter<UnitEntity>(__db) {
-      @Override
-      public String createQuery() {
-        return "INSERT OR ABORT INTO `tb_unit` (`idUnit`,`nameUnit`) VALUES (nullif(?, 0),?)";
-      }
-
-      @Override
-      public void bind(SupportSQLiteStatement stmt, UnitEntity value) {
-        stmt.bindLong(1, value.getIdUnit());
-        if (value.getNameUnit() == null) {
-          stmt.bindNull(2);
-        } else {
-          stmt.bindString(2, value.getNameUnit());
-        }
-      }
-    };
-    this.__insertionAdapterOfArticleEntity = new EntityInsertionAdapter<ArticleEntity>(__db) {
-      @Override
-      public String createQuery() {
-        return "INSERT OR ABORT INTO `tb_article` (`idArticle`,`nameArticle`,`groupId`,`unitId`) VALUES (nullif(?, 0),?,?,?)";
-      }
-
-      @Override
-      public void bind(SupportSQLiteStatement stmt, ArticleEntity value) {
-        stmt.bindLong(1, value.getIdArticle());
-        if (value.getNameArticle() == null) {
-          stmt.bindNull(2);
-        } else {
-          stmt.bindString(2, value.getNameArticle());
-        }
-        stmt.bindLong(3, value.getGroupId());
-        stmt.bindLong(4, value.getUnitId());
-      }
-    };
     this.__insertionAdapterOfProductEntity = new EntityInsertionAdapter<ProductEntity>(__db) {
       @Override
       public String createQuery() {
@@ -118,6 +84,32 @@ public final class DataDao_Impl implements DataDao {
         stmt.bindLong(5, _tmp);
       }
     };
+    this.__insertionAdapterOfArticleEntity = new EntityInsertionAdapter<ArticleEntity>(__db) {
+      @Override
+      public String createQuery() {
+        return "INSERT OR ABORT INTO `tb_article` (`idArticle`,`nameArticle`,`groupId`,`unitId`) VALUES (nullif(?, 0),?,?,?)";
+      }
+
+      @Override
+      public void bind(SupportSQLiteStatement stmt, ArticleEntity value) {
+        stmt.bindLong(1, value.getIdArticle());
+        if (value.getNameArticle() == null) {
+          stmt.bindNull(2);
+        } else {
+          stmt.bindString(2, value.getNameArticle());
+        }
+        if (value.getGroupId() == null) {
+          stmt.bindNull(3);
+        } else {
+          stmt.bindLong(3, value.getGroupId());
+        }
+        if (value.getUnitId() == null) {
+          stmt.bindNull(4);
+        } else {
+          stmt.bindLong(4, value.getUnitId());
+        }
+      }
+    };
     this.__insertionAdapterOfGroupEntity = new EntityInsertionAdapter<GroupEntity>(__db) {
       @Override
       public String createQuery() {
@@ -131,6 +123,22 @@ public final class DataDao_Impl implements DataDao {
           stmt.bindNull(2);
         } else {
           stmt.bindString(2, value.getNameGroup());
+        }
+      }
+    };
+    this.__insertionAdapterOfUnitEntity = new EntityInsertionAdapter<UnitEntity>(__db) {
+      @Override
+      public String createQuery() {
+        return "INSERT OR ABORT INTO `tb_unit` (`idUnit`,`nameUnit`) VALUES (nullif(?, 0),?)";
+      }
+
+      @Override
+      public void bind(SupportSQLiteStatement stmt, UnitEntity value) {
+        stmt.bindLong(1, value.getIdUnit());
+        if (value.getNameUnit() == null) {
+          stmt.bindNull(2);
+        } else {
+          stmt.bindString(2, value.getNameUnit());
         }
       }
     };
@@ -165,7 +173,7 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
-  public long addBasket(final BasketEntity basket) {
+  public long newBasket(final BasketEntity basket) {
     __db.assertNotSuspendingTransaction();
     __db.beginTransaction();
     try {
@@ -178,37 +186,24 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
-  public long addUnit(final UnitEntity unit) {
-    __db.assertNotSuspendingTransaction();
-    __db.beginTransaction();
-    try {
-      long _result = __insertionAdapterOfUnitEntity.insertAndReturnId(unit);
-      __db.setTransactionSuccessful();
-      return _result;
-    } finally {
-      __db.endTransaction();
-    }
-  }
-
-  @Override
-  public long addArticle(final ArticleEntity article) {
-    __db.assertNotSuspendingTransaction();
-    __db.beginTransaction();
-    try {
-      long _result = __insertionAdapterOfArticleEntity.insertAndReturnId(article);
-      __db.setTransactionSuccessful();
-      return _result;
-    } finally {
-      __db.endTransaction();
-    }
-  }
-
-  @Override
-  public long addProduct(final ProductEntity product) {
+  public long newProduct(final ProductEntity product) {
     __db.assertNotSuspendingTransaction();
     __db.beginTransaction();
     try {
       long _result = __insertionAdapterOfProductEntity.insertAndReturnId(product);
+      __db.setTransactionSuccessful();
+      return _result;
+    } finally {
+      __db.endTransaction();
+    }
+  }
+
+  @Override
+  public long newArticle(final ArticleEntity article) {
+    __db.assertNotSuspendingTransaction();
+    __db.beginTransaction();
+    try {
+      long _result = __insertionAdapterOfArticleEntity.insertAndReturnId(article);
       __db.setTransactionSuccessful();
       return _result;
     } finally {
@@ -222,6 +217,19 @@ public final class DataDao_Impl implements DataDao {
     __db.beginTransaction();
     try {
       long _result = __insertionAdapterOfGroupEntity.insertAndReturnId(group);
+      __db.setTransactionSuccessful();
+      return _result;
+    } finally {
+      __db.endTransaction();
+    }
+  }
+
+  @Override
+  public long addUnit(final UnitEntity unit) {
+    __db.assertNotSuspendingTransaction();
+    __db.beginTransaction();
+    try {
+      long _result = __insertionAdapterOfUnitEntity.insertAndReturnId(unit);
       __db.setTransactionSuccessful();
       return _result;
     } finally {
@@ -288,36 +296,6 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
-  public Long checkProductFromName(final String name) {
-    final String _sql = "SELECT idProduct FROM tb_product JOIN tb_article ON tb_article.nameArticle = ? WHERE tb_product.articleId = tb_article.idArticle";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
-    int _argIndex = 1;
-    if (name == null) {
-      _statement.bindNull(_argIndex);
-    } else {
-      _statement.bindString(_argIndex, name);
-    }
-    __db.assertNotSuspendingTransaction();
-    final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
-    try {
-      final Long _result;
-      if(_cursor.moveToFirst()) {
-        if (_cursor.isNull(0)) {
-          _result = null;
-        } else {
-          _result = _cursor.getLong(0);
-        }
-      } else {
-        _result = null;
-      }
-      return _result;
-    } finally {
-      _cursor.close();
-      _statement.release();
-    }
-  }
-
-  @Override
   public List<BasketEntity> getListBasket() {
     final String _sql = "SELECT * FROM tb_basket";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
@@ -358,27 +336,27 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
-  public List<UnitEntity> getUnits() {
-    final String _sql = "SELECT * FROM tb_unit";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+  public Long checkProductFromName(final String name) {
+    final String _sql = "SELECT idProduct FROM tb_product JOIN tb_article ON tb_article.nameArticle = ? WHERE tb_product.articleId = tb_article.idArticle";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    if (name == null) {
+      _statement.bindNull(_argIndex);
+    } else {
+      _statement.bindString(_argIndex, name);
+    }
     __db.assertNotSuspendingTransaction();
     final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
     try {
-      final int _cursorIndexOfIdUnit = CursorUtil.getColumnIndexOrThrow(_cursor, "idUnit");
-      final int _cursorIndexOfNameUnit = CursorUtil.getColumnIndexOrThrow(_cursor, "nameUnit");
-      final List<UnitEntity> _result = new ArrayList<UnitEntity>(_cursor.getCount());
-      while(_cursor.moveToNext()) {
-        final UnitEntity _item;
-        final long _tmpIdUnit;
-        _tmpIdUnit = _cursor.getLong(_cursorIndexOfIdUnit);
-        final String _tmpNameUnit;
-        if (_cursor.isNull(_cursorIndexOfNameUnit)) {
-          _tmpNameUnit = null;
+      final Long _result;
+      if(_cursor.moveToFirst()) {
+        if (_cursor.isNull(0)) {
+          _result = null;
         } else {
-          _tmpNameUnit = _cursor.getString(_cursorIndexOfNameUnit);
+          _result = _cursor.getLong(0);
         }
-        _item = new UnitEntity(_tmpIdUnit,_tmpNameUnit);
-        _result.add(_item);
+      } else {
+        _result = null;
       }
       return _result;
     } finally {
@@ -388,27 +366,25 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
-  public List<GroupEntity> getGroups() {
-    final String _sql = "SELECT * FROM tb_group";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+  public Long checkProductInBasket(final long basketId, final long productId) {
+    final String _sql = "SELECT idProduct FROM tb_product WHERE idProduct = ? AND basketId = ?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 2);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, productId);
+    _argIndex = 2;
+    _statement.bindLong(_argIndex, basketId);
     __db.assertNotSuspendingTransaction();
     final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
     try {
-      final int _cursorIndexOfIdGroup = CursorUtil.getColumnIndexOrThrow(_cursor, "idGroup");
-      final int _cursorIndexOfNameGroup = CursorUtil.getColumnIndexOrThrow(_cursor, "nameGroup");
-      final List<GroupEntity> _result = new ArrayList<GroupEntity>(_cursor.getCount());
-      while(_cursor.moveToNext()) {
-        final GroupEntity _item;
-        final long _tmpIdGroup;
-        _tmpIdGroup = _cursor.getLong(_cursorIndexOfIdGroup);
-        final String _tmpNameGroup;
-        if (_cursor.isNull(_cursorIndexOfNameGroup)) {
-          _tmpNameGroup = null;
+      final Long _result;
+      if(_cursor.moveToFirst()) {
+        if (_cursor.isNull(0)) {
+          _result = null;
         } else {
-          _tmpNameGroup = _cursor.getString(_cursorIndexOfNameGroup);
+          _result = _cursor.getLong(0);
         }
-        _item = new GroupEntity(_tmpIdGroup,_tmpNameGroup);
-        _result.add(_item);
+      } else {
+        _result = null;
       }
       return _result;
     } finally {
@@ -418,57 +394,54 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
-  public List<ArticleObj> getListArticle() {
-    final String _sql = "SELECT * FROM tb_article ";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+  public List<ProductObj> getListProduct(final long basketId) {
+    final String _sql = "SELECT * FROM tb_product WHERE basketId = ?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, basketId);
     __db.assertNotSuspendingTransaction();
     __db.beginTransaction();
     try {
       final Cursor _cursor = DBUtil.query(__db, _statement, true, null);
       try {
-        final int _cursorIndexOfIdArticle = CursorUtil.getColumnIndexOrThrow(_cursor, "idArticle");
-        final int _cursorIndexOfNameArticle = CursorUtil.getColumnIndexOrThrow(_cursor, "nameArticle");
-        final int _cursorIndexOfGroupId = CursorUtil.getColumnIndexOrThrow(_cursor, "groupId");
-        final int _cursorIndexOfUnitId = CursorUtil.getColumnIndexOrThrow(_cursor, "unitId");
-        final LongSparseArray<UnitEntity> _collectionUnitA = new LongSparseArray<UnitEntity>();
-        final LongSparseArray<GroupEntity> _collectionGroup = new LongSparseArray<GroupEntity>();
+        final int _cursorIndexOfIdProduct = CursorUtil.getColumnIndexOrThrow(_cursor, "idProduct");
+        final int _cursorIndexOfValue = CursorUtil.getColumnIndexOrThrow(_cursor, "value");
+        final int _cursorIndexOfBasketId = CursorUtil.getColumnIndexOrThrow(_cursor, "basketId");
+        final int _cursorIndexOfArticleId = CursorUtil.getColumnIndexOrThrow(_cursor, "articleId");
+        final int _cursorIndexOfSelected = CursorUtil.getColumnIndexOrThrow(_cursor, "selected");
+        final LongSparseArray<ArticleObj> _collectionArticle = new LongSparseArray<ArticleObj>();
         while (_cursor.moveToNext()) {
-          final long _tmpKey = _cursor.getLong(_cursorIndexOfUnitId);
-          _collectionUnitA.put(_tmpKey, null);
-          final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfGroupId);
-          _collectionGroup.put(_tmpKey_1, null);
+          final long _tmpKey = _cursor.getLong(_cursorIndexOfArticleId);
+          _collectionArticle.put(_tmpKey, null);
         }
         _cursor.moveToPosition(-1);
-        __fetchRelationshiptbUnitAscomExampleShoppingListDataRoomTablesUnitEntity(_collectionUnitA);
-        __fetchRelationshiptbGroupAscomExampleShoppingListDataRoomTablesGroupEntity(_collectionGroup);
-        final List<ArticleObj> _result = new ArrayList<ArticleObj>(_cursor.getCount());
+        __fetchRelationshiptbArticleAscomExampleShoppingListDataRoomTablesRelationArticleObj(_collectionArticle);
+        final List<ProductObj> _result = new ArrayList<ProductObj>(_cursor.getCount());
         while(_cursor.moveToNext()) {
-          final ArticleObj _item;
-          final ArticleEntity _tmpArticle;
-          _tmpArticle = new ArticleEntity();
-          final long _tmpIdArticle;
-          _tmpIdArticle = _cursor.getLong(_cursorIndexOfIdArticle);
-          _tmpArticle.setIdArticle(_tmpIdArticle);
-          final String _tmpNameArticle;
-          if (_cursor.isNull(_cursorIndexOfNameArticle)) {
-            _tmpNameArticle = null;
-          } else {
-            _tmpNameArticle = _cursor.getString(_cursorIndexOfNameArticle);
-          }
-          _tmpArticle.setNameArticle(_tmpNameArticle);
-          final long _tmpGroupId;
-          _tmpGroupId = _cursor.getLong(_cursorIndexOfGroupId);
-          _tmpArticle.setGroupId(_tmpGroupId);
-          final long _tmpUnitId;
-          _tmpUnitId = _cursor.getLong(_cursorIndexOfUnitId);
-          _tmpArticle.setUnitId(_tmpUnitId);
-          UnitEntity _tmpUnitA = null;
-          final long _tmpKey_2 = _cursor.getLong(_cursorIndexOfUnitId);
-          _tmpUnitA = _collectionUnitA.get(_tmpKey_2);
-          GroupEntity _tmpGroup = null;
-          final long _tmpKey_3 = _cursor.getLong(_cursorIndexOfGroupId);
-          _tmpGroup = _collectionGroup.get(_tmpKey_3);
-          _item = new ArticleObj(_tmpArticle,_tmpUnitA,_tmpGroup);
+          final ProductObj _item;
+          final ProductEntity _tmpProduct;
+          _tmpProduct = new ProductEntity();
+          final long _tmpIdProduct;
+          _tmpIdProduct = _cursor.getLong(_cursorIndexOfIdProduct);
+          _tmpProduct.setIdProduct(_tmpIdProduct);
+          final double _tmpValue;
+          _tmpValue = _cursor.getDouble(_cursorIndexOfValue);
+          _tmpProduct.setValue(_tmpValue);
+          final long _tmpBasketId;
+          _tmpBasketId = _cursor.getLong(_cursorIndexOfBasketId);
+          _tmpProduct.setBasketId(_tmpBasketId);
+          final long _tmpArticleId;
+          _tmpArticleId = _cursor.getLong(_cursorIndexOfArticleId);
+          _tmpProduct.setArticleId(_tmpArticleId);
+          final boolean _tmpSelected;
+          final int _tmp;
+          _tmp = _cursor.getInt(_cursorIndexOfSelected);
+          _tmpSelected = _tmp != 0;
+          _tmpProduct.setSelected(_tmpSelected);
+          ArticleObj _tmpArticle = null;
+          final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfArticleId);
+          _tmpArticle = _collectionArticle.get(_tmpKey_1);
+          _item = new ProductObj(_tmpProduct,_tmpArticle);
           _result.add(_item);
         }
         __db.setTransactionSuccessful();
@@ -483,8 +456,8 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
-  public List<ProductObj> getListProduct() {
-    final String _sql = "SELECT * FROM tb_product ";
+  public List<ProductObj> getListProductAll() {
+    final String _sql = "SELECT * FROM tb_product";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
     __db.assertNotSuspendingTransaction();
     __db.beginTransaction();
@@ -539,6 +512,147 @@ public final class DataDao_Impl implements DataDao {
       }
     } finally {
       __db.endTransaction();
+    }
+  }
+
+  @Override
+  public List<ArticleObj> getListArticle() {
+    final String _sql = "SELECT * FROM tb_article ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    __db.assertNotSuspendingTransaction();
+    __db.beginTransaction();
+    try {
+      final Cursor _cursor = DBUtil.query(__db, _statement, true, null);
+      try {
+        final int _cursorIndexOfIdArticle = CursorUtil.getColumnIndexOrThrow(_cursor, "idArticle");
+        final int _cursorIndexOfNameArticle = CursorUtil.getColumnIndexOrThrow(_cursor, "nameArticle");
+        final int _cursorIndexOfGroupId = CursorUtil.getColumnIndexOrThrow(_cursor, "groupId");
+        final int _cursorIndexOfUnitId = CursorUtil.getColumnIndexOrThrow(_cursor, "unitId");
+        final LongSparseArray<UnitEntity> _collectionUnitA = new LongSparseArray<UnitEntity>();
+        final LongSparseArray<GroupEntity> _collectionGroup = new LongSparseArray<GroupEntity>();
+        while (_cursor.moveToNext()) {
+          if (!_cursor.isNull(_cursorIndexOfUnitId)) {
+            final long _tmpKey = _cursor.getLong(_cursorIndexOfUnitId);
+            _collectionUnitA.put(_tmpKey, null);
+          }
+          if (!_cursor.isNull(_cursorIndexOfGroupId)) {
+            final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfGroupId);
+            _collectionGroup.put(_tmpKey_1, null);
+          }
+        }
+        _cursor.moveToPosition(-1);
+        __fetchRelationshiptbUnitAscomExampleShoppingListDataRoomTablesUnitEntity(_collectionUnitA);
+        __fetchRelationshiptbGroupAscomExampleShoppingListDataRoomTablesGroupEntity(_collectionGroup);
+        final List<ArticleObj> _result = new ArrayList<ArticleObj>(_cursor.getCount());
+        while(_cursor.moveToNext()) {
+          final ArticleObj _item;
+          final ArticleEntity _tmpArticle;
+          _tmpArticle = new ArticleEntity();
+          final long _tmpIdArticle;
+          _tmpIdArticle = _cursor.getLong(_cursorIndexOfIdArticle);
+          _tmpArticle.setIdArticle(_tmpIdArticle);
+          final String _tmpNameArticle;
+          if (_cursor.isNull(_cursorIndexOfNameArticle)) {
+            _tmpNameArticle = null;
+          } else {
+            _tmpNameArticle = _cursor.getString(_cursorIndexOfNameArticle);
+          }
+          _tmpArticle.setNameArticle(_tmpNameArticle);
+          final Long _tmpGroupId;
+          if (_cursor.isNull(_cursorIndexOfGroupId)) {
+            _tmpGroupId = null;
+          } else {
+            _tmpGroupId = _cursor.getLong(_cursorIndexOfGroupId);
+          }
+          _tmpArticle.setGroupId(_tmpGroupId);
+          final Long _tmpUnitId;
+          if (_cursor.isNull(_cursorIndexOfUnitId)) {
+            _tmpUnitId = null;
+          } else {
+            _tmpUnitId = _cursor.getLong(_cursorIndexOfUnitId);
+          }
+          _tmpArticle.setUnitId(_tmpUnitId);
+          UnitEntity _tmpUnitA = null;
+          if (!_cursor.isNull(_cursorIndexOfUnitId)) {
+            final long _tmpKey_2 = _cursor.getLong(_cursorIndexOfUnitId);
+            _tmpUnitA = _collectionUnitA.get(_tmpKey_2);
+          }
+          GroupEntity _tmpGroup = null;
+          if (!_cursor.isNull(_cursorIndexOfGroupId)) {
+            final long _tmpKey_3 = _cursor.getLong(_cursorIndexOfGroupId);
+            _tmpGroup = _collectionGroup.get(_tmpKey_3);
+          }
+          _item = new ArticleObj(_tmpArticle,_tmpUnitA,_tmpGroup);
+          _result.add(_item);
+        }
+        __db.setTransactionSuccessful();
+        return _result;
+      } finally {
+        _cursor.close();
+        _statement.release();
+      }
+    } finally {
+      __db.endTransaction();
+    }
+  }
+
+  @Override
+  public List<GroupEntity> getGroups() {
+    final String _sql = "SELECT * FROM tb_group";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    __db.assertNotSuspendingTransaction();
+    final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+    try {
+      final int _cursorIndexOfIdGroup = CursorUtil.getColumnIndexOrThrow(_cursor, "idGroup");
+      final int _cursorIndexOfNameGroup = CursorUtil.getColumnIndexOrThrow(_cursor, "nameGroup");
+      final List<GroupEntity> _result = new ArrayList<GroupEntity>(_cursor.getCount());
+      while(_cursor.moveToNext()) {
+        final GroupEntity _item;
+        final long _tmpIdGroup;
+        _tmpIdGroup = _cursor.getLong(_cursorIndexOfIdGroup);
+        final String _tmpNameGroup;
+        if (_cursor.isNull(_cursorIndexOfNameGroup)) {
+          _tmpNameGroup = null;
+        } else {
+          _tmpNameGroup = _cursor.getString(_cursorIndexOfNameGroup);
+        }
+        _item = new GroupEntity(_tmpIdGroup,_tmpNameGroup);
+        _result.add(_item);
+      }
+      return _result;
+    } finally {
+      _cursor.close();
+      _statement.release();
+    }
+  }
+
+  @Override
+  public List<UnitEntity> getUnits() {
+    final String _sql = "SELECT * FROM tb_unit";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    __db.assertNotSuspendingTransaction();
+    final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+    try {
+      final int _cursorIndexOfIdUnit = CursorUtil.getColumnIndexOrThrow(_cursor, "idUnit");
+      final int _cursorIndexOfNameUnit = CursorUtil.getColumnIndexOrThrow(_cursor, "nameUnit");
+      final List<UnitEntity> _result = new ArrayList<UnitEntity>(_cursor.getCount());
+      while(_cursor.moveToNext()) {
+        final UnitEntity _item;
+        final long _tmpIdUnit;
+        _tmpIdUnit = _cursor.getLong(_cursorIndexOfIdUnit);
+        final String _tmpNameUnit;
+        if (_cursor.isNull(_cursorIndexOfNameUnit)) {
+          _tmpNameUnit = null;
+        } else {
+          _tmpNameUnit = _cursor.getString(_cursorIndexOfNameUnit);
+        }
+        _item = new UnitEntity(_tmpIdUnit,_tmpNameUnit);
+        _result.add(_item);
+      }
+      return _result;
+    } finally {
+      _cursor.close();
+      _statement.release();
     }
   }
 
@@ -597,19 +711,21 @@ public final class DataDao_Impl implements DataDao {
       final int _cursorIndexOfIdUnit = 0;
       final int _cursorIndexOfNameUnit = 1;
       while(_cursor.moveToNext()) {
-        final long _tmpKey = _cursor.getLong(_itemKeyIndex);
-        if (_map.containsKey(_tmpKey)) {
-          final UnitEntity _item_1;
-          final long _tmpIdUnit;
-          _tmpIdUnit = _cursor.getLong(_cursorIndexOfIdUnit);
-          final String _tmpNameUnit;
-          if (_cursor.isNull(_cursorIndexOfNameUnit)) {
-            _tmpNameUnit = null;
-          } else {
-            _tmpNameUnit = _cursor.getString(_cursorIndexOfNameUnit);
+        if (!_cursor.isNull(_itemKeyIndex)) {
+          final long _tmpKey = _cursor.getLong(_itemKeyIndex);
+          if (_map.containsKey(_tmpKey)) {
+            final UnitEntity _item_1;
+            final long _tmpIdUnit;
+            _tmpIdUnit = _cursor.getLong(_cursorIndexOfIdUnit);
+            final String _tmpNameUnit;
+            if (_cursor.isNull(_cursorIndexOfNameUnit)) {
+              _tmpNameUnit = null;
+            } else {
+              _tmpNameUnit = _cursor.getString(_cursorIndexOfNameUnit);
+            }
+            _item_1 = new UnitEntity(_tmpIdUnit,_tmpNameUnit);
+            _map.put(_tmpKey, _item_1);
           }
-          _item_1 = new UnitEntity(_tmpIdUnit,_tmpNameUnit);
-          _map.put(_tmpKey, _item_1);
         }
       }
     } finally {
@@ -668,19 +784,21 @@ public final class DataDao_Impl implements DataDao {
       final int _cursorIndexOfIdGroup = 0;
       final int _cursorIndexOfNameGroup = 1;
       while(_cursor.moveToNext()) {
-        final long _tmpKey = _cursor.getLong(_itemKeyIndex);
-        if (_map.containsKey(_tmpKey)) {
-          final GroupEntity _item_1;
-          final long _tmpIdGroup;
-          _tmpIdGroup = _cursor.getLong(_cursorIndexOfIdGroup);
-          final String _tmpNameGroup;
-          if (_cursor.isNull(_cursorIndexOfNameGroup)) {
-            _tmpNameGroup = null;
-          } else {
-            _tmpNameGroup = _cursor.getString(_cursorIndexOfNameGroup);
+        if (!_cursor.isNull(_itemKeyIndex)) {
+          final long _tmpKey = _cursor.getLong(_itemKeyIndex);
+          if (_map.containsKey(_tmpKey)) {
+            final GroupEntity _item_1;
+            final long _tmpIdGroup;
+            _tmpIdGroup = _cursor.getLong(_cursorIndexOfIdGroup);
+            final String _tmpNameGroup;
+            if (_cursor.isNull(_cursorIndexOfNameGroup)) {
+              _tmpNameGroup = null;
+            } else {
+              _tmpNameGroup = _cursor.getString(_cursorIndexOfNameGroup);
+            }
+            _item_1 = new GroupEntity(_tmpIdGroup,_tmpNameGroup);
+            _map.put(_tmpKey, _item_1);
           }
-          _item_1 = new GroupEntity(_tmpIdGroup,_tmpNameGroup);
-          _map.put(_tmpKey, _item_1);
         }
       }
     } finally {
@@ -743,10 +861,14 @@ public final class DataDao_Impl implements DataDao {
       final LongSparseArray<UnitEntity> _collectionUnitA = new LongSparseArray<UnitEntity>();
       final LongSparseArray<GroupEntity> _collectionGroup = new LongSparseArray<GroupEntity>();
       while (_cursor.moveToNext()) {
-        final long _tmpKey = _cursor.getLong(_cursorIndexOfUnitId);
-        _collectionUnitA.put(_tmpKey, null);
-        final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfGroupId);
-        _collectionGroup.put(_tmpKey_1, null);
+        if (!_cursor.isNull(_cursorIndexOfUnitId)) {
+          final long _tmpKey = _cursor.getLong(_cursorIndexOfUnitId);
+          _collectionUnitA.put(_tmpKey, null);
+        }
+        if (!_cursor.isNull(_cursorIndexOfGroupId)) {
+          final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfGroupId);
+          _collectionGroup.put(_tmpKey_1, null);
+        }
       }
       _cursor.moveToPosition(-1);
       __fetchRelationshiptbUnitAscomExampleShoppingListDataRoomTablesUnitEntity(_collectionUnitA);
@@ -767,18 +889,30 @@ public final class DataDao_Impl implements DataDao {
             _tmpNameArticle = _cursor.getString(_cursorIndexOfNameArticle);
           }
           _tmpArticle.setNameArticle(_tmpNameArticle);
-          final long _tmpGroupId;
-          _tmpGroupId = _cursor.getLong(_cursorIndexOfGroupId);
+          final Long _tmpGroupId;
+          if (_cursor.isNull(_cursorIndexOfGroupId)) {
+            _tmpGroupId = null;
+          } else {
+            _tmpGroupId = _cursor.getLong(_cursorIndexOfGroupId);
+          }
           _tmpArticle.setGroupId(_tmpGroupId);
-          final long _tmpUnitId;
-          _tmpUnitId = _cursor.getLong(_cursorIndexOfUnitId);
+          final Long _tmpUnitId;
+          if (_cursor.isNull(_cursorIndexOfUnitId)) {
+            _tmpUnitId = null;
+          } else {
+            _tmpUnitId = _cursor.getLong(_cursorIndexOfUnitId);
+          }
           _tmpArticle.setUnitId(_tmpUnitId);
           UnitEntity _tmpUnitA = null;
-          final long _tmpKey_3 = _cursor.getLong(_cursorIndexOfUnitId);
-          _tmpUnitA = _collectionUnitA.get(_tmpKey_3);
+          if (!_cursor.isNull(_cursorIndexOfUnitId)) {
+            final long _tmpKey_3 = _cursor.getLong(_cursorIndexOfUnitId);
+            _tmpUnitA = _collectionUnitA.get(_tmpKey_3);
+          }
           GroupEntity _tmpGroup = null;
-          final long _tmpKey_4 = _cursor.getLong(_cursorIndexOfGroupId);
-          _tmpGroup = _collectionGroup.get(_tmpKey_4);
+          if (!_cursor.isNull(_cursorIndexOfGroupId)) {
+            final long _tmpKey_4 = _cursor.getLong(_cursorIndexOfGroupId);
+            _tmpGroup = _collectionGroup.get(_tmpKey_4);
+          }
           _item_1 = new ArticleObj(_tmpArticle,_tmpUnitA,_tmpGroup);
           _map.put(_tmpKey_2, _item_1);
         }

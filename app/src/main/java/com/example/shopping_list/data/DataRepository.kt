@@ -1,5 +1,6 @@
 package com.example.shopping_list.data
 
+import android.util.Log
 import com.example.shopping_list.data.room.DataSourceDB
 import com.example.shopping_list.entity.*
 import javax.inject.Inject
@@ -12,7 +13,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         return dataSourceDB.getListBasket()
     }
 
-    fun getListProducts(basketId: Int): List<Product> = dataSourceDB.getListProducts(basketId)
+    fun getListProducts(basketId: Long): List<Product> = dataSourceDB.getListProducts(basketId)
 
     fun getListArticle(): List<Article> =  dataSourceDB.getListArticle()
 
@@ -20,11 +21,14 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
 
     fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
 
-    fun addBasket(basketName: String): List<Basket>{
-        return dataSourceDB.addBasket(basketName)
+    fun newBasket(basketName: String): List<Basket>{
+        return dataSourceDB.newBasket(basketName)
     }
-    fun addProduct(productName: String): List<Product>{
-        return dataSourceDB.addProduct(productName, -1)
+    fun newProduct(product: Product): List<Product>{
+        return dataSourceDB.newProduct(product)
+    }
+    fun newArticle(name: String): List<Article> {
+        return dataSourceDB.newArticle(name)
     }
 //    fun getBasketProducts(basket:BasketDB): List<ProductDB>{
 //        var listProduct = emptyList<ProductDB>()

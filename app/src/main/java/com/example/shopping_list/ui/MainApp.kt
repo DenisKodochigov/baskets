@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.shopping_list.navigation.*
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MainApp() {
+fun MainApp(viewModel: AppViewModel) {
     AppTheme {
         val navController = rememberNavController()
         val currentBackStack by navController.currentBackStackEntryAsState()
@@ -49,7 +50,8 @@ fun MainApp() {
                 floatingActionButtonPosition = FabPosition.Center,
                 isFloatingActionButtonDocked = true,
             ) { innerPadding ->
-                AppNavHost( navController, modifier = Modifier.padding(innerPadding), bottomSheetContent = bottomSheetContent)
+                AppNavHost(navController, modifier = Modifier.padding(innerPadding),
+                    viewModel = viewModel, bottomSheetContent = bottomSheetContent)
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.shopping_list.ui.baskets
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -21,22 +23,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.ui.AppViewModel
-import com.example.shopping_list.ui.components.BasketsRow
-import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.HeaderScreen1
 
 @Composable
 fun BasketsScreen(
-    onBasketClick: (Int) -> Unit,
+    onBasketClick: (Long) -> Unit,
     viewModel: AppViewModel,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>) {
 
     viewModel.getListBasket()
     val uiState by viewModel.stateBasketScreen.collectAsState()
-    bottomSheetContent.value = { BottomSheetContentBasket(onAddClick = {viewModel.addBasket(it)}) }
+    bottomSheetContent.value = { BottomSheetContentBasket(onAddClick = {viewModel.newBasket(it)}) }
 
     BasketsScreenLayout(
         modifier = Modifier.semantics { contentDescription = "Baskets Screen" },
@@ -50,11 +49,12 @@ fun BasketsScreen(
 fun BasketsScreenLayout(
     modifier: Modifier = Modifier,
     itemList: List<Basket>,
-    onBasketClick: (Int) -> Unit,
+    onBasketClick: (Long) -> Unit,
     onHeaderClick: () -> Unit,
 ){
+//    Log.d("KDS", "New state BasketsScreenLayout, ${itemList.size}")
     val listState = rememberLazyListState()
-    Column( ){
+    Column( modifier ){
         HeaderScreen1(text = "Baskets", onHeaderClick)
         LazyColumn (state = listState, modifier = Modifier
             .fillMaxSize()
@@ -64,7 +64,7 @@ fun BasketsScreenLayout(
                     .fillMaxWidth()
                     .padding(start = 24.dp, top = 2.dp, end = 24.dp, bottom = 2.dp)
                     .background(Color.White)
-                    .clickable { /*onBasketClick(item.idBasket)*/ }){
+                    .clickable { onBasketClick(item.idBasket) }){
                     Text(
                         text = item.nameBasket,
                         fontSize = 20.sp,
@@ -72,9 +72,6 @@ fun BasketsScreenLayout(
                     )
                 }
             }
-        }
-        itemList.forEach{ item ->
-            BasketsRow(modifier = modifier, name = item.nameBasket)
         }
     }
  }
@@ -86,7 +83,7 @@ fun BottomSheetContentBasket(onAddClick: (String) -> Unit){
     var nameNewBasket by remember { mutableStateOf("")}
     val pb = 0.dp
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    val localFocusManager = LocalFocusManager.current
     Column(
         Modifier
             .padding(16.dp)
@@ -107,18 +104,19 @@ fun BottomSheetContentBasket(onAddClick: (String) -> Unit){
                 onAddClick(nameNewBasket)
                 keyboardController?.hide()
                 nameNewBasket = ""
+                localFocusManager.clearFocus()
             }) ,
         )
         Spacer(Modifier.width(36.dp))
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun BottomSheetContentBasketPreview(){
     BottomSheetContentBasket {}
 }
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun BasketsScreenLayoutPreview(){
 //    BasketsScreenLayout(Modifier, listOf(BasketDB(nameBasket = "Fruicts"), BasketDB(nameBasket = "Auto"))) {}

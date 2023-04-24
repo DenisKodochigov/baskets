@@ -12,6 +12,6 @@ fun NavHostController.navigateToScreen(route: String) =
         }
     }
 
-fun NavHostController.navigateToProducts(basketId: Int) {
+fun NavHostController.navigateToProducts(basketId: Long) {
     this.navigateToScreen("${ProductsBasket.route}/$basketId")
 }
