@@ -2,7 +2,7 @@ package com.example.shopping_list
 
 import android.annotation.SuppressLint
 import android.app.Application
-import com.example.shopping_list.data.room.tables.BasketDB
+import com.example.shopping_list.data.room.tables.BasketEntity
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -16,6 +16,6 @@ class App: Application()  {
         @SuppressLint("StaticFieldLeak")
 //        lateinit var context: Context
 //            private set
-        var basket: BasketDB? = null
+        var basket: BasketEntity? = null
     }
 }

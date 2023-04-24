@@ -1,5 +1,6 @@
 package com.example.shopping_list.entity
 
 interface GroupArticle {
-    val nameGroup: String
+    var idGroup: Long
+    var nameGroup: String
 }

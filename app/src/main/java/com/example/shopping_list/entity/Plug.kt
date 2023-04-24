@@ -1,7 +1,5 @@
 package com.example.shopping_list.entity
 
-import com.example.shopping_list.data.room.tables.BasketDB
-
 object Plug {
     
 //    val listBasket = listOf(

@@ -55,12 +55,12 @@ fun ProductsScreenLayout(
                 Row ( modifier = Modifier.clickable {
 //                    onProductClick(item.idBasket)
                 }){
-                    Text(text = item.nameProduct)
+                    Text(text = "pppp" )//item.nameProduct)
                 }
             }
         }
         itemList.forEach{ item ->
-            BasketsRow(modifier = modifier, name = item.nameProduct)
+            BasketsRow(modifier = modifier, name = "pppp") // item.nameProduct)
         }
     }
 }

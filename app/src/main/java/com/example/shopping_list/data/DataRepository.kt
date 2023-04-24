@@ -1,9 +1,7 @@
 package com.example.shopping_list.data
 
 import com.example.shopping_list.data.room.DataSourceDB
-import com.example.shopping_list.data.room.tables.GroupWithArticle
-import com.example.shopping_list.entity.Basket
-import com.example.shopping_list.entity.Product
+import com.example.shopping_list.entity.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,23 +12,14 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         return dataSourceDB.getListBasket()
     }
 
-    fun getListProducts(basketId: Int): List<Product>{
-        return dataSourceDB.getListProducts(basketId)
-    }
-    fun getGroups(): List<String>{
-        val list = mutableListOf<String>()
-        dataSourceDB.getGroups().forEach {
-            list.add(it.nameGroup)
-        }
-        return list
-    }
-    fun getUnits(): List<String>{
-        val list = mutableListOf<String>()
-        dataSourceDB.getUnits().forEach {
-            list.add(it.nameUnit)
-        }
-        return list
-    }
+    fun getListProducts(basketId: Int): List<Product> = dataSourceDB.getListProducts(basketId)
+
+    fun getListArticle(): List<Article> =  dataSourceDB.getListArticle()
+
+    fun getGroups(): List<GroupArticle> = dataSourceDB.getGroups()
+
+    fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
+
     fun addBasket(basketName: String): List<Basket>{
         return dataSourceDB.addBasket(basketName)
     }
@@ -47,7 +36,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     fun addGroup(groupName: String){
         dataSourceDB.addGroup(groupName)
     }
-    fun getGroupsWithProduct(): List<GroupWithArticle>{
-        return dataSourceDB.getGroupsWithProduct()
-    }
+//    fun getGroupsWithProduct(): List<GroupWithArticle>{
+//        return dataSourceDB.getGroupsWithProduct()
+//    }
 }

@@ -5,12 +5,11 @@ import androidx.room.RoomDatabase
 import com.example.shopping_list.data.room.tables.*
 
 @Database(entities = [
-    BasketDB::class,
-    ProductDB::class,
-    ArticleDB::class,
-    GroupDB::class,
-    UnitDB::class,
-    BasketToProductDB::class], version = 1, exportSchema = false)
+    BasketEntity::class,
+    ProductEntity::class,
+    ArticleEntity::class,
+    GroupEntity::class,
+    UnitEntity::class,], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dataDao(): DataDao
 }

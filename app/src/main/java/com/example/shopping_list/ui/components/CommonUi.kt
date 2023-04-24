@@ -1,5 +1,6 @@
 package com.example.shopping_list.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -15,6 +16,13 @@ import androidx.compose.ui.unit.dp
 fun HeaderScreen(text: String){
     val typography = MaterialTheme.typography
     Row( Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
+        Text(text, style = typography.h1)
+    }
+}
+@Composable
+fun HeaderScreen1(text: String, onClick: () -> Unit){
+    val typography = MaterialTheme.typography
+    Row( Modifier.fillMaxWidth().clickable { onClick }, horizontalArrangement = Arrangement.Center){
         Text(text, style = typography.h1)
     }
 }

@@ -21,11 +21,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.shopping_list.data.room.tables.BasketDB
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.BasketsRow
 import com.example.shopping_list.ui.components.HeaderScreen
+import com.example.shopping_list.ui.components.HeaderScreen1
 
 @Composable
 fun BasketsScreen(
@@ -41,6 +42,7 @@ fun BasketsScreen(
         modifier = Modifier.semantics { contentDescription = "Baskets Screen" },
         onBasketClick = onBasketClick,
         itemList = uiState.baskets,
+        onHeaderClick = {viewModel.getListBasket()}
     )
 }
 
@@ -49,17 +51,20 @@ fun BasketsScreenLayout(
     modifier: Modifier = Modifier,
     itemList: List<Basket>,
     onBasketClick: (Int) -> Unit,
+    onHeaderClick: () -> Unit,
 ){
     val listState = rememberLazyListState()
     Column( ){
-        HeaderScreen(text = "Baskets")
-        LazyColumn (state = listState, modifier = Modifier.fillMaxSize().padding(vertical = 12.dp)) {
+        HeaderScreen1(text = "Baskets", onHeaderClick)
+        LazyColumn (state = listState, modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 12.dp)) {
             items(items = itemList){ item->
                 Row ( modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 24.dp, top = 2.dp, end = 24.dp, bottom = 2.dp)
                     .background(Color.White)
-                    .clickable { onBasketClick(item.idBasket) }){
+                    .clickable { /*onBasketClick(item.idBasket)*/ }){
                     Text(
                         text = item.nameBasket,
                         fontSize = 20.sp,
@@ -82,7 +87,10 @@ fun BottomSheetContentBasket(onAddClick: (String) -> Unit){
     val pb = 0.dp
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Column( Modifier.padding(16.dp).fillMaxWidth(1f)) {
+    Column(
+        Modifier
+            .padding(16.dp)
+            .fillMaxWidth(1f)) {
         OutlinedTextField(
             value = nameNewBasket,
             singleLine = true,
@@ -90,7 +98,7 @@ fun BottomSheetContentBasket(onAddClick: (String) -> Unit){
             label = { Text(text = "New name basket") },
             onValueChange = { nameNewBasket = it},
             modifier = Modifier
-                .padding(start = pb, top = pb, end = pb, bottom = pb )
+                .padding(start = pb, top = pb, end = pb, bottom = pb)
                 .fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
@@ -113,5 +121,5 @@ fun BottomSheetContentBasketPreview(){
 @Preview
 @Composable
 fun BasketsScreenLayoutPreview(){
-    BasketsScreenLayout(Modifier, listOf(BasketDB(nameBasket = "Fruicts"), BasketDB(nameBasket = "Auto"))) {}
+//    BasketsScreenLayout(Modifier, listOf(BasketDB(nameBasket = "Fruicts"), BasketDB(nameBasket = "Auto"))) {}
 }

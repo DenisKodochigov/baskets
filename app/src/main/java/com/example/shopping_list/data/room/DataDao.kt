@@ -2,47 +2,66 @@ package com.example.shopping_list.data.room
 
 import androidx.room.*
 import com.example.shopping_list.data.room.tables.*
+import com.example.shopping_list.data.room.tables.relation.ArticleObj
+import com.example.shopping_list.data.room.tables.relation.ProductObj
 
 /* Data access object to query the database. */
 @Dao
 interface DataDao {
 
     @Insert
-    fun addBasket(basket: BasketDB): Long
+    fun addBasket(basket: BasketEntity): Long
 
     @Insert
-    fun addProduct(product: ProductDB): Long
-//
-//    @Update
-//    fun update(basket: BasketDB)
-//
-//    @Query("DELETE FROM basket WHERE idBasket = :id")
-//    fun deleteByIdBasket(id:Int)
+    fun addUnit(unit: UnitEntity): Long
 
-    @Query("SELECT idBasket FROM basket WHERE nameBasket = :basketName")
+    @Insert
+    fun addArticle(article: ArticleEntity): Long
+
+    @Insert
+    fun addProduct(product: ProductEntity): Long
+
+    @Update
+    fun update(basket: BasketEntity)
+
+    @Query("DELETE FROM tb_basket WHERE idBasket = :id")
+    fun deleteByIdBasket(id:Int)
+
+    @Query("SELECT idBasket FROM tb_basket WHERE nameBasket = :basketName")
     fun checkBasketFromName(basketName: String): Long?
 
-    @Query("SELECT idProduct FROM products WHERE nameProduct = :productName")
-    fun checkProductFromName(productName: String): Long?
+    @Query("SELECT idProduct FROM tb_product " +
+            "JOIN tb_article ON tb_article.nameArticle = :name " +
+            "WHERE tb_product.articleId = tb_article.idArticle")
+    fun checkProductFromName(name: String): Long?
 
-    @Query("SELECT * FROM basket")
-    fun getListBasket(): List<BasketDB>
+    @Query("SELECT * FROM tb_basket")
+    fun getListBasket(): List<BasketEntity>
 
-    @Query("SELECT * FROM myunit")
-    fun getUnits(): List<UnitDB>
+    @Query("SELECT * FROM tb_unit")
+    fun getUnits(): List<UnitEntity>
 
-    @Query("SELECT * FROM mygroup")
-    fun getGroups(): List<GroupDB>
+    @Query("SELECT * FROM tb_group")
+    fun getGroups(): List<GroupEntity>
 
     @Insert
-    fun addGroup(group: GroupDB): Long
-
-    @Query("SELECT * FROM products")
-    fun getListProducts(): List<ProductDB>
+    fun addGroup(group: GroupEntity): Long
 
     @Transaction
-    @Query("SELECT * FROM basket WHERE idBasket = :basket_id")
-    fun getBasketWithProducts(basket_id: Int): List<BasketWithProduct>
+    @Query("SELECT * FROM tb_article ")
+    fun getListArticle(): List<ArticleObj>
+
+    @Transaction
+    @Query("SELECT * FROM tb_product ")
+    fun getListProduct(): List<ProductObj>
+
+//    @Query("SELECT * FROM basket JOIN products ON basket.productId = products.idProduct" +
+//            "JOIN article ON products.articleId = article.idArticle " +
+//            "JOIN tb_unit ON article.unitId = tb_uit.idUnit WHERE basketId=:basketId")
+//    fun getListProducts(basketId: Int): List<ProductTable>
+//    @Transaction
+//    @Query("SELECT * FROM basket WHERE idBasket = :basket_id")
+//    fun getBasketWithProducts(basket_id: Int): List<BasketWithProduct>
 
 ////    @Transaction
 ////    @Query("SELECT * FROM Basket WHERE idBasket = :basket_id")
