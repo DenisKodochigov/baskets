@@ -1,12 +1,14 @@
 package com.example.shopping_list.ui.baskets
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -14,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
@@ -97,15 +100,15 @@ fun BottomSheetContentBasket(onAddClick: (String) -> Unit){
             modifier = Modifier
                 .padding(start = pb, top = pb, end = pb, bottom = pb)
                 .fillMaxWidth(),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(onDone = {
-                onAddClick(nameNewBasket)
-                keyboardController?.hide()
-                nameNewBasket = ""
-                localFocusManager.clearFocus()
-            }) ,
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    onAddClick(nameNewBasket)
+                    keyboardController?.hide()
+                    nameNewBasket = ""
+                    localFocusManager.clearFocus()
+                }
+            ) ,
         )
         Spacer(Modifier.width(36.dp))
     }

@@ -17,10 +17,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -139,9 +140,10 @@ fun ListArticle(itemList: List<Article>, onAddClick: (Long, Double) -> Unit){
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EditTextNewArticle(onNewArticle: (String) -> Unit){
-    var nameNewArticle by remember { mutableStateOf("") }
+
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
+    var nameNewArticle by remember { mutableStateOf("") }
     val pb = 0.dp
     val modifier = Modifier.padding(start = pb, top = pb, end = pb, bottom = pb).fillMaxWidth()
     OutlinedTextField(
@@ -154,40 +156,35 @@ fun EditTextNewArticle(onNewArticle: (String) -> Unit){
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Done
         ),
-        keyboardActions = KeyboardActions(onDone = {
-            onNewArticle(nameNewArticle)
-            keyboardController?.hide()
-            localFocusManager.clearFocus()
-            nameNewArticle = ""
-        }) ,
-        leadingIcon = { Icon(
-                Icons.Filled.Add,
-                contentDescription = "Add",
-                Modifier.clickable {
-                    keyboardController?.hide()
-                    onNewArticle(nameNewArticle)
-                    localFocusManager.clearFocus()
-                    nameNewArticle = ""
-                }
-            )
-        },
-        trailingIcon = {Icon(
-                Icons.Filled.Add,
-                contentDescription = "Add",
-                Modifier.clickable {
-                    nameNewArticle = ""
-                    keyboardController?.hide()
-                    onNewArticle(nameNewArticle)
-                    localFocusManager.clearFocus()
-                }
-            )
-        }
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onNewArticle(nameNewArticle)
+                keyboardController?.hide()
+                localFocusManager.clearFocus()
+                nameNewArticle = ""
+            }
+        ) ,
+        leadingIcon = { nameNewArticle = onAddIconEditText(onNewArticle,nameNewArticle) },
+        trailingIcon = { nameNewArticle = onAddIconEditText(onNewArticle,nameNewArticle) }
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun onClickIconEditText(){
-
+fun onAddIconEditText(onNewArticle: (String) -> Unit, nameNewArticle: String): String {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val localFocusManager = LocalFocusManager.current
+    Icon(
+        Icons.Filled.Add,
+        contentDescription = "Add",
+        Modifier.clickable(
+            onClick = {
+                keyboardController?.hide()
+                onNewArticle(nameNewArticle)
+                localFocusManager.clearFocus() }
+        )
+    )
+    return ""
 }
 
 @Preview(showBackground = true)
