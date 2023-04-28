@@ -2,11 +2,12 @@ package com.example.shopping_list.ui
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -27,7 +28,6 @@ fun MainApp(viewModel: AppViewModel) {
         val currentBackStack by navController.currentBackStackEntryAsState()
         val currentDestination = currentBackStack?.destination
         val currentScreen = appTabRowScreens.find { it.route == currentDestination?.route } ?: Baskets
-
         val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
         val bottomSheetContent = remember { mutableStateOf<@Composable (() -> Unit)?>({ })  }
         val scope  = rememberCoroutineScope()

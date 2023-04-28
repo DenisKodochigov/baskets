@@ -5,6 +5,7 @@ import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.ExposedDropdownMenu
 import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.UnitA
 

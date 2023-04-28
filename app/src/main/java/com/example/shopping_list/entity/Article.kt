@@ -1,6 +1,6 @@
 package com.example.shopping_list.entity
 
-interface Article {
+interface Article{
     var idArticle: Long
     var nameArticle: String
     var unitA: UnitA?

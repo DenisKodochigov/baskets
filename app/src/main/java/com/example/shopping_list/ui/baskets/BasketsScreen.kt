@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -87,10 +88,11 @@ fun BottomSheetContentBasket(onAddClick: (String) -> Unit){
     val pb = 0.dp
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
+    val screenHeight = LocalConfiguration.current.screenHeightDp
     Column(
-        Modifier
-            .padding(16.dp)
-            .fillMaxWidth(1f)) {
+        Modifier.fillMaxWidth()
+            .heightIn((screenHeight * 0.25).dp, (screenHeight * 0.75).dp)
+            .padding(24.dp, 24.dp, 24.dp, 32.dp)) {
         OutlinedTextField(
             value = nameNewBasket,
             singleLine = true,

@@ -19,6 +19,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
@@ -32,9 +33,11 @@ import androidx.compose.ui.unit.sp
 import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.ExposedDropdownMenu
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.HeaderScreen
+import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
 
 @Composable
 fun ProductsScreen(
@@ -42,19 +45,18 @@ fun ProductsScreen(
     viewModel: AppViewModel,
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>
 ){
-    viewModel.getListProducts(basketId)
-    viewModel.getListArticle()
+    viewModel.getStateProducts(basketId)
     val uiState by viewModel.stateProductsScreen.collectAsState()
 
     bottomSheetContent.value = {
         BottomSheetContentProduct(
-            itemList = uiState.articles,
+            uiState = uiState,
             onNewArticle = { viewModel.newArticle(it)},
             onAddClick = { articleId, value->
-                viewModel.newProduct(ProductEntity(
+                viewModel.newProduct( ProductEntity(
                     basketId = basketId,
                     articleId = articleId,
-                    article = ArticleEntity(idArticle = articleId),
+                    article = ArticleEntity( idArticle = articleId ),
                     value = value
             ))}
         )
@@ -75,9 +77,12 @@ fun ProductsScreenLayout(
     Log.d("KDS", "ProductsScreenLayout ${itemList.size}")
     Column( modifier ) {
         HeaderScreen(text = "Products")
-        LazyColumn (state = listState, modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 12.dp)) {
+        LazyColumn (
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 12.dp, horizontal = 24.dp))
+        {
             items(items = itemList){ item->
                 Row ( modifier = Modifier
                     .fillMaxWidth()
@@ -97,100 +102,50 @@ fun ProductsScreenLayout(
 
 @Composable
 fun BottomSheetContentProduct(
-    itemList: List<Article>,
+    uiState: StateProductsScreen,
     onAddClick: (Long, Double) -> Unit,
-    onNewArticle: (String) -> Unit){
+    onNewArticle: (Pair<Long,String>) -> Unit){
 
-    Log.d("KDS", "BottomSheetContentProduct ${itemList.size}")
+    val screenHeight = LocalConfiguration.current.screenHeightDp
 
     Column(
         Modifier
-            .padding(16.dp)
-            .fillMaxWidth(1f)) {
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .heightIn((screenHeight * 0.25).dp, (screenHeight * 0.75).dp)) {
         HeaderScreen(text = "Select product")
-        ListArticle(itemList, onAddClick)
-        EditTextNewArticle(onNewArticle)
-        Spacer(Modifier.width(36.dp))
-    }
-}
-
-@Composable
-fun ListArticle(itemList: List<Article>, onAddClick: (Long, Double) -> Unit){
-    val listState = rememberLazyListState()
-    LazyColumn (state = listState, modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 12.dp)) {
-        items(items = itemList){ item->
-            Row ( modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, top = 2.dp, end = 24.dp, bottom = 2.dp)
-                .background(Color.White)
-                .clickable {
-                    //Показать диалог с выбором значения
-                    onAddClick(item.idArticle, 0.0)
-                }){
-                Text(text = item.nameArticle,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
-            }
+        Spacer(Modifier.height(36.dp))
+        MyExposedDropdownMenuBox(
+            listItems = uiState.articles.map{ Pair(it.idArticle, it.nameArticle) },
+            label = "Select product",
+            modifier = Modifier.fillMaxWidth(),
+            onSelectItem = onNewArticle )
+        Spacer(Modifier.height(16.dp))
+        Row() {
+            MyExposedDropdownMenuBox(
+                listItems = uiState.group.map{ Pair(it.idGroup, it.nameGroup) },
+                label = "group",
+                modifier = Modifier.width(150.dp),
+                onSelectItem = onNewArticle )
+            MyExposedDropdownMenuBox(
+                listItems = emptyList(),
+                label = "",
+                modifier = Modifier.width(100.dp),
+                onSelectItem = onNewArticle )
+            MyExposedDropdownMenuBox(
+                listItems = uiState.unitA.map{ Pair(it.idUnit, it.nameUnit) },
+                label = "unit",
+                modifier = Modifier.width(120.dp),
+                onSelectItem = onNewArticle )
         }
+        Spacer(Modifier.height(32.dp))
     }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun EditTextNewArticle(onNewArticle: (String) -> Unit){
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val localFocusManager = LocalFocusManager.current
-    var nameNewArticle by remember { mutableStateOf("") }
-    val pb = 0.dp
-    val modifier = Modifier.padding(start = pb, top = pb, end = pb, bottom = pb).fillMaxWidth()
-    OutlinedTextField(
-        value = nameNewArticle,
-        singleLine = true,
-        textStyle = TextStyle(fontSize =  20.sp),
-        label = { Text(text = "New article") },
-        onValueChange = { nameNewArticle = it},
-        modifier = modifier,
-        keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                onNewArticle(nameNewArticle)
-                keyboardController?.hide()
-                localFocusManager.clearFocus()
-                nameNewArticle = ""
-            }
-        ) ,
-        leadingIcon = { nameNewArticle = onAddIconEditText(onNewArticle,nameNewArticle) },
-        trailingIcon = { nameNewArticle = onAddIconEditText(onNewArticle,nameNewArticle) }
-    )
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun onAddIconEditText(onNewArticle: (String) -> Unit, nameNewArticle: String): String {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val localFocusManager = LocalFocusManager.current
-    Icon(
-        Icons.Filled.Add,
-        contentDescription = "Add",
-        Modifier.clickable(
-            onClick = {
-                keyboardController?.hide()
-                onNewArticle(nameNewArticle)
-                localFocusManager.clearFocus() }
-        )
-    )
-    return ""
 }
 
 @Preview(showBackground = true)
 @Composable
 fun BottomSheetContentProductPreview(){
-    BottomSheetContentProduct(emptyList(),{ l: Long, d: Double -> } ,{})
+    BottomSheetContentProduct(StateProductsScreen(),{ l: Long, d: Double -> } ,{})
 }
 @Preview(showBackground = true)
 @Composable
