@@ -10,8 +10,8 @@ import com.example.shopping_list.entity.Product
 data class ProductEntity (
     @PrimaryKey(autoGenerate = true) override var idProduct: Long = 0,
     override var value: Double = 0.0,
-    override var basketId: Long = -1,
-    var articleId: Long = -1,
+    override var basketId: Long? = null,
+    var articleId: Long? = null,
     var selected:Boolean = false,
     @Ignore override var article: Article = ArticleEntity(),
 ): Product

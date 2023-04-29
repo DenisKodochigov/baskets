@@ -39,7 +39,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       public void createAllTables(SupportSQLiteDatabase _db) {
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_basket` (`idBasket` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameBasket` TEXT NOT NULL, `fillBasket` INTEGER NOT NULL, `selected` INTEGER NOT NULL)");
         _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_basket_nameBasket` ON `tb_basket` (`nameBasket`)");
-        _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_product` (`idProduct` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `value` REAL NOT NULL, `basketId` INTEGER NOT NULL, `articleId` INTEGER NOT NULL, `selected` INTEGER NOT NULL)");
+        _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_product` (`idProduct` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `value` REAL NOT NULL, `basketId` INTEGER, `articleId` INTEGER, `selected` INTEGER NOT NULL)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_article` (`idArticle` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameArticle` TEXT NOT NULL, `groupId` INTEGER, `unitId` INTEGER)");
         _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_article_nameArticle` ON `tb_article` (`nameArticle`)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_group` (`idGroup` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameGroup` TEXT NOT NULL)");
@@ -47,7 +47,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_unit` (`idUnit` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameUnit` TEXT NOT NULL)");
         _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_unit_nameUnit` ON `tb_unit` (`nameUnit`)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        _db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b51b93d1cfa52a19f0ffb4177e67981')");
+        _db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd92e28ff6d550fd9aa8a09c9b4860d4f')");
       }
 
       @Override
@@ -113,8 +113,8 @@ public final class AppDatabase_Impl extends AppDatabase {
         final HashMap<String, TableInfo.Column> _columnsTbProduct = new HashMap<String, TableInfo.Column>(5);
         _columnsTbProduct.put("idProduct", new TableInfo.Column("idProduct", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbProduct.put("value", new TableInfo.Column("value", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsTbProduct.put("basketId", new TableInfo.Column("basketId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsTbProduct.put("articleId", new TableInfo.Column("articleId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTbProduct.put("basketId", new TableInfo.Column("basketId", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTbProduct.put("articleId", new TableInfo.Column("articleId", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbProduct.put("selected", new TableInfo.Column("selected", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysTbProduct = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesTbProduct = new HashSet<TableInfo.Index>(0);
@@ -168,7 +168,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "7b51b93d1cfa52a19f0ffb4177e67981", "079de7096faaccd736a100ae33e66c8a");
+    }, "d92e28ff6d550fd9aa8a09c9b4860d4f", "72d67b1e5bad1c677be31fbe94f4dd15");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(configuration.context)
         .name(configuration.name)
         .callback(_openCallback)

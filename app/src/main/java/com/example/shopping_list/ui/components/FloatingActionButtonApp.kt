@@ -1,6 +1,7 @@
 package com.example.shopping_list.ui.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -17,7 +18,9 @@ import com.example.shopping_list.ui.theme.ContentFab
 fun FloatingActionButtonApp(onClick:() -> Unit){
     FloatingActionButton(
         onClick = onClick,
-        modifier = Modifier.border(2.dp, color = BorderBottomBar, shape = RoundedCornerShape(50.dp)),
+        modifier = Modifier
+            .padding(top = 48.dp)
+            .border(2.dp, color = BorderBottomBar, shape = RoundedCornerShape(50.dp)),
         backgroundColor = BackgroundFab,
         contentColor = ContentFab
     ) {

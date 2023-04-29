@@ -1,14 +1,11 @@
 package com.example.shopping_list.ui.baskets
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -17,7 +14,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
@@ -29,7 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.ui.AppViewModel
-import com.example.shopping_list.ui.components.HeaderScreen1
+import com.example.shopping_list.ui.components.HeaderScreen
+import android.util.Log
 
 @Composable
 fun BasketsScreen(
@@ -45,7 +42,6 @@ fun BasketsScreen(
         modifier = Modifier.semantics { contentDescription = "Baskets Screen" },
         onBasketClick = onBasketClick,
         itemList = uiState.baskets,
-        onHeaderClick = {viewModel.getListBasket()}
     )
 }
 
@@ -54,12 +50,11 @@ fun BasketsScreenLayout(
     modifier: Modifier = Modifier,
     itemList: List<Basket>,
     onBasketClick: (Long) -> Unit,
-    onHeaderClick: () -> Unit,
 ){
 //    Log.d("KDS", "New state BasketsScreenLayout, ${itemList.size}")
     val listState = rememberLazyListState()
     Column( modifier ){
-        HeaderScreen1(text = "Baskets", onHeaderClick)
+        HeaderScreen(text = "Baskets", Modifier)
         LazyColumn (state = listState, modifier = Modifier
             .fillMaxSize()
             .padding(vertical = 12.dp)) {

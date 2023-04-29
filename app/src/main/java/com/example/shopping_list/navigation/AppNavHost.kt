@@ -1,5 +1,7 @@
 package com.example.shopping_list.navigation
 
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -18,6 +20,7 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     viewModel: AppViewModel,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>,
+    bottomSheetHide: () -> Unit,
 ) {
 
     NavHost(navController = navController, startDestination = Baskets.route, modifier = modifier){
@@ -36,7 +39,8 @@ fun AppNavHost(
                 ProductsScreen(
                     basketId = basketId,
                     viewModel = viewModel,
-                    bottomSheetContent = bottomSheetContent
+                    bottomSheetContent = bottomSheetContent,
+                    bottomSheetHide = bottomSheetHide
                 )
             }
         }
@@ -45,7 +49,8 @@ fun AppNavHost(
             ProductsScreen(
                 basketId = -1,
                 viewModel = viewModel,
-                bottomSheetContent = bottomSheetContent)
+                bottomSheetContent = bottomSheetContent,
+                bottomSheetHide = bottomSheetHide)
         }
         composable( route = Setting.route) {
             SettingsScreen(

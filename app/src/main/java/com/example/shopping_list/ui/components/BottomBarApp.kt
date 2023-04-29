@@ -44,6 +44,7 @@ fun BottomBarApp(currentScreen: ScreenDestination,
         backgroundColor = Color.Transparent,
         elevation = 0.dp,
         modifier = Modifier
+            .padding(horizontal = 12.dp, vertical = 12.dp)
             .border(
                 1.dp,
                 color = BorderBottomBar,
@@ -68,7 +69,9 @@ fun BottomTabRow(
     currentScreen: ScreenDestination
 ) {
     Row(
-        modifier = Modifier.selectableGroup().fillMaxWidth()) {
+        modifier = Modifier
+            .selectableGroup()
+            .fillMaxWidth()) {
         allScreens.forEachIndexed { index, screen ->
             if (index == allScreens.size - 1) Spacer(modifier = Modifier.weight(1f))
             BottomTab(

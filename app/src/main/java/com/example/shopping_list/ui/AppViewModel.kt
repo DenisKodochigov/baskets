@@ -40,6 +40,8 @@ class AppViewModel @Inject constructor(
     fun getStateProducts(basketId: Long){
         getListProducts(basketId)
         getListArticle()
+        getListGroup()
+        getListUnit()
     }
 
     private fun getListProducts(basketId: Long) {
@@ -60,6 +62,24 @@ class AppViewModel @Inject constructor(
             )
         }
     }
+    private fun getListGroup() {
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching { dataRepository.getGroups() }.fold(
+                onSuccess = { _stateProductsScreen.update { currentState ->
+                    currentState.copy(group = it) } },
+                onFailure = { errorApp.errorApi(it.message!!) }
+            )
+        }
+    }
+    private fun getListUnit() {
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching { dataRepository.getUnits() }.fold(
+                onSuccess = { _stateProductsScreen.update { currentState ->
+                    currentState.copy(unitA = it) } },
+                onFailure = { errorApp.errorApi(it.message!!) }
+            )
+        }
+    }
     fun newBasket(basketName: String){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
@@ -71,10 +91,10 @@ class AppViewModel @Inject constructor(
             )
         }
     }
-    fun newProduct(product: Product){
+    fun addProduct(product: Product, basketId: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.newProduct(product)
+                dataRepository.addProduct(product, basketId)
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
                     currentState.copy(products = it) }},

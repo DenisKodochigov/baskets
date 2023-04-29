@@ -21,14 +21,21 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return getListBasket()
     }
 
-    fun newProduct(product: Product): List<Product> {
-        if (dataDao.checkProductInBasket(product.basketId, product.idProduct) == null) {
-            dataDao.newProduct(ProductEntity(
-                value = product.value,
-                basketId = product.basketId,
-                articleId = product.article.idArticle,))
+    fun addProduct(product: Product): List<Product> {
+
+        if (product.basketId!! > 0L && product.article.idArticle > 0L) {
+            if (dataDao.checkProductInBasket(product.basketId!!, product.article.idArticle) == null) {
+                dataDao.addProduct(
+                    ProductEntity(
+                        value = product.value,
+                        basketId = product.basketId,
+                        articleId = product.article.idArticle,
+
+                    )
+                )
+            }
         }
-        return getListProducts(product.basketId)
+        return getListProducts(product.basketId!!)
     }
 
     fun getProduct(productName: String): Long? {
@@ -68,9 +75,12 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         }
     }
 
-    fun newArticle(name: String): List<Article> {
-        dataDao.newArticle(ArticleEntity(nameArticle = name, groupId = 1, unitId = 1))
+    fun newArticleS(name: String): List<Article> {
+        dataDao.addArticle(ArticleEntity(nameArticle = name, groupId = 1, unitId = 1))
         return getListArticle()
+    }
+    fun addArticle(articleEntity: ArticleEntity): Long {
+        return dataDao.addArticle(articleEntity)
     }
     fun getListArticle(): List<Article> = dataDao.getListArticle().map { item ->
             ArticleEntity(
@@ -85,10 +95,13 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.getGroups()
     }
 
-    fun addGroup(groupName: String){
-        dataDao.addGroup(GroupEntity(nameGroup = groupName))
+    fun addGroup(group: GroupEntity): Long{
+        return dataDao.addGroup(group)
     }
 
+    fun addUnit(unitA: UnitEntity): Long{
+        return dataDao.addUnit(unitA)
+    }
     fun getUnits(): List<UnitA>{
         return dataDao.getUnits()
     }

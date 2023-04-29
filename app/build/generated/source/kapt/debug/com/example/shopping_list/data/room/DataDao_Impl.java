@@ -78,8 +78,16 @@ public final class DataDao_Impl implements DataDao {
       public void bind(SupportSQLiteStatement stmt, ProductEntity value) {
         stmt.bindLong(1, value.getIdProduct());
         stmt.bindDouble(2, value.getValue());
-        stmt.bindLong(3, value.getBasketId());
-        stmt.bindLong(4, value.getArticleId());
+        if (value.getBasketId() == null) {
+          stmt.bindNull(3);
+        } else {
+          stmt.bindLong(3, value.getBasketId());
+        }
+        if (value.getArticleId() == null) {
+          stmt.bindNull(4);
+        } else {
+          stmt.bindLong(4, value.getArticleId());
+        }
         final int _tmp = value.getSelected() ? 1 : 0;
         stmt.bindLong(5, _tmp);
       }
@@ -186,7 +194,7 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
-  public long newProduct(final ProductEntity product) {
+  public long addProduct(final ProductEntity product) {
     __db.assertNotSuspendingTransaction();
     __db.beginTransaction();
     try {
@@ -199,7 +207,7 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
-  public long newArticle(final ArticleEntity article) {
+  public long addArticle(final ArticleEntity article) {
     __db.assertNotSuspendingTransaction();
     __db.beginTransaction();
     try {
@@ -411,8 +419,10 @@ public final class DataDao_Impl implements DataDao {
         final int _cursorIndexOfSelected = CursorUtil.getColumnIndexOrThrow(_cursor, "selected");
         final LongSparseArray<ArticleObj> _collectionArticle = new LongSparseArray<ArticleObj>();
         while (_cursor.moveToNext()) {
-          final long _tmpKey = _cursor.getLong(_cursorIndexOfArticleId);
-          _collectionArticle.put(_tmpKey, null);
+          if (!_cursor.isNull(_cursorIndexOfArticleId)) {
+            final long _tmpKey = _cursor.getLong(_cursorIndexOfArticleId);
+            _collectionArticle.put(_tmpKey, null);
+          }
         }
         _cursor.moveToPosition(-1);
         __fetchRelationshiptbArticleAscomExampleShoppingListDataRoomTablesRelationArticleObj(_collectionArticle);
@@ -427,11 +437,19 @@ public final class DataDao_Impl implements DataDao {
           final double _tmpValue;
           _tmpValue = _cursor.getDouble(_cursorIndexOfValue);
           _tmpProduct.setValue(_tmpValue);
-          final long _tmpBasketId;
-          _tmpBasketId = _cursor.getLong(_cursorIndexOfBasketId);
+          final Long _tmpBasketId;
+          if (_cursor.isNull(_cursorIndexOfBasketId)) {
+            _tmpBasketId = null;
+          } else {
+            _tmpBasketId = _cursor.getLong(_cursorIndexOfBasketId);
+          }
           _tmpProduct.setBasketId(_tmpBasketId);
-          final long _tmpArticleId;
-          _tmpArticleId = _cursor.getLong(_cursorIndexOfArticleId);
+          final Long _tmpArticleId;
+          if (_cursor.isNull(_cursorIndexOfArticleId)) {
+            _tmpArticleId = null;
+          } else {
+            _tmpArticleId = _cursor.getLong(_cursorIndexOfArticleId);
+          }
           _tmpProduct.setArticleId(_tmpArticleId);
           final boolean _tmpSelected;
           final int _tmp;
@@ -439,8 +457,10 @@ public final class DataDao_Impl implements DataDao {
           _tmpSelected = _tmp != 0;
           _tmpProduct.setSelected(_tmpSelected);
           ArticleObj _tmpArticle = null;
-          final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfArticleId);
-          _tmpArticle = _collectionArticle.get(_tmpKey_1);
+          if (!_cursor.isNull(_cursorIndexOfArticleId)) {
+            final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfArticleId);
+            _tmpArticle = _collectionArticle.get(_tmpKey_1);
+          }
           _item = new ProductObj(_tmpProduct,_tmpArticle);
           _result.add(_item);
         }
@@ -471,8 +491,10 @@ public final class DataDao_Impl implements DataDao {
         final int _cursorIndexOfSelected = CursorUtil.getColumnIndexOrThrow(_cursor, "selected");
         final LongSparseArray<ArticleObj> _collectionArticle = new LongSparseArray<ArticleObj>();
         while (_cursor.moveToNext()) {
-          final long _tmpKey = _cursor.getLong(_cursorIndexOfArticleId);
-          _collectionArticle.put(_tmpKey, null);
+          if (!_cursor.isNull(_cursorIndexOfArticleId)) {
+            final long _tmpKey = _cursor.getLong(_cursorIndexOfArticleId);
+            _collectionArticle.put(_tmpKey, null);
+          }
         }
         _cursor.moveToPosition(-1);
         __fetchRelationshiptbArticleAscomExampleShoppingListDataRoomTablesRelationArticleObj(_collectionArticle);
@@ -487,11 +509,19 @@ public final class DataDao_Impl implements DataDao {
           final double _tmpValue;
           _tmpValue = _cursor.getDouble(_cursorIndexOfValue);
           _tmpProduct.setValue(_tmpValue);
-          final long _tmpBasketId;
-          _tmpBasketId = _cursor.getLong(_cursorIndexOfBasketId);
+          final Long _tmpBasketId;
+          if (_cursor.isNull(_cursorIndexOfBasketId)) {
+            _tmpBasketId = null;
+          } else {
+            _tmpBasketId = _cursor.getLong(_cursorIndexOfBasketId);
+          }
           _tmpProduct.setBasketId(_tmpBasketId);
-          final long _tmpArticleId;
-          _tmpArticleId = _cursor.getLong(_cursorIndexOfArticleId);
+          final Long _tmpArticleId;
+          if (_cursor.isNull(_cursorIndexOfArticleId)) {
+            _tmpArticleId = null;
+          } else {
+            _tmpArticleId = _cursor.getLong(_cursorIndexOfArticleId);
+          }
           _tmpProduct.setArticleId(_tmpArticleId);
           final boolean _tmpSelected;
           final int _tmp;
@@ -499,8 +529,10 @@ public final class DataDao_Impl implements DataDao {
           _tmpSelected = _tmp != 0;
           _tmpProduct.setSelected(_tmpSelected);
           ArticleObj _tmpArticle = null;
-          final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfArticleId);
-          _tmpArticle = _collectionArticle.get(_tmpKey_1);
+          if (!_cursor.isNull(_cursorIndexOfArticleId)) {
+            final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfArticleId);
+            _tmpArticle = _collectionArticle.get(_tmpKey_1);
+          }
           _item = new ProductObj(_tmpProduct,_tmpArticle);
           _result.add(_item);
         }
@@ -874,47 +906,49 @@ public final class DataDao_Impl implements DataDao {
       __fetchRelationshiptbUnitAscomExampleShoppingListDataRoomTablesUnitEntity(_collectionUnitA);
       __fetchRelationshiptbGroupAscomExampleShoppingListDataRoomTablesGroupEntity(_collectionGroup);
       while(_cursor.moveToNext()) {
-        final long _tmpKey_2 = _cursor.getLong(_itemKeyIndex);
-        if (_map.containsKey(_tmpKey_2)) {
-          final ArticleObj _item_1;
-          final ArticleEntity _tmpArticle;
-          _tmpArticle = new ArticleEntity();
-          final long _tmpIdArticle;
-          _tmpIdArticle = _cursor.getLong(_cursorIndexOfIdArticle);
-          _tmpArticle.setIdArticle(_tmpIdArticle);
-          final String _tmpNameArticle;
-          if (_cursor.isNull(_cursorIndexOfNameArticle)) {
-            _tmpNameArticle = null;
-          } else {
-            _tmpNameArticle = _cursor.getString(_cursorIndexOfNameArticle);
+        if (!_cursor.isNull(_itemKeyIndex)) {
+          final long _tmpKey_2 = _cursor.getLong(_itemKeyIndex);
+          if (_map.containsKey(_tmpKey_2)) {
+            final ArticleObj _item_1;
+            final ArticleEntity _tmpArticle;
+            _tmpArticle = new ArticleEntity();
+            final long _tmpIdArticle;
+            _tmpIdArticle = _cursor.getLong(_cursorIndexOfIdArticle);
+            _tmpArticle.setIdArticle(_tmpIdArticle);
+            final String _tmpNameArticle;
+            if (_cursor.isNull(_cursorIndexOfNameArticle)) {
+              _tmpNameArticle = null;
+            } else {
+              _tmpNameArticle = _cursor.getString(_cursorIndexOfNameArticle);
+            }
+            _tmpArticle.setNameArticle(_tmpNameArticle);
+            final Long _tmpGroupId;
+            if (_cursor.isNull(_cursorIndexOfGroupId)) {
+              _tmpGroupId = null;
+            } else {
+              _tmpGroupId = _cursor.getLong(_cursorIndexOfGroupId);
+            }
+            _tmpArticle.setGroupId(_tmpGroupId);
+            final Long _tmpUnitId;
+            if (_cursor.isNull(_cursorIndexOfUnitId)) {
+              _tmpUnitId = null;
+            } else {
+              _tmpUnitId = _cursor.getLong(_cursorIndexOfUnitId);
+            }
+            _tmpArticle.setUnitId(_tmpUnitId);
+            UnitEntity _tmpUnitA = null;
+            if (!_cursor.isNull(_cursorIndexOfUnitId)) {
+              final long _tmpKey_3 = _cursor.getLong(_cursorIndexOfUnitId);
+              _tmpUnitA = _collectionUnitA.get(_tmpKey_3);
+            }
+            GroupEntity _tmpGroup = null;
+            if (!_cursor.isNull(_cursorIndexOfGroupId)) {
+              final long _tmpKey_4 = _cursor.getLong(_cursorIndexOfGroupId);
+              _tmpGroup = _collectionGroup.get(_tmpKey_4);
+            }
+            _item_1 = new ArticleObj(_tmpArticle,_tmpUnitA,_tmpGroup);
+            _map.put(_tmpKey_2, _item_1);
           }
-          _tmpArticle.setNameArticle(_tmpNameArticle);
-          final Long _tmpGroupId;
-          if (_cursor.isNull(_cursorIndexOfGroupId)) {
-            _tmpGroupId = null;
-          } else {
-            _tmpGroupId = _cursor.getLong(_cursorIndexOfGroupId);
-          }
-          _tmpArticle.setGroupId(_tmpGroupId);
-          final Long _tmpUnitId;
-          if (_cursor.isNull(_cursorIndexOfUnitId)) {
-            _tmpUnitId = null;
-          } else {
-            _tmpUnitId = _cursor.getLong(_cursorIndexOfUnitId);
-          }
-          _tmpArticle.setUnitId(_tmpUnitId);
-          UnitEntity _tmpUnitA = null;
-          if (!_cursor.isNull(_cursorIndexOfUnitId)) {
-            final long _tmpKey_3 = _cursor.getLong(_cursorIndexOfUnitId);
-            _tmpUnitA = _collectionUnitA.get(_tmpKey_3);
-          }
-          GroupEntity _tmpGroup = null;
-          if (!_cursor.isNull(_cursorIndexOfGroupId)) {
-            final long _tmpKey_4 = _cursor.getLong(_cursorIndexOfGroupId);
-            _tmpGroup = _collectionGroup.get(_tmpKey_4);
-          }
-          _item_1 = new ArticleObj(_tmpArticle,_tmpUnitA,_tmpGroup);
-          _map.put(_tmpKey_2, _item_1);
         }
       }
     } finally {

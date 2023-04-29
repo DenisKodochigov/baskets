@@ -27,7 +27,7 @@ interface DataDao {
 /** Product entity*/
 
     @Insert
-    fun newProduct(product: ProductEntity): Long
+    fun addProduct(product: ProductEntity): Long
 
     @Query("SELECT idProduct FROM tb_product " +
             "JOIN tb_article ON tb_article.nameArticle = :name " +
@@ -48,7 +48,7 @@ interface DataDao {
 /** Article entity*/
 
     @Insert
-    fun newArticle(article: ArticleEntity): Long
+    fun addArticle(article: ArticleEntity): Long
 
     @Transaction
     @Query("SELECT * FROM tb_article ")

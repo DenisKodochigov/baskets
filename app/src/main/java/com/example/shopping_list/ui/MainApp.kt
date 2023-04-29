@@ -1,15 +1,12 @@
 package com.example.shopping_list.ui
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.shopping_list.navigation.*
@@ -40,18 +37,20 @@ fun MainApp(viewModel: AppViewModel) {
         ) {
             Scaffold(
                 bottomBar = {
-                    BottomBarApp( currentScreen = currentScreen, onTabSelection = { newScreen ->
-                        navController.navigateToScreen(newScreen.route) }) },
+                    BottomBarApp(
+                        currentScreen = currentScreen,
+                        onTabSelection = { newScreen ->
+                            navController.navigateToScreen(newScreen.route) }) },
                 floatingActionButton = {
                     FloatingActionButtonApp( onClick = { scope.launch {
-                        if (bottomSheetContent.value != null) {
-//                            Log.d("KDS", "bottomSheetContent.value = ${bottomSheetContent.value} ")
-                            bottomSheetState.show() }}})},
+                        if (bottomSheetContent.value != null) { bottomSheetState.show() }}})
+                },
                 floatingActionButtonPosition = FabPosition.Center,
                 isFloatingActionButtonDocked = true,
             ) { innerPadding ->
                 AppNavHost(navController, modifier = Modifier.padding(innerPadding),
-                    viewModel = viewModel, bottomSheetContent = bottomSheetContent)
+                    viewModel = viewModel, bottomSheetContent = bottomSheetContent
+                ) { scope.launch {bottomSheetState.hide() }}
             }
         }
     }

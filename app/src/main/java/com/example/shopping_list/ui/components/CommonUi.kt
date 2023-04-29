@@ -1,5 +1,6 @@
 package com.example.shopping_list.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,29 +22,25 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shopping_list.entity.Article
-
+import com.example.shopping_list.ui.theme.AppTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 
 @Composable
-fun HeaderScreen(text: String){
+fun HeaderScreen(text: String, modifier: Modifier){
     val typography = MaterialTheme.typography
-    Row( Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
+    Row( modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
         Text(text, style = typography.h1)
     }
 }
-@Composable
-fun HeaderScreen1(text: String, onClick: () -> Unit){
-    val typography = MaterialTheme.typography
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clickable { onClick }, horizontalArrangement = Arrangement.Center){
-        Text(text, style = typography.h1)
-    }
-}
+
 @Composable
 fun BasketsRow(modifier: Modifier = Modifier, name: String,){
 
@@ -95,52 +92,56 @@ fun BasketsRow(modifier: Modifier = Modifier, name: String,){
     listItems: List<Pair<Long,String>>,
     label: String?,
     modifier: Modifier,
-    onSelectItem: (Pair<Long,String>) -> Unit) {
+    enterValue: MutableState<Pair<Long,String>>?) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf("") }
+    var enteredText by remember { mutableStateOf("") }
 
+    if (enterValue != null) {
+        enteredText = enterValue.value.second
+    }
     ExposedDropdownMenuBox(
         expanded = expanded,
         modifier = modifier,
         onExpandedChange = { expanded = !expanded }){
         OutlinedTextField(
-            value = selectedText,
+            value = enteredText,
+            modifier = Modifier.fillMaxWidth(1f),
             singleLine = true,
-            textStyle = TextStyle(fontSize =  20.sp),
-            onValueChange = { selectedText = it },
-            label = { if( label != null) Text(label) },
+            textStyle = MaterialTheme.typography.h1,
+            onValueChange = { enteredText = it ; enterValue!!.value = Pair(0,it); expanded = true},
+            label = { if( label != null) Text(text = label, style = MaterialTheme.typography.h3) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    onSelectItem(Pair(0,selectedText))
-                    keyboardController?.hide()
                     localFocusManager.clearFocus()
+                    enterValue!!.value = Pair(0,enteredText)
+                    expanded = false
+//                    keyboardController?.hide()
                 }
             ) ,
         )
-        val filteringOptions = listItems.filter { it.second.contains(selectedText, ignoreCase = true) }
+        val filteringOptions = listItems.filter{ it.second.contains(enteredText, ignoreCase = true)}
         if (filteringOptions.isNotEmpty()) {
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = {}
-//                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false }
             ) {
                 filteringOptions.forEach { item ->
                     DropdownMenuItem(
                         onClick = {
-                            selectedText = item.second
+                            enteredText = item.second
                             expanded = false
-                            onSelectItem(item)
-                            keyboardController?.hide()
+                            enterValue!!.value = item
+//                            keyboardController?.hide()
                             localFocusManager.clearFocus()
                         }
                     ) {
-                        Text(text = item.second)
+                        Text(text = item.second, style = MaterialTheme.typography.h1)
                     }
                 }
             }
@@ -151,9 +152,43 @@ fun BasketsRow(modifier: Modifier = Modifier, name: String,){
 @Preview(showBackground = true)
 @Composable
 fun MyExposedDropdownMenuBoxPreview(){
-    MyExposedDropdownMenuBox(emptyList(),"label", Modifier.width(220.dp),{})
+    MyExposedDropdownMenuBox(emptyList(),"label", Modifier, null)
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun MyOutlinedTextFieldWithoutIcon(modifier: Modifier, enterValue: MutableState<Double>){
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val localFocusManager = LocalFocusManager.current
+    var enterText by remember { mutableStateOf("") }
+
+    OutlinedTextField(
+        modifier = modifier,
+        value = enterText,
+        singleLine = true,
+        textStyle = MaterialTheme.typography.h1,
+        onValueChange = { enterText = it; enterValue.value = it.toDouble()},
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                keyboardController?.hide()
+                localFocusManager.clearFocus()
+                enterValue.value = enterText.toDouble()
+            }
+        ) ,
+    )
+}
+
+@Composable
+fun ButtonMy(modifier: Modifier, nameButton: String, onClick: () -> Unit){
+    OutlinedButton(modifier = modifier, elevation = ButtonDefaults.elevation(), onClick = {
+        onClick()
+        Log.d("KDS", "Button.click")
+    }){
+        Text(text = nameButton, fontSize = 25.sp)
+    }
+}
 
 @Composable
 fun ListArticle(itemList: List<Article>, onAddClick: (Long, Double) -> Unit){
@@ -180,13 +215,15 @@ fun ListArticle(itemList: List<Article>, onAddClick: (Long, Double) -> Unit){
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun EditTextNewArticle(onNewArticle: (String) -> Unit){
+fun MyOutlinedTextField(onNewArticle: (String) -> Unit){
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
     var nameNewArticle by remember { mutableStateOf("") }
     val pb = 0.dp
-    val modifier = Modifier.padding(start = pb, top = pb, end = pb, bottom = pb).fillMaxWidth()
+    val modifier = Modifier
+        .padding(start = pb, top = pb, end = pb, bottom = pb)
+        .fillMaxWidth()
     OutlinedTextField(
         value = nameNewArticle,
         singleLine = true,
@@ -209,7 +246,6 @@ fun EditTextNewArticle(onNewArticle: (String) -> Unit){
         trailingIcon = { nameNewArticle = onAddIconEditText(onNewArticle,nameNewArticle) }
     )
 }
-
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
