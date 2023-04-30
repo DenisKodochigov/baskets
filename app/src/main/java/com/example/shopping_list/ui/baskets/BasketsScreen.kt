@@ -27,11 +27,24 @@ import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.HeaderScreen
 import android.util.Log
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import com.example.shopping_list.data.room.tables.ArticleEntity
+import com.example.shopping_list.data.room.tables.GroupEntity
+import com.example.shopping_list.data.room.tables.ProductEntity
+import com.example.shopping_list.data.room.tables.UnitEntity
+import com.example.shopping_list.entity.Product
+import com.example.shopping_list.ui.components.ButtonMy
+import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
+import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
+import com.example.shopping_list.ui.products.StateProductsScreen
 
 @Composable
 fun BasketsScreen(
     onBasketClick: (Long) -> Unit,
     viewModel: AppViewModel,
+    modifier: Modifier = Modifier,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>) {
 
     viewModel.getListBasket()
@@ -39,7 +52,7 @@ fun BasketsScreen(
     bottomSheetContent.value = { BottomSheetContentBasket(onAddClick = {viewModel.newBasket(it)}) }
 
     BasketsScreenLayout(
-        modifier = Modifier.semantics { contentDescription = "Baskets Screen" },
+        modifier = modifier.semantics{ contentDescription = "Baskets Screen" },
         onBasketClick = onBasketClick,
         itemList = uiState.baskets,
     )

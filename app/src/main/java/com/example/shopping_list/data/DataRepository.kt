@@ -31,6 +31,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         product.basketId = basketId
         if (product.article.unitA!!.idUnit == 0L){
             product.article.unitA!!.idUnit = dataSourceDB.addUnit(product.article.unitA as UnitEntity)
+
         }
         if (product.article.group!!.idGroup == 0L){
             product.article.group!!.idGroup = dataSourceDB.addGroup(product.article.group as GroupEntity)

@@ -49,7 +49,7 @@ fun ProductsScreen(
             onAddProduct = { product-> viewModel.addProduct( product, basketId )}
         )
     }
-//    Log.d("KDS", "basketId = $basketId")
+//    Log.d("KDS", "basketId = $basketId") ProductsScreenLayout
     ProductsScreenLayout(
         modifier = Modifier.semantics { contentDescription = "Baskets Screen" },
         itemList = uiState.products,
@@ -62,7 +62,7 @@ fun ProductsScreenLayout(
     itemList: List<Product>,
 ){
     val listState = rememberLazyListState()
-    Log.d("KDS", "ProductsScreenLayout ${itemList.size}")
+//    Log.d("KDS", "ProductsScreenLayout ${itemList.size}")
     Column( modifier ) {
         HeaderScreen(text = "Products", Modifier)
         LazyColumn (
@@ -109,34 +109,54 @@ fun BottomSheetContentProduct(
     val enterUnit = remember{ mutableStateOf(Pair<Long,String>(0,""))}
     val focusRequesterSheet = remember { FocusRequester() }
 
+    if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
+        val id:Long = uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
+        enterUnit.value = Pair(id, enterUnit.value.second )
+    }
+    if (enterGroup.value.first == 0L && enterGroup.value.second != "") {
+        val id:Long = uiState.group.find { it.nameGroup == enterGroup.value.second }?.idGroup ?: 0L
+        enterGroup.value = Pair(id, enterGroup.value.second )
+    }
+    if (enterArticle.value.first == 0L && enterArticle.value.second != "") {
+        val id:Long = uiState.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L
+        enterArticle.value = Pair(id, enterArticle.value.second )
+    }
     Column(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
             .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.75).dp)) {
-        HeaderScreen(text = "Select product", Modifier.focusRequester(focusRequesterSheet))
+        Log.d("KDS", "BottomSheetContentProduct.Column")
+        HeaderScreen(text = "Add product", Modifier.focusRequester(focusRequesterSheet))
         Spacer(Modifier.height(24.dp))
         MyExposedDropdownMenuBox(/** Select article*/
             listItems = uiState.articles.map{ Pair(it.idArticle, it.nameArticle) },
             label = "Select product",
-            modifier = Modifier.fillMaxWidth(), enterArticle)
+            modifier = Modifier.fillMaxWidth(),
+            enterValue = enterArticle,
+            filtering = true)
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth()) {
             MyExposedDropdownMenuBox(/** Select group*/
                 listItems = uiState.group.map{ Pair(it.idGroup, it.nameGroup) },
                 label = "Group",
-                modifier = Modifier.weight(1f), enterGroup)
+                modifier = Modifier.weight(1f),
+                enterValue = enterGroup,
+                filtering = true)
             Spacer(Modifier.width(4.dp))
             MyOutlinedTextFieldWithoutIcon( /** Value*/
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .width(80.dp)
-                    .padding(top = 8.dp), enterValue)
+                    .padding(top = 8.dp),
+                enterValue = enterValue)
             Spacer(Modifier.width(4.dp))
             MyExposedDropdownMenuBox(/** Select unit*/
                 listItems = uiState.unitA.map{ Pair(it.idUnit, it.nameUnit) },
                 label = "Unit",
-                modifier = Modifier.width(120.dp),enterUnit)
+                modifier = Modifier.width(120.dp),
+                enterValue = enterUnit,
+                filtering = false)
         }
         Spacer(Modifier.height(36.dp))
         Row(Modifier.fillMaxWidth()) {
@@ -168,10 +188,11 @@ fun BottomSheetContentProduct(
         Spacer(Modifier.height(72.dp))
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun ProductsScreenLayoutPreview(){
-    ProductsScreenLayout(Modifier, emptyList())
+    ProductsScreenLayout( Modifier, emptyList())
 }
 @Preview(showBackground = true)
 @Composable

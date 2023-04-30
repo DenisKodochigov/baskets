@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -92,9 +93,9 @@ fun BasketsRow(modifier: Modifier = Modifier, name: String,){
     listItems: List<Pair<Long,String>>,
     label: String?,
     modifier: Modifier,
+    filtering: Boolean,
     enterValue: MutableState<Pair<Long,String>>?) {
 
-    val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
     var expanded by remember { mutableStateOf(false) }
     var enteredText by remember { mutableStateOf("") }
@@ -105,13 +106,19 @@ fun BasketsRow(modifier: Modifier = Modifier, name: String,){
     ExposedDropdownMenuBox(
         expanded = expanded,
         modifier = modifier,
-        onExpandedChange = { expanded = !expanded }){
+        onExpandedChange = {
+            expanded = !expanded
+        }){
         OutlinedTextField(
             value = enteredText,
             modifier = Modifier.fillMaxWidth(1f),
             singleLine = true,
             textStyle = MaterialTheme.typography.h1,
-            onValueChange = { enteredText = it ; enterValue!!.value = Pair(0,it); expanded = true},
+            onValueChange = {
+                enteredText = it
+                enterValue!!.value = Pair(0,it)
+                expanded = true
+            },
             label = { if( label != null) Text(text = label, style = MaterialTheme.typography.h3) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
@@ -121,11 +128,11 @@ fun BasketsRow(modifier: Modifier = Modifier, name: String,){
                     localFocusManager.clearFocus()
                     enterValue!!.value = Pair(0,enteredText)
                     expanded = false
-//                    keyboardController?.hide()
                 }
             ) ,
         )
-        val filteringOptions = listItems.filter{ it.second.contains(enteredText, ignoreCase = true)}
+        var filteringOptions = listItems
+        if (filtering) filteringOptions = listItems.filter{ it.second.contains(enteredText, ignoreCase = true)}
         if (filteringOptions.isNotEmpty()) {
             ExposedDropdownMenu(
                 expanded = expanded,
@@ -137,7 +144,6 @@ fun BasketsRow(modifier: Modifier = Modifier, name: String,){
                             enteredText = item.second
                             expanded = false
                             enterValue!!.value = item
-//                            keyboardController?.hide()
                             localFocusManager.clearFocus()
                         }
                     ) {
@@ -145,24 +151,21 @@ fun BasketsRow(modifier: Modifier = Modifier, name: String,){
                     }
                 }
             }
-        }
+        } else expanded = false
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun MyExposedDropdownMenuBoxPreview(){
-    MyExposedDropdownMenuBox(emptyList(),"label", Modifier, null)
+    MyExposedDropdownMenuBox(emptyList(),"label", Modifier, true, null)
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MyOutlinedTextFieldWithoutIcon(modifier: Modifier, enterValue: MutableState<Double>){
 
-    val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
     var enterText by remember { mutableStateOf("") }
-
     OutlinedTextField(
         modifier = modifier,
         value = enterText,
@@ -172,7 +175,6 @@ fun MyOutlinedTextFieldWithoutIcon(modifier: Modifier, enterValue: MutableState<
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
             onDone = {
-                keyboardController?.hide()
                 localFocusManager.clearFocus()
                 enterValue.value = enterText.toDouble()
             }

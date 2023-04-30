@@ -29,6 +29,7 @@ fun AppNavHost(
             BasketsScreen(
                 onBasketClick = { navController.navigateToProducts(it) },
                 viewModel = viewModel,
+                modifier = modifier,
                 bottomSheetContent = bottomSheetContent)
         }
 

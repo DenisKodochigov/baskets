@@ -101,6 +101,9 @@ class AppViewModel @Inject constructor(
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
+        getListArticle()
+        getListGroup()
+        getListUnit()
     }
 
     fun newArticle(name: Pair<Long,String>){
