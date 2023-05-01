@@ -1,5 +1,6 @@
 package com.example.shopping_list.data
 
+import android.util.Log
 import com.example.shopping_list.data.room.DataSourceDB
 import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.GroupEntity
@@ -28,6 +29,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     }
     fun addProduct(product: Product, basketId: Long): List<Product>{
         //Checking unit in db.
+        Log.d("KDS", " ${product}")
         product.basketId = basketId
         if (product.article.unitA!!.idUnit == 0L){
             product.article.unitA!!.idUnit = dataSourceDB.addUnit(product.article.unitA as UnitEntity)

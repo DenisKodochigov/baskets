@@ -168,7 +168,7 @@ fun BottomSheetContentProduct(
                             idArticle = enterArticle.value.first,
                             nameArticle = enterArticle.value.second,
                             group = GroupEntity(
-                                idGroup = enterGroup.value.first,
+                                idGroup = if (enterGroup.value.first != 0L) enterGroup.value.first else 1,
                                 nameGroup = enterGroup.value.second
                             ),
                             unitA = UnitEntity(

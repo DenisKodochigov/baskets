@@ -12,12 +12,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -28,11 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.ui.theme.AppTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.launch
 
 @Composable
 fun HeaderScreen(text: String, modifier: Modifier){
@@ -42,53 +34,7 @@ fun HeaderScreen(text: String, modifier: Modifier){
     }
 }
 
-@Composable
-fun BasketsRow(modifier: Modifier = Modifier, name: String,){
-
-    Spacer(
-        Modifier
-            .width(360.dp)
-            .size(360.dp, 4.dp)
-//            .background(color = color)
-            .padding(bottom = 12.dp))
-    Row(
-        modifier = modifier.height(68.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        val typography = MaterialTheme.typography
-
-        Column(Modifier) {
-            Text(text = name, style = typography.body1)
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(text = name, style = typography.subtitle1)
-            }
-        }
-        Spacer(Modifier.weight(1f))
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = name,
-                style = typography.h6,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
-        }
-        Spacer(Modifier.width(16.dp))
-
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Icon(
-                imageVector = Icons.Filled.ChevronRight,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(end = 12.dp)
-                    .size(24.dp)
-            )
-        }
-    }
-    com.example.shopping_list.archiv.RallyDivider()
-}
-
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable fun MyExposedDropdownMenuBox(
     listItems: List<Pair<Long,String>>,
     label: String?,
@@ -171,12 +117,14 @@ fun MyOutlinedTextFieldWithoutIcon(modifier: Modifier, enterValue: MutableState<
         value = enterText,
         singleLine = true,
         textStyle = MaterialTheme.typography.h1,
-        onValueChange = { enterText = it; enterValue.value = it.toDouble()},
+        onValueChange = {
+            enterText = it;
+            if (it.isNotEmpty()) enterValue.value = it.toDouble()},
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
             onDone = {
                 localFocusManager.clearFocus()
-                enterValue.value = enterText.toDouble()
+                if (enterText.isNotEmpty()) enterValue.value = enterText.toDouble()
             }
         ) ,
     )
