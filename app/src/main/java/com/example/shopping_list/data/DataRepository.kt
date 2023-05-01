@@ -1,51 +1,65 @@
 package com.example.shopping_list.data
 
+import android.util.Log
 import com.example.shopping_list.data.room.DataSourceDB
-import com.example.shopping_list.data.room.tables.BasketDB
-import com.example.shopping_list.data.room.tables.GroupWithProducts
-import com.example.shopping_list.data.room.tables.ProductDB
-import com.example.shopping_list.entity.Product
+import com.example.shopping_list.data.room.tables.ArticleEntity
+import com.example.shopping_list.data.room.tables.GroupEntity
+import com.example.shopping_list.data.room.tables.UnitEntity
+import com.example.shopping_list.entity.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB) {
 
-    fun getListBasket(): List<BasketDB>{
-        return dataSourceDB.getBaskets()
+    fun getListBasket(): List<Basket>{
+        return dataSourceDB.getListBasket()
     }
 
-    fun getProducts(): List<Product>{
-        return emptyList<Product>()
+    fun getListProducts(basketId: Long): List<Product> = dataSourceDB.getListProducts(basketId)
+
+    fun getListArticle(): List<Article> =  dataSourceDB.getListArticle()
+
+    fun getGroups(): List<GroupArticle> = dataSourceDB.getGroups()
+
+    fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
+
+    fun newBasket(basketName: String): List<Basket>{
+        return dataSourceDB.newBasket(basketName)
     }
-    fun getGroups(): List<String>{
-        val list = mutableListOf<String>()
-        dataSourceDB.getGroups().forEach {
-            list.add(it.nameGroup)
+    fun addProduct(product: Product, basketId: Long): List<Product>{
+        //Checking unit in db.
+        Log.d("KDS", " ${product}")
+        product.basketId = basketId
+        if (product.article.unitA!!.idUnit == 0L){
+            product.article.unitA!!.idUnit = dataSourceDB.addUnit(product.article.unitA as UnitEntity)
+
         }
-        return list
-    }
-    fun getUnits(): List<String>{
-        val list = mutableListOf<String>()
-        dataSourceDB.getUnits().forEach {
-            list.add(it.nameUnit)
+        if (product.article.group!!.idGroup == 0L){
+            product.article.group!!.idGroup = dataSourceDB.addGroup(product.article.group as GroupEntity)
         }
-        return list
-    }
-    fun addBasket(basketName: String): Long{
-        return dataSourceDB.addBasket(basketName)
-    }
-    fun getBasketProducts(basket:BasketDB): List<ProductDB>{
-        var listProduct = emptyList<ProductDB>()
-        dataSourceDB.getBasketProducts(basket).forEach { item->
-            listProduct = item.listProductDB
+        if (product.article.idArticle == 0L){
+            product.article.idArticle = dataSourceDB.addArticle(
+                ArticleEntity(
+                    nameArticle = product.article.nameArticle,
+                    groupId = product.article.group!!.idGroup,
+                    unitId = product.article.unitA!!.idUnit
+                ))
         }
-        return listProduct
+
+        return dataSourceDB.addProduct(product)
     }
-    fun addGroup(groupName: String){
-        dataSourceDB.addGroup(groupName)
+    fun newArticle(name: String): List<Article> {
+        return dataSourceDB.newArticleS(name)
     }
-    fun getGroupsWithProduct(): List<GroupWithProducts>{
-        return dataSourceDB.getGroupsWithProduct()
-    }
+//    fun getBasketProducts(basket:BasketDB): List<ProductDB>{
+//        var listProduct = emptyList<ProductDB>()
+//        dataSourceDB.getBasketProducts(basket).forEach { item->
+//            listProduct = item.listProductDB
+//        }
+//        return listProduct
+//    }
+//    fun getGroupsWithProduct(): List<GroupWithArticle>{
+//        return dataSourceDB.getGroupsWithProduct()
+//    }
 }

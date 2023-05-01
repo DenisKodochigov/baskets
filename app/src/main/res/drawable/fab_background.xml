@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:top="0dp"
+        android:height="@dimen/fb_button_size"
+        android:width="@dimen/fb_button_size" >
+        <shape
+            android:innerRadius="0dp"
+            android:shape="ring"
+            android:thicknessRatio="2"
+            android:useLevel="false" >
+            <solid android:color="#00FFFFFF" />
+
+            <stroke
+                android:width="2dp"
+                android:color="@color/purple_500" />
+        </shape>
+    </item>
+    <item
+        android:start="0dp"
+        android:top="0dp"
+        android:height="@dimen/fb_button_plus_length"
+        android:width="2dp"
+        android:gravity="center">
+
+            <shape android:shape="rectangle">
+                <solid android:color="@color/purple_500"/>
+                <corners
+                    android:radius="1dp"
+                    android:topRightRadius="0dp"
+                    android:topLeftRadius="0dp"/>
+            </shape>
+    </item>
+    <item
+        android:start="0dp"
+        android:bottom="0dp"
+        android:height="@dimen/fb_button_plus_length"
+        android:width="2dp"
+        android:gravity="center">
+        <rotate
+            android:fromDegrees="@dimen/viewer_image_button_corner_minus"
+            android:toDegrees="@dimen/viewer_image_button_corner">
+            <shape android:shape="rectangle">
+                <solid android:color="@color/purple_500"/>
+                <corners
+                    android:radius="1dp"
+                    android:bottomRightRadius="0dp"
+                    android:bottomLeftRadius="0dp"/>
+            </shape>
+        </rotate>
+    </item>
+
+</layer-list>

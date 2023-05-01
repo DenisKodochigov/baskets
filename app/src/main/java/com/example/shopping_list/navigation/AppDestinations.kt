@@ -1,19 +1,3 @@
-/*
- * Copyright 2022 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.shopping_list.navigation
 
 import androidx.compose.material.icons.Icons
@@ -38,19 +22,15 @@ object Baskets : ScreenDestination {
 
 object ProductsBasket : ScreenDestination {
     override val icon = Icons.Filled.Dashboard
-    override val route = "products_basket"
+    override val route = "products"
     const val basketIdArg = "basket_type"
     val routeWithArgs = "${route}/{$basketIdArg}"
-    val arguments = listOf(navArgument(basketIdArg) { type = NavType.StringType })
-}
-object Accounts : ScreenDestination {
-    override val icon = Icons.Filled.Dashboard
-    override val route = "products"
+    val arguments = listOf(navArgument(basketIdArg) { type = NavType.LongType })
 }
 
 object Products : ScreenDestination {
     override val icon = Icons.Filled.Dashboard
-    override val route = "prodacts"
+    override val route = "products"
 }
 
 object Setting : ScreenDestination {
@@ -58,18 +38,21 @@ object Setting : ScreenDestination {
     override val route = "settings"
 }
 
-object SingleAccount : ScreenDestination {
-    // Added for simplicity, this icon will not in fact be used, as SingleAccount isn't
-    // part of the AppTabRow selection
-    override val icon = Icons.Filled.Money
-    override val route = "single_account"
-    const val accountTypeArg = "account_type"
-    val routeWithArgs = "$route/{$accountTypeArg}"
-    val arguments = listOf(
-        navArgument(accountTypeArg) { type = NavType.StringType })
-    val deepLinks = listOf(
-        navDeepLink { uriPattern = "App://$route/{$accountTypeArg}"})
-}
-
+//object SingleAccount : ScreenDestination {
+//    // Added for simplicity, this icon will not in fact be used, as SingleAccount isn't
+//    // part of the AppTabRow selection
+//    override val icon = Icons.Filled.Money
+//    override val route = "single_account"
+//    const val accountTypeArg = "account_type"
+//    val routeWithArgs = "$route/{$accountTypeArg}"
+//    val arguments = listOf(
+//        navArgument(accountTypeArg) { type = NavType.StringType })
+//    val deepLinks = listOf(
+//        navDeepLink { uriPattern = "App://$route/{$accountTypeArg}"})
+//}
+//object Accounts : ScreenDestination {
+//    override val icon = Icons.Filled.Dashboard
+//    override val route = "products"
+//}
 // Screens to be displayed in the top AppTabRow
 val appTabRowScreens = listOf(Baskets, Products, Setting)

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_basket">
+
+    <fragment
+        android:id="@+id/nav_basket"
+        android:name="com.example.shopping_list.ui.list_basket.ListBasketFragment"
+        android:label="@string/title_box"
+        tools:layout="@layout/fragment_list_basket" >
+        <action
+            android:id="@+id/action_nav_basket_to_nav_basket_products"
+            app:destination="@id/nav_basket_products" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_product"
+        android:name="com.example.shopping_list.ui.list_product.ListProductFragment"
+        android:label="@string/title_products"
+        tools:layout="@layout/fragment_list_product" />
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.example.shopping_list.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/nav_basket_products"
+        android:name="com.example.shopping_list.ui.basket_products.BasketProductsFragment"
+        android:label="BasketProductsFragment"
+        tools:layout="@layout/fragment_basket_products"/>
+</navigation>

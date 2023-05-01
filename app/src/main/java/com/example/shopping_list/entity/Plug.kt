@@ -1,11 +1,13 @@
 package com.example.shopping_list.entity
 
-import com.example.shopping_list.data.room.tables.BasketDB
-
 object Plug {
     
-    val listBasket = listOf(
-        BasketDB(basketName = "box1", selected = false))
+//    val listBasket = listOf(
+//        BasketDB(nameBasket = "box1", selected = false, fillBasket = false))
+
+//    private fun BasketDB(nameBasket: String, selected: Boolean, fillBasket: Boolean): BasketDB {
+//
+//    }
 //        BasketDB("box2", listOf(Product("box2Product0", Unit.L, 1.0),
 //            Product("box2Product1", Unit.L, 1.0),
 //            Product("box2Product2", Unit.L, 1.0),

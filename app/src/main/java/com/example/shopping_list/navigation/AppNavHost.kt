@@ -1,66 +1,72 @@
 package com.example.shopping_list.navigation
 
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.shopping_list.ui.AppViewModel
-import com.example.shopping_list.ui.accounts.AccountsScreen
-import com.example.shopping_list.ui.accounts.SingleAccountScreen
 import com.example.shopping_list.ui.baskets.BasketsScreen
-import com.example.shopping_list.ui.products_basket.ProductsBasketScreen
 import com.example.shopping_list.ui.products.ProductsScreen
-import javax.inject.Inject
+import com.example.shopping_list.ui.settings.SettingsScreen
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AppViewModel,
+    bottomSheetContent: MutableState <@Composable (() -> Unit)?>,
+    bottomSheetHide: () -> Unit,
 ) {
+
     NavHost(navController = navController, startDestination = Baskets.route, modifier = modifier){
 
         composable( route = Baskets.route) {
-            BasketsScreen( onBasketClick = { navController.navigateProductsBasketTo(it) },
-            )
+            BasketsScreen(
+                onBasketClick = { navController.navigateToProducts(it) },
+                viewModel = viewModel,
+                modifier = modifier,
+                bottomSheetContent = bottomSheetContent)
         }
 
         composable( route = ProductsBasket.routeWithArgs, arguments = ProductsBasket.arguments )
         { navBackStackEntry ->
-            val basketId = navBackStackEntry.arguments?.getString(ProductsBasket.basketIdArg)
+            val basketId = navBackStackEntry.arguments?.getLong(ProductsBasket.basketIdArg)
             if (basketId != null) {
-                ProductsBasketScreen(basketId)
+                ProductsScreen(
+                    basketId = basketId,
+                    viewModel = viewModel,
+                    bottomSheetContent = bottomSheetContent,
+                    bottomSheetHide = bottomSheetHide
+                )
             }
         }
 
         composable( route = Products.route) {
-            ProductsScreen()
+            ProductsScreen(
+                basketId = -1,
+                viewModel = viewModel,
+                bottomSheetContent = bottomSheetContent,
+                bottomSheetHide = bottomSheetHide)
         }
-
-        composable(route = Accounts.route) {
-            AccountsScreen(
-                onAccountClick = { accountType -> navController.navigateToSingleAccount(accountType) })
+        composable( route = Setting.route) {
+            SettingsScreen(
+                onSettingsClick = { navController.navigateToScreen(it) },
+                viewModel = viewModel,
+                bottomSheetContent = bottomSheetContent)
         }
-//        composable(route = Bills.route) { BillsScreen() }
-        composable(
-            route = SingleAccount.routeWithArgs,
-            arguments = SingleAccount.arguments,
-            deepLinks = SingleAccount.deepLinks
-        ) { navBackStackEntry ->
-            val accountType = navBackStackEntry.arguments?.getString(SingleAccount.accountTypeArg)
-            SingleAccountScreen(accountType)
-        }
+//        composable(
+//            route = SingleAccount.routeWithArgs,
+//            arguments = SingleAccount.arguments,
+//            deepLinks = SingleAccount.deepLinks
+//        ) { navBackStackEntry ->
+//            val accountType = navBackStackEntry.arguments?.getString(SingleAccount.accountTypeArg)
+//            SingleAccountScreen(accountType)
+//        }
     }
 }
 
-fun NavHostController.navigateSingleTopTo(route: String) =
-    this.navigate(route) { launchSingleTop = true }
-private fun NavHostController.navigateToSingleAccount(accountType: String) {
-    this.navigateSingleTopTo("${SingleAccount.route}/$accountType")
-}
-
-fun NavHostController.navigateProductsBasketTo(route: String) =
-    this.navigate(route) { launchSingleTop = true }
-private fun NavHostController.navigateToProductsBasket(basketId: String) {
-    this.navigateProductsBasketTo("${ProductsBasket.route}/$basketId")
-}

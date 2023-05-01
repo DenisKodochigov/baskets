@@ -1,6 +1,8 @@
 package com.example.shopping_list.entity
 
-data class Product (
-    val name: String? = null,
-    val value: Double? = null,
-)
+interface Product {
+    var idProduct: Long
+    var basketId: Long?
+    var article: Article
+    var value: Double
+}
