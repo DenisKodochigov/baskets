@@ -1,12 +1,14 @@
 package com.example.shopping_list.ui.products
 
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,13 +26,11 @@ import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.GroupEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
+import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.AppViewModel
-import com.example.shopping_list.ui.components.ButtonMy
-import com.example.shopping_list.ui.components.HeaderScreen
-import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
-import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
+import com.example.shopping_list.ui.components.*
 
 @Composable
 fun ProductsScreen(
@@ -56,44 +56,54 @@ fun ProductsScreen(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ProductsScreenLayout(
     modifier: Modifier = Modifier,
     itemList: List<Product>,
 ){
-    val listState = rememberLazyListState()
+
 //    Log.d("KDS", "ProductsScreenLayout ${itemList.size}")
     Column( modifier ) {
         HeaderScreen(text = "Products", Modifier)
-        LazyColumn (
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 12.dp, horizontal = 24.dp))
-        {
-            items(items = itemList){ item->
-                Row ( modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-                    .background(Color.White)
-                    .clickable {
+        swipeToDismiss()
+//        LazyColumnWithSwipe()
+//        LazyColumnProduct(modifier, itemList)
+    }
+}
+
+@Composable
+fun LazyColumnProduct(modifier: Modifier = Modifier,itemList: List<Product>){
+    val listState = rememberLazyListState()
+    LazyColumn (
+        state = listState,
+        modifier = modifier
+            .fillMaxSize()
+            .padding(vertical = 12.dp, horizontal = 24.dp))
+    {
+        items(items = itemList){ item->
+            Row ( modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+                .background(Color.White)
+                .clickable {
 //                    onProductClick(item.idBasket)
-                    }){
-                    Text(text = item.article.nameArticle,
-                        fontSize = 20.sp,
-                        modifier = Modifier.weight(1f).padding(start = 12.dp, top = 12.dp, bottom = 12.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = item.value.toString(),
-                        fontSize = 20.sp,
-                        modifier = Modifier.width(40.dp).padding(vertical = 12.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = item.article.unitA?.nameUnit ?: "",
-                        fontSize = 20.sp,
-                        modifier = Modifier.width(40.dp).padding(vertical = 12.dp))
-                }
+                }){
+                Text(text = item.article.nameArticle,
+                    fontSize = 20.sp,
+                    modifier = Modifier.weight(1f).padding(start = 12.dp, top = 12.dp, bottom = 12.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = item.value.toString(),
+                    fontSize = 20.sp,
+                    modifier = Modifier.width(50.dp).padding(vertical = 12.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = item.article.unitA?.nameUnit ?: "",
+                    fontSize = 20.sp,
+                    modifier = Modifier.width(40.dp).padding(vertical = 12.dp))
             }
         }
     }
+
 }
 
 @Composable
@@ -134,7 +144,12 @@ fun BottomSheetContentProduct(
             label = "Select product",
             modifier = Modifier.fillMaxWidth(),
             enterValue = enterArticle,
-            filtering = true)
+            filtering = true )
+        if (enterArticle.value.first > 0) {
+            enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.articles)
+            enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
+            enterValue.value = 1.0
+        }
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth()) {
             MyExposedDropdownMenuBox(/** Select group*/
@@ -187,6 +202,26 @@ fun BottomSheetContentProduct(
         }
         Spacer(Modifier.height(72.dp))
     }
+}
+
+@Composable
+fun selectGroupWithArticle (id: Long, listArticle: List<Article>): Pair<Long, String>{
+    val article = listArticle.find { it.idArticle == id }
+    return if (article != null) {
+        if (article.group != null) {
+            Pair(article.group!!.idGroup, article.group!!.nameGroup)
+        } else Pair(0L,"")
+    } else Pair(0L,"")
+}
+
+@Composable
+fun selectUnitWithArticle (id: Long, listArticle: List<Article>): Pair<Long, String>{
+    val article = listArticle.find { it.idArticle == id }
+    return if (article != null) {
+        if (article.unitA != null) {
+            Pair(article.unitA!!.idUnit, article.unitA!!.nameUnit)
+        } else Pair(0L,"")
+    } else Pair(0L,"")
 }
 
 @Preview(showBackground = true)

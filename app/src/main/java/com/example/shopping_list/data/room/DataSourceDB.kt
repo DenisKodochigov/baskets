@@ -24,6 +24,7 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     fun addProduct(product: Product): List<Product> {
 
         if (product.basketId!! > 0L && product.article.idArticle > 0L) {
+            val result = dataDao.checkProductInBasket(product.basketId!!, product.article.idArticle)
             if (dataDao.checkProductInBasket(product.basketId!!, product.article.idArticle) == null) {
                 dataDao.addProduct(
                     ProductEntity(

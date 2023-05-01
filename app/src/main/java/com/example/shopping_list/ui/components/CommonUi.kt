@@ -112,6 +112,8 @@ fun MyOutlinedTextFieldWithoutIcon(modifier: Modifier, enterValue: MutableState<
 
     val localFocusManager = LocalFocusManager.current
     var enterText by remember { mutableStateOf("") }
+    enterText = enterValue.value.toString()
+
     OutlinedTextField(
         modifier = modifier,
         value = enterText,
