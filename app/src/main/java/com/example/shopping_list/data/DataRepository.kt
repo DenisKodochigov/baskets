@@ -27,6 +27,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     fun newBasket(basketName: String): List<Basket>{
         return dataSourceDB.newBasket(basketName)
     }
+
     fun addProduct(product: Product, basketId: Long): List<Product>{
         //Checking unit in db.
         Log.d("KDS", " ${product}")
@@ -51,8 +52,11 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
             }
             dataSourceDB.addProduct(product)
         } else dataSourceDB.getListProducts(0L)
-
     }
+    fun putProductInBasket(product: Product, basketId: Long): List<Product>{
+        return dataSourceDB.putProductInBasket(product, basketId)
+    }
+
     fun newArticle(name: String): List<Article> {
         return dataSourceDB.newArticleS(name)
     }

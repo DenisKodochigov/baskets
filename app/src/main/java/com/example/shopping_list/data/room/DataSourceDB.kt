@@ -1,5 +1,6 @@
 package com.example.shopping_list.data.room
 
+import android.util.Log
 import com.example.shopping_list.data.room.tables.*
 import com.example.shopping_list.entity.*
 import javax.inject.Inject
@@ -50,7 +51,7 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
                 idProduct = item.product.idProduct,
                 value = item.product.value,
                 basketId = item.product.basketId,
-                selected = item.product.selected,
+                putInBasket = item.product.putInBasket,
                 articleId = item.article.article.idArticle,
                 article = ArticleEntity(
                     idArticle = item.article.article.idArticle,
@@ -64,7 +65,7 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
                 idProduct = item.product.idProduct,
                 value = item.product.value,
                 basketId = item.product.basketId,
-                selected = item.product.selected,
+                putInBasket = item.product.putInBasket,
                 articleId = item.article.article.idArticle,
                 article = ArticleEntity(
                     idArticle = item.article.article.idArticle,
@@ -75,7 +76,24 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
             )
         }
     }
-
+    fun putProductInBasket(product: Product, basketId: Long): List<Product>{
+        dataDao.putProductInBasket(product.idProduct, basketId)
+        return dataDao.getListProductAll().map { item ->
+            ProductEntity(
+                idProduct = item.product.idProduct,
+                value = item.product.value,
+                basketId = item.product.basketId,
+                putInBasket = item.product.putInBasket,
+                articleId = item.article.article.idArticle,
+                article = ArticleEntity(
+                    idArticle = item.article.article.idArticle,
+                    nameArticle = item.article.article.nameArticle,
+                    group = item.article.group,
+                    unitA = item.article.unitA
+                )
+            )
+        }
+    }
     fun newArticleS(name: String): List<Article> {
         dataDao.addArticle(ArticleEntity(nameArticle = name, groupId = 1, unitId = 1))
         return getListArticle()

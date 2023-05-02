@@ -1,6 +1,7 @@
 package com.example.shopping_list.ui.products
 
-import android.util.Log
+import android.os.Looper
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,11 +9,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -27,10 +30,13 @@ import com.example.shopping_list.data.room.tables.GroupEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.AppViewModel
-import com.example.shopping_list.ui.components.*
+import com.example.shopping_list.ui.components.ButtonMy
+import com.example.shopping_list.ui.components.HeaderScreen
+import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
+import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
+import kotlinx.coroutines.delay
 
 @Composable
 fun ProductsScreen(
@@ -53,6 +59,7 @@ fun ProductsScreen(
     ProductsScreenLayout(
         modifier = Modifier.semantics { contentDescription = "Baskets Screen" },
         itemList = uiState.products,
+        putProductInBasket = {product-> viewModel.putProductInBasket( product, basketId )}
     )
 }
 
@@ -61,49 +68,72 @@ fun ProductsScreen(
 fun ProductsScreenLayout(
     modifier: Modifier = Modifier,
     itemList: List<Product>,
+    putProductInBasket: (Product) -> Unit
 ){
-
 //    Log.d("KDS", "ProductsScreenLayout ${itemList.size}")
     Column( modifier ) {
         HeaderScreen(text = "Products", Modifier)
-        swipeToDismiss()
 //        LazyColumnWithSwipe()
-//        LazyColumnProduct(modifier, itemList)
+        LazyColumnProduct(modifier, itemList, putProductInBasket)
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun LazyColumnProduct(modifier: Modifier = Modifier,itemList: List<Product>){
+fun LazyColumnProduct(modifier: Modifier = Modifier,itemList: List<Product>, putProductInBasket: (Product) -> Unit){
     val listState = rememberLazyListState()
-    LazyColumn (
-        state = listState,
-        modifier = modifier
-            .fillMaxSize()
-            .padding(vertical = 12.dp, horizontal = 24.dp))
-    {
-        items(items = itemList){ item->
-            Row ( modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp)
-                .background(Color.White)
-                .clickable {
-//                    onProductClick(item.idBasket)
-                }){
-                Text(text = item.article.nameArticle,
-                    fontSize = 20.sp,
-                    modifier = Modifier.weight(1f).padding(start = 12.dp, top = 12.dp, bottom = 12.dp))
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = item.value.toString(),
-                    fontSize = 20.sp,
-                    modifier = Modifier.width(50.dp).padding(vertical = 12.dp))
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = item.article.unitA?.nameUnit ?: "",
-                    fontSize = 20.sp,
-                    modifier = Modifier.width(40.dp).padding(vertical = 12.dp))
+    LazyColumn (state = listState, modifier = modifier.fillMaxSize().padding(vertical = 12.dp, horizontal = 24.dp)) {
+        items(items = itemList) { item ->
+            val dismissState = rememberDismissState(
+                confirmStateChange = {
+                    if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
+                        android.os.Handler(Looper.getMainLooper()).postDelayed({
+                            putProductInBasket(item) }, 1000) }
+                    true })
+            if (dismissState.isDismissed(DismissDirection.EndToStart) || dismissState.isDismissed(DismissDirection.StartToEnd)) {
+                LaunchedEffect(Unit) {
+                    delay(300)
+                    dismissState.reset() }
             }
+            SwipeToDismiss(state = dismissState,
+                modifier = Modifier.padding(vertical = 1.dp).animateItemPlacement(),
+                directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+                dismissThresholds = { direction ->
+                    FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.1f else 0.4f)
+                },
+                background = {
+                    val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
+                    val alignment = when (direction) {
+                        DismissDirection.StartToEnd -> Alignment.CenterStart
+                        DismissDirection.EndToStart -> Alignment.CenterEnd
+                    }
+                    val icon = when (direction) {
+                        DismissDirection.StartToEnd -> Icons.Default.ShoppingBasket
+                        DismissDirection.EndToStart -> Icons.Default.ShoppingBasket
+                    }
+                    val scale by animateFloatAsState(if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f)
+                    Box(Modifier.fillMaxSize().padding(horizontal = 20.dp), contentAlignment = alignment) {
+                        Icon(icon, contentDescription = "Localized description", modifier = Modifier.scale(scale))
+                    }
+                },
+                dismissContent = {
+                    Box {
+                        LaunchedEffect(Unit) {dismissState.reset()}
+                        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).background(Color.White)
+                            .clickable {/*  onProductClick(item.idBasket)*/ }) {
+                            Text(text = item.article.nameArticle, fontSize = 20.sp, modifier = Modifier.weight(1f).padding(start = 12.dp, top = 12.dp, bottom = 12.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(text = item.value.toString(), fontSize = 20.sp, modifier = Modifier.width(50.dp).padding(vertical = 12.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(text = item.article.unitA?.nameUnit ?: "", fontSize = 20.sp, modifier = Modifier.width(40.dp).padding(vertical = 12.dp))
+                        }
+                        if (item.putInBasket) Divider( color = MaterialTheme.colors.onSurface, thickness = 1.dp,
+                            modifier = Modifier.padding(top = 32.dp, start = 8.dp, end = 8.dp).fillMaxWidth() )
+                    }
+                }
+            )
         }
     }
-
 }
 
 @Composable
@@ -113,7 +143,7 @@ fun BottomSheetContentProduct(
     onAddProduct: (Product) -> Unit){
 
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    val enterValue = remember{ mutableStateOf(0.0)}
+    val enterValue = remember{ mutableStateOf(1.0)}
     val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
     val enterGroup = remember{ mutableStateOf(Pair<Long,String>(0,""))}
     val enterUnit = remember{ mutableStateOf(Pair<Long,String>(0,""))}
@@ -136,7 +166,7 @@ fun BottomSheetContentProduct(
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
             .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.75).dp)) {
-        Log.d("KDS", "BottomSheetContentProduct.Column")
+//        Log.d("KDS", "BottomSheetContentProduct.Column")
         HeaderScreen(text = "Add product", Modifier.focusRequester(focusRequesterSheet))
         Spacer(Modifier.height(24.dp))
         MyExposedDropdownMenuBox(/** Select article*/
@@ -227,7 +257,7 @@ fun selectUnitWithArticle (id: Long, listArticle: List<Article>): Pair<Long, Str
 @Preview(showBackground = true)
 @Composable
 fun ProductsScreenLayoutPreview(){
-    ProductsScreenLayout( Modifier, emptyList())
+    ProductsScreenLayout( Modifier, emptyList(), {})
 }
 @Preview(showBackground = true)
 @Composable

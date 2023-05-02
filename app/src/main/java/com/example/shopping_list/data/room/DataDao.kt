@@ -69,6 +69,9 @@ interface DataDao {
     @Query("SELECT * FROM tb_unit")
     fun getUnits(): List<UnitEntity>
 
+    @Query("UPDATE tb_product SET putInBasket = NOT putInBasket WHERE idProduct=:productId AND basketId =:basketId " )
+    fun putProductInBasket(productId:Long,basketId: Long)
+
 //    @Query("SELECT * FROM basket JOIN products ON basket.productId = products.idProduct" +
 //            "JOIN article ON products.articleId = article.idArticle " +
 //            "JOIN tb_unit ON article.unitId = tb_uit.idUnit WHERE basketId=:basketId")

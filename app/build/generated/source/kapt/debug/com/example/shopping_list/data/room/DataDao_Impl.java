@@ -46,6 +46,8 @@ public final class DataDao_Impl implements DataDao {
 
   private final SharedSQLiteStatement __preparedStmtOfDeleteByIdBasket;
 
+  private final SharedSQLiteStatement __preparedStmtOfPutProductInBasket;
+
   public DataDao_Impl(RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfBasketEntity = new EntityInsertionAdapter<BasketEntity>(__db) {
@@ -71,7 +73,7 @@ public final class DataDao_Impl implements DataDao {
     this.__insertionAdapterOfProductEntity = new EntityInsertionAdapter<ProductEntity>(__db) {
       @Override
       public String createQuery() {
-        return "INSERT OR ABORT INTO `tb_product` (`idProduct`,`value`,`basketId`,`articleId`,`selected`) VALUES (nullif(?, 0),?,?,?,?)";
+        return "INSERT OR ABORT INTO `tb_product` (`idProduct`,`value`,`basketId`,`putInBasket`,`articleId`) VALUES (nullif(?, 0),?,?,?,?)";
       }
 
       @Override
@@ -83,13 +85,13 @@ public final class DataDao_Impl implements DataDao {
         } else {
           stmt.bindLong(3, value.getBasketId());
         }
+        final int _tmp = value.getPutInBasket() ? 1 : 0;
+        stmt.bindLong(4, _tmp);
         if (value.getArticleId() == null) {
-          stmt.bindNull(4);
+          stmt.bindNull(5);
         } else {
-          stmt.bindLong(4, value.getArticleId());
+          stmt.bindLong(5, value.getArticleId());
         }
-        final int _tmp = value.getSelected() ? 1 : 0;
-        stmt.bindLong(5, _tmp);
       }
     };
     this.__insertionAdapterOfArticleEntity = new EntityInsertionAdapter<ArticleEntity>(__db) {
@@ -175,6 +177,13 @@ public final class DataDao_Impl implements DataDao {
       @Override
       public String createQuery() {
         final String _query = "DELETE FROM tb_basket WHERE idBasket = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfPutProductInBasket = new SharedSQLiteStatement(__db) {
+      @Override
+      public String createQuery() {
+        final String _query = "UPDATE tb_product SET putInBasket = NOT putInBasket WHERE idProduct=? AND basketId =? ";
         return _query;
       }
     };
@@ -270,6 +279,24 @@ public final class DataDao_Impl implements DataDao {
     } finally {
       __db.endTransaction();
       __preparedStmtOfDeleteByIdBasket.release(_stmt);
+    }
+  }
+
+  @Override
+  public void putProductInBasket(final long productId, final long basketId) {
+    __db.assertNotSuspendingTransaction();
+    final SupportSQLiteStatement _stmt = __preparedStmtOfPutProductInBasket.acquire();
+    int _argIndex = 1;
+    _stmt.bindLong(_argIndex, productId);
+    _argIndex = 2;
+    _stmt.bindLong(_argIndex, basketId);
+    __db.beginTransaction();
+    try {
+      _stmt.executeUpdateDelete();
+      __db.setTransactionSuccessful();
+    } finally {
+      __db.endTransaction();
+      __preparedStmtOfPutProductInBasket.release(_stmt);
     }
   }
 
@@ -415,8 +442,8 @@ public final class DataDao_Impl implements DataDao {
         final int _cursorIndexOfIdProduct = CursorUtil.getColumnIndexOrThrow(_cursor, "idProduct");
         final int _cursorIndexOfValue = CursorUtil.getColumnIndexOrThrow(_cursor, "value");
         final int _cursorIndexOfBasketId = CursorUtil.getColumnIndexOrThrow(_cursor, "basketId");
+        final int _cursorIndexOfPutInBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "putInBasket");
         final int _cursorIndexOfArticleId = CursorUtil.getColumnIndexOrThrow(_cursor, "articleId");
-        final int _cursorIndexOfSelected = CursorUtil.getColumnIndexOrThrow(_cursor, "selected");
         final LongSparseArray<ArticleObj> _collectionArticle = new LongSparseArray<ArticleObj>();
         while (_cursor.moveToNext()) {
           if (!_cursor.isNull(_cursorIndexOfArticleId)) {
@@ -444,6 +471,11 @@ public final class DataDao_Impl implements DataDao {
             _tmpBasketId = _cursor.getLong(_cursorIndexOfBasketId);
           }
           _tmpProduct.setBasketId(_tmpBasketId);
+          final boolean _tmpPutInBasket;
+          final int _tmp;
+          _tmp = _cursor.getInt(_cursorIndexOfPutInBasket);
+          _tmpPutInBasket = _tmp != 0;
+          _tmpProduct.setPutInBasket(_tmpPutInBasket);
           final Long _tmpArticleId;
           if (_cursor.isNull(_cursorIndexOfArticleId)) {
             _tmpArticleId = null;
@@ -451,11 +483,6 @@ public final class DataDao_Impl implements DataDao {
             _tmpArticleId = _cursor.getLong(_cursorIndexOfArticleId);
           }
           _tmpProduct.setArticleId(_tmpArticleId);
-          final boolean _tmpSelected;
-          final int _tmp;
-          _tmp = _cursor.getInt(_cursorIndexOfSelected);
-          _tmpSelected = _tmp != 0;
-          _tmpProduct.setSelected(_tmpSelected);
           ArticleObj _tmpArticle = null;
           if (!_cursor.isNull(_cursorIndexOfArticleId)) {
             final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfArticleId);
@@ -487,8 +514,8 @@ public final class DataDao_Impl implements DataDao {
         final int _cursorIndexOfIdProduct = CursorUtil.getColumnIndexOrThrow(_cursor, "idProduct");
         final int _cursorIndexOfValue = CursorUtil.getColumnIndexOrThrow(_cursor, "value");
         final int _cursorIndexOfBasketId = CursorUtil.getColumnIndexOrThrow(_cursor, "basketId");
+        final int _cursorIndexOfPutInBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "putInBasket");
         final int _cursorIndexOfArticleId = CursorUtil.getColumnIndexOrThrow(_cursor, "articleId");
-        final int _cursorIndexOfSelected = CursorUtil.getColumnIndexOrThrow(_cursor, "selected");
         final LongSparseArray<ArticleObj> _collectionArticle = new LongSparseArray<ArticleObj>();
         while (_cursor.moveToNext()) {
           if (!_cursor.isNull(_cursorIndexOfArticleId)) {
@@ -516,6 +543,11 @@ public final class DataDao_Impl implements DataDao {
             _tmpBasketId = _cursor.getLong(_cursorIndexOfBasketId);
           }
           _tmpProduct.setBasketId(_tmpBasketId);
+          final boolean _tmpPutInBasket;
+          final int _tmp;
+          _tmp = _cursor.getInt(_cursorIndexOfPutInBasket);
+          _tmpPutInBasket = _tmp != 0;
+          _tmpProduct.setPutInBasket(_tmpPutInBasket);
           final Long _tmpArticleId;
           if (_cursor.isNull(_cursorIndexOfArticleId)) {
             _tmpArticleId = null;
@@ -523,11 +555,6 @@ public final class DataDao_Impl implements DataDao {
             _tmpArticleId = _cursor.getLong(_cursorIndexOfArticleId);
           }
           _tmpProduct.setArticleId(_tmpArticleId);
-          final boolean _tmpSelected;
-          final int _tmp;
-          _tmp = _cursor.getInt(_cursorIndexOfSelected);
-          _tmpSelected = _tmp != 0;
-          _tmpProduct.setSelected(_tmpSelected);
           ArticleObj _tmpArticle = null;
           if (!_cursor.isNull(_cursorIndexOfArticleId)) {
             final long _tmpKey_1 = _cursor.getLong(_cursorIndexOfArticleId);

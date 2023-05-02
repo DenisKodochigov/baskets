@@ -11,7 +11,7 @@ data class ProductEntity (
     @PrimaryKey(autoGenerate = true) override var idProduct: Long = 0,
     override var value: Double = 0.0,
     override var basketId: Long? = null,
+    override var putInBasket:Boolean = false,
     var articleId: Long? = null,
-    var selected:Boolean = false,
     @Ignore override var article: Article = ArticleEntity(),
 ): Product
