@@ -53,12 +53,20 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
             dataSourceDB.addProduct(product)
         } else dataSourceDB.getListProducts(0L)
     }
+
     fun putProductInBasket(product: Product, basketId: Long): List<Product>{
         return dataSourceDB.putProductInBasket(product, basketId)
     }
 
     fun newArticle(name: String): List<Article> {
         return dataSourceDB.newArticleS(name)
+    }
+
+    fun changeGroupSelected(productList: MutableList<Product>, idGroup: Long){
+
+    }
+    fun deleteSelectedProduct(productList: MutableList<Product>): List<Product>{
+        return dataSourceDB.deleteSelectedProduct(productList)
     }
 //    fun getBasketProducts(basket:BasketDB): List<ProductDB>{
 //        var listProduct = emptyList<ProductDB>()

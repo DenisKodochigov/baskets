@@ -1,6 +1,10 @@
 package com.example.shopping_list.ui.products
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Looper
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -11,7 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingBasket
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +24,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,12 +35,11 @@ import com.example.shopping_list.data.room.tables.GroupEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.Product
+import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.AppViewModel
-import com.example.shopping_list.ui.components.ButtonMy
-import com.example.shopping_list.ui.components.HeaderScreen
-import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
-import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
+import com.example.shopping_list.ui.components.*
 import kotlinx.coroutines.delay
 
 @Composable
@@ -58,34 +62,71 @@ fun ProductsScreen(
 //    Log.d("KDS", "basketId = $basketId") ProductsScreenLayout
     ProductsScreenLayout(
         modifier = Modifier.semantics { contentDescription = "Baskets Screen" },
-        itemList = uiState.products,
-        putProductInBasket = {product-> viewModel.putProductInBasket( product, basketId )}
+        itemList = uiState.products ,
+        putProductInBasket = {product-> viewModel.putProductInBasket( product, basketId )},
+        doChangeGroupSelected = {productList, idGroup -> viewModel.changeGroupSelected(productList,idGroup)} ,
+        doDeleteSelected = {productList -> viewModel.deleteSelected(productList)}
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ProductsScreenLayout(
     modifier: Modifier = Modifier,
-    itemList: List<Product>,
-    putProductInBasket: (Product) -> Unit
+    itemList: MutableList<Product>,
+    putProductInBasket: (Product) -> Unit,
+    doChangeGroupSelected: (MutableList<Product>, Long) -> Unit,
+    doDeleteSelected: (MutableList<Product>) -> Unit
 ){
-//    Log.d("KDS", "ProductsScreenLayout ${itemList.size}")
-    Column( modifier ) {
-        HeaderScreen(text = "Products", Modifier)
-//        LazyColumnWithSwipe()
-        LazyColumnProduct(modifier, itemList, putProductInBasket)
+    val isSelectedId: MutableState<Long> = remember {  mutableStateOf(0L) }
+    val deleteSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
+    val unSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
+    val changeGroupSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
+    if (isSelectedId.value > 0L) {
+        val item = itemList.find { it.idProduct == isSelectedId.value }
+        if (item != null) { item.isSelected = !item.isSelected }
+        isSelectedId.value = 0
+    }
+    if (unSelected.value) {
+       itemList.forEach { it.isSelected = false }
+       unSelected.value = false
+    }
+    if (changeGroupSelected.value) {
+        val idGroup =0L
+        doChangeGroupSelected(itemList,idGroup)
+        changeGroupSelected.value = false
+    }
+    if (deleteSelected.value) {
+        doDeleteSelected(itemList)
+        deleteSelected.value = false
+    }
+    Box(Modifier.fillMaxSize()){
+        Column( modifier ) {
+            HeaderScreen(text = "Products", Modifier)
+            LazyColumnProduct(modifier, itemList, putProductInBasket, isSelectedId )
+        }
+        if ( itemList.find { it.isSelected } != null) {
+            Column(Modifier.align(alignment = Alignment.BottomCenter)) {
+                FabDeleteProducts( deleteSelected )
+                FabChangeGroupProducts( changeGroupSelected )
+                FabUnSelectProducts ( unSelected )
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun LazyColumnProduct(modifier: Modifier = Modifier,itemList: List<Product>, putProductInBasket: (Product) -> Unit){
+fun LazyColumnProduct(
+    modifier: Modifier = Modifier,itemList: List<Product>,
+    putProductInBasket: (Product) -> Unit, isSelected: MutableState<Long>){
     val listState = rememberLazyListState()
-    LazyColumn (state = listState, modifier = modifier.fillMaxSize().padding(vertical = 12.dp, horizontal = 24.dp)) {
-        items(items = itemList) { item ->
-            val dismissState = rememberDismissState(
-                confirmStateChange = {
+
+    LazyColumn (state = listState, verticalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier
+        .fillMaxSize()
+        .padding(vertical = 12.dp, horizontal = 24.dp)) {
+        items(items = itemList, key = { it.idProduct }) {
+        item ->
+            val dismissState = rememberDismissState( confirmStateChange = {
                     if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
                         android.os.Handler(Looper.getMainLooper()).postDelayed({
                             putProductInBasket(item) }, 1000) }
@@ -108,27 +149,64 @@ fun LazyColumnProduct(modifier: Modifier = Modifier,itemList: List<Product>, put
                         DismissDirection.EndToStart -> Alignment.CenterEnd
                     }
                     val icon = when (direction) {
-                        DismissDirection.StartToEnd -> Icons.Default.ShoppingBasket
-                        DismissDirection.EndToStart -> Icons.Default.ShoppingBasket
+                        DismissDirection.StartToEnd -> Icons.Default.AddShoppingCart
+                        DismissDirection.EndToStart -> Icons.Default.AddShoppingCart
                     }
                     val scale by animateFloatAsState(if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f)
-                    Box(Modifier.fillMaxSize().padding(horizontal = 20.dp), contentAlignment = alignment) {
+                    Box(
+                        Modifier.fillMaxSize()
+                            .padding(horizontal = 20.dp), contentAlignment = alignment) {
                         Icon(icon, contentDescription = "Localized description", modifier = Modifier.scale(scale))
                     }
                 },
                 dismissContent = {
                     Box {
-                        LaunchedEffect(Unit) {dismissState.reset()}
-                        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).background(Color.White)
-                            .clickable {/*  onProductClick(item.idBasket)*/ }) {
-                            Text(text = item.article.nameArticle, fontSize = 20.sp, modifier = Modifier.weight(1f).padding(start = 12.dp, top = 12.dp, bottom = 12.dp))
+//                        LaunchedEffect(Unit) {dismissState.reset()}
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .background(Color.White)
+                            .clickable {/*  onProductClick(item.idBasket)*/
+                                isSelected.value = item.idProduct
+                            }) {
+//                            Log.d("KDS","${item.article.nameArticle} - ${item.isSelected}")
+                            Spacer(
+                                modifier = Modifier
+                                    .background(if (item.isSelected) Color.Red else Color.LightGray)
+                                    .width(8.dp)
+                                    .height(32.dp)
+                                    .align(Alignment.CenterVertically)
+                            )
+                            Text(
+                                text = item.article.nameArticle,
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 12.dp, top = 12.dp, bottom = 12.dp)
+                            )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = item.value.toString(), fontSize = 20.sp, modifier = Modifier.width(50.dp).padding(vertical = 12.dp))
+                            Text(
+                                text = item.value.toString(),
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .padding(vertical = 12.dp)
+                            )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = item.article.unitA?.nameUnit ?: "", fontSize = 20.sp, modifier = Modifier.width(40.dp).padding(vertical = 12.dp))
+                            Text(
+                                text = item.article.unitA?.nameUnit ?: "",
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .width(40.dp)
+                                    .padding(vertical = 12.dp)
+                            )
                         }
-                        if (item.putInBasket) Divider( color = MaterialTheme.colors.onSurface, thickness = 1.dp,
-                            modifier = Modifier.padding(top = 32.dp, start = 8.dp, end = 8.dp).fillMaxWidth() )
+                        if (item.putInBasket) Divider(
+                            color = MaterialTheme.colors.onSurface, thickness = 1.dp,
+                            modifier = Modifier
+                                .padding(top = 32.dp, start = 8.dp, end = 8.dp)
+                                .fillMaxWidth()
+                        )
                     }
                 }
             )
@@ -143,9 +221,9 @@ fun BottomSheetContentProduct(
     onAddProduct: (Product) -> Unit){
 
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    val enterValue = remember{ mutableStateOf(1.0)}
+    val enterValue = remember{ mutableStateOf("1")}
     val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
-    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(0,""))}
+    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,"All"))}
     val enterUnit = remember{ mutableStateOf(Pair<Long,String>(0,""))}
     val focusRequesterSheet = remember { FocusRequester() }
 
@@ -178,7 +256,7 @@ fun BottomSheetContentProduct(
         if (enterArticle.value.first > 0) {
             enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.articles)
             enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
-            enterValue.value = 1.0
+            enterValue.value = "1"
         }
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth()) {
@@ -192,7 +270,7 @@ fun BottomSheetContentProduct(
             MyOutlinedTextFieldWithoutIcon( /** Value*/
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .width(80.dp)
+                    .width(100.dp)
                     .padding(top = 8.dp),
                 enterValue = enterValue)
             Spacer(Modifier.width(4.dp))
@@ -208,7 +286,7 @@ fun BottomSheetContentProduct(
             ButtonMy(Modifier.weight(1f),"Add") {
                 onAddProduct(
                     ProductEntity(
-                    value = enterValue.value,
+                    value = if (enterValue.value.isEmpty()) 1.0 else enterValue.value.toDouble(),
                         article = ArticleEntity(
                             idArticle = enterArticle.value.first,
                             nameArticle = enterArticle.value.second,
@@ -257,14 +335,26 @@ fun selectUnitWithArticle (id: Long, listArticle: List<Article>): Pair<Long, Str
 @Preview(showBackground = true)
 @Composable
 fun ProductsScreenLayoutPreview(){
-    ProductsScreenLayout( Modifier, emptyList(), {})
+//    ProductsScreenLayout( Modifier, mutableListOf(
+//        ProductEntity(
+//            idProduct = 1, basketId = 1, value = 1.0, putInBasket = false,
+//            article = ArticleEntity(
+//                idArticle = 1, nameArticle = "Milk",
+//                group = GroupEntity(idGroup = 1, nameGroup = "All") as GroupArticle,
+//                unitA = UnitEntity(idUnit = 1, nameUnit = "in.") as UnitA))),
+//        putProductInBasket = {},
+//        changeGroupSelected = {},
+//        deleteSelected = {}
+//    )
 }
+
 @Preview(showBackground = true)
 @Composable
 fun BottomSheetContentProductPreview(){
     BottomSheetContentProduct(
         StateProductsScreen(),{}, {})
 }
+
 @Preview(showBackground = true)
 @Composable
 fun BasketsScreenPreview(){

@@ -1,4 +1,4 @@
-package com.example.shopping_list.archiv.list_basket
+package com.example.shopping_list.archiv.xml.adapter.list_basket
 //
 //import android.annotation.SuppressLint
 //import android.os.Bundle

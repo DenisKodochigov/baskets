@@ -46,6 +46,8 @@ public final class DataDao_Impl implements DataDao {
 
   private final SharedSQLiteStatement __preparedStmtOfDeleteByIdBasket;
 
+  private final SharedSQLiteStatement __preparedStmtOfDeleteSelectedProduct;
+
   private final SharedSQLiteStatement __preparedStmtOfPutProductInBasket;
 
   public DataDao_Impl(RoomDatabase __db) {
@@ -180,6 +182,13 @@ public final class DataDao_Impl implements DataDao {
         return _query;
       }
     };
+    this.__preparedStmtOfDeleteSelectedProduct = new SharedSQLiteStatement(__db) {
+      @Override
+      public String createQuery() {
+        final String _query = "DELETE FROM tb_product WHERE idProduct=? AND basketId =?";
+        return _query;
+      }
+    };
     this.__preparedStmtOfPutProductInBasket = new SharedSQLiteStatement(__db) {
       @Override
       public String createQuery() {
@@ -279,6 +288,24 @@ public final class DataDao_Impl implements DataDao {
     } finally {
       __db.endTransaction();
       __preparedStmtOfDeleteByIdBasket.release(_stmt);
+    }
+  }
+
+  @Override
+  public void deleteSelectedProduct(final long productId, final long basketId) {
+    __db.assertNotSuspendingTransaction();
+    final SupportSQLiteStatement _stmt = __preparedStmtOfDeleteSelectedProduct.acquire();
+    int _argIndex = 1;
+    _stmt.bindLong(_argIndex, productId);
+    _argIndex = 2;
+    _stmt.bindLong(_argIndex, basketId);
+    __db.beginTransaction();
+    try {
+      _stmt.executeUpdateDelete();
+      __db.setTransactionSuccessful();
+    } finally {
+      __db.endTransaction();
+      __preparedStmtOfDeleteSelectedProduct.release(_stmt);
     }
   }
 

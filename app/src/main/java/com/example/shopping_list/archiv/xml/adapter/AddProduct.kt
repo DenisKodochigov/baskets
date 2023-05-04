@@ -1,4 +1,4 @@
-package com.example.shopping_list.archiv
+package com.example.shopping_list.archiv.xml.adapter
 //
 //import android.os.Bundle
 //import android.util.Log

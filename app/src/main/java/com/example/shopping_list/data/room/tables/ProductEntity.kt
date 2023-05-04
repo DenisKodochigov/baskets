@@ -14,4 +14,5 @@ data class ProductEntity (
     override var putInBasket:Boolean = false,
     var articleId: Long? = null,
     @Ignore override var article: Article = ArticleEntity(),
+    @Ignore override var isSelected: Boolean = false,
 ): Product

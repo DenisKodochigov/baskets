@@ -37,6 +37,7 @@ class AppViewModel @Inject constructor(
             )
         }
     }
+
     fun getStateProducts(basketId: Long){
         getListProducts(basketId)
         getListArticle()
@@ -48,11 +49,12 @@ class AppViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListProducts(basketId) }.fold(
                 onSuccess = { _stateProductsScreen.update { currentState ->
-                    currentState.copy(products = it) } },
+                    currentState.copy(products = it as MutableList<Product>) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
     }
+
     private fun getListArticle() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListArticle() }.fold(
@@ -62,6 +64,7 @@ class AppViewModel @Inject constructor(
             )
         }
     }
+
     private fun getListGroup() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getGroups() }.fold(
@@ -71,6 +74,7 @@ class AppViewModel @Inject constructor(
             )
         }
     }
+
     private fun getListUnit() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getUnits() }.fold(
@@ -80,6 +84,7 @@ class AppViewModel @Inject constructor(
             )
         }
     }
+
     fun newBasket(basketName: String){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
@@ -91,13 +96,14 @@ class AppViewModel @Inject constructor(
             )
         }
     }
+
     fun addProduct(product: Product, basketId: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.addProduct(product, basketId)
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
-                    currentState.copy(products = it) }},
+                    currentState.copy(products = it as MutableList<Product>) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -105,17 +111,19 @@ class AppViewModel @Inject constructor(
         getListGroup()
         getListUnit()
     }
+
     fun putProductInBasket(product: Product, basketId: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.putProductInBasket(product, basketId)
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
-                    currentState.copy(products = it) }},
+                    currentState.copy(products = it as MutableList<Product>) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
     }
+
     fun newArticle(name: Pair<Long,String>){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
@@ -128,4 +136,26 @@ class AppViewModel @Inject constructor(
         }
     }
 
+    fun changeGroupSelected(productList: MutableList<Product>, idGroup: Long){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.changeGroupSelected(productList, idGroup) }.fold(
+                onSuccess = {_stateProductsScreen.update { currentState ->
+                    currentState.copy(products = it as MutableList<Product>) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
+    fun deleteSelected(productList: MutableList<Product>){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.deleteSelectedProduct(productList)
+            }.fold(
+                onSuccess = {_stateProductsScreen.update { currentState ->
+                    currentState.copy(products = it as MutableList<Product>) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
 }

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -108,25 +109,25 @@ fun MyExposedDropdownMenuBoxPreview(){
 }
 
 @Composable
-fun MyOutlinedTextFieldWithoutIcon(modifier: Modifier, enterValue: MutableState<Double>){
+fun MyOutlinedTextFieldWithoutIcon(modifier: Modifier, enterValue: MutableState<String>){
 
     val localFocusManager = LocalFocusManager.current
     var enterText by remember { mutableStateOf("") }
-    enterText = enterValue.value.toInt().toString()
+    enterText = enterValue.value
 
     OutlinedTextField(
-        modifier = modifier,
+        modifier = modifier, //.onFocusChanged { if (it.isFocused) { enterText = "" } },
         value = enterText,
         singleLine = true,
         textStyle = MaterialTheme.typography.h1,
         onValueChange = {
             enterText = it;
-            if (it.isNotEmpty()) enterValue.value = it.toDouble()},
+            enterValue.value = it },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
             onDone = {
                 localFocusManager.clearFocus()
-                if (enterText.isNotEmpty()) enterValue.value = enterText.toDouble()
+                enterValue.value = enterText
             }
         ) ,
     )

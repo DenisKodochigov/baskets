@@ -1,4 +1,4 @@
-package com.example.shopping_list.archiv.adapter
+package com.example.shopping_list.archiv.xml.adapter
 
 //import android.annotation.SuppressLint
 //import android.view.LayoutInflater

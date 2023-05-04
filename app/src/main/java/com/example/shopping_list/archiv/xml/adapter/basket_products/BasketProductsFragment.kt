@@ -1,4 +1,4 @@
-package com.example.shopping_list.archiv.basket_products
+package com.example.shopping_list.archiv.xml.adapter.basket_products
 
 //import android.os.Bundle
 //import android.view.LayoutInflater

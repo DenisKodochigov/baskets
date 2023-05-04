@@ -45,6 +45,9 @@ interface DataDao {
     @Transaction
     @Query("SELECT * FROM tb_product")
     fun getListProductAll(): List<ProductObj>
+
+    @Query("DELETE FROM tb_product WHERE idProduct=:productId AND basketId =:basketId")
+    fun deleteSelectedProduct(productId:Long,basketId: Long)
 /** Article entity*/
 
     @Insert
