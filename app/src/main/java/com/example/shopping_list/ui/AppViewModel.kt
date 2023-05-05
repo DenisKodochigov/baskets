@@ -124,6 +124,18 @@ class AppViewModel @Inject constructor(
         }
     }
 
+    fun changeProductInBasket(product: Product, basketId: Long){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.changeProductInBasket(product, basketId)
+            }.fold(
+                onSuccess = {_stateProductsScreen.update { currentState ->
+                    currentState.copy(products = it as MutableList<Product>) } },
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
     fun newArticle(name: Pair<Long,String>){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {

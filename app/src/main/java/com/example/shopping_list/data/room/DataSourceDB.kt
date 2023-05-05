@@ -96,6 +96,38 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         }
     }
 
+    fun changeProductInBasket(product: Product, basketId: Long): List<Product>{
+        if ( product.article.unitA != null) {
+            if (product.article.unitA!!.idUnit != 0L) {
+                if (product.article.unitA!!.idUnit != dataDao.getIdUnitFromArticle(product.article.idArticle)) {
+                    dataDao.setUnitInArticle(product.article.idArticle, product.article.unitA!!.idUnit)
+                }
+            } else {
+                dataDao.setUnitInArticle(
+                    product.article.idArticle,
+                    dataDao.addUnit(UnitEntity(nameUnit = product.article.unitA!!.nameUnit)))
+            }
+        }
+
+        if (product.value > 0) dataDao.setValueProduct(product.idProduct, basketId, product.value)
+
+        return dataDao.getListProductAll().map { item ->
+            ProductEntity(
+                idProduct = item.product.idProduct,
+                value = item.product.value,
+                basketId = item.product.basketId,
+                putInBasket = item.product.putInBasket,
+                articleId = item.article.article.idArticle,
+                article = ArticleEntity(
+                    idArticle = item.article.article.idArticle,
+                    nameArticle = item.article.article.nameArticle,
+                    group = item.article.group,
+                    unitA = item.article.unitA
+                )
+            )
+        }
+    }
+
     fun newArticleS(name: String): List<Article> {
         dataDao.addArticle(ArticleEntity(nameArticle = name, groupId = 1, unitId = 1))
         return getListArticle()
@@ -121,6 +153,7 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     fun addGroup(group: GroupEntity): Long{
         return dataDao.addGroup(group)
     }
+
     fun deleteSelectedProduct(productList: MutableList<Product>): List<Product>{
         for (product in productList) {
             if (product.isSelected) product.basketId?.let {
@@ -129,9 +162,11 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         }
         return if (productList[0].basketId != null) getListProducts(productList[0].basketId!!) else emptyList()
     }
+
     fun addUnit(unitA: UnitEntity): Long{
         return dataDao.addUnit(unitA)
     }
+
     fun getUnits(): List<UnitA>{
         return dataDao.getUnits()
     }

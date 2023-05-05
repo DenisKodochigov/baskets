@@ -1,10 +1,7 @@
 package com.example.shopping_list.ui.products
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Looper
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -15,7 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +21,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,9 +31,8 @@ import com.example.shopping_list.data.room.tables.GroupEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.exsample.EditQuantityDialog
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.*
 import kotlinx.coroutines.delay
@@ -62,25 +57,32 @@ fun ProductsScreen(
 //    Log.d("KDS", "basketId = $basketId") ProductsScreenLayout
     ProductsScreenLayout(
         modifier = Modifier.semantics { contentDescription = "Baskets Screen" },
-        itemList = uiState.products ,
+        uiState = uiState ,
         putProductInBasket = {product-> viewModel.putProductInBasket( product, basketId )},
-        doChangeGroupSelected = {productList, idGroup -> viewModel.changeGroupSelected(productList,idGroup)} ,
-        doDeleteSelected = {productList -> viewModel.deleteSelected(productList)}
+        changeProductInBasket = {product-> viewModel.changeProductInBasket( product, basketId )},
+        doChangeGroupSelected = {productList, idGroup -> viewModel.changeGroupSelected(productList,idGroup)},
+        doDeleteSelected = {productList -> viewModel.deleteSelected(productList)},
     )
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun ProductsScreenLayout(
     modifier: Modifier = Modifier,
-    itemList: MutableList<Product>,
+    uiState: StateProductsScreen,
     putProductInBasket: (Product) -> Unit,
+    changeProductInBasket: (Product) -> Unit,
     doChangeGroupSelected: (MutableList<Product>, Long) -> Unit,
-    doDeleteSelected: (MutableList<Product>) -> Unit
+    doDeleteSelected: (MutableList<Product>) -> Unit,
 ){
     val isSelectedId: MutableState<Long> = remember {  mutableStateOf(0L) }
+    val editProduct: MutableState<Product?> = remember {  mutableStateOf(null) }
     val deleteSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val changeGroupSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
+    val itemList = uiState.products
+
+
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idProduct == isSelectedId.value }
         if (item != null) { item.isSelected = !item.isSelected }
@@ -102,7 +104,7 @@ fun ProductsScreenLayout(
     Box(Modifier.fillMaxSize()){
         Column( modifier ) {
             HeaderScreen(text = "Products", Modifier)
-            LazyColumnProduct(modifier, itemList, putProductInBasket, isSelectedId )
+            LazyColumnProduct(modifier, itemList, putProductInBasket, changeProductInBasket, editProduct, isSelectedId)
         }
         if ( itemList.find { it.isSelected } != null) {
             Column(Modifier.align(alignment = Alignment.BottomCenter)) {
@@ -117,10 +119,27 @@ fun ProductsScreenLayout(
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun LazyColumnProduct(
-    modifier: Modifier = Modifier,itemList: List<Product>,
-    putProductInBasket: (Product) -> Unit, isSelected: MutableState<Long>){
-    val listState = rememberLazyListState()
+    modifier: Modifier = Modifier,
+    itemList: List<Product>,
+    putProductInBasket: (Product) -> Unit,
+    changeProductInBasket: (Product) -> Unit,
+    editProduct: MutableState<Product?>,
+    isSelected: MutableState<Long>){
 
+    val listState = rememberLazyListState()
+    val showDialog = remember {mutableStateOf(false)}
+
+    if (showDialog.value) {
+        EditQuantityDialog(
+            product = item,
+            listUnit = uiState.unitA,
+            onDismiss = { showDialog.value = false },
+            changeProductInBasket = {
+                changeProductInBasket(item)
+                showDialog.value = false
+            },
+            Modifier)
+    }
     LazyColumn (state = listState, verticalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier
         .fillMaxSize()
         .padding(vertical = 12.dp, horizontal = 24.dp)) {
@@ -137,7 +156,9 @@ fun LazyColumnProduct(
                     dismissState.reset() }
             }
             SwipeToDismiss(state = dismissState,
-                modifier = Modifier.padding(vertical = 1.dp).animateItemPlacement(),
+                modifier = Modifier
+                    .padding(vertical = 1.dp)
+                    .animateItemPlacement(),
                 directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
                 dismissThresholds = { direction ->
                     FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.1f else 0.4f)
@@ -154,28 +175,26 @@ fun LazyColumnProduct(
                     }
                     val scale by animateFloatAsState(if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f)
                     Box(
-                        Modifier.fillMaxSize()
+                        Modifier
+                            .fillMaxSize()
                             .padding(horizontal = 20.dp), contentAlignment = alignment) {
                         Icon(icon, contentDescription = "Localized description", modifier = Modifier.scale(scale))
                     }
                 },
                 dismissContent = {
                     Box {
-//                        LaunchedEffect(Unit) {dismissState.reset()}
                         Row(modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .background(Color.White)
-                            .clickable {/*  onProductClick(item.idBasket)*/
-                                isSelected.value = item.idProduct
-                            }) {
-//                            Log.d("KDS","${item.article.nameArticle} - ${item.isSelected}")
+                        ) {
                             Spacer(
                                 modifier = Modifier
                                     .background(if (item.isSelected) Color.Red else Color.LightGray)
                                     .width(8.dp)
                                     .height(32.dp)
                                     .align(Alignment.CenterVertically)
+                                    .clickable { isSelected.value = item.idProduct }
                             )
                             Text(
                                 text = item.article.nameArticle,
@@ -183,6 +202,7 @@ fun LazyColumnProduct(
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(start = 12.dp, top = 12.dp, bottom = 12.dp)
+                                    .clickable { isSelected.value = item.idProduct }
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
@@ -191,6 +211,7 @@ fun LazyColumnProduct(
                                 modifier = Modifier
                                     .width(50.dp)
                                     .padding(vertical = 12.dp)
+                                    .clickable { showDialog.value = true }
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
@@ -199,6 +220,7 @@ fun LazyColumnProduct(
                                 modifier = Modifier
                                     .width(40.dp)
                                     .padding(vertical = 12.dp)
+                                    .clickable { isSelected.value = item.idProduct }
                             )
                         }
                         if (item.putInBasket) Divider(
@@ -224,7 +246,7 @@ fun BottomSheetContentProduct(
     val enterValue = remember{ mutableStateOf("1")}
     val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
     val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,"All"))}
-    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(0,""))}
+    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1,"шт"))}
     val focusRequesterSheet = remember { FocusRequester() }
 
     if (enterUnit.value.first == 0L && enterUnit.value.second != "") {

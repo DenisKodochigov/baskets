@@ -48,14 +48,23 @@ interface DataDao {
 
     @Query("DELETE FROM tb_product WHERE idProduct=:productId AND basketId =:basketId")
     fun deleteSelectedProduct(productId:Long,basketId: Long)
-/** Article entity*/
 
+    @Query("UPDATE tb_product SET value = :value WHERE  idProduct=:productId AND basketId =:basketId ")
+    fun setValueProduct(productId:Long,basketId: Long, value: Double)
+
+/** Article entity*/
     @Insert
     fun addArticle(article: ArticleEntity): Long
 
     @Transaction
     @Query("SELECT * FROM tb_article ")
     fun getListArticle(): List<ArticleObj>
+
+    @Query("UPDATE tb_article SET unitId = :unitId WHERE idArticle =:articleId")
+    fun setUnitInArticle(articleId:Long,unitId: Long)
+
+    @Query("SELECT unitId FROM tb_article WHERE idArticle =:articleId")
+    fun getIdUnitFromArticle(articleId:Long): Long
 
 /** Group entity*/
 

@@ -48,6 +48,10 @@ public final class DataDao_Impl implements DataDao {
 
   private final SharedSQLiteStatement __preparedStmtOfDeleteSelectedProduct;
 
+  private final SharedSQLiteStatement __preparedStmtOfSetValueProduct;
+
+  private final SharedSQLiteStatement __preparedStmtOfSetUnitInArticle;
+
   private final SharedSQLiteStatement __preparedStmtOfPutProductInBasket;
 
   public DataDao_Impl(RoomDatabase __db) {
@@ -189,6 +193,20 @@ public final class DataDao_Impl implements DataDao {
         return _query;
       }
     };
+    this.__preparedStmtOfSetValueProduct = new SharedSQLiteStatement(__db) {
+      @Override
+      public String createQuery() {
+        final String _query = "UPDATE tb_product SET value = ? WHERE  idProduct=? AND basketId =? ";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfSetUnitInArticle = new SharedSQLiteStatement(__db) {
+      @Override
+      public String createQuery() {
+        final String _query = "UPDATE tb_article SET unitId = ? WHERE idArticle =?";
+        return _query;
+      }
+    };
     this.__preparedStmtOfPutProductInBasket = new SharedSQLiteStatement(__db) {
       @Override
       public String createQuery() {
@@ -306,6 +324,44 @@ public final class DataDao_Impl implements DataDao {
     } finally {
       __db.endTransaction();
       __preparedStmtOfDeleteSelectedProduct.release(_stmt);
+    }
+  }
+
+  @Override
+  public void setValueProduct(final long productId, final long basketId, final double value) {
+    __db.assertNotSuspendingTransaction();
+    final SupportSQLiteStatement _stmt = __preparedStmtOfSetValueProduct.acquire();
+    int _argIndex = 1;
+    _stmt.bindDouble(_argIndex, value);
+    _argIndex = 2;
+    _stmt.bindLong(_argIndex, productId);
+    _argIndex = 3;
+    _stmt.bindLong(_argIndex, basketId);
+    __db.beginTransaction();
+    try {
+      _stmt.executeUpdateDelete();
+      __db.setTransactionSuccessful();
+    } finally {
+      __db.endTransaction();
+      __preparedStmtOfSetValueProduct.release(_stmt);
+    }
+  }
+
+  @Override
+  public void setUnitInArticle(final long articleId, final long unitId) {
+    __db.assertNotSuspendingTransaction();
+    final SupportSQLiteStatement _stmt = __preparedStmtOfSetUnitInArticle.acquire();
+    int _argIndex = 1;
+    _stmt.bindLong(_argIndex, unitId);
+    _argIndex = 2;
+    _stmt.bindLong(_argIndex, articleId);
+    __db.beginTransaction();
+    try {
+      _stmt.executeUpdateDelete();
+      __db.setTransactionSuccessful();
+    } finally {
+      __db.endTransaction();
+      __preparedStmtOfSetUnitInArticle.release(_stmt);
     }
   }
 
@@ -679,6 +735,28 @@ public final class DataDao_Impl implements DataDao {
       }
     } finally {
       __db.endTransaction();
+    }
+  }
+
+  @Override
+  public long getIdUnitFromArticle(final long articleId) {
+    final String _sql = "SELECT unitId FROM tb_article WHERE idArticle =?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, articleId);
+    __db.assertNotSuspendingTransaction();
+    final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+    try {
+      final long _result;
+      if(_cursor.moveToFirst()) {
+        _result = _cursor.getLong(0);
+      } else {
+        _result = 0L;
+      }
+      return _result;
+    } finally {
+      _cursor.close();
+      _statement.release();
     }
   }
 

@@ -39,7 +39,7 @@
 
     <string name="enter_your_word">enter your word</string>
     <string name="congratulations">congratulations</string>
-    <string name="you_scored">you scored</string>
-    <string name="exit">exit</string>
-    <string name="play_again">playagain</string>
+    <string name="change_quantity">Change quantity"</string>
+    <string name="exit">EXIT</string>
+    <string name="ok">OK</string>
 </resources>

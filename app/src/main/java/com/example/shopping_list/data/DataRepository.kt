@@ -58,6 +58,10 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         return dataSourceDB.putProductInBasket(product, basketId)
     }
 
+    fun changeProductInBasket(product: Product, basketId: Long): List<Product>{
+        return dataSourceDB.changeProductInBasket(product, basketId)
+    }
+
     fun newArticle(name: String): List<Article> {
         return dataSourceDB.newArticleS(name)
     }
