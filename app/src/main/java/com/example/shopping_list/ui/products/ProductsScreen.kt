@@ -32,7 +32,6 @@ import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.exsample.EditQuantityDialog
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.*
 import kotlinx.coroutines.delay
@@ -104,7 +103,7 @@ fun ProductsScreenLayout(
     Box(Modifier.fillMaxSize()){
         Column( modifier ) {
             HeaderScreen(text = "Products", Modifier)
-            LazyColumnProduct(modifier, itemList, putProductInBasket, changeProductInBasket, editProduct, isSelectedId)
+            LazyColumnProduct(modifier, uiState, putProductInBasket, changeProductInBasket, isSelectedId)
         }
         if ( itemList.find { it.isSelected } != null) {
             Column(Modifier.align(alignment = Alignment.BottomCenter)) {
@@ -120,26 +119,29 @@ fun ProductsScreenLayout(
 @Composable
 fun LazyColumnProduct(
     modifier: Modifier = Modifier,
-    itemList: List<Product>,
+    uiState: StateProductsScreen,
     putProductInBasket: (Product) -> Unit,
     changeProductInBasket: (Product) -> Unit,
-    editProduct: MutableState<Product?>,
     isSelected: MutableState<Long>){
 
     val listState = rememberLazyListState()
     val showDialog = remember {mutableStateOf(false)}
+    val editProduct: MutableState<Product?> = remember {  mutableStateOf(null) }
 
-    if (showDialog.value) {
+    if (editProduct.value != null && showDialog.value){
         EditQuantityDialog(
-            product = item,
+            product = editProduct.value!!,
             listUnit = uiState.unitA,
+            showDialog = showDialog.value,
             onDismiss = { showDialog.value = false },
-            changeProductInBasket = {
-                changeProductInBasket(item)
+            onConfirm = {
+                changeProductInBasket(editProduct.value!!)
                 showDialog.value = false
             },
-            Modifier)
+            modifier = Modifier
+        )
     }
+    val itemList = uiState.products
     LazyColumn (state = listState, verticalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier
         .fillMaxSize()
         .padding(vertical = 12.dp, horizontal = 24.dp)) {
@@ -211,7 +213,9 @@ fun LazyColumnProduct(
                                 modifier = Modifier
                                     .width(50.dp)
                                     .padding(vertical = 12.dp)
-                                    .clickable { showDialog.value = true }
+                                    .clickable { editProduct.value = item
+                                        showDialog.value = true
+                                    }
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(

@@ -41,7 +41,8 @@ fun HeaderScreen(text: String, modifier: Modifier){
     label: String?,
     modifier: Modifier,
     filtering: Boolean,
-    enterValue: MutableState<Pair<Long,String>>?) {
+    enterValue: MutableState<Pair<Long,String>>?,
+    readOnly: Boolean = false,) {
 
     val localFocusManager = LocalFocusManager.current
     var expanded by remember { mutableStateOf(false) }
@@ -60,6 +61,7 @@ fun HeaderScreen(text: String, modifier: Modifier){
             value = enteredText,
             modifier = Modifier.fillMaxWidth(1f),
             singleLine = true,
+            readOnly = readOnly,
             textStyle = MaterialTheme.typography.h1,
             onValueChange = {
                 enteredText = it
