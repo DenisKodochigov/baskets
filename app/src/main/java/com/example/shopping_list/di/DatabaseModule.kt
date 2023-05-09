@@ -39,10 +39,10 @@ object DatabaseModule {
                         database.dataDao().addArticle(ArticleEntity(nameArticle = "Масло", groupId = 1, unitId = 3))
                         database.dataDao().addArticle(ArticleEntity(nameArticle = "Клей", groupId = 1, unitId = 1))
                         database.dataDao().addArticle(ArticleEntity(nameArticle = "Картошка", groupId = 1, unitId = 2))
-                        database.dataDao().addProduct(ProductEntity(articleId = 1, value = 1.0, basketId = 1))
-                        database.dataDao().addProduct(ProductEntity(articleId = 2, value = 1.0, basketId = 1))
-                        database.dataDao().addProduct(ProductEntity(articleId = 3, value = 1.0, basketId = 1))
-                        database.dataDao().addProduct(ProductEntity(articleId = 4, value = 1.0, basketId = 1))
+                        database.dataDao().addProduct(ProductEntity(articleId = 1, value = 1.0, basketId = 1, position = 1))
+                        database.dataDao().addProduct(ProductEntity(articleId = 2, value = 1.0, basketId = 1, position = 2))
+                        database.dataDao().addProduct(ProductEntity(articleId = 3, value = 1.0, basketId = 1, position = 3))
+                        database.dataDao().addProduct(ProductEntity(articleId = 4, value = 1.0, basketId = 1, position = 4))
                     }
                 }
             })

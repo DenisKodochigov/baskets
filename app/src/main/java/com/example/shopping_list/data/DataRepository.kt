@@ -12,27 +12,31 @@ import javax.inject.Singleton
 @Singleton
 class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB) {
 
+    /** Basket entity*/
     fun getListBasket(): List<Basket>{
-        return dataSourceDB.getListBasket()
+        return dataSourceDB.getListBasketCount()
     }
-
-    fun getListProducts(basketId: Long): List<Product> = dataSourceDB.getListProducts(basketId)
-
-    fun getListArticle(): List<Article> =  dataSourceDB.getListArticle()
-
-    fun getGroups(): List<GroupArticle> = dataSourceDB.getGroups()
-
-    fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
 
     fun newBasket(basketName: String): List<Basket>{
         return dataSourceDB.newBasket(basketName)
     }
 
+    fun changeNameBasket(basket: Basket): List<Basket>{
+        return dataSourceDB.changeNameBasket(basket)
+    }
+
+    fun deleteBasket(basketId: Long): List<Basket> {
+        return dataSourceDB.deleteBasket(basketId)
+    }
+
+    /** Product entity*/
+    fun getListProducts(basketId: Long): List<Product> = dataSourceDB.getListProducts(basketId)
+
     fun addProduct(product: Product, basketId: Long): List<Product>{
-        //Checking unit in db.
-        Log.d("KDS", " ${product}")
+//        Log.d("KDS", " ${product}")
         return  if (product.article.nameArticle != "") {
             product.basketId = basketId
+            product.position = dataSourceDB.getCountProductInBasket(basketId) + 1
             if (product.article.unitA!!.idUnit == 0L && product.article.unitA!!.nameUnit != "") {
                 product.article.unitA!!.idUnit =
                     dataSourceDB.addUnit(product.article.unitA as UnitEntity)
@@ -58,19 +62,35 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         return dataSourceDB.putProductInBasket(product, basketId)
     }
 
+    fun setPositionBasket(baskets: List<Basket>, direction: Int): List<Basket>{
+        return dataSourceDB.setPositionBasket(baskets,direction)
+    }
+
+    fun setPositionProductInBasket(products: List<Product>, direction: Int): List<Product>{
+        return dataSourceDB.setPositionProductInBasket(products,direction)
+    }
+
     fun changeProductInBasket(product: Product, basketId: Long): List<Product>{
         return dataSourceDB.changeProductInBasket(product, basketId)
     }
+
+    fun deleteSelectedProduct(productList: MutableList<Product>): List<Product>{
+        return dataSourceDB.deleteSelectedProduct(productList)
+    }
+
+    /** Article entity*/
+    fun getListArticle(): List<Article> =  dataSourceDB.getListArticle()
 
     fun newArticle(name: String): List<Article> {
         return dataSourceDB.newArticleS(name)
     }
 
+    fun getGroups(): List<GroupArticle> = dataSourceDB.getGroups()
+
+    fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
+
     fun changeGroupSelected(productList: MutableList<Product>, idGroup: Long){
 
-    }
-    fun deleteSelectedProduct(productList: MutableList<Product>): List<Product>{
-        return dataSourceDB.deleteSelectedProduct(productList)
     }
 //    fun getBasketProducts(basket:BasketDB): List<ProductDB>{
 //        var listProduct = emptyList<ProductDB>()

@@ -2,8 +2,6 @@ package com.example.shopping_list.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -12,14 +10,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
+import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.entity.UnitA
-import com.example.shopping_list.ui.theme.DialogThemeOverlay
-
 
 @Composable
 fun EditQuantityDialog(
@@ -72,7 +68,7 @@ fun DialogLayout(
         MyOutlinedTextFieldWithoutIcon(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .width(100.dp)
+                .width(120.dp)
                 .padding(top = 8.dp),
             enterValue = enterValue)
         Spacer(Modifier.width(4.dp))
@@ -85,5 +81,44 @@ fun DialogLayout(
             filtering = false,
             readOnly = true
         )
+    }
+}
+
+
+@Composable
+fun EditBasketName(
+    basket: Basket,
+    onConfirm: (Basket) -> Unit,
+    onDismiss: () -> Unit,)
+{
+    val nameBasket = remember{ mutableStateOf(basket.nameBasket) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss ,
+        title = { Text(stringResource(R.string.change_quantity)) },
+        text = { EditBasketNameDialogLayout(nameBasket) },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.exit))
+            }
+        },
+        confirmButton = {
+            TextButton( onClick = {
+                basket.nameBasket = nameBasket.value
+                onConfirm(basket)
+            }) {
+                Text( text = stringResource(R.string.ok))
+            }
+        }
+    )
+}
+
+
+@Composable
+fun EditBasketNameDialogLayout( enterValue: MutableState<String>){
+
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        MyOutlinedTextFieldWithoutIcon( enterValue = enterValue,
+            modifier = Modifier.align(Alignment.CenterVertically).fillMaxWidth() )
     }
 }

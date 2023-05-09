@@ -3,12 +3,13 @@ package com.example.shopping_list.data.room
 import androidx.room.*
 import com.example.shopping_list.data.room.tables.*
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
+import com.example.shopping_list.data.room.tables.relation.BasketCountObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
 
 @Dao
 interface DataDao {
 
-/** Basket entity*/
+
     @Update
     fun update(basket: BasketEntity)
 
@@ -19,10 +20,22 @@ interface DataDao {
     fun checkBasketFromName(basketName: String): Long?
 
     @Query("DELETE FROM tb_basket WHERE idBasket = :id")
-    fun deleteByIdBasket(id:Int)
+    fun deleteByIdBasket(id:Long)
+
+    @Query("DELETE FROM tb_product WHERE basketId = :id")
+    fun deleteByIdBasketProduct(id:Long)
 
     @Query("SELECT * FROM tb_basket")
     fun getListBasket(): List<BasketEntity>
+
+    @Query("SELECT * , COUNT(tb_product.idProduct) as count FROM tb_basket " +
+            "JOIN tb_product ON tb_basket.idBasket = tb_product.basketId " +
+            "GROUP BY tb_basket.idBasket")
+    fun getListBasketCount(): List<BasketCountObj>
+
+    @Query("UPDATE tb_basket " +
+            "SET nameBasket = :newName WHERE idBasket =:basketId " )
+    fun changeNameBasket(basketId:Long, newName:String)
 
 /** Product entity*/
 
@@ -39,8 +52,13 @@ interface DataDao {
     fun checkProductInBasket(basketId:Long, productId: Long): Long?
 
     @Transaction
-    @Query("SELECT * FROM tb_product WHERE basketId = :basketId")
+    @Query("SELECT * FROM tb_product " +
+            "WHERE basketId = :basketId " +
+            "ORDER BY putInBasket DESC, position ASC")
     fun getListProduct(basketId: Long): List<ProductObj>
+
+    @Query("SELECT COUNT(idProduct) FROM tb_product WHERE basketId = :basketId")
+    fun countProductInBasket(basketId: Long): Int
 
     @Transaction
     @Query("SELECT * FROM tb_product")
@@ -51,6 +69,16 @@ interface DataDao {
 
     @Query("UPDATE tb_product SET value = :value WHERE  idProduct=:productId AND basketId =:basketId ")
     fun setValueProduct(productId:Long,basketId: Long, value: Double)
+
+    @Query("UPDATE tb_product " +
+            "SET putInBasket = NOT putInBasket " +
+            "WHERE idProduct=:productId AND basketId =:basketId " )
+    fun putProductInBasket(productId:Long,basketId: Long)
+
+    @Query("UPDATE tb_product " +
+            "SET position = :position " +
+            "WHERE idProduct=:productId AND basketId =:basketId " )
+    fun setPositionProductInBasket(productId:Long,basketId: Long, position: Int)
 
 /** Article entity*/
     @Insert
@@ -81,8 +109,6 @@ interface DataDao {
     @Query("SELECT * FROM tb_unit")
     fun getUnits(): List<UnitEntity>
 
-    @Query("UPDATE tb_product SET putInBasket = NOT putInBasket WHERE idProduct=:productId AND basketId =:basketId " )
-    fun putProductInBasket(productId:Long,basketId: Long)
 
 //    @Query("SELECT * FROM basket JOIN products ON basket.productId = products.idProduct" +
 //            "JOIN article ON products.articleId = article.idArticle " +
@@ -111,39 +137,51 @@ interface DataDao {
 
 //    @Query("SELECT * FROM baskettoproduct WHERE basket_id = :idBasket")
 //    fun getBasketProducts(idBasket: Int): List<ProductDB>
+
     //Insert new record to the table films
 //    @Insert(entity = BasketDB::class)
 //    fun insert(vararg data: BasketDB)
+
 //    //Updating a record in the table films
 //    @Update
 //    fun update(film: BasketDB)
+
 //    //Clearing the table films
 //    @Query("DELETE FROM films")
 //    fun nukeTable()
+
 //    //Select all entries and sort by id
 //    @Query("SELECT * FROM films ORDER BY idFilm DESC")
 //    fun getAll(): BasketDB
+
 //    //Select filmDB bi id
 //    @Query("SELECT * FROM films WHERE idFilm = :id")
 //    fun getFilm(id: Int): BasketDB?
+
 //    //Select all entries from films
 //    @Query("SELECT * FROM films")
 //    fun getFilms(): List<BasketDB>?
+
 //    //Get the VIEWED parameter for recording with id = id
 //    @Query("SELECT viewed FROM films WHERE idFilm = :id")
 //    fun getViewed(id: Int): Boolean
+
 //    //Select list value filmId from the table films where viewed = :viewed
 //    @Query("SELECT filmId FROM films WHERE viewed = :viewed")
 //    fun getViewedFilms(viewed: Boolean): List<Int>
+
 //    //Setting the viewed parameter in all records
 //    @Query("UPDATE films SET viewed = :value ")
 //    fun setAllViewed(value: Boolean)
+
 //    //Creating a stream to a movie in viewed state
 //    @Query("SELECT viewed FROM films WHERE idFilm = :id")
 //    fun setViewedFlow(id: Int): Flow<Boolean>
+
 //    //Delete record in the table films where id=id
 //    @Query("DELETE FROM films WHERE idFilm = :id")
 //    fun deleteByIdFilmDB(id: Int)
+
 //    //Selection of records from the FILES table where shs belong to the list
 //    @Query("SELECT * FROM films WHERE idFilm = :listId")
 //    fun getFilmInList(listId: List<Int>): List<BasketDB>

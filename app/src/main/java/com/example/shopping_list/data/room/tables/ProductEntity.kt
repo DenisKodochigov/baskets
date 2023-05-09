@@ -12,6 +12,7 @@ data class ProductEntity (
     override var value: Double = 0.0,
     override var basketId: Long? = null,
     override var putInBasket:Boolean = false,
+    override var position : Int = 0,
     var articleId: Long? = null,
     @Ignore override var article: Article = ArticleEntity(),
     @Ignore override var isSelected: Boolean = false,

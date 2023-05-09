@@ -1,11 +1,8 @@
 package com.example.shopping_list.navigation
 
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,10 +24,10 @@ fun AppNavHost(
 
         composable( route = Baskets.route) {
             BasketsScreen(
-                onBasketClick = { navController.navigateToProducts(it) },
-                viewModel = viewModel,
                 modifier = modifier,
-                bottomSheetContent = bottomSheetContent)
+                viewModel = viewModel,
+                bottomSheetContent = bottomSheetContent,
+                onClickBasket = { navController.navigateToProducts(it) },)
         }
 
         composable( route = ProductsBasket.routeWithArgs, arguments = ProductsBasket.arguments )
@@ -39,6 +36,7 @@ fun AppNavHost(
             if (basketId != null) {
                 ProductsScreen(
                     basketId = basketId,
+                    modifier = modifier,
                     viewModel = viewModel,
                     bottomSheetContent = bottomSheetContent,
                     bottomSheetHide = bottomSheetHide

@@ -1,5 +1,6 @@
 package com.example.shopping_list.data.room.tables.relation
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.example.shopping_list.data.room.tables.*
@@ -23,6 +24,11 @@ data class ProductObj (
         entityColumn = "idArticle",
         entity = ArticleEntity::class
     ) val article: ArticleObj
+)
+
+data class BasketCountObj(
+    @Embedded var basket: BasketEntity,
+    @ColumnInfo var count: Int
 )
 //data class ProductForBasket (
 //    @Embedded val basket: BasketTable,

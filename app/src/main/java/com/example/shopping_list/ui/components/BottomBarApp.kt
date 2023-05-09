@@ -4,8 +4,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -21,8 +19,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -30,30 +30,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.navigation.ScreenDestination
 import com.example.shopping_list.navigation.appTabRowScreens
-import com.example.shopping_list.ui.theme.BorderBottomBar
 import com.example.shopping_list.ui.theme.BackgroundBottomBar
 import com.example.shopping_list.ui.theme.textBottomBar
 import java.util.*
+import com.example.shopping_list.R
+
 
 @Composable
 fun BottomBarApp(currentScreen: ScreenDestination,
                  onTabSelection:(ScreenDestination) -> Unit
 ) {
-    val cornerRadius = 20.dp
     BottomAppBar(
-        backgroundColor = Color.Transparent,
-        elevation = 0.dp,
-        modifier = Modifier
-            .padding(horizontal = 12.dp, vertical = 12.dp)
-            .border(
-                1.dp,
-                color = BorderBottomBar,
-                shape = RoundedCornerShape(cornerRadius)
-            )
-            .background(
-                color = BackgroundBottomBar,
-                shape = RoundedCornerShape(cornerRadius)
-            ),
+        backgroundColor = BackgroundBottomBar,
+        elevation = 4.dp,
+        modifier = Modifier.clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
     ){
         BottomTabRow(
             allScreens = appTabRowScreens,

@@ -8,4 +8,5 @@ interface Product {
     var value: Double
     var putInBasket: Boolean
     var isSelected:Boolean
+    var position: Int
 }

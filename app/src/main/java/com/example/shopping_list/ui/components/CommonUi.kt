@@ -12,11 +12,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
@@ -26,6 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.Basket
+import com.example.shopping_list.entity.Product
 
 @Composable
 fun HeaderScreen(text: String, modifier: Modifier){
@@ -136,12 +140,41 @@ fun MyOutlinedTextFieldWithoutIcon(modifier: Modifier, enterValue: MutableState<
 }
 
 @Composable
+fun ButtonSwipeProduct(itemList:MutableList<Product>,
+                       sortingList: (MutableList<Product>, Int) -> Unit )
+{
+    Log.d("KDS", "ButtonSwipeProduct")
+    Row(Modifier.fillMaxWidth()) {
+        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
+        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
+    }
+}
+
+@Composable
+fun ButtonSwipeBacket(itemList:MutableList<Basket>,
+                      sortingList: (MutableList<Basket>, Int) -> Unit )
+{
+    Log.d("KDS", "ButtonSwipeProduct")
+    Row(Modifier.fillMaxWidth()) {
+        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
+        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
+    }
+}
+
+@Composable
 fun ButtonMy(modifier: Modifier, nameButton: String, onClick: () -> Unit){
     OutlinedButton(modifier = modifier, elevation = ButtonDefaults.elevation(), onClick = {
         onClick()
         Log.d("KDS", "Button.click")
     }){
         Text(text = nameButton, fontSize = 25.sp)
+    }
+}
+
+@Composable
+fun ButtonMove(modifier: Modifier, icon: ImageVector, onClick: () -> Unit){
+    OutlinedButton(onClick = onClick, modifier.height(36.dp)) {
+        Icon(icon, contentDescription = null)
     }
 }
 
@@ -219,3 +252,5 @@ fun onAddIconEditText(onNewArticle: (String) -> Unit, nameNewArticle: String): S
     )
     return ""
 }
+
+

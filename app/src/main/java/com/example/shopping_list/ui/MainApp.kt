@@ -1,6 +1,7 @@
 package com.example.shopping_list.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -36,6 +37,9 @@ fun MainApp(viewModel: AppViewModel) {
             sheetContent = { bottomSheetContent.value?.invoke() },
         ) {
             Scaffold(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.background)
+                    .padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 12.dp),
                 bottomBar = {
                     BottomBarApp(
                         currentScreen = currentScreen,

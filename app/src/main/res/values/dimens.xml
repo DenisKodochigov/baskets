@@ -19,4 +19,10 @@
     <dimen name="bottom_rv_item_height">39dp</dimen>
     <dimen name="bottom_rv_item_checkbox_paddingStart">25dp</dimen>
 
+    <dimen name="corner_default">6dp</dimen>
+    // LazyColumn
+    <dimen name="lazy_padding_ver">12dp</dimen>
+    <dimen name="lazy_padding_hor">12dp</dimen>
+    <dimen name="screen_padding_hor">12dp</dimen>
+
 </resources>
