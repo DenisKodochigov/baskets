@@ -66,20 +66,21 @@ public final class DataDao_Impl implements DataDao {
     this.__insertionAdapterOfBasketEntity = new EntityInsertionAdapter<BasketEntity>(__db) {
       @Override
       public String createQuery() {
-        return "INSERT OR ABORT INTO `tb_basket` (`idBasket`,`nameBasket`,`fillBasket`,`quantity`) VALUES (nullif(?, 0),?,?,?)";
+        return "INSERT OR ABORT INTO `tb_basket` (`idBasket`,`dateB`,`nameBasket`,`fillBasket`,`quantity`) VALUES (nullif(?, 0),?,?,?,?)";
       }
 
       @Override
       public void bind(SupportSQLiteStatement stmt, BasketEntity value) {
         stmt.bindLong(1, value.getIdBasket());
+        stmt.bindLong(2, value.getDateB());
         if (value.getNameBasket() == null) {
-          stmt.bindNull(2);
+          stmt.bindNull(3);
         } else {
-          stmt.bindString(2, value.getNameBasket());
+          stmt.bindString(3, value.getNameBasket());
         }
         final int _tmp = value.getFillBasket() ? 1 : 0;
-        stmt.bindLong(3, _tmp);
-        stmt.bindLong(4, value.getQuantity());
+        stmt.bindLong(4, _tmp);
+        stmt.bindLong(5, value.getQuantity());
       }
     };
     this.__insertionAdapterOfProductEntity = new EntityInsertionAdapter<ProductEntity>(__db) {
@@ -168,21 +169,22 @@ public final class DataDao_Impl implements DataDao {
     this.__updateAdapterOfBasketEntity = new EntityDeletionOrUpdateAdapter<BasketEntity>(__db) {
       @Override
       public String createQuery() {
-        return "UPDATE OR ABORT `tb_basket` SET `idBasket` = ?,`nameBasket` = ?,`fillBasket` = ?,`quantity` = ? WHERE `idBasket` = ?";
+        return "UPDATE OR ABORT `tb_basket` SET `idBasket` = ?,`dateB` = ?,`nameBasket` = ?,`fillBasket` = ?,`quantity` = ? WHERE `idBasket` = ?";
       }
 
       @Override
       public void bind(SupportSQLiteStatement stmt, BasketEntity value) {
         stmt.bindLong(1, value.getIdBasket());
+        stmt.bindLong(2, value.getDateB());
         if (value.getNameBasket() == null) {
-          stmt.bindNull(2);
+          stmt.bindNull(3);
         } else {
-          stmt.bindString(2, value.getNameBasket());
+          stmt.bindString(3, value.getNameBasket());
         }
         final int _tmp = value.getFillBasket() ? 1 : 0;
-        stmt.bindLong(3, _tmp);
-        stmt.bindLong(4, value.getQuantity());
-        stmt.bindLong(5, value.getIdBasket());
+        stmt.bindLong(4, _tmp);
+        stmt.bindLong(5, value.getQuantity());
+        stmt.bindLong(6, value.getIdBasket());
       }
     };
     this.__preparedStmtOfDeleteByIdBasket = new SharedSQLiteStatement(__db) {
@@ -507,6 +509,7 @@ public final class DataDao_Impl implements DataDao {
     final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
     try {
       final int _cursorIndexOfIdBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "idBasket");
+      final int _cursorIndexOfDateB = CursorUtil.getColumnIndexOrThrow(_cursor, "dateB");
       final int _cursorIndexOfNameBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "nameBasket");
       final int _cursorIndexOfFillBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "fillBasket");
       final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
@@ -517,6 +520,9 @@ public final class DataDao_Impl implements DataDao {
         final long _tmpIdBasket;
         _tmpIdBasket = _cursor.getLong(_cursorIndexOfIdBasket);
         _item.setIdBasket(_tmpIdBasket);
+        final long _tmpDateB;
+        _tmpDateB = _cursor.getLong(_cursorIndexOfDateB);
+        _item.setDateB(_tmpDateB);
         final String _tmpNameBasket;
         if (_cursor.isNull(_cursorIndexOfNameBasket)) {
           _tmpNameBasket = null;
@@ -549,6 +555,7 @@ public final class DataDao_Impl implements DataDao {
     final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
     try {
       final int _cursorIndexOfIdBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "idBasket");
+      final int _cursorIndexOfDateB = CursorUtil.getColumnIndexOrThrow(_cursor, "dateB");
       final int _cursorIndexOfNameBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "nameBasket");
       final int _cursorIndexOfFillBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "fillBasket");
       final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
@@ -563,6 +570,9 @@ public final class DataDao_Impl implements DataDao {
         final long _tmpIdBasket;
         _tmpIdBasket = _cursor.getLong(_cursorIndexOfIdBasket);
         _tmpBasket.setIdBasket(_tmpIdBasket);
+        final long _tmpDateB;
+        _tmpDateB = _cursor.getLong(_cursorIndexOfDateB);
+        _tmpBasket.setDateB(_tmpDateB);
         final String _tmpNameBasket;
         if (_cursor.isNull(_cursorIndexOfNameBasket)) {
           _tmpNameBasket = null;

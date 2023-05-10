@@ -21,15 +21,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.shopping_list.R
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.entity.Product
+import com.example.shopping_list.ui.theme.BackgroundBottomBar
 
 @Composable
 fun HeaderScreen(text: String, modifier: Modifier){
@@ -140,12 +143,37 @@ fun MyOutlinedTextFieldWithoutIcon(modifier: Modifier, enterValue: MutableState<
 }
 
 @Composable
+fun MyOutlinedTextFieldWithoutIconKeyText(modifier: Modifier, enterValue: MutableState<String>){
+
+    val localFocusManager = LocalFocusManager.current
+    var enterText by remember { mutableStateOf("") }
+    enterText = enterValue.value
+
+    OutlinedTextField(
+        modifier = modifier, //.onFocusChanged { if (it.isFocused) { enterText = "" } },
+        value = enterText,
+        singleLine = true,
+        textStyle = MaterialTheme.typography.h1,
+        onValueChange = {
+            enterText = it;
+            enterValue.value = it },
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                localFocusManager.clearFocus()
+                enterValue.value = enterText
+            }
+        ) ,
+    )
+}
+@Composable
 fun ButtonSwipeProduct(itemList:MutableList<Product>,
                        sortingList: (MutableList<Product>, Int) -> Unit )
 {
     Log.d("KDS", "ButtonSwipeProduct")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
     }
 }
@@ -157,24 +185,28 @@ fun ButtonSwipeBacket(itemList:MutableList<Basket>,
     Log.d("KDS", "ButtonSwipeProduct")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
     }
 }
 
 @Composable
-fun ButtonMy(modifier: Modifier, nameButton: String, onClick: () -> Unit){
-    OutlinedButton(modifier = modifier, elevation = ButtonDefaults.elevation(), onClick = {
-        onClick()
-        Log.d("KDS", "Button.click")
-    }){
-        Text(text = nameButton, fontSize = 25.sp)
+fun ButtonMove(modifier: Modifier, icon: ImageVector, onClick: () -> Unit){
+    Button(
+        onClick = onClick,
+        modifier.height(36.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor = BackgroundBottomBar)) {
+        Icon(icon, contentDescription = null)
     }
 }
 
 @Composable
-fun ButtonMove(modifier: Modifier, icon: ImageVector, onClick: () -> Unit){
-    OutlinedButton(onClick = onClick, modifier.height(36.dp)) {
-        Icon(icon, contentDescription = null)
+fun ButtonMy(modifier: Modifier, nameButton: String, onClick: () -> Unit){
+    OutlinedButton(
+        modifier = modifier,
+        elevation = ButtonDefaults.elevation(),
+        onClick = { onClick() }){
+        Text(text = nameButton, fontSize = 25.sp)
     }
 }
 

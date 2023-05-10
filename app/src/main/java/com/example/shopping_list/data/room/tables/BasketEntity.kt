@@ -9,6 +9,7 @@ import com.example.shopping_list.entity.Basket
 @Entity(tableName = "tb_basket", indices = [Index( value = ["nameBasket"], unique = true)])
 data class BasketEntity(
     @PrimaryKey(autoGenerate = true) override var idBasket: Long = 0,
+    override var dateB: Long = 0,
     override var nameBasket: String = "",
     override var fillBasket: Boolean = false,
     override var quantity: Int = 0,

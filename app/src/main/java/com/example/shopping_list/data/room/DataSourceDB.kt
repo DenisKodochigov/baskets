@@ -6,8 +6,10 @@ import com.example.shopping_list.data.room.tables.relation.ArticleObj
 import com.example.shopping_list.data.room.tables.relation.BasketCountObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
 import com.example.shopping_list.entity.*
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
@@ -55,9 +57,9 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.checkBasketFromName(basketName)
     }
 
-    fun newBasket(basketName: String): List<Basket> {
-        if (getBasket(basketName) == null ) {
-            dataDao.newBasket(BasketEntity(nameBasket = basketName))
+    fun newBasket(basket: Basket): List<Basket> {
+        if (getBasket(basket.nameBasket) == null ) {
+            dataDao.newBasket(basket as BasketEntity)
         }
         return getListBasketCount()
     }

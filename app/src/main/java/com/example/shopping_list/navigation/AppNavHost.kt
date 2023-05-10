@@ -27,6 +27,7 @@ fun AppNavHost(
                 modifier = modifier,
                 viewModel = viewModel,
                 bottomSheetContent = bottomSheetContent,
+                bottomSheetHide = bottomSheetHide,
                 onClickBasket = { navController.navigateToProducts(it) },)
         }
 

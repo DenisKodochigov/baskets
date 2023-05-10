@@ -1,59 +1,63 @@
 package com.example.shopping_list.ui.baskets
 
+import android.icu.text.SimpleDateFormat
 import android.os.Looper
+import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.shopping_list.R
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.ui.AppViewModel
-import com.example.shopping_list.ui.components.HeaderScreen
-import android.util.Log
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddShoppingCart
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.res.dimensionResource
-import com.example.shopping_list.R
-import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.components.ButtonSwipeBacket
 import com.example.shopping_list.ui.components.EditBasketName
-import com.example.shopping_list.ui.components.EditQuantityDialog
+import com.example.shopping_list.ui.components.HeaderScreen
+import com.example.shopping_list.ui.theme.BackgroundBottomBar
+import com.example.shopping_list.ui.theme.TextDate
+import com.example.shopping_list.ui.theme.TextIcon
 import kotlinx.coroutines.delay
+import java.util.*
 
 @Composable
 fun BasketsScreen(
     onClickBasket: (Long) -> Unit,
     viewModel: AppViewModel,
     modifier: Modifier = Modifier,
+    bottomSheetHide: () -> Unit,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>) {
 
     viewModel.getListBasket()
     val uiState by viewModel.stateBasketScreen.collectAsState()
-    bottomSheetContent.value = { BottomSheetContentBasket(onAddClick = {viewModel.newBasket(it)}) }
+    bottomSheetContent.value = {
+        BottomSheetContentBasket(
+            onAddClick = {viewModel.newBasket(it)},
+            bottomSheetHide = bottomSheetHide) }
 
     BasketsScreenLayout(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
@@ -87,7 +91,6 @@ fun BasketsScreenLayout(
         itemList.forEach { it.isSelected = false }
         unSelected.value = false
     }
-    Log.d("KDS", "BasketsScreenLayout")
     Column( modifier = modifier.fillMaxHeight()
         .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
         HeaderScreen(text = "Baskets", modifier)
@@ -171,9 +174,7 @@ fun LazyColumnBasket(
                     }
                 },
                 dismissContent = {
-                    val modifier = Modifier
-                        .padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor),
-                            vertical = dimensionResource(R.dimen.lazy_padding_ver))
+                    val modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
                     Row(
                         modifier = Modifier
                             .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
@@ -181,6 +182,22 @@ fun LazyColumnBasket(
                             .background(Color.White)
                             .clickable { onClickBasket(item.idBasket) })
                     {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = modifier
+                                .padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))){
+                            Text(
+                                text =  SimpleDateFormat("dd-MM", Locale.getDefault()).format(item.dateB),
+                                style = MaterialTheme.typography.h4,
+                                color = TextDate,
+                            )
+                            Text(
+                                text = SimpleDateFormat("yyyy", Locale.getDefault()).format(item.dateB),
+                                style = MaterialTheme.typography.h4,
+                                color = TextDate,
+                            )
+                        }
                         Text(
                             text = item.nameBasket,
                             style = MaterialTheme.typography.h1,
@@ -189,7 +206,7 @@ fun LazyColumnBasket(
                         Text(
                             text = item.quantity.toString(),
                             style = MaterialTheme.typography.h1,
-                            modifier = modifier
+                            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))
                         )
                     }
                 }
@@ -200,7 +217,7 @@ fun LazyColumnBasket(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BottomSheetContentBasket(onAddClick: (String) -> Unit){
+fun BottomSheetContentBasket(onAddClick: (String) -> Unit, bottomSheetHide: () -> Unit,){
 
     var nameNewBasket by remember { mutableStateOf("")}
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -225,6 +242,7 @@ fun BottomSheetContentBasket(onAddClick: (String) -> Unit){
                     keyboardController?.hide()
                     nameNewBasket = ""
                     localFocusManager.clearFocus()
+                    bottomSheetHide()
                 }
             ) ,
         )
@@ -235,7 +253,7 @@ fun BottomSheetContentBasket(onAddClick: (String) -> Unit){
 @Preview(showBackground = true)
 @Composable
 fun BottomSheetContentBasketPreview(){
-    BottomSheetContentBasket {}
+    BottomSheetContentBasket ({},{})
 }
 @Preview(showBackground = true)
 @Composable

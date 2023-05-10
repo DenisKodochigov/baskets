@@ -118,7 +118,7 @@ fun EditBasketName(
 fun EditBasketNameDialogLayout( enterValue: MutableState<String>){
 
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        MyOutlinedTextFieldWithoutIcon( enterValue = enterValue,
+        MyOutlinedTextFieldWithoutIconKeyText( enterValue = enterValue,
             modifier = Modifier.align(Alignment.CenterVertically).fillMaxWidth() )
     }
 }

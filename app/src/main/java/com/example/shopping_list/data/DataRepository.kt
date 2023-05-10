@@ -3,11 +3,14 @@ package com.example.shopping_list.data
 import android.util.Log
 import com.example.shopping_list.data.room.DataSourceDB
 import com.example.shopping_list.data.room.tables.ArticleEntity
+import com.example.shopping_list.data.room.tables.BasketEntity
 import com.example.shopping_list.data.room.tables.GroupEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.*
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB) {
@@ -18,7 +21,8 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     }
 
     fun newBasket(basketName: String): List<Basket>{
-        return dataSourceDB.newBasket(basketName)
+        val currentTime = Date().time
+        return dataSourceDB.newBasket(BasketEntity(nameBasket = basketName, dateB = currentTime))
     }
 
     fun changeNameBasket(basket: Basket): List<Basket>{

@@ -14,7 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.shopping_list.R
 import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.GroupEntity
@@ -39,6 +38,7 @@ import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.*
 import kotlinx.coroutines.delay
+
 @Composable
 fun ProductsScreen(
     basketId: Long,
@@ -60,7 +60,7 @@ fun ProductsScreen(
     }
 //    Log.d("KDS", "basketId = $basketId") ProductsScreenLayout
     ProductsScreenLayout(
-        modifier = Modifier.padding(bottom = 24.dp),
+        modifier = Modifier.padding(bottom =  dimensionResource(R.dimen.screen_padding_hor)),
         uiState = uiState ,
         putProductInBasket = {product-> viewModel.putProductInBasket( product, basketId )},
         changeProductInBasket = {product-> viewModel.changeProductInBasket( product, basketId )},
@@ -109,7 +109,7 @@ fun ProductsScreenLayout(
         deleteSelected.value = false
     }
 
-    Box(Modifier.fillMaxSize().padding(horizontal = 12.dp)){
+    Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
         Column( modifier.fillMaxHeight()) {
             HeaderScreen(text = "Products", modifier)
             Spacer(Modifier.weight(1f) )
@@ -312,10 +312,10 @@ fun BottomSheetContentProduct(
                 filtering = true)
             Spacer(Modifier.width(4.dp))
             MyOutlinedTextFieldWithoutIcon( /** Value*/
-                modifier = Modifier
+                modifier = Modifier.background(Color.LightGray)
                     .align(Alignment.CenterVertically)
-                    .width(100.dp)
-                    .padding(top = 8.dp),
+                    .width(200.dp)
+                    .padding(top = 4.dp),
                 enterValue = enterValue)
             Spacer(Modifier.width(4.dp))
             MyExposedDropdownMenuBox(/** Select unit*/
