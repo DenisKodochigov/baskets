@@ -5,4 +5,6 @@ interface Article{
     var nameArticle: String
     var unitA: UnitA?
     var group: GroupArticle?
+    var isSelected: Boolean
+    var position: Int
 }

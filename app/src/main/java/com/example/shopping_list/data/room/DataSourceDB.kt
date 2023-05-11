@@ -1,21 +1,17 @@
 package com.example.shopping_list.data.room
 
-import android.util.Log
 import com.example.shopping_list.data.room.tables.*
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
 import com.example.shopping_list.data.room.tables.relation.BasketCountObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
 import com.example.shopping_list.entity.*
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     /** Manage position product*/
-
     private fun reBuildPosition(basketId: Long, direction: Int){
         val listProduct = getListProducts(basketId)
         val positionEnd = listProduct.size
@@ -37,8 +33,21 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
                 } }
         }
     }
-
-    private fun getListBasket(): List<Basket> = dataDao.getListBasket()
+    private fun reBuildPositionArticle(direction: Int){
+        val list = getListArticle()
+        val positionEnd = list.size
+        val positionStart = 1
+        var position = 1
+        if (list.isNotEmpty()) {
+            list.forEach {
+                if (position + direction < positionStart) it.position = positionEnd
+                else if (position + direction > positionEnd) it.position = positionStart
+                else it.position = position + direction
+                position++
+            }
+            list.forEach { dataDao.setPositionArticle(it.idArticle, it.position) }
+        }
+    }
 
     fun changeNameBasket(basket: Basket): List<Basket>{
         dataDao.changeNameBasket(basket.idBasket, basket.nameBasket)
@@ -70,6 +79,16 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return getListBasketCount()
     }
 
+    fun setPositionBasket(baskets: List<Basket>, direction: Int): List<Basket>{
+//        val basketId = baskets[0].basketId
+//        return if (basketId != null) {
+//            reBuildPosition(basketId, direction)
+//            dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
+//        } else emptyList()
+        return emptyList()
+    }
+
+    /** Product*/
     fun getCountProductInBasket(basketId: Long): Int {
         return dataDao.countProductInBasket(basketId)
     }
@@ -90,10 +109,6 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return getListProducts(product.basketId!!)
     }
 
-    fun getProduct(productName: String): Long? {
-        return dataDao.checkProductFromName(productName)
-    }
-
     fun getListProducts(basketId: Long): List<Product>{
         return if (basketId > 0) dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
         else emptyList()
@@ -103,15 +118,6 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         dataDao.putProductInBasket(product.idProduct, basketId)
         reBuildPosition(basketId, 0)
         return dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
-    }
-
-    fun setPositionBasket(baskets: List<Basket>, direction: Int): List<Basket>{
-//        val basketId = baskets[0].basketId
-//        return if (basketId != null) {
-//            reBuildPosition(basketId, direction)
-//            dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
-//        } else emptyList()
-        return emptyList()
     }
 
     fun setPositionProductInBasket(products: List<Product>, direction: Int): List<Product>{
@@ -150,17 +156,35 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
     }
 
-    fun newArticleS(name: String): List<Article> {
-        dataDao.addArticle(ArticleEntity(nameArticle = name, groupId = 1, unitId = 1))
-        return getListArticle()
-    }
-
+    /** Article*/
     fun addArticle(articleEntity: ArticleEntity): Long {
         return dataDao.addArticle(articleEntity)
     }
 
+    fun changeArticle(articleEntity: ArticleEntity) {
+        return dataDao.changeArticle(articleEntity)
+    }
+
     fun getListArticle(): List<Article> = dataDao.getListArticle().map { item -> mapArticle(item) }
 
+    fun changeGroupArticle(articles: List<Article>, idGroup: Long): List<Article>{
+        dataDao.changeGroupArticle(idGroup, articles.map { it.idArticle })
+        return getListArticle()
+    }
+
+    fun deleteSelectedArticle(articles: List<Article>): List<Article>{
+        articles.forEach {
+            if (dataDao.checkArticleWithProduct(it.idArticle).isEmpty()) dataDao.delArticle(it.idArticle)
+        }
+        return getListArticle()
+    }
+
+    fun setPositionArticle( direction: Int): List<Article>{
+        reBuildPositionArticle( direction)
+        return return getListArticle()
+    }
+
+    /** Group article*/
     fun getGroups(): List<GroupArticle>{
         return dataDao.getGroups()
     }
@@ -169,6 +193,7 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.addGroup(group)
     }
 
+    /** Unit*/
     fun addUnit(unitA: UnitEntity): Long{
         return dataDao.addUnit(unitA)
     }

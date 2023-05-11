@@ -65,8 +65,8 @@ fun ProductsScreen(
         putProductInBasket = {product-> viewModel.putProductInBasket( product, basketId )},
         changeProductInBasket = {product-> viewModel.changeProductInBasket( product, basketId )},
         doChangeGroupSelected = {
-                productList, idGroup -> viewModel.changeGroupSelected(productList,idGroup)},
-        doDeleteSelected = {productList -> viewModel.deleteSelected(productList)},
+                productList, idGroup -> viewModel.changeGroupSelectedProduct(productList,idGroup)},
+        doDeleteSelected = {productList -> viewModel.deleteSelectedProducts(productList)},
         refreshPosition = {
                 productList, direction -> viewModel.setPositionProductInBasket(productList, direction)}
     )
@@ -222,11 +222,13 @@ fun LazyColumnProduct(
                                     .clickable { isSelected.value = item.idProduct }
                             )
                             Spacer(modifier = Modifier.width(4.dp))
+                            val num = if (item.value.rem(1).equals(0.0)) item.value.toInt()
+                                        else item.value
                             Text(
-                                text = item.value.toString(),
+                                text = num.toString(),
                                 style = MaterialTheme.typography.h1,
                                 modifier = Modifier
-                                    .width(50.dp)
+                                    .width(70.dp)
                                     .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
                                     .clickable {
                                         editProduct.value = item

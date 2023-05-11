@@ -7,4 +7,5 @@ interface Basket {
     var fillBasket: Boolean
     var quantity: Int
     var isSelected:Boolean
+    var position: Int
 }

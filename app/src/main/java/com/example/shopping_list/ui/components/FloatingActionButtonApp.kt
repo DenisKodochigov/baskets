@@ -1,8 +1,5 @@
 package com.example.shopping_list.ui.components
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,9 +13,8 @@ import androidx.compose.material.icons.filled.RemoveDone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.shopping_list.entity.Product
+import com.example.shopping_list.entity.Article
 import com.example.shopping_list.ui.theme.BackgroundFab
 import com.example.shopping_list.ui.theme.BorderBottomBar
 import com.example.shopping_list.ui.theme.ContentFab

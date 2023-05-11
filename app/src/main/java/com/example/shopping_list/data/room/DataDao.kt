@@ -85,15 +85,29 @@ interface DataDao {
     fun addArticle(article: ArticleEntity): Long
 
     @Transaction
-    @Query("SELECT * FROM tb_article ")
+    @Query("SELECT * FROM tb_article ORDER BY position ASC")
     fun getListArticle(): List<ArticleObj>
 
     @Query("UPDATE tb_article SET unitId = :unitId WHERE idArticle =:articleId")
     fun setUnitInArticle(articleId:Long,unitId: Long)
 
+    @Query("UPDATE tb_article SET groupId = :idGroup WHERE idArticle IN (:articles)")
+    fun changeGroupArticle(idGroup: Long, articles:List<Long>)
+
     @Query("SELECT unitId FROM tb_article WHERE idArticle =:articleId")
     fun getIdUnitFromArticle(articleId:Long): Long
 
+    @Update
+    fun changeArticle(article: ArticleEntity)
+
+    @Query("SELECT idProduct FROM tb_product WHERE articleId =:articleId")
+    fun checkArticleWithProduct(articleId:Long): List<Long>
+
+    @Query("DELETE FROM tb_article WHERE idArticle =:articleId")
+    fun delArticle(articleId:Long)
+
+    @Query("UPDATE tb_article SET position = :position WHERE idArticle=:articleId " )
+    fun setPositionArticle(articleId:Long,position: Int)
 /** Group entity*/
 
     @Query("SELECT * FROM tb_group")

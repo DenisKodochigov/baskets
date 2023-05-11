@@ -42,7 +42,7 @@ fun BottomBarApp(currentScreen: ScreenDestination,
 ) {
     BottomAppBar(
         backgroundColor = BackgroundBottomBar,
-        elevation = 4.dp,
+        elevation = 6.dp,
         modifier = Modifier.clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
     ){
         BottomTabRow(

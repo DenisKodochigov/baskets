@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.shopping_list.ui.AppViewModel
+import com.example.shopping_list.ui.article.ArticlesScreen
 import com.example.shopping_list.ui.baskets.BasketsScreen
 import com.example.shopping_list.ui.products.ProductsScreen
 import com.example.shopping_list.ui.settings.SettingsScreen
@@ -45,9 +46,8 @@ fun AppNavHost(
             }
         }
 
-        composable( route = Products.route) {
-            ProductsScreen(
-                basketId = -1,
+        composable( route = Articles.route) {
+            ArticlesScreen(
                 viewModel = viewModel,
                 bottomSheetContent = bottomSheetContent,
                 bottomSheetHide = bottomSheetHide)

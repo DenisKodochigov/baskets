@@ -179,14 +179,25 @@ fun ButtonSwipeProduct(itemList:MutableList<Product>,
 }
 
 @Composable
-fun ButtonSwipeBacket(itemList:MutableList<Basket>,
+fun ButtonSwipeBasket(itemList:MutableList<Basket>,
                       sortingList: (MutableList<Basket>, Int) -> Unit )
 {
-    Log.d("KDS", "ButtonSwipeProduct")
+    Log.d("KDS", "ButtonSwipeBasket")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
+    }
+}
+
+@Composable
+fun ButtonSwipeArticle( sortingList: (Int) -> Unit )
+{
+    Log.d("KDS", "ButtonSwipeArticle")
+    Row(Modifier.fillMaxWidth()) {
+        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(1) }
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
+        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(-1) }
     }
 }
 

@@ -37,17 +37,17 @@ public final class AppDatabase_Impl extends AppDatabase {
     final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(configuration, new RoomOpenHelper.Delegate(1) {
       @Override
       public void createAllTables(SupportSQLiteDatabase _db) {
-        _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_basket` (`idBasket` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dateB` INTEGER NOT NULL, `nameBasket` TEXT NOT NULL, `fillBasket` INTEGER NOT NULL, `quantity` INTEGER NOT NULL)");
+        _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_basket` (`idBasket` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dateB` INTEGER NOT NULL, `nameBasket` TEXT NOT NULL, `fillBasket` INTEGER NOT NULL, `quantity` INTEGER NOT NULL, `position` INTEGER NOT NULL)");
         _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_basket_nameBasket` ON `tb_basket` (`nameBasket`)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_product` (`idProduct` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `value` REAL NOT NULL, `basketId` INTEGER, `putInBasket` INTEGER NOT NULL, `position` INTEGER NOT NULL, `articleId` INTEGER)");
-        _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_article` (`idArticle` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameArticle` TEXT NOT NULL, `groupId` INTEGER, `unitId` INTEGER)");
+        _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_article` (`idArticle` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameArticle` TEXT NOT NULL, `position` INTEGER NOT NULL, `groupId` INTEGER, `unitId` INTEGER)");
         _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_article_nameArticle` ON `tb_article` (`nameArticle`)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_group` (`idGroup` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameGroup` TEXT NOT NULL)");
         _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_group_nameGroup` ON `tb_group` (`nameGroup`)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS `tb_unit` (`idUnit` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nameUnit` TEXT NOT NULL)");
         _db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_tb_unit_nameUnit` ON `tb_unit` (`nameUnit`)");
         _db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        _db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '27d373c5a8c7e2692d7fca4093a1eca7')");
+        _db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2e577a4b63b52be7d65eb11c90825c20')");
       }
 
       @Override
@@ -95,12 +95,13 @@ public final class AppDatabase_Impl extends AppDatabase {
 
       @Override
       public RoomOpenHelper.ValidationResult onValidateSchema(SupportSQLiteDatabase _db) {
-        final HashMap<String, TableInfo.Column> _columnsTbBasket = new HashMap<String, TableInfo.Column>(5);
+        final HashMap<String, TableInfo.Column> _columnsTbBasket = new HashMap<String, TableInfo.Column>(6);
         _columnsTbBasket.put("idBasket", new TableInfo.Column("idBasket", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbBasket.put("dateB", new TableInfo.Column("dateB", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbBasket.put("nameBasket", new TableInfo.Column("nameBasket", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbBasket.put("fillBasket", new TableInfo.Column("fillBasket", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbBasket.put("quantity", new TableInfo.Column("quantity", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTbBasket.put("position", new TableInfo.Column("position", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysTbBasket = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesTbBasket = new HashSet<TableInfo.Index>(1);
         _indicesTbBasket.add(new TableInfo.Index("index_tb_basket_nameBasket", true, Arrays.asList("nameBasket"), Arrays.asList("ASC")));
@@ -127,9 +128,10 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoTbProduct + "\n"
                   + " Found:\n" + _existingTbProduct);
         }
-        final HashMap<String, TableInfo.Column> _columnsTbArticle = new HashMap<String, TableInfo.Column>(4);
+        final HashMap<String, TableInfo.Column> _columnsTbArticle = new HashMap<String, TableInfo.Column>(5);
         _columnsTbArticle.put("idArticle", new TableInfo.Column("idArticle", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbArticle.put("nameArticle", new TableInfo.Column("nameArticle", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTbArticle.put("position", new TableInfo.Column("position", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbArticle.put("groupId", new TableInfo.Column("groupId", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTbArticle.put("unitId", new TableInfo.Column("unitId", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysTbArticle = new HashSet<TableInfo.ForeignKey>(0);
@@ -170,7 +172,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "27d373c5a8c7e2692d7fca4093a1eca7", "3703029f498a0f2b559cefe921f8baf9");
+    }, "2e577a4b63b52be7d65eb11c90825c20", "07368f8e997778093b2dd6aae59d1186");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(configuration.context)
         .name(configuration.name)
         .callback(_openCallback)

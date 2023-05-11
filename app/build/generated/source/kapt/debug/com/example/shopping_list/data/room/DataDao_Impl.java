@@ -45,6 +45,8 @@ public final class DataDao_Impl implements DataDao {
 
   private final EntityDeletionOrUpdateAdapter<BasketEntity> __updateAdapterOfBasketEntity;
 
+  private final EntityDeletionOrUpdateAdapter<ArticleEntity> __updateAdapterOfArticleEntity;
+
   private final SharedSQLiteStatement __preparedStmtOfDeleteByIdBasket;
 
   private final SharedSQLiteStatement __preparedStmtOfDeleteByIdBasketProduct;
@@ -61,12 +63,16 @@ public final class DataDao_Impl implements DataDao {
 
   private final SharedSQLiteStatement __preparedStmtOfSetUnitInArticle;
 
+  private final SharedSQLiteStatement __preparedStmtOfDelArticle;
+
+  private final SharedSQLiteStatement __preparedStmtOfSetPositionArticle;
+
   public DataDao_Impl(RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfBasketEntity = new EntityInsertionAdapter<BasketEntity>(__db) {
       @Override
       public String createQuery() {
-        return "INSERT OR ABORT INTO `tb_basket` (`idBasket`,`dateB`,`nameBasket`,`fillBasket`,`quantity`) VALUES (nullif(?, 0),?,?,?,?)";
+        return "INSERT OR ABORT INTO `tb_basket` (`idBasket`,`dateB`,`nameBasket`,`fillBasket`,`quantity`,`position`) VALUES (nullif(?, 0),?,?,?,?,?)";
       }
 
       @Override
@@ -81,6 +87,7 @@ public final class DataDao_Impl implements DataDao {
         final int _tmp = value.getFillBasket() ? 1 : 0;
         stmt.bindLong(4, _tmp);
         stmt.bindLong(5, value.getQuantity());
+        stmt.bindLong(6, value.getPosition());
       }
     };
     this.__insertionAdapterOfProductEntity = new EntityInsertionAdapter<ProductEntity>(__db) {
@@ -111,7 +118,7 @@ public final class DataDao_Impl implements DataDao {
     this.__insertionAdapterOfArticleEntity = new EntityInsertionAdapter<ArticleEntity>(__db) {
       @Override
       public String createQuery() {
-        return "INSERT OR ABORT INTO `tb_article` (`idArticle`,`nameArticle`,`groupId`,`unitId`) VALUES (nullif(?, 0),?,?,?)";
+        return "INSERT OR ABORT INTO `tb_article` (`idArticle`,`nameArticle`,`position`,`groupId`,`unitId`) VALUES (nullif(?, 0),?,?,?,?)";
       }
 
       @Override
@@ -122,15 +129,16 @@ public final class DataDao_Impl implements DataDao {
         } else {
           stmt.bindString(2, value.getNameArticle());
         }
+        stmt.bindLong(3, value.getPosition());
         if (value.getGroupId() == null) {
-          stmt.bindNull(3);
-        } else {
-          stmt.bindLong(3, value.getGroupId());
-        }
-        if (value.getUnitId() == null) {
           stmt.bindNull(4);
         } else {
-          stmt.bindLong(4, value.getUnitId());
+          stmt.bindLong(4, value.getGroupId());
+        }
+        if (value.getUnitId() == null) {
+          stmt.bindNull(5);
+        } else {
+          stmt.bindLong(5, value.getUnitId());
         }
       }
     };
@@ -169,7 +177,7 @@ public final class DataDao_Impl implements DataDao {
     this.__updateAdapterOfBasketEntity = new EntityDeletionOrUpdateAdapter<BasketEntity>(__db) {
       @Override
       public String createQuery() {
-        return "UPDATE OR ABORT `tb_basket` SET `idBasket` = ?,`dateB` = ?,`nameBasket` = ?,`fillBasket` = ?,`quantity` = ? WHERE `idBasket` = ?";
+        return "UPDATE OR ABORT `tb_basket` SET `idBasket` = ?,`dateB` = ?,`nameBasket` = ?,`fillBasket` = ?,`quantity` = ?,`position` = ? WHERE `idBasket` = ?";
       }
 
       @Override
@@ -184,7 +192,36 @@ public final class DataDao_Impl implements DataDao {
         final int _tmp = value.getFillBasket() ? 1 : 0;
         stmt.bindLong(4, _tmp);
         stmt.bindLong(5, value.getQuantity());
-        stmt.bindLong(6, value.getIdBasket());
+        stmt.bindLong(6, value.getPosition());
+        stmt.bindLong(7, value.getIdBasket());
+      }
+    };
+    this.__updateAdapterOfArticleEntity = new EntityDeletionOrUpdateAdapter<ArticleEntity>(__db) {
+      @Override
+      public String createQuery() {
+        return "UPDATE OR ABORT `tb_article` SET `idArticle` = ?,`nameArticle` = ?,`position` = ?,`groupId` = ?,`unitId` = ? WHERE `idArticle` = ?";
+      }
+
+      @Override
+      public void bind(SupportSQLiteStatement stmt, ArticleEntity value) {
+        stmt.bindLong(1, value.getIdArticle());
+        if (value.getNameArticle() == null) {
+          stmt.bindNull(2);
+        } else {
+          stmt.bindString(2, value.getNameArticle());
+        }
+        stmt.bindLong(3, value.getPosition());
+        if (value.getGroupId() == null) {
+          stmt.bindNull(4);
+        } else {
+          stmt.bindLong(4, value.getGroupId());
+        }
+        if (value.getUnitId() == null) {
+          stmt.bindNull(5);
+        } else {
+          stmt.bindLong(5, value.getUnitId());
+        }
+        stmt.bindLong(6, value.getIdArticle());
       }
     };
     this.__preparedStmtOfDeleteByIdBasket = new SharedSQLiteStatement(__db) {
@@ -240,6 +277,20 @@ public final class DataDao_Impl implements DataDao {
       @Override
       public String createQuery() {
         final String _query = "UPDATE tb_article SET unitId = ? WHERE idArticle =?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfDelArticle = new SharedSQLiteStatement(__db) {
+      @Override
+      public String createQuery() {
+        final String _query = "DELETE FROM tb_article WHERE idArticle =?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfSetPositionArticle = new SharedSQLiteStatement(__db) {
+      @Override
+      public String createQuery() {
+        final String _query = "UPDATE tb_article SET position = ? WHERE idArticle=? ";
         return _query;
       }
     };
@@ -316,6 +367,18 @@ public final class DataDao_Impl implements DataDao {
     __db.beginTransaction();
     try {
       __updateAdapterOfBasketEntity.handle(basket);
+      __db.setTransactionSuccessful();
+    } finally {
+      __db.endTransaction();
+    }
+  }
+
+  @Override
+  public void changeArticle(final ArticleEntity article) {
+    __db.assertNotSuspendingTransaction();
+    __db.beginTransaction();
+    try {
+      __updateAdapterOfArticleEntity.handle(article);
       __db.setTransactionSuccessful();
     } finally {
       __db.endTransaction();
@@ -472,6 +535,40 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
+  public void delArticle(final long articleId) {
+    __db.assertNotSuspendingTransaction();
+    final SupportSQLiteStatement _stmt = __preparedStmtOfDelArticle.acquire();
+    int _argIndex = 1;
+    _stmt.bindLong(_argIndex, articleId);
+    __db.beginTransaction();
+    try {
+      _stmt.executeUpdateDelete();
+      __db.setTransactionSuccessful();
+    } finally {
+      __db.endTransaction();
+      __preparedStmtOfDelArticle.release(_stmt);
+    }
+  }
+
+  @Override
+  public void setPositionArticle(final long articleId, final int position) {
+    __db.assertNotSuspendingTransaction();
+    final SupportSQLiteStatement _stmt = __preparedStmtOfSetPositionArticle.acquire();
+    int _argIndex = 1;
+    _stmt.bindLong(_argIndex, position);
+    _argIndex = 2;
+    _stmt.bindLong(_argIndex, articleId);
+    __db.beginTransaction();
+    try {
+      _stmt.executeUpdateDelete();
+      __db.setTransactionSuccessful();
+    } finally {
+      __db.endTransaction();
+      __preparedStmtOfSetPositionArticle.release(_stmt);
+    }
+  }
+
+  @Override
   public Long checkBasketFromName(final String basketName) {
     final String _sql = "SELECT idBasket FROM tb_basket WHERE nameBasket = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
@@ -513,6 +610,7 @@ public final class DataDao_Impl implements DataDao {
       final int _cursorIndexOfNameBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "nameBasket");
       final int _cursorIndexOfFillBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "fillBasket");
       final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+      final int _cursorIndexOfPosition = CursorUtil.getColumnIndexOrThrow(_cursor, "position");
       final List<BasketEntity> _result = new ArrayList<BasketEntity>(_cursor.getCount());
       while(_cursor.moveToNext()) {
         final BasketEntity _item;
@@ -538,6 +636,9 @@ public final class DataDao_Impl implements DataDao {
         final int _tmpQuantity;
         _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
         _item.setQuantity(_tmpQuantity);
+        final int _tmpPosition;
+        _tmpPosition = _cursor.getInt(_cursorIndexOfPosition);
+        _item.setPosition(_tmpPosition);
         _result.add(_item);
       }
       return _result;
@@ -559,6 +660,7 @@ public final class DataDao_Impl implements DataDao {
       final int _cursorIndexOfNameBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "nameBasket");
       final int _cursorIndexOfFillBasket = CursorUtil.getColumnIndexOrThrow(_cursor, "fillBasket");
       final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+      final int _cursorIndexOfPosition = CursorUtil.getColumnIndexOrThrow(_cursor, "position");
       final int _cursorIndexOfCount = CursorUtil.getColumnIndexOrThrow(_cursor, "count");
       final List<BasketCountObj> _result = new ArrayList<BasketCountObj>(_cursor.getCount());
       while(_cursor.moveToNext()) {
@@ -588,6 +690,9 @@ public final class DataDao_Impl implements DataDao {
         final int _tmpQuantity;
         _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
         _tmpBasket.setQuantity(_tmpQuantity);
+        final int _tmpPosition;
+        _tmpPosition = _cursor.getInt(_cursorIndexOfPosition);
+        _tmpBasket.setPosition(_tmpPosition);
         _item = new BasketCountObj(_tmpBasket,_tmpCount);
         _result.add(_item);
       }
@@ -834,7 +939,7 @@ public final class DataDao_Impl implements DataDao {
 
   @Override
   public List<ArticleObj> getListArticle() {
-    final String _sql = "SELECT * FROM tb_article ";
+    final String _sql = "SELECT * FROM tb_article ORDER BY position ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
     __db.assertNotSuspendingTransaction();
     __db.beginTransaction();
@@ -843,6 +948,7 @@ public final class DataDao_Impl implements DataDao {
       try {
         final int _cursorIndexOfIdArticle = CursorUtil.getColumnIndexOrThrow(_cursor, "idArticle");
         final int _cursorIndexOfNameArticle = CursorUtil.getColumnIndexOrThrow(_cursor, "nameArticle");
+        final int _cursorIndexOfPosition = CursorUtil.getColumnIndexOrThrow(_cursor, "position");
         final int _cursorIndexOfGroupId = CursorUtil.getColumnIndexOrThrow(_cursor, "groupId");
         final int _cursorIndexOfUnitId = CursorUtil.getColumnIndexOrThrow(_cursor, "unitId");
         final LongSparseArray<UnitEntity> _collectionUnitA = new LongSparseArray<UnitEntity>();
@@ -875,6 +981,9 @@ public final class DataDao_Impl implements DataDao {
             _tmpNameArticle = _cursor.getString(_cursorIndexOfNameArticle);
           }
           _tmpArticle.setNameArticle(_tmpNameArticle);
+          final int _tmpPosition;
+          _tmpPosition = _cursor.getInt(_cursorIndexOfPosition);
+          _tmpArticle.setPosition(_tmpPosition);
           final Long _tmpGroupId;
           if (_cursor.isNull(_cursorIndexOfGroupId)) {
             _tmpGroupId = null;
@@ -927,6 +1036,32 @@ public final class DataDao_Impl implements DataDao {
         _result = _cursor.getLong(0);
       } else {
         _result = 0L;
+      }
+      return _result;
+    } finally {
+      _cursor.close();
+      _statement.release();
+    }
+  }
+
+  @Override
+  public List<Long> checkArticleWithProduct(final long articleId) {
+    final String _sql = "SELECT idProduct FROM tb_product WHERE articleId =?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, articleId);
+    __db.assertNotSuspendingTransaction();
+    final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+    try {
+      final List<Long> _result = new ArrayList<Long>(_cursor.getCount());
+      while(_cursor.moveToNext()) {
+        final Long _item;
+        if (_cursor.isNull(0)) {
+          _item = null;
+        } else {
+          _item = _cursor.getLong(0);
+        }
+        _result.add(_item);
       }
       return _result;
     } finally {
@@ -992,6 +1127,38 @@ public final class DataDao_Impl implements DataDao {
     } finally {
       _cursor.close();
       _statement.release();
+    }
+  }
+
+  @Override
+  public void changeGroupArticle(final long idGroup, final List<Long> articles) {
+    __db.assertNotSuspendingTransaction();
+    StringBuilder _stringBuilder = StringUtil.newStringBuilder();
+    _stringBuilder.append("UPDATE tb_article SET groupId = ");
+    _stringBuilder.append("?");
+    _stringBuilder.append(" WHERE idArticle IN (");
+    final int _inputSize = articles.size();
+    StringUtil.appendPlaceholders(_stringBuilder, _inputSize);
+    _stringBuilder.append(")");
+    final String _sql = _stringBuilder.toString();
+    final SupportSQLiteStatement _stmt = __db.compileStatement(_sql);
+    int _argIndex = 1;
+    _stmt.bindLong(_argIndex, idGroup);
+    _argIndex = 2;
+    for (Long _item : articles) {
+      if (_item == null) {
+        _stmt.bindNull(_argIndex);
+      } else {
+        _stmt.bindLong(_argIndex, _item);
+      }
+      _argIndex ++;
+    }
+    __db.beginTransaction();
+    try {
+      _stmt.executeUpdateDelete();
+      __db.setTransactionSuccessful();
+    } finally {
+      __db.endTransaction();
     }
   }
 
@@ -1174,7 +1341,7 @@ public final class DataDao_Impl implements DataDao {
       return;
     }
     StringBuilder _stringBuilder = StringUtil.newStringBuilder();
-    _stringBuilder.append("SELECT `idArticle`,`nameArticle`,`groupId`,`unitId` FROM `tb_article` WHERE `idArticle` IN (");
+    _stringBuilder.append("SELECT `idArticle`,`nameArticle`,`position`,`groupId`,`unitId` FROM `tb_article` WHERE `idArticle` IN (");
     final int _inputSize = _map.size();
     StringUtil.appendPlaceholders(_stringBuilder, _inputSize);
     _stringBuilder.append(")");
@@ -1195,8 +1362,9 @@ public final class DataDao_Impl implements DataDao {
       }
       final int _cursorIndexOfIdArticle = 0;
       final int _cursorIndexOfNameArticle = 1;
-      final int _cursorIndexOfGroupId = 2;
-      final int _cursorIndexOfUnitId = 3;
+      final int _cursorIndexOfPosition = 2;
+      final int _cursorIndexOfGroupId = 3;
+      final int _cursorIndexOfUnitId = 4;
       final LongSparseArray<UnitEntity> _collectionUnitA = new LongSparseArray<UnitEntity>();
       final LongSparseArray<GroupEntity> _collectionGroup = new LongSparseArray<GroupEntity>();
       while (_cursor.moveToNext()) {
@@ -1229,6 +1397,9 @@ public final class DataDao_Impl implements DataDao {
               _tmpNameArticle = _cursor.getString(_cursorIndexOfNameArticle);
             }
             _tmpArticle.setNameArticle(_tmpNameArticle);
+            final int _tmpPosition;
+            _tmpPosition = _cursor.getInt(_cursorIndexOfPosition);
+            _tmpArticle.setPosition(_tmpPosition);
             final Long _tmpGroupId;
             if (_cursor.isNull(_cursorIndexOfGroupId)) {
               _tmpGroupId = null;

@@ -3,6 +3,7 @@ package com.example.shopping_list.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
+import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.ErrorApp
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.baskets.StateBasketScreen
@@ -15,8 +16,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 import com.example.shopping_list.entity.Basket
+import com.example.shopping_list.ui.article.StateArticlesScreen
 
 @HiltViewModel
 class AppViewModel @Inject constructor(
@@ -28,6 +29,8 @@ class AppViewModel @Inject constructor(
     val stateBasketScreen: StateFlow<StateBasketScreen> = _stateBasketScreen.asStateFlow()
     private val _stateProductsScreen = MutableStateFlow(StateProductsScreen())
     val stateProductsScreen: StateFlow<StateProductsScreen> = _stateProductsScreen.asStateFlow()
+    private val _stateArticlesScreen = MutableStateFlow(StateArticlesScreen())
+    val stateArticlesScreen: StateFlow<StateArticlesScreen> = _stateArticlesScreen.asStateFlow()
 
     fun getListBasket() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -76,7 +79,7 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    private fun getListArticle() {
+    fun getListArticle() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListArticle() }.fold(
                 onSuccess = { _stateProductsScreen.update { currentState ->
@@ -106,7 +109,7 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    fun newBasket(basketName: String){
+    fun addBasket(basketName: String){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.newBasket(basketName)
@@ -181,22 +184,10 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    fun newArticle(name: Pair<Long,String>){
+    fun changeGroupSelectedProduct(productList: MutableList<Product>, idGroup: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.newArticle(name.second)
-            }.fold(
-                onSuccess = {_stateProductsScreen.update { currentState ->
-                    currentState.copy(articles = it) }},
-                onFailure = { errorApp.errorApi(it.message!!)}
-            )
-        }
-    }
-
-    fun changeGroupSelected(productList: MutableList<Product>, idGroup: Long){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching {
-                dataRepository.changeGroupSelected(productList, idGroup) }.fold(
+                dataRepository.changeGroupSelectedProduct(productList, idGroup) }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
                     currentState.copy(products = it as MutableList<Product>) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
@@ -204,13 +195,85 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    fun deleteSelected(productList: MutableList<Product>){
+    fun changeGroupSelectedArticle(articles: MutableList<Article>, idGroup: Long){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.changeGroupSelectedArticle(articles, idGroup) }.fold(
+                onSuccess = {_stateArticlesScreen.update { currentState ->
+                    currentState.copy(article = it as MutableList<Article>) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
+    fun deleteSelectedArticle(articles: MutableList<Article>){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.deleteSelectedArticle(articles)
+            }.fold(
+                onSuccess = {_stateArticlesScreen.update { currentState ->
+                    currentState.copy(article = it as MutableList<Article>) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
+    fun setPositionArticle( direction: Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.setPositionArticle( direction)
+            }.fold(
+                onSuccess = {_stateArticlesScreen.update { currentState ->
+                    currentState.copy(article = it as MutableList<Article>) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
+    fun deleteSelectedProducts(productList: MutableList<Product>){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.deleteSelectedProduct(productList)
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
                     currentState.copy(products = it as MutableList<Product>) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
+    /** */
+
+
+    fun getArticles() {
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching { dataRepository.getListArticle() }.fold(
+                onSuccess = { _stateArticlesScreen.update { currentState ->
+                    currentState.copy(article = it as MutableList<Article>) } },
+                onFailure = { errorApp.errorApi(it.message!!) }
+            )
+        }
+    }
+
+    fun addArticle(article: Article){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.addArticle(article)
+            }.fold(
+                onSuccess = {_stateArticlesScreen.update { currentState ->
+                    currentState.copy(article = it as MutableList<Article>) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
+    fun changeArticle(article: Article){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.changeArticle(article)
+            }.fold(
+                onSuccess = {_stateArticlesScreen.update { currentState ->
+                    currentState.copy(article = it as MutableList<Article>) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }

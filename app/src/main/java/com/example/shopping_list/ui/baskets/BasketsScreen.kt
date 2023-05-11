@@ -2,7 +2,6 @@ package com.example.shopping_list.ui.baskets
 
 import android.icu.text.SimpleDateFormat
 import android.os.Looper
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -35,12 +34,10 @@ import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.ui.AppViewModel
-import com.example.shopping_list.ui.components.ButtonSwipeBacket
+import com.example.shopping_list.ui.components.ButtonSwipeBasket
 import com.example.shopping_list.ui.components.EditBasketName
 import com.example.shopping_list.ui.components.HeaderScreen
-import com.example.shopping_list.ui.theme.BackgroundBottomBar
 import com.example.shopping_list.ui.theme.TextDate
-import com.example.shopping_list.ui.theme.TextIcon
 import kotlinx.coroutines.delay
 import java.util.*
 
@@ -56,7 +53,7 @@ fun BasketsScreen(
     val uiState by viewModel.stateBasketScreen.collectAsState()
     bottomSheetContent.value = {
         BottomSheetContentBasket(
-            onAddClick = {viewModel.newBasket(it)},
+            onAddClick = {viewModel.addBasket(it)},
             bottomSheetHide = bottomSheetHide) }
 
     BasketsScreenLayout(
@@ -96,7 +93,7 @@ fun BasketsScreenLayout(
         HeaderScreen(text = "Baskets", modifier)
         Spacer( Modifier.weight(1f))
         LazyColumnBasket( itemList, onClickBasket, deleteBasket, changeNameBasket)
-        ButtonSwipeBacket(itemList, refreshPosition)
+        ButtonSwipeBasket(itemList, refreshPosition)
     }
  }
 

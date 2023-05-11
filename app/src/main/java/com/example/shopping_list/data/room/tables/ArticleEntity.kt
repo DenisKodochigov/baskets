@@ -13,8 +13,10 @@ import com.example.shopping_list.entity.UnitA
 data class ArticleEntity(
     @PrimaryKey(autoGenerate = true) override var idArticle: Long = 0,
     override var nameArticle: String = "",
+    override var position: Int = 0,
     var groupId: Long? = null,
     var unitId: Long? = null,
     @Ignore override var group: GroupArticle? = null,
-    @Ignore override var unitA: UnitA? = null
+    @Ignore override var unitA: UnitA? = null,
+    @Ignore override var isSelected: Boolean = false,
 ): Article

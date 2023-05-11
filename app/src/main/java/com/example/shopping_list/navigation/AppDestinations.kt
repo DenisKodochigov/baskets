@@ -28,9 +28,9 @@ object ProductsBasket : ScreenDestination {
     val arguments = listOf(navArgument(basketIdArg) { type = NavType.LongType })
 }
 
-object Products : ScreenDestination {
+object Articles : ScreenDestination {
     override val icon = Icons.Filled.Dashboard
-    override val route = "products"
+    override val route = "article"
 }
 
 object Setting : ScreenDestination {
@@ -55,4 +55,4 @@ object Setting : ScreenDestination {
 //    override val route = "products"
 //}
 // Screens to be displayed in the top AppTabRow
-val appTabRowScreens = listOf(Baskets, Products, Setting)
+val appTabRowScreens = listOf(Baskets, Articles, Setting)

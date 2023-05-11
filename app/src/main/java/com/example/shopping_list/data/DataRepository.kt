@@ -1,6 +1,5 @@
 package com.example.shopping_list.data
 
-import android.util.Log
 import com.example.shopping_list.data.room.DataSourceDB
 import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.BasketEntity
@@ -10,7 +9,6 @@ import com.example.shopping_list.entity.*
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB) {
@@ -85,16 +83,34 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     /** Article entity*/
     fun getListArticle(): List<Article> =  dataSourceDB.getListArticle()
 
-    fun newArticle(name: String): List<Article> {
-        return dataSourceDB.newArticleS(name)
+    fun addArticle(article: Article): List<Article> {
+        dataSourceDB.addArticle(article as ArticleEntity)
+        return getListArticle()
+    }
+
+    fun changeArticle(article: Article): List<Article> {
+        dataSourceDB.changeArticle(article as ArticleEntity)
+        return getListArticle()
     }
 
     fun getGroups(): List<GroupArticle> = dataSourceDB.getGroups()
 
     fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
 
-    fun changeGroupSelected(productList: MutableList<Product>, idGroup: Long){
+    fun changeGroupSelectedProduct(productList: MutableList<Product>, idGroup: Long){
+        changeGroupSelectedArticle(productList.map { it.article }, idGroup)
+    }
 
+    fun changeGroupSelectedArticle(articles: List<Article>, idGroup: Long){
+        dataSourceDB.changeGroupArticle(articles,idGroup)
+    }
+
+    fun deleteSelectedArticle(articles: List<Article>): List<Article>{
+        return dataSourceDB.deleteSelectedArticle(articles)
+    }
+
+    fun setPositionArticle( direction: Int): List<Article>{
+        return dataSourceDB.setPositionArticle(direction)
     }
 //    fun getBasketProducts(basket:BasketDB): List<ProductDB>{
 //        var listProduct = emptyList<ProductDB>()
