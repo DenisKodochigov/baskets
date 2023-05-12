@@ -157,8 +157,17 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     }
 
     /** Article*/
-    fun addArticle(articleEntity: ArticleEntity): Long {
-        return dataDao.addArticle(articleEntity)
+    fun addArticle(article: ArticleEntity): Long {
+        if (article.unitA!!.idUnit == 0L && article.unitA!!.nameUnit != "") {
+            article.unitA!!.idUnit =
+                dataDao.addUnit(article.unitA as UnitEntity)
+        } else { article.unitA!!.idUnit = 1}
+
+        if (article.group!!.idGroup == 0L && article.group!!.nameGroup != "") {
+            article.group!!.idGroup =
+                dataDao.addGroup(article.group as GroupEntity)
+        } else { article.group!!.idGroup = 1}
+        return dataDao.addArticle(article)
     }
 
     fun changeArticle(articleEntity: ArticleEntity) {

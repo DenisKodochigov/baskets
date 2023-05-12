@@ -23,14 +23,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
+import com.example.shopping_list.data.room.tables.ArticleEntity
+import com.example.shopping_list.data.room.tables.GroupEntity
+import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.*
+import com.example.shopping_list.ui.products.selectGroupWithArticle
+import com.example.shopping_list.ui.products.selectUnitWithArticle
 import kotlinx.coroutines.delay
 
 @Composable
@@ -47,7 +55,7 @@ fun ArticlesScreen(
         BottomSheetContentArticle(
             uiState = uiState,
             bottomSheetHide = bottomSheetHide,
-            onAddArticle = { article-> viewModel.addArticle( article)}
+            onAddArticle = { article-> viewModel.addArticle( article )}
         )
     }
 //    Log.d("KDS", "basketId = $basketId") ProductsScreenLayout
@@ -257,95 +265,85 @@ fun BottomSheetContentArticle(
     bottomSheetHide: () -> Unit,
     onAddArticle: (Article) -> Unit)
 {
-//    Log.d("KDS", "BottomSheetContentProduct")
-//    val screenHeight = LocalConfiguration.current.screenHeightDp
-//    val enterValue = remember{ mutableStateOf("1")}
-//    val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
-//    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,"All"))}
-//    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1,"шт"))}
-//    val focusRequesterSheet = remember { FocusRequester() }
-//
-//    if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
-//        val id:Long = uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
-//        enterUnit.value = Pair(id, enterUnit.value.second )
-//    }
-//    if (enterGroup.value.first == 0L && enterGroup.value.second != "") {
-//        val id:Long = uiState.group.find { it.nameGroup == enterGroup.value.second }?.idGroup ?: 0L
-//        enterGroup.value = Pair(id, enterGroup.value.second )
-//    }
-//    if (enterArticle.value.first == 0L && enterArticle.value.second != "") {
-//        val id:Long = uiState.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L
-//        enterArticle.value = Pair(id, enterArticle.value.second )
-//    }
-//    Column(
-//        Modifier
-//            .fillMaxWidth()
-//            .padding(horizontal = 24.dp)
-//            .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.75).dp)) {
-////        Log.d("KDS", "BottomSheetContentProduct.Column")
-//        HeaderScreen(text = "Add product", Modifier.focusRequester(focusRequesterSheet))
-//        Spacer(Modifier.height(24.dp))
-//        MyExposedDropdownMenuBox(/** Select article*/
-//            listItems = uiState.articles.map{ Pair(it.idArticle, it.nameArticle) },
-//            label = "Select product",
-//            modifier = Modifier.fillMaxWidth(),
-//            enterValue = enterArticle,
-//            filtering = true )
-//        if (enterArticle.value.first > 0) {
-//            enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.articles)
-//            enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
-//            enterValue.value = "1"
-//        }
-//        Spacer(Modifier.height(12.dp))
-//        Row(Modifier.fillMaxWidth()) {
-//            MyExposedDropdownMenuBox(/** Select group*/
-//                listItems = uiState.group.map{ Pair(it.idGroup, it.nameGroup) },
-//                label = "Group",
-//                modifier = Modifier.weight(1f),
-//                enterValue = enterGroup,
-//                filtering = true)
-//            Spacer(Modifier.width(4.dp))
-//            MyOutlinedTextFieldWithoutIcon( /** Value*/
-//                modifier = Modifier.background(Color.LightGray)
-//                    .align(Alignment.CenterVertically)
-//                    .width(200.dp)
-//                    .padding(top = 4.dp),
-//                enterValue = enterValue)
-//            Spacer(Modifier.width(4.dp))
-//            MyExposedDropdownMenuBox(/** Select unit*/
-//                listItems = uiState.unitA.map{ Pair(it.idUnit, it.nameUnit) },
-//                label = "Unit",
-//                modifier = Modifier.width(120.dp),
-//                enterValue = enterUnit,
-//                filtering = false)
-//        }
-//        Spacer(Modifier.height(36.dp))
-//        Row(Modifier.fillMaxWidth()) {
-//            ButtonMy(Modifier.weight(1f),"Add") {
-//                onAddProduct(
-//                    ProductEntity(
-//                        value = if (enterValue.value.isEmpty()) 1.0 else enterValue.value.toDouble(),
-//                        article = ArticleEntity(
-//                            idArticle = enterArticle.value.first,
-//                            nameArticle = enterArticle.value.second,
-//                            group = GroupEntity(
-//                                idGroup = if (enterGroup.value.first != 0L) enterGroup.value.first else 1,
-//                                nameGroup = enterGroup.value.second
-//                            ),
-//                            unitA = UnitEntity(
-//                                idUnit = enterUnit.value.first,
-//                                nameUnit = enterUnit.value.second
-//                            )
-//                        )
-//                    )
-//                )
-//                enterArticle.value = Pair(0,"")
-//            }
-//            Spacer(Modifier.width(12.dp))
-//            ButtonMy(Modifier.weight(1f), "Cancel"){
-//                enterArticle.value = Pair(0,"")
-//                bottomSheetHide() }
-//        }
-//        Spacer(Modifier.height(72.dp))
-//    }
+    Log.d("KDS", "BottomSheetContentProduct")
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+    val enterValue = remember{ mutableStateOf("1")}
+    val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
+    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,"All"))}
+    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1,"шт"))}
+    val focusRequesterSheet = remember { FocusRequester() }
+
+    if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
+        val id:Long = uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
+        enterUnit.value = Pair(id, enterUnit.value.second )
+    }
+    if (enterGroup.value.first == 0L && enterGroup.value.second != "") {
+        val id:Long = uiState.group.find { it.nameGroup == enterGroup.value.second }?.idGroup ?: 0L
+        enterGroup.value = Pair(id, enterGroup.value.second )
+    }
+    if (enterArticle.value.first == 0L && enterArticle.value.second != "") {
+        val id:Long = uiState.article.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L
+        enterArticle.value = Pair(id, enterArticle.value.second )
+    }
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.75).dp)) {
+//        Log.d("KDS", "BottomSheetContentProduct.Column")
+        HeaderScreen(text = "Add product", Modifier.focusRequester(focusRequesterSheet))
+        Spacer(Modifier.height(24.dp))
+        MyExposedDropdownMenuBox(/** Select article*/
+            listItems = uiState.article.map{ Pair(it.idArticle, it.nameArticle) },
+            label = "Select product",
+            modifier = Modifier.fillMaxWidth(),
+            enterValue = enterArticle,
+            filtering = true )
+        if (enterArticle.value.first > 0) {
+            enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.article)
+            enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.article)
+            enterValue.value = "1"
+        }
+        Spacer(Modifier.height(12.dp))
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+            MyExposedDropdownMenuBox(/** Select group*/
+                listItems = uiState.group.map{ Pair(it.idGroup, it.nameGroup) },
+                label = "Group",
+                modifier = Modifier.weight(1f),
+                enterValue = enterGroup,
+                filtering = false)
+            Spacer(Modifier.width(4.dp))
+            MyExposedDropdownMenuBox(/** Select unit*/
+                listItems = uiState.unitA.map{ Pair(it.idUnit, it.nameUnit) },
+                label = "Unit",
+                modifier = Modifier.width(120.dp),
+                enterValue = enterUnit,
+                filtering = false)
+        }
+        Spacer(Modifier.height(36.dp))
+        Row(Modifier.fillMaxWidth()) {
+            ButtonMy(Modifier.weight(1f),"Add") {
+                onAddArticle(
+                    ArticleEntity(
+                        idArticle = enterArticle.value.first,
+                        nameArticle = enterArticle.value.second,
+                        group = GroupEntity(
+                            idGroup = if (enterGroup.value.first != 0L) enterGroup.value.first else 1,
+                            nameGroup = enterGroup.value.second
+                        ),
+                        unitA = UnitEntity(
+                            idUnit = enterUnit.value.first,
+                            nameUnit = enterUnit.value.second
+                        )
+                    )
+                )
+                enterArticle.value = Pair(0,"")
+            }
+            Spacer(Modifier.width(12.dp))
+            ButtonMy(Modifier.weight(1f), "Cancel"){
+                enterArticle.value = Pair(0,"")
+                bottomSheetHide() }
+        }
+        Spacer(Modifier.height(72.dp))
+    }
 }

@@ -195,41 +195,6 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    fun changeGroupSelectedArticle(articles: MutableList<Article>, idGroup: Long){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching {
-                dataRepository.changeGroupSelectedArticle(articles, idGroup) }.fold(
-                onSuccess = {_stateArticlesScreen.update { currentState ->
-                    currentState.copy(article = it as MutableList<Article>) }},
-                onFailure = { errorApp.errorApi(it.message!!)}
-            )
-        }
-    }
-
-    fun deleteSelectedArticle(articles: MutableList<Article>){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching {
-                dataRepository.deleteSelectedArticle(articles)
-            }.fold(
-                onSuccess = {_stateArticlesScreen.update { currentState ->
-                    currentState.copy(article = it as MutableList<Article>) }},
-                onFailure = { errorApp.errorApi(it.message!!)}
-            )
-        }
-    }
-
-    fun setPositionArticle( direction: Int){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching {
-                dataRepository.setPositionArticle( direction)
-            }.fold(
-                onSuccess = {_stateArticlesScreen.update { currentState ->
-                    currentState.copy(article = it as MutableList<Article>) }},
-                onFailure = { errorApp.errorApi(it.message!!)}
-            )
-        }
-    }
-
     fun deleteSelectedProducts(productList: MutableList<Product>){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
@@ -278,4 +243,40 @@ class AppViewModel @Inject constructor(
             )
         }
     }
+
+    fun changeGroupSelectedArticle(articles: MutableList<Article>, idGroup: Long){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.changeGroupSelectedArticle(articles, idGroup) }.fold(
+                onSuccess = {_stateArticlesScreen.update { currentState ->
+                    currentState.copy(article = it as MutableList<Article>) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
+    fun deleteSelectedArticle(articles: MutableList<Article>){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.deleteSelectedArticle(articles)
+            }.fold(
+                onSuccess = {_stateArticlesScreen.update { currentState ->
+                    currentState.copy(article = it as MutableList<Article>) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
+    fun setPositionArticle( direction: Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching {
+                dataRepository.setPositionArticle( direction)
+            }.fold(
+                onSuccess = {_stateArticlesScreen.update { currentState ->
+                    currentState.copy(article = it as MutableList<Article>) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+
 }

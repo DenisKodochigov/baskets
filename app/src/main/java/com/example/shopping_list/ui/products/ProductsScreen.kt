@@ -305,7 +305,7 @@ fun BottomSheetContentProduct(
             enterValue.value = "1"
         }
         Spacer(Modifier.height(12.dp))
-        Row(Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
             MyExposedDropdownMenuBox(/** Select group*/
                 listItems = uiState.group.map{ Pair(it.idGroup, it.nameGroup) },
                 label = "Group",
@@ -314,10 +314,7 @@ fun BottomSheetContentProduct(
                 filtering = true)
             Spacer(Modifier.width(4.dp))
             MyOutlinedTextFieldWithoutIcon( /** Value*/
-                modifier = Modifier.background(Color.LightGray)
-                    .align(Alignment.CenterVertically)
-                    .width(200.dp)
-                    .padding(top = 4.dp),
+                modifier = Modifier.width(90.dp),
                 enterValue = enterValue)
             Spacer(Modifier.width(4.dp))
             MyExposedDropdownMenuBox(/** Select unit*/
