@@ -42,7 +42,6 @@ import kotlinx.coroutines.delay
 @Composable
 fun ProductsScreen(
     basketId: Long,
-    modifier: Modifier = Modifier,
     viewModel: AppViewModel,
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>,
     bottomSheetHide: () -> Unit,
@@ -100,9 +99,12 @@ fun ProductsScreenLayout(
        unSelected.value = false
     }
     if (changeGroupSelected.value) {
-        val idGroup =0L
-        doChangeGroupSelected(itemList,idGroup)
-        changeGroupSelected.value = false
+        SelectGroupDialog(
+            listGroup = uiState.group,
+            onDismiss = {changeGroupSelected.value = false },
+            onConfirm = {
+                if (it != 0L) doChangeGroupSelected( itemList, it)
+                changeGroupSelected.value = false },)
     }
     if (deleteSelected.value) {
         doDeleteSelected(itemList)
@@ -111,7 +113,7 @@ fun ProductsScreenLayout(
 
     Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
         Column( modifier.fillMaxHeight()) {
-            HeaderScreen(text = "Products", modifier)
+            HeaderScreen(text = "Products in basket: ${uiState.nameBasket} ", modifier)
             Spacer(Modifier.weight(1f) )
             LazyColumnProduct(modifier, itemList, uiState.unitA, putProductInBasket,
                 changeProductInBasket, isSelectedId)
@@ -195,66 +197,55 @@ fun LazyColumnProduct(
                         Modifier.fillMaxSize(), contentAlignment = alignment) {
                         Icon( icon, null, modifier = Modifier.scale(scale) )
                     }
-                },
-                dismissContent = {
-                    Box {
-                        Row(modifier = Modifier
+                }
+            ) {
+                Box {
+                    Row(
+                        modifier = Modifier
                             .clip(shape = RoundedCornerShape(6.dp))
                             .fillMaxWidth()
                             .background(Color.White)
-                        ) {
-                            Spacer(
-                                modifier = Modifier
-                                    .background(if (item.isSelected) Color.Red else Color.LightGray)
-                                    .width(8.dp)
-                                    .height(32.dp)
-                                    .align(Alignment.CenterVertically)
-                                    .clickable { isSelected.value = item.idProduct }
-                            )
-                            Text(
-                                text = item.article.nameArticle,
-                                style = MaterialTheme.typography.h1,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(start = dimensionResource(R.dimen.lazy_padding_hor),
-                                        top = dimensionResource(R.dimen.lazy_padding_ver),
-                                        bottom = dimensionResource(R.dimen.lazy_padding_ver))
-                                    .clickable { isSelected.value = item.idProduct }
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            val num = if (item.value.rem(1).equals(0.0)) item.value.toInt()
-                                        else item.value
-                            Text(
-                                text = num.toString(),
-                                style = MaterialTheme.typography.h1,
-                                modifier = Modifier
-                                    .width(70.dp)
-                                    .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                                    .clickable {
-                                        editProduct.value = item
-                                        showDialog.value = true
-                                    }
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = item.article.unitA?.nameUnit ?: "",
-                                style = MaterialTheme.typography.h1,
-                                modifier = Modifier
-                                    .width(40.dp)
-                                    .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                                    .clickable { isSelected.value = item.idProduct }
-                            )
-                        }
-                        if (item.putInBasket) Divider(
-                            color = MaterialTheme.colors.onSurface,
-                            thickness = 1.dp,
+                    ) {
+                        Spacer(
                             modifier = Modifier
-                                .padding(top = 28.dp, start = 8.dp, end = 8.dp)
-                                .fillMaxWidth()
+                                .background(if (item.isSelected) Color.Red else Color.LightGray)
+                                .width(8.dp)
+                                .height(32.dp)
+                                .align(Alignment.CenterVertically)
+                                .clickable { isSelected.value = item.idProduct }
+                        )
+                        myText( item.article.nameArticle, Modifier.weight(1f)
+                                .clickable {isSelected.value = item.idProduct }
+                                .padding(
+                                start = dimensionResource(R.dimen.lazy_padding_hor),
+                                top = dimensionResource(R.dimen.lazy_padding_ver),
+                                bottom = dimensionResource(R.dimen.lazy_padding_ver)
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        val num = if (item.value.rem(1).equals(0.0)) item.value.toInt()
+                        else item.value
+                        myText( num.toString(), Modifier.width(70.dp)
+                                .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+                                .clickable {
+                                    editProduct.value = item
+                                    showDialog.value = true
+                                })
+                        Spacer(modifier = Modifier.width(4.dp))
+                        myText(item.article.unitA?.nameUnit ?: "", Modifier.width(40.dp)
+                                .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+                                .clickable { isSelected.value = item.idProduct }
                         )
                     }
+                    if (item.putInBasket) Divider(
+                        color = MaterialTheme.colors.onSurface,
+                        thickness = 1.dp,
+                        modifier = Modifier
+                            .padding(top = 28.dp, start = 8.dp, end = 8.dp)
+                            .fillMaxWidth()
+                    )
                 }
-            )
+            }
         }
     }
 }
@@ -334,7 +325,7 @@ fun BottomSheetContentProduct(
                             idArticle = enterArticle.value.first,
                             nameArticle = enterArticle.value.second,
                             group = GroupEntity(
-                                idGroup = if (enterGroup.value.first != 0L) enterGroup.value.first else 1,
+                                idGroup = enterGroup.value.first,
                                 nameGroup = enterGroup.value.second
                             ),
                             unitA = UnitEntity(

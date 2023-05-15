@@ -39,7 +39,8 @@
 
     <string name="enter_your_word">enter your word</string>
     <string name="congratulations">congratulations</string>
-    <string name="change_quantity">Change quantity"</string>
+    <string name="change_quantity">Change quantity</string>
+    <string name="change_group">New group</string>
     <string name="exit">EXIT</string>
     <string name="ok">OK</string>
 </resources>

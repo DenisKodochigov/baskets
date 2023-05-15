@@ -31,6 +31,7 @@ object DatabaseModule {
                     ioThread {
                         database.dataDao().newBasket(BasketEntity(nameBasket = "Test"))
                         database.dataDao().addGroup(GroupEntity(nameGroup = nameGroup))
+                        database.dataDao().addGroup(GroupEntity(nameGroup = "Продукты"))
                         database.dataDao().addUnit(UnitEntity(nameUnit = "шт"))
                         database.dataDao().addUnit(UnitEntity(nameUnit = "кг"))
                         database.dataDao().addUnit(UnitEntity(nameUnit = "гр"))

@@ -25,6 +25,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -109,6 +110,17 @@ fun HeaderScreen(text: String, modifier: Modifier){
             }
         } else expanded = false
     }
+}
+
+@Composable
+fun myText(text: String, modifier: Modifier){
+    Text(
+        text = text,
+        style = MaterialTheme.typography.h1,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier
+    )
 }
 
 @Preview(showBackground = true)

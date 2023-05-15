@@ -37,6 +37,9 @@ interface DataDao {
             "SET nameBasket = :newName WHERE idBasket =:basketId " )
     fun changeNameBasket(basketId:Long, newName:String)
 
+    @Query("SELECT nameBasket FROM tb_basket WHERE idBasket = :basketId")
+    fun getNameBasket(basketId: Long): String
+
 /** Product entity*/
 
     @Insert

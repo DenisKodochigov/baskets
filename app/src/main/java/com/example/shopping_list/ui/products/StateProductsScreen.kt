@@ -9,5 +9,6 @@ data class StateProductsScreen(
     val products: MutableList<Product> = mutableListOf(),
     val articles: List<Article> = emptyList(),
     val group: List<GroupArticle> = emptyList(),
-    val unitA: List<UnitA> = emptyList(),
+    var unitA: List<UnitA> = emptyList(),
+    val nameBasket: String = ""
 )

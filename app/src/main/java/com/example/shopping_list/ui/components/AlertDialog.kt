@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Basket
+import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.entity.UnitA
 
@@ -34,7 +35,7 @@ fun EditQuantityDialog(
         AlertDialog(
             onDismissRequest = onDismiss ,
             title = { Text(stringResource(R.string.change_quantity)) },
-            text = { DialogLayout(enterValue, enterUnit, listUnit) },
+            text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
             modifier = modifier,
             dismissButton = {
                 TextButton(onClick = onDismiss) {
@@ -57,7 +58,7 @@ fun EditQuantityDialog(
 
 
 @Composable
-fun DialogLayout(
+fun EditQuantityDialogLayout(
     enterValue: MutableState<String>,
     enterUnit: MutableState<Pair<Long, String>>,
     listUnit: List<UnitA>){
@@ -120,5 +121,48 @@ fun EditBasketNameDialogLayout( enterValue: MutableState<String>){
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         MyOutlinedTextFieldWithoutIconKeyText( enterValue = enterValue,
             modifier = Modifier.align(Alignment.CenterVertically).fillMaxWidth() )
+    }
+}
+
+@Composable
+fun SelectGroupDialog(
+    listGroup: List<GroupArticle>,
+    onConfirm: (Long) -> Unit,
+    onDismiss: () -> Unit)
+{
+    val enterGroup = remember { mutableStateOf(Pair(listGroup[0].idGroup, listGroup[0].nameGroup)) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss ,
+        title = { Text(stringResource(R.string.change_group)) },
+        text = { SelectGroupDialogLayout(enterGroup, listGroup) },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.exit))
+            }
+        },
+        confirmButton = {
+            TextButton( onClick = { onConfirm(enterGroup.value.first) })
+            {
+                Text( text = stringResource(R.string.ok))
+            }
+        }
+    )
+}
+@Composable
+fun SelectGroupDialogLayout(
+    enterGroup: MutableState<Pair<Long, String>>,
+    listGroup: List<GroupArticle>){
+
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        /** Select group*/
+        MyExposedDropdownMenuBox(
+            listItems = listGroup.map{ Pair(it.idGroup, it.nameGroup) },
+            label = "Groups",
+            modifier = Modifier.fillMaxWidth(),
+            enterValue = enterGroup,
+            filtering = false,
+            readOnly = true
+        )
     }
 }

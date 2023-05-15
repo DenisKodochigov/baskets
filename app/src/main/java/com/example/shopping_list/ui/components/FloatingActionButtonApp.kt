@@ -48,12 +48,13 @@ fun FabDeleteProducts(deleteSelected: MutableState<Boolean>){
 @Composable
 fun FabChangeGroupProducts(changeGroupSelected: MutableState<Boolean>){
 
-    FloatingActionButton(onClick =  { changeGroupSelected.value = true },
-        modifier = Modifier
-            .padding(bottom = 16.dp)
+    FloatingActionButton(
+        onClick =  { changeGroupSelected.value = true },
+        modifier = Modifier.padding(bottom = 16.dp)
             .border(2.dp, color = BorderBottomBar, shape = RoundedCornerShape(50.dp)),
         backgroundColor = BackgroundFab,
-        contentColor = ContentFab) {
+        contentColor = ContentFab)
+    {
         Icon(Icons.Filled.Dns,"")
     }
 }

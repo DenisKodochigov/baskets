@@ -28,6 +28,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
 import com.example.shopping_list.data.room.tables.ArticleEntity
@@ -47,7 +48,7 @@ fun ArticlesScreen(
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>,
     bottomSheetHide: () -> Unit,
 ){
-    viewModel.getArticles()
+    viewModel.getStateArticle()
     val uiState by viewModel.stateArticlesScreen.collectAsState()
 
     Log.d("KDS", "ArticlesScreen")
@@ -97,16 +98,22 @@ fun ScreenLayoutArticle(
         unSelected.value = false
     }
     if (changeGroupSelected.value) {
-        val idGroup =0L
-        doChangeGroupSelected(itemList,idGroup)
-        changeGroupSelected.value = false
+        SelectGroupDialog(
+            listGroup = uiState.group,
+            onDismiss = {changeGroupSelected.value = false },
+            onConfirm = {
+                if (it != 0L) doChangeGroupSelected( itemList, it)
+                changeGroupSelected.value = false },)
     }
     if (deleteSelected.value) {
         doDeleteSelected(itemList)
         deleteSelected.value = false
     }
 
-    Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
         Column( modifier.fillMaxHeight()) {
             HeaderScreen(text = "Products", modifier)
             Spacer(Modifier.weight(1f) )
@@ -179,7 +186,9 @@ fun LazyColumnArticle(
                     dismissState.reset() }
             }
             SwipeToDismiss(state = dismissState,
-                modifier = Modifier.padding(vertical = 1.dp).animateItemPlacement(),
+                modifier = Modifier
+                    .padding(vertical = 1.dp)
+                    .animateItemPlacement(),
                 directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
                 dismissThresholds = { direction ->
                     FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.1f else 0.4f)
@@ -220,36 +229,28 @@ fun LazyColumnArticle(
                                     .align(Alignment.CenterVertically)
                                     .clickable { isSelected.value = item.idArticle }
                             )
-                            Text(
-                                text = item.nameArticle,
-                                style = MaterialTheme.typography.h1,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(start = dimensionResource(R.dimen.lazy_padding_hor),
+                            myText(text = item.nameArticle, modifier = Modifier.weight(1f)
+                                    .padding(
+                                        start = dimensionResource(R.dimen.lazy_padding_hor),
                                         top = dimensionResource(R.dimen.lazy_padding_ver),
-                                        bottom = dimensionResource(R.dimen.lazy_padding_ver))
+                                        bottom = dimensionResource(R.dimen.lazy_padding_ver)
+                                    )
                                     .clickable { isSelected.value = item.idArticle }
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = item.group?.nameGroup ?: "",
-                                style = MaterialTheme.typography.h1,
-                                modifier = Modifier
-                                    .width(100.dp)
-                                    .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                                    .clickable {
-                                        editArticle.value = item
-                                        showDialog.value = true
-                                    }
+                            myText(text = item.group?.nameGroup ?: "", modifier = Modifier
+                                .width(100.dp)
+                                .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+                                .clickable {
+                                    editArticle.value = item
+                                    showDialog.value = true
+                                }
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = item.unitA?.nameUnit ?: "",
-                                style = MaterialTheme.typography.h1,
-                                modifier = Modifier
-                                    .width(40.dp)
-                                    .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                                    .clickable { isSelected.value = item.idArticle }
+                            myText(text = item.unitA?.nameUnit ?: "", modifier = Modifier
+                                .width(40.dp)
+                                .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+                                .clickable { isSelected.value = item.idArticle }
                             )
                         }
                     }
@@ -328,7 +329,7 @@ fun BottomSheetContentArticle(
                         idArticle = enterArticle.value.first,
                         nameArticle = enterArticle.value.second,
                         group = GroupEntity(
-                            idGroup = if (enterGroup.value.first != 0L) enterGroup.value.first else 1,
+                            idGroup = enterGroup.value.first,
                             nameGroup = enterGroup.value.second
                         ),
                         unitA = UnitEntity(

@@ -704,6 +704,32 @@ public final class DataDao_Impl implements DataDao {
   }
 
   @Override
+  public String getNameBasket(final long basketId) {
+    final String _sql = "SELECT nameBasket FROM tb_basket WHERE idBasket = ?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, basketId);
+    __db.assertNotSuspendingTransaction();
+    final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+    try {
+      final String _result;
+      if(_cursor.moveToFirst()) {
+        if (_cursor.isNull(0)) {
+          _result = null;
+        } else {
+          _result = _cursor.getString(0);
+        }
+      } else {
+        _result = null;
+      }
+      return _result;
+    } finally {
+      _cursor.close();
+      _statement.release();
+    }
+  }
+
+  @Override
   public Long checkProductFromName(final String name) {
     final String _sql = "SELECT idProduct FROM tb_product JOIN tb_article ON tb_article.nameArticle = ? WHERE tb_product.articleId = tb_article.idArticle";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);

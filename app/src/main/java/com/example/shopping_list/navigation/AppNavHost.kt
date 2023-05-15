@@ -38,7 +38,6 @@ fun AppNavHost(
             if (basketId != null) {
                 ProductsScreen(
                     basketId = basketId,
-                    modifier = modifier,
                     viewModel = viewModel,
                     bottomSheetContent = bottomSheetContent,
                     bottomSheetHide = bottomSheetHide

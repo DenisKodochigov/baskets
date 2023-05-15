@@ -2,7 +2,6 @@ package com.example.shopping_list.data.room
 
 import com.example.shopping_list.data.room.tables.*
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
-import com.example.shopping_list.data.room.tables.relation.BasketCountObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
 import com.example.shopping_list.entity.*
 import javax.inject.Inject
@@ -88,13 +87,19 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return emptyList()
     }
 
+    fun getNameBasket(basketId: Long): String {
+        return dataDao.getNameBasket(basketId)
+    }
+
     /** Product*/
     fun getCountProductInBasket(basketId: Long): Int {
         return dataDao.countProductInBasket(basketId)
     }
 
     fun addProduct(product: Product): List<Product> {
-        if (product.basketId!! > 0L && product.article.idArticle > 0L) {
+
+        if (product.basketId!! > 0L ) {
+            product.article.idArticle = addArticle(product.article as ArticleEntity)
             if (dataDao.checkProductInBasket(product.basketId!!, product.idProduct) == null) {
                 dataDao.addProduct(
                     ProductEntity(
@@ -158,16 +163,12 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     /** Article*/
     fun addArticle(article: ArticleEntity): Long {
-        if (article.unitA!!.idUnit == 0L && article.unitA!!.nameUnit != "") {
-            article.unitA!!.idUnit =
-                dataDao.addUnit(article.unitA as UnitEntity)
-        } else { article.unitA!!.idUnit = 1}
+        article.unitId = addUnit(article.unitA as UnitEntity)
+        article.groupId = addGroup(article.group as GroupEntity)
 
-        if (article.group!!.idGroup == 0L && article.group!!.nameGroup != "") {
-            article.group!!.idGroup =
-                dataDao.addGroup(article.group as GroupEntity)
-        } else { article.group!!.idGroup = 1}
-        return dataDao.addArticle(article)
+        return if (article.idArticle == 0L) {
+            if (article.nameArticle != "") dataDao.addArticle(article)  else 1
+        } else article.idArticle
     }
 
     fun changeArticle(articleEntity: ArticleEntity) {
@@ -176,8 +177,8 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     fun getListArticle(): List<Article> = dataDao.getListArticle().map { item -> mapArticle(item) }
 
-    fun changeGroupArticle(articles: List<Article>, idGroup: Long): List<Article>{
-        dataDao.changeGroupArticle(idGroup, articles.map { it.idArticle })
+    fun changeGroupArticle( idGroup: Long, articlesId: List<Long>): List<Article>{
+        dataDao.changeGroupArticle(idGroup, articlesId)
         return getListArticle()
     }
 
@@ -190,7 +191,7 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     fun setPositionArticle( direction: Int): List<Article>{
         reBuildPositionArticle( direction)
-        return return getListArticle()
+        return getListArticle()
     }
 
     /** Group article*/
@@ -198,13 +199,17 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.getGroups()
     }
 
-    fun addGroup(group: GroupEntity): Long{
-        return dataDao.addGroup(group)
+    private fun addGroup(group: GroupEntity): Long{
+        return  if (group.idGroup == 0L) {
+            if (group.nameGroup != "") dataDao.addGroup(group)  else 1
+        } else group.idGroup
     }
 
     /** Unit*/
-    fun addUnit(unitA: UnitEntity): Long{
-        return dataDao.addUnit(unitA)
+    private fun addUnit(unitA: UnitEntity): Long{
+        return  if (unitA.idUnit == 0L) {
+            if (unitA.nameUnit != "") dataDao.addUnit(unitA)  else 1
+        } else unitA.idUnit
     }
 
     fun getUnits(): List<UnitA>{
@@ -237,9 +242,5 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
             group = obj.group,
             unitA = obj.unitA
         )
-    }
-
-    private fun mapBasket(obj: BasketCountObj): Basket{
-        return obj.basket.also { it.quantity = obj.count }
     }
 }
