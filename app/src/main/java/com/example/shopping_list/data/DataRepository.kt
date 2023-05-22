@@ -16,9 +16,9 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         return dataSourceDB.getListBasketCount()
     }
 
-    fun newBasket(basketName: String): List<Basket> {
+    fun addBasket(basketName: String): List<Basket> {
         val currentTime = Date().time
-        return dataSourceDB.newBasket(BasketEntity(nameBasket = basketName, dateB = currentTime))
+        return dataSourceDB.addBasket(BasketEntity(nameBasket = basketName, dateB = currentTime))
     }
 
     fun changeNameBasket(basket: Basket): List<Basket> {

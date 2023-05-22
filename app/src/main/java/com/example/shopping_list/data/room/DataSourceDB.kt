@@ -1,9 +1,17 @@
 package com.example.shopping_list.data.room
 
-import com.example.shopping_list.data.room.tables.*
+import com.example.shopping_list.data.room.tables.ArticleEntity
+import com.example.shopping_list.data.room.tables.BasketEntity
+import com.example.shopping_list.data.room.tables.GroupEntity
+import com.example.shopping_list.data.room.tables.ProductEntity
+import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
-import com.example.shopping_list.entity.*
+import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.Basket
+import com.example.shopping_list.entity.GroupArticle
+import com.example.shopping_list.entity.Product
+import com.example.shopping_list.entity.UnitA
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -65,8 +73,10 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.checkBasketFromName(basketName)
     }
 
-    fun newBasket(basket: Basket): List<Basket> {
-        if (getBasket(basket.nameBasket) == null ) {
+    fun addBasket(basket: Basket): List<Basket> {
+        basket.nameBasket = (basket.nameBasket[0].uppercase()+basket.nameBasket.substring(1)).trim()
+        val existBasket = getBasket(basket.nameBasket)
+        if (existBasket == null ) {
             dataDao.newBasket(basket as BasketEntity)
         }
         return getListBasketCount()
@@ -167,7 +177,12 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         article.groupId = addGroup(article.group as GroupEntity)
 
         return if (article.idArticle == 0L) {
-            if (article.nameArticle != "") dataDao.addArticle(article)  else 1
+            if (article.nameArticle != "") {
+                article.nameArticle =
+                    (article.nameArticle[0].uppercase()+article.nameArticle.substring(1)).trim()
+                dataDao.addArticle(article)
+            }
+            else 1
         } else article.idArticle
     }
 
@@ -184,7 +199,10 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     fun deleteSelectedArticle(articles: List<Article>): List<Article>{
         articles.forEach {
-            if (dataDao.checkArticleWithProduct(it.idArticle).isEmpty()) dataDao.delArticle(it.idArticle)
+            if (it.isSelected) {
+                if (dataDao.checkArticleWithProduct(it.idArticle).isEmpty())
+                    dataDao.delArticle(it.idArticle)
+            }
         }
         return getListArticle()
     }
@@ -201,7 +219,10 @@ open class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     private fun addGroup(group: GroupEntity): Long{
         return  if (group.idGroup == 0L) {
-            if (group.nameGroup != "") dataDao.addGroup(group)  else 1
+            if (group.nameGroup != "") {
+                group.nameGroup = (group.nameGroup[0].uppercase()+group.nameGroup.substring(1)).trim()
+                dataDao.addGroup(group)
+            }  else 1
         } else group.idGroup
     }
 

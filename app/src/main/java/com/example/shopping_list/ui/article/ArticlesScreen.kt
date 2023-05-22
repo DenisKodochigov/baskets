@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddShoppingCart
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
@@ -41,6 +43,7 @@ import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.products.selectGroupWithArticle
 import com.example.shopping_list.ui.products.selectUnitWithArticle
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ArticlesScreen(
@@ -111,13 +114,14 @@ fun ScreenLayoutArticle(
     }
 
     Box(
-        Modifier
-            .fillMaxSize()
+        Modifier.fillMaxSize()
             .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
         Column( modifier.fillMaxHeight()) {
             HeaderScreen(text = "Products", modifier)
-            Spacer(Modifier.weight(1f) )
-            LazyColumnArticle(modifier, uiState, doDeleteSelected, changeArticle, isSelectedId)
+            Column(Modifier.fillMaxHeight().weight(1f)) {
+                Spacer(modifier = Modifier.weight(1f))
+                LazyColumnArticle(modifier, uiState, doDeleteSelected, changeArticle, isSelectedId)
+            }
             ButtonSwipeArticle( refreshPosition )
         }
         if ( itemList.find { it.isSelected } != null) {
@@ -130,6 +134,7 @@ fun ScreenLayoutArticle(
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun LazyColumnArticle(
@@ -143,7 +148,9 @@ fun LazyColumnArticle(
 
     val listState = rememberLazyListState()
     val showDialog = remember { mutableStateOf(false) }
+    val firstItem = remember { mutableStateOf(Pair<Int, Long>(0,0)) }
     val editArticle: MutableState<Article?> = remember {  mutableStateOf(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     if (editArticle.value != null && showDialog.value){
 //        EditQuantityDialog(
@@ -159,11 +166,19 @@ fun LazyColumnArticle(
 //        )
     }
     val articleList: List<Article> = uiState.article.sortedBy { it.position }
-
+    if (uiState.article.isNotEmpty())
+        if (firstItem.value.first != uiState.article[0].position ||
+            firstItem.value.second != uiState.article[0].idArticle) {
+            coroutineScope.launch {
+                // Animate scroll to the 10th item
+                listState.animateScrollToItem(index = 0)
+            }
+            firstItem.value = Pair(uiState.article[0].position, uiState.article[0].idArticle)
+        }
     LazyColumn (
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+        modifier = modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
         items(items = articleList, key = {it.idArticle})
         { item ->
@@ -266,7 +281,7 @@ fun BottomSheetContentArticle(
     bottomSheetHide: () -> Unit,
     onAddArticle: (Article) -> Unit)
 {
-    Log.d("KDS", "BottomSheetContentProduct")
+    Log.d("KDS", "BottomSheetContentArticle")
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val enterValue = remember{ mutableStateOf("1")}
     val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
@@ -287,9 +302,7 @@ fun BottomSheetContentArticle(
         enterArticle.value = Pair(id, enterArticle.value.second )
     }
     Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
+        Modifier.fillMaxWidth().padding(horizontal = 24.dp)
             .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.75).dp)) {
 //        Log.d("KDS", "BottomSheetContentProduct.Column")
         HeaderScreen(text = "Add product", Modifier.focusRequester(focusRequesterSheet))

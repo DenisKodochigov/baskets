@@ -114,9 +114,11 @@ fun ProductsScreenLayout(
     Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
         Column( modifier.fillMaxHeight()) {
             HeaderScreen(text = "Products in basket: ${uiState.nameBasket} ", modifier)
-            Spacer(Modifier.weight(1f) )
-            LazyColumnProduct(modifier, itemList, uiState.unitA, putProductInBasket,
-                changeProductInBasket, isSelectedId)
+            Column(Modifier.fillMaxHeight().weight(1f)) {
+                Spacer(modifier = Modifier.weight(1f))
+                LazyColumnProduct(modifier, itemList, uiState.unitA, putProductInBasket,
+                    changeProductInBasket, isSelectedId)
+            }
             ButtonSwipeProduct(itemList, refreshPosition)
         }
         if ( itemList.find { it.isSelected } != null) {

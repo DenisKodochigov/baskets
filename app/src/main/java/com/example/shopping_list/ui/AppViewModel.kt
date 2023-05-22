@@ -111,7 +111,7 @@ class AppViewModel @Inject constructor(
     fun addBasket(basketName: String){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.newBasket(basketName)
+                dataRepository.addBasket(basketName)
             }.fold(
                 onSuccess = {_stateBasketScreen.update { currentState ->
                     currentState.copy(baskets = it as MutableList<Basket>) }},

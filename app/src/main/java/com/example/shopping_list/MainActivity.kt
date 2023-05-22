@@ -16,7 +16,6 @@ class MainActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val viewModel: AppViewModel by viewModels()
-        Log.d("KDS", "MainApp.getListBasket")
         viewModel.getListBasket()
         setContent {
             MainApp(viewModel)

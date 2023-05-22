@@ -185,8 +185,8 @@ fun ButtonSwipeProduct(itemList:MutableList<Product>,
     Log.d("KDS", "ButtonSwipeProduct")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
-        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
+//        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
+//        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
     }
 }
 
@@ -197,8 +197,8 @@ fun ButtonSwipeBasket(itemList:MutableList<Basket>,
     Log.d("KDS", "ButtonSwipeBasket")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
-        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
+//        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
+//        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
     }
 }
 
@@ -208,8 +208,8 @@ fun ButtonSwipeArticle( sortingList: (Int) -> Unit )
     Log.d("KDS", "ButtonSwipeArticle")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(1) }
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
-        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(-1) }
+//        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
+//        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(-1) }
     }
 }
 
@@ -217,7 +217,7 @@ fun ButtonSwipeArticle( sortingList: (Int) -> Unit )
 fun ButtonMove(modifier: Modifier, icon: ImageVector, onClick: () -> Unit){
     Button(
         onClick = onClick,
-        modifier.height(36.dp),
+        modifier,   //.height(36.dp),
         colors = ButtonDefaults.buttonColors(backgroundColor = BackgroundBottomBar)) {
         Icon(icon, contentDescription = null)
     }
