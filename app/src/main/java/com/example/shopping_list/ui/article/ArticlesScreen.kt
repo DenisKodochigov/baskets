@@ -1,7 +1,6 @@
 package com.example.shopping_list.ui.article
 
 import android.annotation.SuppressLint
-import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
@@ -15,9 +14,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddShoppingCart
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
@@ -30,14 +26,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
 import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.GroupEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.products.selectGroupWithArticle
@@ -54,7 +48,7 @@ fun ArticlesScreen(
     viewModel.getStateArticle()
     val uiState by viewModel.stateArticlesScreen.collectAsState()
 
-    Log.d("KDS", "ArticlesScreen")
+//    Log.d("KDS", "ArticlesScreen")
     bottomSheetContent.value = {
         BottomSheetContentArticle(
             uiState = uiState,
@@ -89,7 +83,7 @@ fun ScreenLayoutArticle(
     val unSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val changeGroupSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
 //
-    Log.d("KDS", "ScreenLayoutArticle")
+//    Log.d("KDS", "ScreenLayoutArticle")
     val itemList = uiState.article
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idArticle == isSelectedId.value }
@@ -144,7 +138,7 @@ fun LazyColumnArticle(
     changeArticle: (Article) -> Unit,
     isSelected: MutableState<Long>)
 {
-    Log.d("KDS", "LazyColumnArticle")
+//    Log.d("KDS", "LazyColumnArticle")
 
     val listState = rememberLazyListState()
     val showDialog = remember { mutableStateOf(false) }
@@ -153,17 +147,16 @@ fun LazyColumnArticle(
     val coroutineScope = rememberCoroutineScope()
 
     if (editArticle.value != null && showDialog.value){
-//        EditQuantityDialog(
-//            product = editArticle.value!!,
-//            listUnit = unitList,
-//            showDialog = showDialog.value,
-//            onDismiss = { showDialog.value = false },
-//            onConfirm = {
-//                changeProductInBasket(editArticle.value!!)
-//                showDialog.value = false
-//            },
-//            modifier = Modifier
-//        )
+        EditArticleDialog(
+            article = editArticle.value!!,
+            listUnit = uiState.unitA,
+            listGroup = uiState.group,
+            onDismiss = { showDialog.value = false },
+            onConfirm = {
+                changeArticle( editArticle.value!!)
+                showDialog.value = false
+            },
+        )
     }
     val articleList: List<Article> = uiState.article.sortedBy { it.position }
     if (uiState.article.isNotEmpty())
@@ -186,6 +179,7 @@ fun LazyColumnArticle(
                 confirmStateChange = {
                     if ( it == DismissValue.DismissedToStart) {
                         android.os.Handler(Looper.getMainLooper()).postDelayed({
+                            item.isSelected = true
                             doDeleteSelected(mutableListOf(item)) }, 1000)
                     } else if (it == DismissValue.DismissedToEnd) {
                         android.os.Handler(Looper.getMainLooper()).postDelayed({
@@ -201,9 +195,7 @@ fun LazyColumnArticle(
                     dismissState.reset() }
             }
             SwipeToDismiss(state = dismissState,
-                modifier = Modifier
-                    .padding(vertical = 1.dp)
-                    .animateItemPlacement(),
+                modifier = Modifier.padding(vertical = 1.dp).animateItemPlacement(),
                 directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
                 dismissThresholds = { direction ->
                     FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.1f else 0.4f)
@@ -235,6 +227,7 @@ fun LazyColumnArticle(
                             .clip(shape = RoundedCornerShape(6.dp))
                             .fillMaxWidth()
                             .background(Color.White)
+                            .clickable { isSelected.value = item.idArticle }
                         ) {
                             Spacer(
                                 modifier = Modifier
@@ -242,30 +235,23 @@ fun LazyColumnArticle(
                                     .width(8.dp)
                                     .height(32.dp)
                                     .align(Alignment.CenterVertically)
-                                    .clickable { isSelected.value = item.idArticle }
                             )
-                            myText(text = item.nameArticle, modifier = Modifier.weight(1f)
-                                    .padding(
-                                        start = dimensionResource(R.dimen.lazy_padding_hor),
-                                        top = dimensionResource(R.dimen.lazy_padding_ver),
-                                        bottom = dimensionResource(R.dimen.lazy_padding_ver)
-                                    )
-                                    .clickable { isSelected.value = item.idArticle }
+                            myText( text = item.nameArticle, modifier = Modifier
+                                .weight(1f)
+                                .padding(
+                                    start = dimensionResource(R.dimen.lazy_padding_hor),
+                                    top = dimensionResource(R.dimen.lazy_padding_ver),
+                                    bottom = dimensionResource(R.dimen.lazy_padding_ver))
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             myText(text = item.group?.nameGroup ?: "", modifier = Modifier
                                 .width(100.dp)
                                 .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                                .clickable {
-                                    editArticle.value = item
-                                    showDialog.value = true
-                                }
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             myText(text = item.unitA?.nameUnit ?: "", modifier = Modifier
                                 .width(40.dp)
                                 .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                                .clickable { isSelected.value = item.idArticle }
                             )
                         }
                     }
@@ -281,7 +267,7 @@ fun BottomSheetContentArticle(
     bottomSheetHide: () -> Unit,
     onAddArticle: (Article) -> Unit)
 {
-    Log.d("KDS", "BottomSheetContentArticle")
+//    Log.d("KDS", "BottomSheetContentArticle")
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val enterValue = remember{ mutableStateOf("1")}
     val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
@@ -337,20 +323,13 @@ fun BottomSheetContentArticle(
         Spacer(Modifier.height(36.dp))
         Row(Modifier.fillMaxWidth()) {
             ButtonMy(Modifier.weight(1f),"Add") {
-                onAddArticle(
-                    ArticleEntity(
-                        idArticle = enterArticle.value.first,
-                        nameArticle = enterArticle.value.second,
-                        group = GroupEntity(
-                            idGroup = enterGroup.value.first,
-                            nameGroup = enterGroup.value.second
-                        ),
-                        unitA = UnitEntity(
-                            idUnit = enterUnit.value.first,
-                            nameUnit = enterUnit.value.second
-                        )
-                    )
-                )
+                val article = ArticleEntity( idArticle = enterArticle.value.first,
+                    nameArticle = enterArticle.value.second )
+                article.group = GroupEntity( idGroup = enterGroup.value.first,
+                    nameGroup = enterGroup.value.second )
+                article.unitA = UnitEntity( idUnit = enterUnit.value.first,
+                    nameUnit = enterUnit.value.second )
+                onAddArticle( article )
                 enterArticle.value = Pair(0,"")
             }
             Spacer(Modifier.width(12.dp))

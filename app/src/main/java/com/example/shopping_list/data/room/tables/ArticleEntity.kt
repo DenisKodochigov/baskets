@@ -16,7 +16,8 @@ data class ArticleEntity(
     override var position: Int = 0,
     var groupId: Long? = null,
     var unitId: Long? = null,
-    @Ignore override var group: GroupArticle? = null,
-    @Ignore override var unitA: UnitA? = null,
-    @Ignore override var isSelected: Boolean = false,
-): Article
+): Article {
+    @Ignore override var group: GroupArticle? = null
+    @Ignore override var unitA: UnitA? = null
+    @Ignore override var isSelected: Boolean = false
+}

@@ -93,7 +93,7 @@ fun LazyColumnWithSwipe() {
                             DismissValue.Default -> Color.LightGray
                             DismissValue.DismissedToEnd -> Color.Green
                             DismissValue.DismissedToStart -> Color.Red
-                            null -> Color.Transparent})
+                    })
                     val alignment = when (direction) {
                         DismissDirection.StartToEnd -> Alignment.CenterStart
                         DismissDirection.EndToStart -> Alignment.CenterEnd }
@@ -150,33 +150,6 @@ private fun adminCard() {
             }
         }
     }
-}
-
-@Composable
-fun Swipe1(recipes: List<Product>, onDismiss: (Product) -> Unit){
-    LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
-        items( count = recipes.size,
-            itemContent = {
-                AnimatedSwipeDismiss(
-                    item = recipes[it],
-                    background = { isDismissed ->
-                        Box(modifier = Modifier.fillMaxSize().background(color = Color.Red).padding(start = 20.dp, end = 20.dp),
-                            contentAlignment = Alignment.CenterEnd) {
-                               Icon(Icons.Filled.Delete, tint = Color.White, contentDescription = "Delete")
-                            }
-                    },
-                    content = { isDismissed -> RecipeistItem(recipe = recipes[it]) },
-                    onDismiss = { onDismiss(it)
-//                        viewModel.beginPendingDelete(it)
-                    }
-                )
-            })
-    }
-}
-
-@Composable
-fun RecipeistItem(recipe: Product) {
-
 }
 
 @OptIn( ExperimentalMaterialApi::class)

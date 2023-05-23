@@ -182,7 +182,7 @@ fun MyOutlinedTextFieldWithoutIconKeyText(modifier: Modifier, enterValue: Mutabl
 fun ButtonSwipeProduct(itemList:MutableList<Product>,
                        sortingList: (MutableList<Product>, Int) -> Unit )
 {
-    Log.d("KDS", "ButtonSwipeProduct")
+//    Log.d("KDS", "ButtonSwipeProduct")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
 //        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
@@ -194,7 +194,7 @@ fun ButtonSwipeProduct(itemList:MutableList<Product>,
 fun ButtonSwipeBasket(itemList:MutableList<Basket>,
                       sortingList: (MutableList<Basket>, Int) -> Unit )
 {
-    Log.d("KDS", "ButtonSwipeBasket")
+//    Log.d("KDS", "ButtonSwipeBasket")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
 //        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
@@ -205,7 +205,7 @@ fun ButtonSwipeBasket(itemList:MutableList<Basket>,
 @Composable
 fun ButtonSwipeArticle( sortingList: (Int) -> Unit )
 {
-    Log.d("KDS", "ButtonSwipeArticle")
+//    Log.d("KDS", "ButtonSwipeArticle")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(1) }
 //        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))

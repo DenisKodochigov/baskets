@@ -1,5 +1,6 @@
 package com.example.shopping_list.data
 
+import android.util.Log
 import com.example.shopping_list.data.room.DataSourceDB
 import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.BasketEntity
@@ -90,7 +91,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
             }
         }
         changeGroupSelectedArticle(articles, idGroup)
-        return if (productList[0].basketId != null) getListProducts(productList[0].basketId!!)
+        return if (productList[0].basketId > 0) getListProducts(productList[0].basketId)
         else emptyList()
     }
 

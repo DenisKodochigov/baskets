@@ -49,7 +49,7 @@ fun ProductsScreen(
     viewModel.getStateProducts(basketId)
     val uiState by viewModel.stateProductsScreen.collectAsState()
 
-    Log.d("KDS", "ProductsScreen")
+//    Log.d("KDS", "ProductsScreen")
     bottomSheetContent.value = {
         BottomSheetContentProduct(
             uiState = uiState,
@@ -87,7 +87,7 @@ fun ProductsScreenLayout(
     val unSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val changeGroupSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
 
-    Log.d("KDS", "ProductsScreenLayout")
+//    Log.d("KDS", "ProductsScreenLayout")
     val itemList = uiState.products
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idProduct == isSelectedId.value }
@@ -141,7 +141,7 @@ fun LazyColumnProduct(
     changeProductInBasket: (Product) -> Unit,
     isSelected: MutableState<Long>)
 {
-    Log.d("KDS", "LazyColumnProduct")
+//    Log.d("KDS", "LazyColumnProduct")
     val listState = rememberLazyListState()
     val showDialog = remember {mutableStateOf(false)}
     val editProduct: MutableState<Product?> = remember {  mutableStateOf(null) }
@@ -243,7 +243,7 @@ fun LazyColumnProduct(
                         color = MaterialTheme.colors.onSurface,
                         thickness = 1.dp,
                         modifier = Modifier
-                            .padding(top = 28.dp, start = 8.dp, end = 8.dp)
+                            .padding(top = 36.dp, start = 8.dp, end = 8.dp)
                             .fillMaxWidth()
                     )
                 }
@@ -258,7 +258,7 @@ fun BottomSheetContentProduct(
     bottomSheetHide: () -> Unit,
     onAddProduct: (Product) -> Unit)
 {
-    Log.d("KDS", "BottomSheetContentProduct")
+//    Log.d("KDS", "BottomSheetContentProduct")
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val enterValue = remember{ mutableStateOf("1")}
     val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
@@ -320,23 +320,16 @@ fun BottomSheetContentProduct(
         Spacer(Modifier.height(36.dp))
         Row(Modifier.fillMaxWidth()) {
             ButtonMy(Modifier.weight(1f),"Add") {
-                onAddProduct(
-                    ProductEntity(
-                    value = if (enterValue.value.isEmpty()) 1.0 else enterValue.value.toDouble(),
-                        article = ArticleEntity(
-                            idArticle = enterArticle.value.first,
-                            nameArticle = enterArticle.value.second,
-                            group = GroupEntity(
-                                idGroup = enterGroup.value.first,
-                                nameGroup = enterGroup.value.second
-                            ),
-                            unitA = UnitEntity(
-                                idUnit = enterUnit.value.first,
-                                nameUnit = enterUnit.value.second
-                            )
-                        )
-                    )
-                )
+                val article = ArticleEntity( idArticle = enterArticle.value.first,
+                    nameArticle = enterArticle.value.second )
+                article.group = GroupEntity( idGroup = enterGroup.value.first,
+                    nameGroup = enterGroup.value.second )
+                article.unitA = UnitEntity( idUnit = enterUnit.value.first,
+                    nameUnit = enterUnit.value.second )
+                val product = ProductEntity(
+                    value = if (enterValue.value.isEmpty()) 1.0 else enterValue.value.toDouble())
+                product.article = article
+                onAddProduct( product )
                 enterArticle.value = Pair(0,"")
             }
             Spacer(Modifier.width(12.dp))

@@ -214,7 +214,8 @@ class AppViewModel @Inject constructor(
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
                     currentState.copy(products = it as MutableList<Product>) }},
-                onFailure = { errorApp.errorApi(it.message!!)}
+                onFailure = {
+                    errorApp.errorApi(it.message!!)}
             )
         }
     }

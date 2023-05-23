@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
+import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.Product
@@ -64,7 +65,6 @@ fun EditQuantityDialogLayout(
     listUnit: List<UnitA>){
 
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-
         /** Value*/
         MyOutlinedTextFieldWithoutIcon(
             modifier = Modifier
@@ -164,5 +164,43 @@ fun SelectGroupDialogLayout(
             filtering = false,
             readOnly = true
         )
+    }
+}
+
+@Composable
+fun EditArticleDialog(
+    article: Article,
+    listUnit: List<UnitA>,
+    listGroup: List<GroupArticle>,
+    onConfirm: (Article) -> Unit,
+    onDismiss: () -> Unit,)
+{
+    val nameArticle = remember{ mutableStateOf(article.nameArticle) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss ,
+        title = { Text(stringResource(R.string.change_quantity)) },
+        text = { EditArticleDialogLayout(nameArticle) },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text( text = stringResource(R.string.exit)) }
+        },
+        confirmButton = {
+            TextButton( onClick = {
+                article.nameArticle = nameArticle.value
+                onConfirm(article)
+            }) {
+                Text( text = stringResource(R.string.ok))
+            }
+        }
+    )
+}
+
+
+@Composable
+fun EditArticleDialogLayout( enterValue: MutableState<String>){
+
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        MyOutlinedTextFieldWithoutIconKeyText( enterValue = enterValue,
+            modifier = Modifier.align(Alignment.CenterVertically).fillMaxWidth() )
     }
 }

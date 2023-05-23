@@ -14,6 +14,7 @@ data class BasketEntity(
     override var fillBasket: Boolean = false,
     override var quantity: Int = 0,
     override var position: Int = 0,
-    @Ignore override var isSelected: Boolean = false,
-): Basket
+): Basket {
+    @Ignore override var isSelected: Boolean = false
+}
 

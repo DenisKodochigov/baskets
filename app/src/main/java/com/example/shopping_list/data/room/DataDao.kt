@@ -8,8 +8,6 @@ import com.example.shopping_list.data.room.tables.relation.ProductObj
 
 @Dao
 interface DataDao {
-
-
     @Update
     fun update(basket: BasketEntity)
 
@@ -28,10 +26,10 @@ interface DataDao {
     @Query("SELECT * FROM tb_basket")
     fun getListBasket(): List<BasketEntity>
 
-    @Query("SELECT * , COUNT(tb_product.idProduct) as count FROM tb_basket " +
-            "JOIN tb_product ON tb_basket.idBasket = tb_product.basketId " +
-            "GROUP BY tb_basket.idBasket")
-    fun getListBasketCount(): List<BasketCountObj>
+//    @Query("SELECT * , COUNT(tb_product.idProduct) as count FROM tb_basket " +
+//            "JOIN tb_product ON tb_basket.idBasket = tb_product.basketId " +
+//            "GROUP BY tb_basket.idBasket")
+//    fun getListBasketCount(): List<BasketCountObj>
 
     @Query("UPDATE tb_basket " +
             "SET nameBasket = :newName WHERE idBasket =:basketId " )
@@ -67,8 +65,6 @@ interface DataDao {
     @Query("SELECT * FROM tb_product")
     fun getListProductAll(): List<ProductObj>
 
-    @Query("DELETE FROM tb_product WHERE idProduct=:productId AND basketId =:basketId")
-    fun deleteSelectedProduct(productId:Long,basketId: Long)
 
     @Query("UPDATE tb_product SET value = :value WHERE  idProduct=:productId AND basketId =:basketId ")
     fun setValueProduct(productId:Long,basketId: Long, value: Double)
@@ -82,8 +78,16 @@ interface DataDao {
             "SET position = :position " +
             "WHERE idProduct=:productId AND basketId =:basketId " )
     fun setPositionProductInBasket(productId:Long,basketId: Long, position: Int)
-
+    @Query("DELETE FROM tb_product WHERE idProduct=:productId AND basketId=:basketId")
+    fun deleteProduct(productId:Long, basketId: Long)
+    @Query("DELETE FROM tb_product WHERE basketId=:basketId AND idProduct IN (:listId)")
+    fun deleteProducts(listId: List<Long>, basketId: Long)
+    @Delete
+    fun removeProduct(product:ProductEntity)
 /** Article entity*/
+    @Query("DELETE FROM tb_article WHERE idArticle =:articleId")
+    fun delArticle(articleId:Long)
+
     @Insert
     fun addArticle(article: ArticleEntity): Long
 
@@ -106,9 +110,6 @@ interface DataDao {
     @Query("SELECT idProduct FROM tb_product WHERE articleId =:articleId")
     fun checkArticleWithProduct(articleId:Long): List<Long>
 
-    @Query("DELETE FROM tb_article WHERE idArticle =:articleId")
-    fun delArticle(articleId:Long)
-
     @Query("UPDATE tb_article SET position = :position WHERE idArticle=:articleId " )
     fun setPositionArticle(articleId:Long,position: Int)
 /** Group entity*/
@@ -120,12 +121,13 @@ interface DataDao {
     fun addGroup(group: GroupEntity): Long
 
 /** Unit entity*/
+
     @Insert
     fun addUnit(unit: UnitEntity): Long
 
     @Query("SELECT * FROM tb_unit")
     fun getUnits(): List<UnitEntity>
-
+}
 
 //    @Query("SELECT * FROM basket JOIN products ON basket.productId = products.idProduct" +
 //            "JOIN article ON products.articleId = article.idArticle " +
@@ -155,7 +157,7 @@ interface DataDao {
 //    @Query("SELECT * FROM baskettoproduct WHERE basket_id = :idBasket")
 //    fun getBasketProducts(idBasket: Int): List<ProductDB>
 
-    //Insert new record to the table films
+//Insert new record to the table films
 //    @Insert(entity = BasketDB::class)
 //    fun insert(vararg data: BasketDB)
 
@@ -256,4 +258,3 @@ interface DataDao {
 //    //Selecting a list of movies-id added to the collection
 //    @Query("SELECT film_id FROM crossFC WHERE collection_id = :collectionId")
 //    fun getListFilmsInCollection(collectionId: Int): List<Int>
-}
