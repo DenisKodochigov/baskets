@@ -5,7 +5,6 @@ import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.ExposedDropdownMenu
 import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.UnitA
 
@@ -14,10 +13,10 @@ data class ArticleEntity(
     @PrimaryKey(autoGenerate = true) override var idArticle: Long = 0,
     override var nameArticle: String = "",
     override var position: Int = 0,
-    var groupId: Long? = null,
-    var unitId: Long? = null,
+    var groupId: Long = 0,
+    var unitId: Long = 0,
 ): Article {
-    @Ignore override var group: GroupArticle? = null
-    @Ignore override var unitA: UnitA? = null
+    @Ignore override var group: GroupArticle = GroupEntity()
+    @Ignore override var unitA: UnitA = UnitEntity()
     @Ignore override var isSelected: Boolean = false
 }

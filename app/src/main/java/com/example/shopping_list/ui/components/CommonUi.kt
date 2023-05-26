@@ -1,38 +1,36 @@
 package com.example.shopping_list.ui.components
 
 import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.shopping_list.R
+import com.example.shopping_list.data.room.tables.ArticleEntity
+import com.example.shopping_list.data.room.tables.GroupEntity
+import com.example.shopping_list.data.room.tables.ProductEntity
+import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.Basket
+import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.Product
+import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.ui.products.StateProductsScreen
 import com.example.shopping_list.ui.theme.BackgroundBottomBar
 
 @Composable
@@ -52,27 +50,25 @@ fun HeaderScreen(text: String, modifier: Modifier){
     enterValue: MutableState<Pair<Long,String>>?,
     readOnly: Boolean = false,) {
 
+    var focusItem by remember { mutableStateOf(false) }
     val localFocusManager = LocalFocusManager.current
     var expanded by remember { mutableStateOf(false) }
     var enteredText by remember { mutableStateOf("") }
-
-    if (enterValue != null) {
-        enteredText = enterValue.value.second
-    }
+    enteredText = if (enterValue != null && !focusItem) enterValue.value.second else ""
     ExposedDropdownMenuBox(
         expanded = expanded,
         modifier = modifier,
-        onExpandedChange = {
-            expanded = !expanded
-        }){
+        onExpandedChange = { expanded = !expanded }
+    ) {
         OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(1f).onFocusChanged { focusItem = it.isFocused},
             value = enteredText,
-            modifier = Modifier.fillMaxWidth(1f),
             singleLine = true,
             readOnly = readOnly,
             textStyle = MaterialTheme.typography.h1,
             onValueChange = {
                 enteredText = it
+                focusItem = false
                 enterValue!!.value = Pair(0,it)
                 expanded = true
             },
@@ -113,7 +109,7 @@ fun HeaderScreen(text: String, modifier: Modifier){
 }
 
 @Composable
-fun myText(text: String, modifier: Modifier){
+fun MyTextH1(text: String, modifier: Modifier){
     Text(
         text = text,
         style = MaterialTheme.typography.h1,
@@ -123,59 +119,79 @@ fun myText(text: String, modifier: Modifier){
     )
 }
 
-@Preview(showBackground = true)
 @Composable
-fun MyExposedDropdownMenuBoxPreview(){
-    MyExposedDropdownMenuBox(emptyList(),"label", Modifier, true, null)
-}
-
-@Composable
-fun MyOutlinedTextFieldWithoutIcon(modifier: Modifier, enterValue: MutableState<String>){
-
-    val localFocusManager = LocalFocusManager.current
-    var enterText by remember { mutableStateOf("") }
-    enterText = enterValue.value
-
-    OutlinedTextField(
-        modifier = modifier, //.onFocusChanged { if (it.isFocused) { enterText = "" } },
-        value = enterText,
-        singleLine = true,
-        textStyle = MaterialTheme.typography.h1,
-        onValueChange = {
-            enterText = it;
-            enterValue.value = it },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                localFocusManager.clearFocus()
-                enterValue.value = enterText
-            }
-        ) ,
+fun MyTextH2(text: String, modifier: Modifier){
+    Text(
+        text = text,
+        style = MaterialTheme.typography.h2,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier
     )
 }
 
 @Composable
-fun MyOutlinedTextFieldWithoutIconKeyText(modifier: Modifier, enterValue: MutableState<String>){
+fun MyOutlinedTextFieldWithoutIcon(
+    modifier: Modifier, enterValue: MutableState<String>, typeKeyboard: String){
 
     val localFocusManager = LocalFocusManager.current
     var enterText by remember { mutableStateOf("") }
     enterText = enterValue.value
+//    val keyboardController = LocalSoftwareKeyboardController.current
+    var keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done)
+    if (typeKeyboard == "text") keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
 
     OutlinedTextField(
-        modifier = modifier, //.onFocusChanged { if (it.isFocused) { enterText = "" } },
+        modifier = modifier,
         value = enterText,
         singleLine = true,
         textStyle = MaterialTheme.typography.h1,
         onValueChange = {
-            enterText = it;
+            enterText = it
             enterValue.value = it },
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(
             onDone = {
                 localFocusManager.clearFocus()
                 enterValue.value = enterText
+//                keyboardController?.hide()
             }
         ) ,
+//        leadingIcon = { enterText = onAddIconEditText(onNewArticle,enterText) },
+//        trailingIcon = { enterText = onAddIconEditText(onNewArticle,enterText) }
+    )
+}
+
+@Composable
+fun MyOutlinedTextFieldWithoutIconClearing(modifier: Modifier, enterValue: MutableState<String>, typeKeyboard: String){
+
+    val localFocusManager = LocalFocusManager.current
+    var focusItem by remember { mutableStateOf(false) }
+    var enterText by remember { mutableStateOf("") }
+    enterText = if (!focusItem) enterValue.value else  ""
+//    val keyboardController = LocalSoftwareKeyboardController.current
+    var keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done)
+    if (typeKeyboard == "text") keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+
+    OutlinedTextField(
+        modifier = modifier.onFocusChanged { focusItem = it.isFocused},
+        value = enterText,
+        singleLine = true,
+        textStyle = MaterialTheme.typography.h1,
+        onValueChange = {
+            focusItem = false
+            enterText = it
+            enterValue.value = it },
+        keyboardOptions = keyboardOptions,
+        keyboardActions = KeyboardActions(
+            onDone = {
+                localFocusManager.clearFocus()
+                enterValue.value = enterText
+//                keyboardController?.hide()
+            }
+        ) ,
+//        leadingIcon = { enterText = onAddIconEditText(onNewArticle,enterText) },
+//        trailingIcon = { enterText = onAddIconEditText(onNewArticle,enterText) }
     )
 }
 @Composable
@@ -234,78 +250,163 @@ fun ButtonMy(modifier: Modifier, nameButton: String, onClick: () -> Unit){
 }
 
 @Composable
-fun ListArticle(itemList: List<Article>, onAddClick: (Long, Double) -> Unit){
-    val listState = rememberLazyListState()
-    LazyColumn (state = listState, modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 12.dp)) {
-        items(items = itemList){ item->
-            Row ( modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, top = 2.dp, end = 24.dp, bottom = 2.dp)
-                .background(Color.White)
-                .clickable {
-                    //Показать диалог с выбором значения
-                    onAddClick(item.idArticle, 0.0)
-                }){
-                Text(text = item.nameArticle,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+fun LayoutAddEditProduct(
+    uiState: StateProductsScreen,
+    bottomSheetHide: () -> Unit,
+    onAddProduct: (Product) -> Unit)
+{
+//    Log.d("KDS", "BottomSheetContentProduct")
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+    val enterValue = remember{ mutableStateOf("1")}
+    val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
+    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,"All"))}
+    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1,"шт"))}
+    val focusRequesterSheet = remember { FocusRequester() }
+
+
+    val idUnit = uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
+    enterUnit.value = Pair(idUnit, enterUnit.value.second )
+    val idGroup = uiState.group.find { it.nameGroup == enterGroup.value.second }?.idGroup ?: 0L
+    enterGroup.value = Pair(idGroup, enterGroup.value.second )
+    val idArticle = uiState.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L
+    enterArticle.value = Pair(idArticle, enterArticle.value.second )
+
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.75).dp)) {
+//        Log.d("KDS", "BottomSheetContentProduct.Column")
+        HeaderScreen(text = "Add product", Modifier.focusRequester(focusRequesterSheet))
+        Spacer(Modifier.height(24.dp))
+        MyExposedDropdownMenuBox(/** Select article*/
+            listItems = uiState.articles.map{ Pair(it.idArticle, it.nameArticle) },
+            label = "Select product",
+            modifier = Modifier.fillMaxWidth(),
+            enterValue = enterArticle,
+            filtering = true )
+        if (enterArticle.value.first > 0) {
+            enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.articles)
+            enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
+            enterValue.value = "1"
+        }
+        Spacer(Modifier.height(12.dp))
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+            MyExposedDropdownMenuBox(/** Select group*/
+                listItems = uiState.group.map{ Pair(it.idGroup, it.nameGroup) },
+                label = "Group",
+                modifier = Modifier.weight(1f),
+                enterValue = enterGroup,
+                filtering = true)
+            Spacer(Modifier.width(4.dp))
+            MyOutlinedTextFieldWithoutIcon( /** Value*/ typeKeyboard = "digit",
+                modifier = Modifier.width(90.dp),
+                enterValue = enterValue)
+            Spacer(Modifier.width(4.dp))
+            MyExposedDropdownMenuBox(/** Select unit*/
+                listItems = uiState.unitA.map{ Pair(it.idUnit, it.nameUnit) },
+                label = "Unit",
+                modifier = Modifier.width(120.dp),
+                enterValue = enterUnit,
+                filtering = false)
+        }
+        Spacer(Modifier.height(36.dp))
+        Row(Modifier.fillMaxWidth()) {
+            ButtonMy(Modifier.weight(1f),"Add") {
+                val article = ArticleEntity( idArticle = enterArticle.value.first,
+                    nameArticle = enterArticle.value.second )
+                article.group = GroupEntity( idGroup = enterGroup.value.first,
+                    nameGroup = enterGroup.value.second )
+                article.groupId = enterGroup.value.first
+                article.unitA = UnitEntity( idUnit = enterUnit.value.first,
+                    nameUnit = enterUnit.value.second )
+                article.unitId = enterUnit.value.first
+                val product = ProductEntity(
+                    value = if (enterValue.value.isEmpty()) 1.0 else enterValue.value.toDouble())
+                product.article = article
+                onAddProduct( product )
+                enterArticle.value = Pair(0,"")
             }
+            Spacer(Modifier.width(12.dp))
+            ButtonMy(Modifier.weight(1f), "Cancel"){
+                enterArticle.value = Pair(0,"")
+                bottomSheetHide() }
+        }
+        Spacer(Modifier.height(72.dp))
+    }
+}
+
+@Composable
+fun LayoutAddEditArticle(
+    article: MutableState<Article>,
+    listUnit: List<UnitA>,
+    listGroup: List<GroupArticle>)
+{
+    Log.d("KDS", "LayoutAddEditArticle")
+    val enterNameArticle = remember{ mutableStateOf( article.value.nameArticle )}
+    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,"All"))}
+    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1,"шт"))}
+
+    article.value.unitA = if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
+        UnitEntity(nameUnit = enterUnit.value.second, idUnit = 0L)
+    } else listUnit.find { it.idUnit == enterUnit.value.first }!!
+
+    article.value.group = if (enterGroup.value.first == 0L && enterGroup.value.second != "") {
+        GroupEntity(nameGroup = enterGroup.value.second, idGroup = 0L)
+    } else listGroup.find { it.idGroup == enterGroup.value.first }!!
+
+    Column(
+        Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+        MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameArticle, "text")
+        Spacer(Modifier.height(12.dp))
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+            MyExposedDropdownMenuBox(/** Select group*/
+                listItems = listGroup.map{ Pair(it.idGroup, it.nameGroup) },
+                label = "Group",
+                modifier = Modifier.weight(1f),
+                enterValue = enterGroup,
+                filtering = true)
+            Spacer(Modifier.width(4.dp))
+            MyExposedDropdownMenuBox(/** Select unit*/
+                listItems = listUnit.map{ Pair(it.idUnit, it.nameUnit) },
+                label = "Unit",
+                modifier = Modifier.width(120.dp),
+                enterValue = enterUnit,
+                filtering = false,
+                readOnly = true)
         }
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun MyOutlinedTextField(onNewArticle: (String) -> Unit){
 
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val localFocusManager = LocalFocusManager.current
-    var nameNewArticle by remember { mutableStateOf("") }
-    val pb = 0.dp
-    val modifier = Modifier
-        .padding(start = pb, top = pb, end = pb, bottom = pb)
-        .fillMaxWidth()
-    OutlinedTextField(
-        value = nameNewArticle,
-        singleLine = true,
-        textStyle = TextStyle(fontSize =  20.sp),
-        label = { Text(text = "New article") },
-        onValueChange = { nameNewArticle = it},
-        modifier = modifier,
-        keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                onNewArticle(nameNewArticle)
-                keyboardController?.hide()
-                localFocusManager.clearFocus()
-                nameNewArticle = ""
-            }
-        ) ,
-        leadingIcon = { nameNewArticle = onAddIconEditText(onNewArticle,nameNewArticle) },
-        trailingIcon = { nameNewArticle = onAddIconEditText(onNewArticle,nameNewArticle) }
-    )
+@Composable
+fun selectGroupWithArticle (id: Long, listArticle: List<Article>): Pair<Long, String>{
+    val article = listArticle.find { it.idArticle == id }
+    return if (article != null) { Pair(article.group.idGroup, article.group.nameGroup) }
+            else Pair(0L,"")
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun onAddIconEditText(onNewArticle: (String) -> Unit, nameNewArticle: String): String {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val localFocusManager = LocalFocusManager.current
-    Icon(
-        Icons.Filled.Add,
-        contentDescription = "Add",
-        Modifier.clickable(
-            onClick = {
-                keyboardController?.hide()
-                onNewArticle(nameNewArticle)
-                localFocusManager.clearFocus() }
-        )
-    )
-    return ""
+fun selectUnitWithArticle (id: Long, listArticle: List<Article>): Pair<Long, String>{
+    val article = listArticle.find { it.idArticle == id }
+    return if (article != null) Pair(article.unitA.idUnit, article.unitA.nameUnit)
+        else Pair(0L,"")
 }
 
-
+//@OptIn(ExperimentalComposeUiApi::class)
+//@Composable
+//fun onAddIconEditText( onNewArticle: (String) -> Unit, nameNewArticle: String): String {
+//    val keyboardController = LocalSoftwareKeyboardController.current
+//    val localFocusManager = LocalFocusManager.current
+//    Icon(
+//        Icons.Filled.Add,
+//        contentDescription = "Add",
+//        Modifier.clickable(
+//            onClick = {
+//                keyboardController?.hide()
+//                onNewArticle(nameNewArticle)
+//                localFocusManager.clearFocus() }
+//        )
+//    )
+//    return ""
+//}

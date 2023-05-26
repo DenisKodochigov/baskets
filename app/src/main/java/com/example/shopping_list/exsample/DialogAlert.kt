@@ -1,19 +1,11 @@
 package com.example.shopping_list.exsample
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.shopping_list.R
-import com.example.shopping_list.entity.Product
-import com.example.shopping_list.entity.UnitA
-import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
-import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.shopping_list.ui.theme.DialogThemeOverlay
 
 @Composable

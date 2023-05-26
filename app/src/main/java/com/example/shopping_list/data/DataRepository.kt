@@ -66,23 +66,17 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     fun getListArticle(): List<Article> = dataSourceDB.getListArticle()
 
     fun addArticle(article: Article): List<Article> {
-        dataSourceDB.addArticle(article as ArticleEntity)
+        dataSourceDB.getAddArticle(article as ArticleEntity)
         return getListArticle()
     }
 
-    fun changeArticle(article: Article): List<Article> {
-        dataSourceDB.changeArticle(article as ArticleEntity)
-        return getListArticle()
-    }
+    fun changeArticle(article: Article): List<Article> = dataSourceDB.changeArticle(article as ArticleEntity)
 
     fun getGroups(): List<GroupArticle> = dataSourceDB.getGroups()
 
     fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
 
-    fun changeGroupSelectedProduct(
-        productList: MutableList<Product>,
-        idGroup: Long
-    ): List<Product> {
+    fun changeGroupSelectedProduct(productList: MutableList<Product>, idGroup: Long): List<Product> {
         val articles = mutableListOf<Article>()
         productList.forEach {
             if (it.isSelected) {
@@ -96,9 +90,9 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     }
 
     fun changeGroupSelectedArticle(articles: List<Article>, idGroup: Long): List<Article> {
-        dataSourceDB.changeGroupArticle(
-            idGroup, articles.filter { it.isSelected }.map { it.idArticle })
-        return getListArticle()
+        val articlesId = articles.filter { it.isSelected }.map { it.idArticle }
+        val listArticle = dataSourceDB.changeGroupArticle(idGroup, articlesId)
+        return listArticle
     }
 
     fun deleteSelectedArticle(articles: List<Article>): List<Article> {

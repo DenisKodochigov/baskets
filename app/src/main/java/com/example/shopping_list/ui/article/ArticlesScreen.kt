@@ -34,8 +34,8 @@ import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.*
-import com.example.shopping_list.ui.products.selectGroupWithArticle
-import com.example.shopping_list.ui.products.selectUnitWithArticle
+import com.example.shopping_list.ui.components.dialog.EditArticleDialog
+import com.example.shopping_list.ui.components.dialog.SelectGroupDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -48,7 +48,7 @@ fun ArticlesScreen(
     viewModel.getStateArticle()
     val uiState by viewModel.stateArticlesScreen.collectAsState()
 
-//    Log.d("KDS", "ArticlesScreen")
+    if (uiState.article.isNotEmpty()) Log.d("KDS", "ArticlesScreen ${uiState.article[0].group.nameGroup}")
     bottomSheetContent.value = {
         BottomSheetContentArticle(
             uiState = uiState,
@@ -56,34 +56,33 @@ fun ArticlesScreen(
             onAddArticle = { article-> viewModel.addArticle( article )}
         )
     }
-//    Log.d("KDS", "basketId = $basketId") ProductsScreenLayout
-    ScreenLayoutArticle(
+    LayoutArticleScreen(
         modifier = Modifier.padding(bottom =  dimensionResource(R.dimen.screen_padding_hor)),
-        uiState = uiState ,
+        uiState = uiState,
         changeArticle = { article-> viewModel.changeArticle( article )},
         doChangeGroupSelected = {
-                articles, idGroup -> viewModel.changeGroupSelectedArticle(articles,idGroup)},
-        doDeleteSelected = {articles -> viewModel.deleteSelectedArticle(articles)},
-        refreshPosition = { direction -> viewModel.setPositionArticle( direction)}
+                articles, idGroup -> viewModel.changeGroupSelectedArticle( articles, idGroup )},
+        doDeleteSelected = { articles -> viewModel.deleteSelectedArticle( articles )},
+        movePosition = { direction -> viewModel.movePositionArticle(direction) }
     )
 }
 
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Composable
-fun ScreenLayoutArticle(
+fun LayoutArticleScreen(
     modifier: Modifier = Modifier,
     uiState: StateArticlesScreen,
     changeArticle: (Article) -> Unit,
-    doChangeGroupSelected: (MutableList<Article>, Long) -> Unit,
-    doDeleteSelected: (MutableList<Article>) -> Unit,
-    refreshPosition: (Int) -> Unit,
+    doChangeGroupSelected: (List<Article>, Long) -> Unit,
+    doDeleteSelected: (List<Article>) -> Unit,
+    movePosition: (Int) -> Unit,
 ){
     val isSelectedId: MutableState<Long> = remember {  mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val changeGroupSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
 //
-//    Log.d("KDS", "ScreenLayoutArticle")
+    if (uiState.article.isNotEmpty()) Log.d("KDS", "ScreenLayoutArticle ${uiState.article[0].group.nameGroup}")
     val itemList = uiState.article
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idArticle == isSelectedId.value }
@@ -108,15 +107,14 @@ fun ScreenLayoutArticle(
     }
 
     Box(
-        Modifier.fillMaxSize()
-            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
+        Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
         Column( modifier.fillMaxHeight()) {
             HeaderScreen(text = "Products", modifier)
             Column(Modifier.fillMaxHeight().weight(1f)) {
                 Spacer(modifier = Modifier.weight(1f))
                 LazyColumnArticle(modifier, uiState, doDeleteSelected, changeArticle, isSelectedId)
             }
-            ButtonSwipeArticle( refreshPosition )
+            ButtonSwipeArticle( movePosition )
         }
         if ( itemList.find { it.isSelected } != null) {
             Column(Modifier.align(alignment = Alignment.BottomCenter)) {
@@ -134,11 +132,11 @@ fun ScreenLayoutArticle(
 fun LazyColumnArticle(
     modifier: Modifier = Modifier,
     uiState: StateArticlesScreen,
-    doDeleteSelected: (MutableList<Article>) -> Unit,
+    doDeleteSelected: (List<Article>) -> Unit,
     changeArticle: (Article) -> Unit,
     isSelected: MutableState<Long>)
 {
-//    Log.d("KDS", "LazyColumnArticle")
+    if (uiState.article.isNotEmpty()) Log.d("KDS", "LazyColumnArticle ${uiState.article[0].group.nameGroup}")
 
     val listState = rememberLazyListState()
     val showDialog = remember { mutableStateOf(false) }
@@ -236,7 +234,7 @@ fun LazyColumnArticle(
                                     .height(32.dp)
                                     .align(Alignment.CenterVertically)
                             )
-                            myText( text = item.nameArticle, modifier = Modifier
+                            MyTextH1( text = item.nameArticle, modifier = Modifier
                                 .weight(1f)
                                 .padding(
                                     start = dimensionResource(R.dimen.lazy_padding_hor),
@@ -244,12 +242,12 @@ fun LazyColumnArticle(
                                     bottom = dimensionResource(R.dimen.lazy_padding_ver))
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            myText(text = item.group?.nameGroup ?: "", modifier = Modifier
+                            MyTextH1(text = item.group.nameGroup, modifier = Modifier
                                 .width(100.dp)
                                 .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            myText(text = item.unitA?.nameUnit ?: "", modifier = Modifier
+                            MyTextH1(text = item.unitA.nameUnit, modifier = Modifier
                                 .width(40.dp)
                                 .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
                             )
@@ -267,7 +265,7 @@ fun BottomSheetContentArticle(
     bottomSheetHide: () -> Unit,
     onAddArticle: (Article) -> Unit)
 {
-//    Log.d("KDS", "BottomSheetContentArticle")
+    Log.d("KDS", "BottomSheetContentArticle")
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val enterValue = remember{ mutableStateOf("1")}
     val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
@@ -290,7 +288,7 @@ fun BottomSheetContentArticle(
     Column(
         Modifier.fillMaxWidth().padding(horizontal = 24.dp)
             .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.75).dp)) {
-//        Log.d("KDS", "BottomSheetContentProduct.Column")
+        Log.d("KDS", "BottomSheetContentProduct.Column")
         HeaderScreen(text = "Add product", Modifier.focusRequester(focusRequesterSheet))
         Spacer(Modifier.height(24.dp))
         MyExposedDropdownMenuBox(/** Select article*/
@@ -329,6 +327,8 @@ fun BottomSheetContentArticle(
                     nameGroup = enterGroup.value.second )
                 article.unitA = UnitEntity( idUnit = enterUnit.value.first,
                     nameUnit = enterUnit.value.second )
+                article.groupId = enterGroup.value.first
+                article.unitId = enterUnit.value.first
                 onAddArticle( article )
                 enterArticle.value = Pair(0,"")
             }

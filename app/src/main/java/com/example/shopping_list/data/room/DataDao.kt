@@ -3,7 +3,6 @@ package com.example.shopping_list.data.room
 import androidx.room.*
 import com.example.shopping_list.data.room.tables.*
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
-import com.example.shopping_list.data.room.tables.relation.BasketCountObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
 
 @Dao
@@ -18,10 +17,10 @@ interface DataDao {
     fun checkBasketFromName(basketName: String): Long?
 
     @Query("DELETE FROM tb_basket WHERE idBasket = :id")
-    fun deleteByIdBasket(id:Long)
+    fun deleteByIdBasket(id: Long)
 
     @Query("DELETE FROM tb_product WHERE basketId = :id")
-    fun deleteByIdBasketProduct(id:Long)
+    fun deleteByIdBasketProduct(id: Long)
 
     @Query("SELECT * FROM tb_basket")
     fun getListBasket(): List<BasketEntity>
@@ -31,31 +30,39 @@ interface DataDao {
 //            "GROUP BY tb_basket.idBasket")
 //    fun getListBasketCount(): List<BasketCountObj>
 
-    @Query("UPDATE tb_basket " +
-            "SET nameBasket = :newName WHERE idBasket =:basketId " )
-    fun changeNameBasket(basketId:Long, newName:String)
+    @Query(
+        "UPDATE tb_basket " +
+                "SET nameBasket = :newName WHERE idBasket =:basketId "
+    )
+    fun changeNameBasket(basketId: Long, newName: String)
 
     @Query("SELECT nameBasket FROM tb_basket WHERE idBasket = :basketId")
     fun getNameBasket(basketId: Long): String
 
-/** Product entity*/
+    /** Product entity*/
 
     @Insert
     fun addProduct(product: ProductEntity): Long
 
-    @Query("SELECT idProduct FROM tb_product " +
-            "JOIN tb_article ON tb_article.nameArticle = :name " +
-            "WHERE tb_product.articleId = tb_article.idArticle")
+    @Query(
+        "SELECT idProduct FROM tb_product " +
+                "JOIN tb_article ON tb_article.nameArticle = :name " +
+                "WHERE tb_product.articleId = tb_article.idArticle"
+    )
     fun checkProductFromName(name: String): Long?
 
-    @Query("SELECT idProduct FROM tb_product " +
-            "WHERE idProduct = :productId AND basketId = :basketId")
-    fun checkProductInBasket(basketId:Long, productId: Long): Long?
+    @Query(
+        "SELECT idProduct FROM tb_product " +
+                "WHERE idProduct = :productId AND basketId = :basketId"
+    )
+    fun checkProductInBasket(basketId: Long, productId: Long): Long?
 
     @Transaction
-    @Query("SELECT * FROM tb_product " +
-            "WHERE basketId = :basketId " +
-            "ORDER BY putInBasket DESC, position ASC")
+    @Query(
+        "SELECT * FROM tb_product " +
+                "WHERE basketId = :basketId " +
+                "ORDER BY putInBasket DESC, position ASC"
+    )
     fun getListProduct(basketId: Long): List<ProductObj>
 
     @Query("SELECT COUNT(idProduct) FROM tb_product WHERE basketId = :basketId")
@@ -67,26 +74,34 @@ interface DataDao {
 
 
     @Query("UPDATE tb_product SET value = :value WHERE  idProduct=:productId AND basketId =:basketId ")
-    fun setValueProduct(productId:Long,basketId: Long, value: Double)
+    fun setValueProduct(productId: Long, basketId: Long, value: Double)
 
-    @Query("UPDATE tb_product " +
-            "SET putInBasket = NOT putInBasket " +
-            "WHERE idProduct=:productId AND basketId =:basketId " )
-    fun putProductInBasket(productId:Long,basketId: Long)
+    @Query(
+        "UPDATE tb_product " +
+                "SET putInBasket = NOT putInBasket " +
+                "WHERE idProduct=:productId AND basketId =:basketId "
+    )
+    fun putProductInBasket(productId: Long, basketId: Long)
 
-    @Query("UPDATE tb_product " +
-            "SET position = :position " +
-            "WHERE idProduct=:productId AND basketId =:basketId " )
-    fun setPositionProductInBasket(productId:Long,basketId: Long, position: Int)
+    @Query(
+        "UPDATE tb_product " +
+                "SET position = :position " +
+                "WHERE idProduct=:productId AND basketId =:basketId "
+    )
+    fun setPositionProductInBasket(productId: Long, basketId: Long, position: Int)
+
     @Query("DELETE FROM tb_product WHERE idProduct=:productId AND basketId=:basketId")
-    fun deleteProduct(productId:Long, basketId: Long)
+    fun deleteProduct(productId: Long, basketId: Long)
+
     @Query("DELETE FROM tb_product WHERE basketId=:basketId AND idProduct IN (:listId)")
     fun deleteProducts(listId: List<Long>, basketId: Long)
+
     @Delete
-    fun removeProduct(product:ProductEntity)
-/** Article entity*/
+    fun removeProduct(product: ProductEntity)
+
+    /** Article entity*/
     @Query("DELETE FROM tb_article WHERE idArticle =:articleId")
-    fun delArticle(articleId:Long)
+    fun delArticle(articleId: Long)
 
     @Insert
     fun addArticle(article: ArticleEntity): Long
@@ -96,39 +111,43 @@ interface DataDao {
     fun getListArticle(): List<ArticleObj>
 
     @Query("UPDATE tb_article SET unitId = :unitId WHERE idArticle =:articleId")
-    fun setUnitInArticle(articleId:Long,unitId: Long)
+    fun setUnitInArticle(articleId: Long, unitId: Long)
 
     @Query("UPDATE tb_article SET groupId = :idGroup WHERE idArticle IN (:articles)")
-    fun changeGroupArticle(idGroup: Long, articles:List<Long>)
+    fun changeGroupArticle(idGroup: Long, articles: List<Long>)
 
     @Query("SELECT unitId FROM tb_article WHERE idArticle =:articleId")
-    fun getIdUnitFromArticle(articleId:Long): Long
+    fun getIdUnitFromArticle(articleId: Long): Long
 
     @Update
     fun changeArticle(article: ArticleEntity)
 
     @Query("SELECT idProduct FROM tb_product WHERE articleId =:articleId")
-    fun checkArticleWithProduct(articleId:Long): List<Long>
+    fun checkArticleWithProduct(articleId: Long): List<Long>
 
-    @Query("UPDATE tb_article SET position = :position WHERE idArticle=:articleId " )
-    fun setPositionArticle(articleId:Long,position: Int)
-/** Group entity*/
+    @Query("UPDATE tb_article SET position = :position WHERE idArticle=:articleId ")
+    fun setPositionArticle(articleId: Long, position: Int)
+
+    /** Group entity*/
 
     @Query("SELECT * FROM tb_group")
     fun getGroups(): List<GroupEntity>
 
     @Insert
     fun addGroup(group: GroupEntity): Long
-
-/** Unit entity*/
+    @Query("SELECT * FROM tb_group WHERE idGroup = :id")
+    fun getGroup(id: Long): GroupEntity
+    /** Unit entity*/
 
     @Insert
     fun addUnit(unit: UnitEntity): Long
 
     @Query("SELECT * FROM tb_unit")
     fun getUnits(): List<UnitEntity>
-}
 
+    @Query("SELECT * FROM tb_unit WHERE idUnit = :id")
+    fun getUnit(id: Long): UnitEntity
+}
 //    @Query("SELECT * FROM basket JOIN products ON basket.productId = products.idProduct" +
 //            "JOIN article ON products.articleId = article.idArticle " +
 //            "JOIN tb_unit ON article.unitId = tb_uit.idUnit WHERE basketId=:basketId")

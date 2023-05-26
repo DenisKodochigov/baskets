@@ -1,10 +1,11 @@
 package com.example.shopping_list.data.room.tables.relation
 
-import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.example.shopping_list.data.room.tables.*
-import com.example.shopping_list.entity.Article
+import com.example.shopping_list.data.room.tables.ArticleEntity
+import com.example.shopping_list.data.room.tables.GroupEntity
+import com.example.shopping_list.data.room.tables.ProductEntity
+import com.example.shopping_list.data.room.tables.UnitEntity
 
 data class ArticleObj(
     @Embedded val article: ArticleEntity,
@@ -26,10 +27,10 @@ data class ProductObj (
     ) val article: ArticleObj
 )
 
-data class BasketCountObj(
-    @Embedded var basket: BasketEntity,
-    @ColumnInfo var count: Int
-)
+//data class BasketCountObj(
+//    @Embedded var basket: BasketEntity,
+//    @ColumnInfo var count: Int
+//)
 //data class ProductForBasket (
 //    @Embedded val basket: BasketTable,
 //    @Relation(

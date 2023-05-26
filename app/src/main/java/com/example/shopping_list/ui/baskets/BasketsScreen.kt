@@ -35,8 +35,8 @@ import com.example.shopping_list.R
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.components.ButtonSwipeBasket
-import com.example.shopping_list.ui.components.EditBasketName
 import com.example.shopping_list.ui.components.HeaderScreen
+import com.example.shopping_list.ui.components.dialog.EditBasketName
 import com.example.shopping_list.ui.theme.TextDate
 import kotlinx.coroutines.delay
 import java.util.*
@@ -56,7 +56,7 @@ fun BasketsScreen(
             onAddClick = {viewModel.addBasket(it)},
             bottomSheetHide = bottomSheetHide) }
 
-    BasketsScreenLayout(
+    LayoutBasketsScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         onClickBasket = onClickBasket,
         itemList = uiState.baskets,
@@ -68,7 +68,7 @@ fun BasketsScreen(
 }
 
 @Composable
-fun BasketsScreenLayout(
+fun LayoutBasketsScreen(
     modifier: Modifier = Modifier,
     itemList: MutableList<Basket>,
     onClickBasket: (Long) -> Unit,

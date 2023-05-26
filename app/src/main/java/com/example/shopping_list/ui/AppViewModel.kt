@@ -1,5 +1,6 @@
 package com.example.shopping_list.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
@@ -24,8 +25,10 @@ class AppViewModel @Inject constructor(
 
     private val _stateBasketScreen = MutableStateFlow(StateBasketScreen())
     val stateBasketScreen: StateFlow<StateBasketScreen> = _stateBasketScreen.asStateFlow()
+
     private val _stateProductsScreen = MutableStateFlow(StateProductsScreen())
     val stateProductsScreen: StateFlow<StateProductsScreen> = _stateProductsScreen.asStateFlow()
+
     private val _stateArticlesScreen = MutableStateFlow(StateArticlesScreen())
     val stateArticlesScreen: StateFlow<StateArticlesScreen> = _stateArticlesScreen.asStateFlow()
 
@@ -160,7 +163,7 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    fun setPositionProductInBasket(products: List<Product>, direction: Int){
+    fun movePositionProductInBasket(products: List<Product>, direction: Int){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.setPositionProductInBasket(products, direction)
@@ -264,7 +267,7 @@ class AppViewModel @Inject constructor(
                 dataRepository.addArticle(article)
             }.fold(
                 onSuccess = {_stateArticlesScreen.update { currentState ->
-                    currentState.copy(article = it as MutableList<Article>) }},
+                    currentState.copy( article = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -275,43 +278,46 @@ class AppViewModel @Inject constructor(
             kotlin.runCatching {
                 dataRepository.changeArticle(article)
             }.fold(
-                onSuccess = {_stateArticlesScreen.update { currentState ->
-                    currentState.copy(article = it as MutableList<Article>) }},
+                onSuccess = {
+                    if (it.isNotEmpty()) Log.d("KDS", "ViewModel.changeArticle ${it[0].group.nameGroup}")
+                    _stateArticlesScreen.update { currentState -> currentState.copy( article = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
     }
 
-    fun changeGroupSelectedArticle(articles: MutableList<Article>, idGroup: Long){
+    fun changeGroupSelectedArticle(articles: List<Article>, idGroup: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.changeGroupSelectedArticle(articles, idGroup) }.fold(
+                dataRepository.changeGroupSelectedArticle(articles, idGroup)
+            }.fold(
                 onSuccess = {_stateArticlesScreen.update { currentState ->
-                    currentState.copy(article = it as MutableList<Article>) }},
+                    currentState.copy( article = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
     }
 
-    fun deleteSelectedArticle(articles: MutableList<Article>){
+    fun deleteSelectedArticle(articles: List<Article>){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.deleteSelectedArticle(articles)
             }.fold(
                 onSuccess = {_stateArticlesScreen.update { currentState ->
-                    currentState.copy(article = it as MutableList<Article>) }},
+                    currentState.copy( article = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
     }
 
-    fun setPositionArticle( direction: Int){
+
+    fun movePositionArticle( direction: Int){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.setPositionArticle( direction)
             }.fold(
                 onSuccess = {_stateArticlesScreen.update { currentState ->
-                    currentState.copy(article = it as MutableList<Article>) }},
+                    currentState.copy( article = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
