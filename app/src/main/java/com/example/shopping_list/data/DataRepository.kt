@@ -58,7 +58,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         return dataSourceDB.changeProductInBasket(product, basketId)
     }
 
-    fun deleteSelectedProduct(productList: MutableList<Product>): List<Product> {
+    fun deleteSelectedProduct(productList: List<Product>): List<Product> {
         return dataSourceDB.deleteSelectedProduct(productList)
     }
 
@@ -76,7 +76,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
 
     fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
 
-    fun changeGroupSelectedProduct(productList: MutableList<Product>, idGroup: Long): List<Product> {
+    fun changeGroupSelectedProduct(productList: List<Product>, idGroup: Long): List<Product> {
         val articles = mutableListOf<Article>()
         productList.forEach {
             if (it.isSelected) {

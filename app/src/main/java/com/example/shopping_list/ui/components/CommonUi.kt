@@ -195,8 +195,8 @@ fun MyOutlinedTextFieldWithoutIconClearing(modifier: Modifier, enterValue: Mutab
     )
 }
 @Composable
-fun ButtonSwipeProduct(itemList:MutableList<Product>,
-                       sortingList: (MutableList<Product>, Int) -> Unit )
+fun ButtonSwipeProduct(itemList:List<Product>,
+                       sortingList: (List<Product>, Int) -> Unit )
 {
 //    Log.d("KDS", "ButtonSwipeProduct")
     Row(Modifier.fillMaxWidth()) {

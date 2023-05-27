@@ -142,7 +142,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
     }
 
-    fun deleteSelectedProduct(products: MutableList<Product>): List<Product>{
+    fun deleteSelectedProduct(products: List<Product>): List<Product>{
         val basketId = products[0].basketId
         val listId = products.filter { it.isSelected }.map { it.idProduct }
         dataDao.deleteProducts(listId, basketId)

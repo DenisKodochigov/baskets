@@ -23,14 +23,14 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase {
 
-        val nameGroup = appContext.getString(R.string.name_group)
+//        val nameGroup = appContext.getString(R.string.name_group)
         database = Room.inMemoryDatabaseBuilder(appContext, AppDatabase::class.java)
             .addCallback( object: RoomDatabase.Callback(){
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     ioThread {
                         database.dataDao().newBasket(BasketEntity(nameBasket = "Test"))
-                        database.dataDao().addGroup(GroupEntity(nameGroup = nameGroup))
+                        database.dataDao().addGroup(GroupEntity(nameGroup = appContext.getString(R.string.name_group)))
                         database.dataDao().addGroup(GroupEntity(nameGroup = "Продукты"))
                         database.dataDao().addUnit(UnitEntity(nameUnit = "шт"))
                         database.dataDao().addUnit(UnitEntity(nameUnit = "кг"))

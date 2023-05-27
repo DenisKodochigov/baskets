@@ -84,14 +84,17 @@ fun ProductsScreen(
 //    Log.d("KDS", "basketId = $basketId") ProductsScreenLayout
     LayoutProductsScreen(
         modifier = Modifier.padding(bottom =  dimensionResource(R.dimen.screen_padding_hor)),
-        uiState = uiState ,
-        putProductInBasket = {product-> viewModel.putProductInBasket( product, basketId )},
-        changeProductInBasket = {product-> viewModel.changeProductInBasket( product, basketId )},
-        doChangeGroupSelected = {
-                productList, idGroup -> viewModel.changeGroupSelectedProduct(productList,idGroup)},
-        doDeleteSelected = {productList -> viewModel.deleteSelectedProducts(productList)},
-        movePosition = {
-                productList, direction -> viewModel.movePositionProductInBasket(productList, direction)}
+        uiState = uiState,
+        putProductInBasket = { product->
+            viewModel.putProductInBasket( product, basketId )},
+        changeProductInBasket = { product->
+            viewModel.changeProductInBasket( product, basketId )},
+        doChangeGroupSelected = { productList, idGroup ->
+            viewModel.changeGroupSelectedProduct(productList,idGroup)},
+        doDeleteSelected = {productList ->
+            viewModel.deleteSelectedProducts(productList)},
+        movePosition = { productList, direction ->
+            viewModel.movePositionProductInBasket(productList, direction)}
     )
 }
 
@@ -102,9 +105,9 @@ fun LayoutProductsScreen(
     uiState: StateProductsScreen,
     putProductInBasket: (Product) -> Unit,
     changeProductInBasket: (Product) -> Unit,
-    doChangeGroupSelected: (MutableList<Product>, Long) -> Unit,
-    doDeleteSelected: (MutableList<Product>) -> Unit,
-    movePosition: (MutableList<Product>, Int) -> Unit,
+    doChangeGroupSelected: (List<Product>, Long) -> Unit,
+    doDeleteSelected: (List<Product>) -> Unit,
+    movePosition: (List<Product>, Int) -> Unit,
 ){
     val isSelectedId: MutableState<Long> = remember {  mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
@@ -141,8 +144,7 @@ fun LayoutProductsScreen(
             Column(Modifier.fillMaxHeight().weight(1f)) {
                 Spacer(modifier = Modifier.weight(1f))
                 LazyColumnProduct(
-                    productList = itemList,
-                    unitList = uiState.unitA,
+                    uiState = uiState,
                     putProductInBasket = putProductInBasket,
                     changeProductInBasket = changeProductInBasket,
                     isSelected = isSelectedId)
@@ -162,8 +164,7 @@ fun LayoutProductsScreen(
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun LazyColumnProduct(
-    productList: MutableList<Product>,
-    unitList: List<UnitA>,
+    uiState: StateProductsScreen,
     putProductInBasket: (Product) -> Unit,
     changeProductInBasket: (Product) -> Unit,
     isSelected: MutableState<Long>)
@@ -176,7 +177,7 @@ fun LazyColumnProduct(
     if (editProduct.value != null && showDialog.value){
         EditQuantityDialog(
             product = editProduct.value!!,
-            listUnit = unitList,
+            listUnit = uiState.unitA,
             onDismiss = { showDialog.value = false },
             onConfirm = {
                 changeProductInBasket(editProduct.value!!)
@@ -184,8 +185,8 @@ fun LazyColumnProduct(
             }
         )
     }
-    productList.sortWith(compareBy ({ !it.putInBasket }, { it.position }))
-
+//    productList.sortWith(compareBy ({ !it.putInBasket }, { it.position }))
+    val productList = uiState.products.filter { !it.putInBasket }.sortedBy { it.position }
     LazyColumn (
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),

@@ -142,7 +142,7 @@ class AppViewModel @Inject constructor(
                 dataRepository.addProduct(product)
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
-                    currentState.copy(products = it as MutableList<Product>) }},
+                    currentState.copy(products = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -157,7 +157,7 @@ class AppViewModel @Inject constructor(
                 dataRepository.putProductInBasket(product, basketId)
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
-                    currentState.copy(products = it as MutableList<Product>) }},
+                    currentState.copy(products = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -169,7 +169,7 @@ class AppViewModel @Inject constructor(
                 dataRepository.setPositionProductInBasket(products, direction)
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
-                    currentState.copy(products = it as MutableList<Product>) }},
+                    currentState.copy(products = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -193,30 +193,30 @@ class AppViewModel @Inject constructor(
                 dataRepository.changeProductInBasket(product, basketId)
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
-                    currentState.copy(products = it as MutableList<Product>) } },
+                    currentState.copy(products = it) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
     }
 
-    fun changeGroupSelectedProduct(productList: MutableList<Product>, idGroup: Long){
+    fun changeGroupSelectedProduct(productList: List<Product>, idGroup: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.changeGroupSelectedProduct(productList, idGroup) }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
-                    currentState.copy(products = it as MutableList<Product>) }},
+                    currentState.copy(products = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
     }
 
-    fun deleteSelectedProducts(productList: MutableList<Product>){
+    fun deleteSelectedProducts(productList: List<Product>){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.deleteSelectedProduct(productList)
             }.fold(
                 onSuccess = {_stateProductsScreen.update { currentState ->
-                    currentState.copy(products = it as MutableList<Product>) }},
+                    currentState.copy(products = it) }},
                 onFailure = {
                     errorApp.errorApi(it.message!!)}
             )
@@ -224,7 +224,6 @@ class AppViewModel @Inject constructor(
     }
 
     /** */
-
 
     fun getStateArticle(){
         getArticles()
@@ -235,7 +234,7 @@ class AppViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListArticle() }.fold(
                 onSuccess = { _stateArticlesScreen.update { currentState ->
-                    currentState.copy(article = it as MutableList<Article>) } },
+                    currentState.copy(article = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -261,6 +260,7 @@ class AppViewModel @Inject constructor(
             )
         }
     }
+
     fun addArticle(article: Article){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
@@ -279,6 +279,7 @@ class AppViewModel @Inject constructor(
                 dataRepository.changeArticle(article)
             }.fold(
                 onSuccess = {
+                    Log.d("KDS", "##########################################################")
                     if (it.isNotEmpty()) Log.d("KDS", "ViewModel.changeArticle ${it[0].group.nameGroup}")
                     _stateArticlesScreen.update { currentState -> currentState.copy( article = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
@@ -291,8 +292,10 @@ class AppViewModel @Inject constructor(
             kotlin.runCatching {
                 dataRepository.changeGroupSelectedArticle(articles, idGroup)
             }.fold(
-                onSuccess = {_stateArticlesScreen.update { currentState ->
-                    currentState.copy( article = it) }},
+                onSuccess = {
+                    Log.d("KDS", "##########################################################")
+                    if (it.isNotEmpty()) Log.d("KDS", "ViewModel.changeGroupSelectedArticle ${it[0].group.nameGroup}")
+                    _stateArticlesScreen.update { currentState -> currentState.copy( article = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -322,5 +325,4 @@ class AppViewModel @Inject constructor(
             )
         }
     }
-
 }

@@ -6,7 +6,7 @@ import com.example.shopping_list.entity.Product
 import com.example.shopping_list.entity.UnitA
 
 data class StateProductsScreen(
-    val products: MutableList<Product> = mutableListOf(),
+    val products: List<Product> = emptyList(),
     val articles: List<Article> = emptyList(),
     val group: List<GroupArticle> = emptyList(),
     var unitA: List<UnitA> = emptyList(),
