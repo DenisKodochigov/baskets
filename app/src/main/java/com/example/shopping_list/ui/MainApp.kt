@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MainApp(viewModel: AppViewModel) {
+fun MainApp() {
     AppTheme {
         val navController = rememberNavController()
         val currentBackStack by navController.currentBackStackEntryAsState()
@@ -55,8 +55,8 @@ fun MainApp(viewModel: AppViewModel) {
                 isFloatingActionButtonDocked = true,
             ) { innerPadding ->
                 AppNavHost(navController, modifier = Modifier.padding(innerPadding),
-                    viewModel = viewModel, bottomSheetContent = bottomSheetContent
-                ) { scope.launch {bottomSheetState.hide() }}
+                    bottomSheetContent = bottomSheetContent )
+                { scope.launch {bottomSheetState.hide() }}
             }
         }
     }

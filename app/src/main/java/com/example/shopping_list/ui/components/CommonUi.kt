@@ -195,32 +195,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(modifier: Modifier, enterValue: Mutab
     )
 }
 @Composable
-fun ButtonSwipeProduct(itemList:List<Product>,
-                       sortingList: (List<Product>, Int) -> Unit )
-{
-//    Log.d("KDS", "ButtonSwipeProduct")
-    Row(Modifier.fillMaxWidth()) {
-        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
-//        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
-//        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
-    }
-}
-
-@Composable
-fun ButtonSwipeBasket(itemList:MutableList<Basket>,
-                      sortingList: (MutableList<Basket>, Int) -> Unit )
-{
-//    Log.d("KDS", "ButtonSwipeBasket")
-    Row(Modifier.fillMaxWidth()) {
-        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(itemList,1) }
-//        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
-//        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(itemList,-1) }
-    }
-}
-
-@Composable
-fun ButtonSwipeArticle( sortingList: (Int) -> Unit )
-{
+fun ButtonSwipe( sortingList: (Int) -> Unit ) {
 //    Log.d("KDS", "ButtonSwipeArticle")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(1) }
@@ -344,8 +319,10 @@ fun LayoutAddEditArticle(
 {
     Log.d("KDS", "LayoutAddEditArticle")
     val enterNameArticle = remember{ mutableStateOf( article.value.nameArticle )}
-    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,"All"))}
-    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1,"шт"))}
+    val enterGroup = remember{
+        mutableStateOf( Pair(article.value.group.idGroup,article.value.group.nameGroup)) }
+    val enterUnit = remember{
+        mutableStateOf( Pair(article.value.unitA.idUnit,article.value.unitA.nameUnit)) }
 
     article.value.unitA = if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
         UnitEntity(nameUnit = enterUnit.value.second, idUnit = 0L)

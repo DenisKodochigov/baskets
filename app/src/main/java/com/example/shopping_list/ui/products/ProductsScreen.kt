@@ -40,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,11 +49,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.entity.UnitA
-import com.example.shopping_list.ui.AppViewModel
-import com.example.shopping_list.ui.components.ButtonSwipeProduct
+import com.example.shopping_list.ui.components.ButtonSwipe
 import com.example.shopping_list.ui.components.FabChangeGroupProducts
 import com.example.shopping_list.ui.components.FabDeleteProducts
 import com.example.shopping_list.ui.components.FabUnSelectProducts
@@ -62,14 +62,15 @@ import com.example.shopping_list.ui.components.MyTextH1
 import com.example.shopping_list.ui.components.dialog.EditQuantityDialog
 import com.example.shopping_list.ui.components.dialog.SelectGroupDialog
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProductsScreen(
     basketId: Long,
-    viewModel: AppViewModel,
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>,
     bottomSheetHide: () -> Unit,
 ){
+    val viewModel: ProductViewModel = hiltViewModel()
     viewModel.getStateProducts(basketId)
     val uiState by viewModel.stateProductsScreen.collectAsState()
 
@@ -93,8 +94,8 @@ fun ProductsScreen(
             viewModel.changeGroupSelectedProduct(productList,idGroup)},
         doDeleteSelected = {productList ->
             viewModel.deleteSelectedProducts(productList)},
-        movePosition = { productList, direction ->
-            viewModel.movePositionProductInBasket(productList, direction)}
+        movePosition = { direction ->
+            viewModel.movePositionProductInBasket( basketId, direction )}
     )
 }
 
@@ -107,7 +108,7 @@ fun LayoutProductsScreen(
     changeProductInBasket: (Product) -> Unit,
     doChangeGroupSelected: (List<Product>, Long) -> Unit,
     doDeleteSelected: (List<Product>) -> Unit,
-    movePosition: (List<Product>, Int) -> Unit,
+    movePosition: (Int) -> Unit,
 ){
     val isSelectedId: MutableState<Long> = remember {  mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
@@ -149,7 +150,7 @@ fun LayoutProductsScreen(
                     changeProductInBasket = changeProductInBasket,
                     isSelected = isSelectedId)
             }
-            ButtonSwipeProduct(itemList, movePosition)
+            ButtonSwipe(movePosition)
         }
         if ( itemList.find { it.isSelected } != null) {
             Column(Modifier.align(alignment = Alignment.BottomCenter)) {
@@ -161,6 +162,7 @@ fun LayoutProductsScreen(
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun LazyColumnProduct(
@@ -173,6 +175,8 @@ fun LazyColumnProduct(
     val listState = rememberLazyListState()
     val showDialog = remember {mutableStateOf(false)}
     val editProduct: MutableState<Product?> = remember {  mutableStateOf(null) }
+    val firstItem = remember { mutableStateOf(Pair<Int, Long>(0, 0)) }
+    val coroutineScope = rememberCoroutineScope()
 
     if (editProduct.value != null && showDialog.value){
         EditQuantityDialog(
@@ -184,6 +188,13 @@ fun LazyColumnProduct(
                 showDialog.value = false
             }
         )
+    }
+    if (uiState.products.isNotEmpty()) {
+        if (firstItem.value.first != uiState.products[0].position ||
+            firstItem.value.second != uiState.products[0].idProduct) {
+            coroutineScope.launch { listState.animateScrollToItem(index = 0) }
+            firstItem.value = Pair(uiState.products[0].position, uiState.products[0].idProduct)
+        }
     }
 //    productList.sortWith(compareBy ({ !it.putInBasket }, { it.position }))
     val productList = uiState.products.filter { !it.putInBasket }.sortedBy { it.position }

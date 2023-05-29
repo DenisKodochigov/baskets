@@ -1,5 +1,6 @@
 package com.example.shopping_list.ui.baskets
 
+import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
 import android.os.Looper
 import androidx.compose.animation.core.animateFloatAsState
@@ -31,24 +32,24 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Basket
-import com.example.shopping_list.ui.AppViewModel
-import com.example.shopping_list.ui.components.ButtonSwipeBasket
+import com.example.shopping_list.ui.components.ButtonSwipe
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.dialog.EditBasketName
 import com.example.shopping_list.ui.theme.TextDate
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 
 @Composable
 fun BasketsScreen(
     onClickBasket: (Long) -> Unit,
-    viewModel: AppViewModel,
-    modifier: Modifier = Modifier,
     bottomSheetHide: () -> Unit,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>) {
 
+    val viewModel: BasketViewModel = hiltViewModel()
     viewModel.getListBasket()
     val uiState by viewModel.stateBasketScreen.collectAsState()
     bottomSheetContent.value = {
@@ -62,17 +63,16 @@ fun BasketsScreen(
         itemList = uiState.baskets,
         changeNameBasket = { basket -> viewModel.changeNameBasket(basket)},
         deleteBasket = { basketId -> viewModel.deleteBasket(basketId)},
-        refreshPosition = {
-                basketList, direction -> viewModel.setPositionBasket(basketList, direction)}
+        refreshPosition = { direction -> viewModel.setPositionBasket(direction)}
     )
 }
 
 @Composable
 fun LayoutBasketsScreen(
     modifier: Modifier = Modifier,
-    itemList: MutableList<Basket>,
+    itemList: List<Basket>,
     onClickBasket: (Long) -> Unit,
-    refreshPosition: (MutableList<Basket>, Int) -> Unit,
+    refreshPosition: (Int) -> Unit,
     changeNameBasket: (Basket) -> Unit,
     deleteBasket: (Long) -> Unit,
 ){
@@ -88,25 +88,31 @@ fun LayoutBasketsScreen(
         itemList.forEach { it.isSelected = false }
         unSelected.value = false
     }
-    Column( modifier = modifier.fillMaxHeight()
-        .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
-        HeaderScreen(text = "Baskets", modifier)
-        Spacer( Modifier.weight(1f))
-        LazyColumnBasket( itemList, onClickBasket, deleteBasket, changeNameBasket)
-        ButtonSwipeBasket(itemList, refreshPosition)
+    Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+        Column(modifier = modifier.fillMaxHeight()) {
+            HeaderScreen(text = "Baskets", modifier)
+            Column(Modifier.fillMaxHeight().weight(1f)) {
+                Spacer(Modifier.weight(1f))
+                LazyColumnBasket(itemList, onClickBasket, deleteBasket, changeNameBasket)
+            }
+            ButtonSwipe(refreshPosition)
+        }
     }
  }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun LazyColumnBasket(
-    basketList: MutableList<Basket>,
+    basketList: List<Basket>,
     onClickBasket: (Long) -> Unit,
     deleteBasket: (Long) -> Unit,
     changeNameBasket: (Basket) -> Unit,
 ){
     val listState = rememberLazyListState()
+    val firstItem = remember { mutableStateOf(Pair<Int, Long>(0, 0)) }
     val showDialog = remember {mutableStateOf(false)}
+    val coroutineScope = rememberCoroutineScope()
     val editBasket: MutableState<Basket?> = remember {  mutableStateOf(null) }
 
     if (editBasket.value != null && showDialog.value){
@@ -118,6 +124,13 @@ fun LazyColumnBasket(
                 showDialog.value = false
             },
         )
+    }
+    if (basketList.isNotEmpty()) {
+        if (firstItem.value.first != basketList[0].position ||
+            firstItem.value.second != basketList[0].idBasket) {
+            coroutineScope.launch { listState.animateScrollToItem(index = 0) }
+            firstItem.value = Pair(basketList[0].position, basketList[0].idBasket)
+        }
     }
     LazyColumn (
         state = listState,
@@ -144,7 +157,9 @@ fun LazyColumnBasket(
                 LaunchedEffect(Unit) { delay(300); dismissState.reset() }
             }
             SwipeToDismiss(state = dismissState,
-                modifier = Modifier.padding(vertical = 1.dp).animateItemPlacement(),
+                modifier = Modifier
+                    .padding(vertical = 1.dp)
+                    .animateItemPlacement(),
                 directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
                 dismissThresholds = { direction ->
                     FractionalThreshold(if (direction == DismissDirection.StartToEnd ||
@@ -222,7 +237,8 @@ fun BottomSheetContentBasket(onAddClick: (String) -> Unit, bottomSheetHide: () -
     val screenHeight = LocalConfiguration.current.screenHeightDp
 
     Column(
-        Modifier.fillMaxWidth()
+        Modifier
+            .fillMaxWidth()
             .heightIn((screenHeight * 0.35).dp, (screenHeight * 0.75).dp)
             .padding(24.dp, 24.dp, 24.dp, 32.dp)) {
         OutlinedTextField(

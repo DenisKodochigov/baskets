@@ -15,13 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.products.StateProductsScreen
 
 @Composable
 fun SettingsScreen(
     onSettingsClick: (String) -> Unit = {},
-    viewModel: AppViewModel,
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>
 ) {
     SettingsScreenLayout()

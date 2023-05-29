@@ -46,12 +46,12 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         return dataSourceDB.putProductInBasket(product, basketId)
     }
 
-    fun setPositionBasket(baskets: List<Basket>, direction: Int): List<Basket> {
-        return dataSourceDB.setPositionBasket(baskets, direction)
+    fun setPositionBasket( direction: Int): List<Basket> {
+        return dataSourceDB.setPositionBasket(direction)
     }
 
-    fun setPositionProductInBasket(products: List<Product>, direction: Int): List<Product> {
-        return dataSourceDB.setPositionProductInBasket(products, direction)
+    fun setPositionProductInBasket(basketId: Long, direction: Int): List<Product> {
+        return dataSourceDB.setPositionProductInBasket(basketId, direction)
     }
 
     fun changeProductInBasket(product: Product, basketId: Long): List<Product> {

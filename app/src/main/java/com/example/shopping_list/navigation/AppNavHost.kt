@@ -6,7 +6,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.shopping_list.ui.AppViewModel
 import com.example.shopping_list.ui.article.ArticlesScreen
 import com.example.shopping_list.ui.baskets.BasketsScreen
 import com.example.shopping_list.ui.products.ProductsScreen
@@ -16,7 +15,6 @@ import com.example.shopping_list.ui.settings.SettingsScreen
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: AppViewModel,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>,
     bottomSheetHide: () -> Unit,
 ) {
@@ -25,8 +23,6 @@ fun AppNavHost(
 
         composable( route = Baskets.route) {
             BasketsScreen(
-                modifier = modifier,
-                viewModel = viewModel,
                 bottomSheetContent = bottomSheetContent,
                 bottomSheetHide = bottomSheetHide,
                 onClickBasket = { navController.navigateToProducts(it) },)
@@ -38,7 +34,6 @@ fun AppNavHost(
             if (basketId != null) {
                 ProductsScreen(
                     basketId = basketId,
-                    viewModel = viewModel,
                     bottomSheetContent = bottomSheetContent,
                     bottomSheetHide = bottomSheetHide
                 )
@@ -47,14 +42,12 @@ fun AppNavHost(
 
         composable( route = Articles.route) {
             ArticlesScreen(
-                viewModel = viewModel,
                 bottomSheetContent = bottomSheetContent,
                 bottomSheetHide = bottomSheetHide)
         }
         composable( route = Setting.route) {
             SettingsScreen(
                 onSettingsClick = { navController.navigateToScreen(it) },
-                viewModel = viewModel,
                 bottomSheetContent = bottomSheetContent)
         }
 //        composable(

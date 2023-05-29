@@ -18,35 +18,22 @@ interface DataDao {
 
     @Query("DELETE FROM tb_basket WHERE idBasket = :id")
     fun deleteByIdBasket(id: Long)
-
     @Query("DELETE FROM tb_product WHERE basketId = :id")
     fun deleteByIdBasketProduct(id: Long)
-
-    @Query("SELECT * FROM tb_basket")
+    @Query("SELECT * FROM tb_basket ORDER BY position ASC")
     fun getListBasket(): List<BasketEntity>
-
-//    @Query("SELECT * , COUNT(tb_product.idProduct) as count FROM tb_basket " +
-//            "JOIN tb_product ON tb_basket.idBasket = tb_product.basketId " +
-//            "GROUP BY tb_basket.idBasket")
-//    fun getListBasketCount(): List<BasketCountObj>
-
-    @Query(
-        "UPDATE tb_basket " +
-                "SET nameBasket = :newName WHERE idBasket =:basketId "
-    )
+    @Query("UPDATE tb_basket SET nameBasket = :newName WHERE idBasket =:basketId")
     fun changeNameBasket(basketId: Long, newName: String)
-
     @Query("SELECT nameBasket FROM tb_basket WHERE idBasket = :basketId")
     fun getNameBasket(basketId: Long): String
+    @Query("UPDATE tb_basket SET position = :position WHERE idBasket=:basketId ")
+    fun setPositionBasket(basketId: Long, position: Int)
 
     /** Product entity*/
-
     @Insert
     fun addProduct(product: ProductEntity): Long
 
-    @Query(
-        "SELECT idProduct FROM tb_product " +
-                "JOIN tb_article ON tb_article.nameArticle = :name " +
+    @Query("SELECT idProduct FROM tb_product JOIN tb_article ON tb_article.nameArticle = :name " +
                 "WHERE tb_product.articleId = tb_article.idArticle"
     )
     fun checkProductFromName(name: String): Long?
@@ -83,11 +70,8 @@ interface DataDao {
     )
     fun putProductInBasket(productId: Long, basketId: Long)
 
-    @Query(
-        "UPDATE tb_product " +
-                "SET position = :position " +
-                "WHERE idProduct=:productId AND basketId =:basketId "
-    )
+    @Query("UPDATE tb_product SET position = :position " +
+                "WHERE idProduct=:productId AND basketId =:basketId ")
     fun setPositionProductInBasket(productId: Long, basketId: Long, position: Int)
 
     @Query("DELETE FROM tb_product WHERE idProduct=:productId AND basketId=:basketId")
