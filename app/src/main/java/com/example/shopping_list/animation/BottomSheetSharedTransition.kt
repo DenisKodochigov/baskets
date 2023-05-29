@@ -1,20 +1,20 @@
 package com.example.shopping_list.animation
 
-import android.animation.Animator
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
-import android.content.Context
-import android.graphics.Point
-import android.transition.Transition
-import android.transition.TransitionValues
-import android.util.AttributeSet
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
-import androidx.core.animation.doOnEnd
-import androidx.core.view.updateLayoutParams
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+//import android.animation.Animator
+//import android.animation.AnimatorSet
+//import android.animation.ObjectAnimator
+//import android.animation.ValueAnimator
+//import android.content.Context
+//import android.graphics.Point
+//import android.transition.Transition
+//import android.transition.TransitionValues
+//import android.util.AttributeSet
+//import android.view.View
+//import android.view.ViewGroup
+//import android.view.WindowManager
+//import androidx.core.animation.doOnEnd
+//import androidx.core.view.updateLayoutParams
+//import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 
 //class BottomSheetSharedTransition : Transition {
 //

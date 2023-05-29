@@ -26,7 +26,6 @@ import com.example.shopping_list.data.room.tables.GroupEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.entity.UnitA
