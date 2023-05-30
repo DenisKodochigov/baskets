@@ -66,7 +66,6 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getUnits() }.fold(
                 onSuccess = {
-                    _stateProductsScreen.value.unitA = it
                     _stateProductsScreen.update { currentState -> currentState.copy(unitA = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )

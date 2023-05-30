@@ -21,41 +21,38 @@ class ArticleViewModel @Inject constructor(
     private val dataRepository: DataRepository
 ): ViewModel() {
 
-    private val _stateArticlesScreen = MutableStateFlow(StateArticlesScreen())
-    val stateArticlesScreen: StateFlow<StateArticlesScreen> = _stateArticlesScreen.asStateFlow()
-
+    private val _articleScreenState = MutableStateFlow(ArticleScreenState())
+    val articleScreenState: StateFlow<ArticleScreenState> = _articleScreenState.asStateFlow()
     fun getStateArticle(){
         getArticles()
-        getListGroup1()
-        getListUnit1()
+        getListGroup()
+        getListUnit()
     }
-
     private fun getArticles() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListArticle() }.fold(
-                onSuccess = { _stateArticlesScreen.update { currentState ->
+                onSuccess = { _articleScreenState.update { currentState ->
                     currentState.copy(article = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
     }
 
-    private fun getListGroup1() {
+    private fun getListGroup() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getGroups() }.fold(
-                onSuccess = {
-                    _stateArticlesScreen.update { currentState ->
+                onSuccess = { _articleScreenState.update { currentState ->
                         currentState.copy(group = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
     }
 
-    private fun getListUnit1() {
+    private fun getListUnit() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getUnits() }.fold(
-                onSuccess = {
-                    _stateArticlesScreen.update { currentState -> currentState.copy( unitA = it)}},
+                onSuccess = { _articleScreenState.update { currentState ->
+                    currentState.copy( unitA = it)}},
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -66,7 +63,7 @@ class ArticleViewModel @Inject constructor(
             kotlin.runCatching {
                 dataRepository.addArticle(article)
             }.fold(
-                onSuccess = {_stateArticlesScreen.update { currentState ->
+                onSuccess = {_articleScreenState.update { currentState ->
                     currentState.copy( article = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
@@ -81,7 +78,7 @@ class ArticleViewModel @Inject constructor(
                 onSuccess = {
                     Log.d("KDS", "##########################################################")
                     if (it.isNotEmpty()) Log.d("KDS", "ViewModel.changeArticle ${it[0].group.nameGroup}")
-                    _stateArticlesScreen.update { currentState -> currentState.copy( article = it ) } },
+                    _articleScreenState.update { currentState -> currentState.copy( article = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -95,7 +92,7 @@ class ArticleViewModel @Inject constructor(
                 onSuccess = {
                     Log.d("KDS", "##########################################################")
                     if (it.isNotEmpty()) Log.d("KDS", "ViewModel.changeGroupSelectedArticle ${it[0].group.nameGroup}")
-                    _stateArticlesScreen.update { currentState -> currentState.copy( article = it) }},
+                    _articleScreenState.update { currentState -> currentState.copy( article = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -106,19 +103,20 @@ class ArticleViewModel @Inject constructor(
             kotlin.runCatching {
                 dataRepository.deleteSelectedArticle(articles)
             }.fold(
-                onSuccess = {_stateArticlesScreen.update { currentState ->
+                onSuccess = {_articleScreenState.update { currentState ->
                     currentState.copy( article = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
     }
 
+
     fun movePositionArticle( direction: Int){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.setPositionArticle( direction)
             }.fold(
-                onSuccess = {_stateArticlesScreen.update { currentState ->
+                onSuccess = {_articleScreenState.update { currentState ->
                     currentState.copy( article = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )

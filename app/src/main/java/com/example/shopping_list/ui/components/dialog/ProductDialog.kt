@@ -1,6 +1,7 @@
 package com.example.shopping_list.ui.components.dialog
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIconClearing
 import com.example.shopping_list.ui.components.MyTextH2
+import com.example.shopping_list.ui.components.TextButtonOK
 
 @Composable
 fun EditQuantityDialog(
@@ -39,17 +41,11 @@ fun EditQuantityDialog(
         onDismissRequest = onDismiss ,
         title = { MyTextH2(stringResource(R.string.change_quantity), Modifier) },
         text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                MyTextH2(stringResource(R.string.exit), Modifier) }
-        },
         confirmButton = {
-            TextButton( onClick = {
-                product.value = enterValue.value.toDouble()
-                product.article.unitA.idUnit = enterUnit.value.first
-                product.article.unitA.nameUnit = enterUnit.value.second
-                onConfirm(product)
-            }) { MyTextH2(stringResource(R.string.ok), Modifier) }
+            product.value = enterValue.value.toDouble()
+            product.article.unitA.idUnit = enterUnit.value.first
+            product.article.unitA.nameUnit = enterUnit.value.second
+            TextButtonOK(onConfirm = { onConfirm(product) })
         }
     )
 }

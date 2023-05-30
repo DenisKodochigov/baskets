@@ -1,6 +1,5 @@
 package com.example.shopping_list.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -10,26 +9,18 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.shopping_list.data.room.tables.ArticleEntity
-import com.example.shopping_list.data.room.tables.GroupEntity
-import com.example.shopping_list.data.room.tables.ProductEntity
-import com.example.shopping_list.data.room.tables.UnitEntity
+import com.example.shopping_list.R
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.entity.UnitA
-import com.example.shopping_list.ui.products.StateProductsScreen
 import com.example.shopping_list.ui.theme.BackgroundBottomBar
 
 @Composable
@@ -60,7 +51,7 @@ fun HeaderScreen(text: String, modifier: Modifier){
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(1f).onFocusChanged { focusItem = it.isFocused},
+            modifier = Modifier.fillMaxWidth(1f).onFocusChanged { focusItem = it.isFocused },
             value = enteredText,
             singleLine = true,
             readOnly = readOnly,
@@ -86,9 +77,7 @@ fun HeaderScreen(text: String, modifier: Modifier){
         var filteringOptions = listItems
         if (filtering) filteringOptions = listItems.filter{ it.second.contains(enteredText, ignoreCase = true)}
         if (filteringOptions.isNotEmpty()) {
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+            ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }
             ) {
                 filteringOptions.forEach { item ->
                     DropdownMenuItem(
@@ -114,19 +103,39 @@ fun MyTextH1(text: String, modifier: Modifier){
         style = MaterialTheme.typography.h1,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        modifier = modifier
+        modifier = modifier,
+    )
+}
+@Composable
+fun MyTextH1End(text: String, modifier: Modifier){
+    Text(
+        text = text,
+        style = MaterialTheme.typography.h1,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier,
+        textAlign = TextAlign.End
     )
 }
 
 @Composable
+fun TextButtonOK(onConfirm: ()->Unit){
+    Column( horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth() ) {
+        TextButton(onClick = onConfirm) { MyTextH2(stringResource(R.string.ok), Modifier) }
+    }
+
+}
+
+@Composable
 fun MyTextH2(text: String, modifier: Modifier){
-    Text(
-        text = text,
-        style = MaterialTheme.typography.h2,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = modifier
-    )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.h2,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = modifier
+        )
 }
 
 @Composable
@@ -220,137 +229,6 @@ fun ButtonMy(modifier: Modifier, nameButton: String, onClick: () -> Unit){
         elevation = ButtonDefaults.elevation(),
         onClick = { onClick() }){
         Text(text = nameButton, fontSize = 25.sp)
-    }
-}
-
-@Composable
-fun LayoutAddEditProduct(
-    uiState: StateProductsScreen,
-    bottomSheetHide: () -> Unit,
-    onAddProduct: (Product) -> Unit)
-{
-//    Log.d("KDS", "BottomSheetContentProduct")
-    val screenHeight = LocalConfiguration.current.screenHeightDp
-    val enterValue = remember{ mutableStateOf("1")}
-    val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
-    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,"All"))}
-    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1,"шт"))}
-    val focusRequesterSheet = remember { FocusRequester() }
-
-
-    val idUnit = uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
-    enterUnit.value = Pair(idUnit, enterUnit.value.second )
-    val idGroup = uiState.group.find { it.nameGroup == enterGroup.value.second }?.idGroup ?: 0L
-    enterGroup.value = Pair(idGroup, enterGroup.value.second )
-    val idArticle = uiState.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L
-    enterArticle.value = Pair(idArticle, enterArticle.value.second )
-
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.75).dp)) {
-//        Log.d("KDS", "BottomSheetContentProduct.Column")
-        HeaderScreen(text = "Add product", Modifier.focusRequester(focusRequesterSheet))
-        Spacer(Modifier.height(24.dp))
-        MyExposedDropdownMenuBox(/** Select article*/
-            listItems = uiState.articles.map{ Pair(it.idArticle, it.nameArticle) },
-            label = "Select product",
-            modifier = Modifier.fillMaxWidth(),
-            enterValue = enterArticle,
-            filtering = true )
-        if (enterArticle.value.first > 0) {
-            enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.articles)
-            enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
-            enterValue.value = "1"
-        }
-        Spacer(Modifier.height(12.dp))
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-            MyExposedDropdownMenuBox(/** Select group*/
-                listItems = uiState.group.map{ Pair(it.idGroup, it.nameGroup) },
-                label = "Group",
-                modifier = Modifier.weight(1f),
-                enterValue = enterGroup,
-                filtering = true)
-            Spacer(Modifier.width(4.dp))
-            MyOutlinedTextFieldWithoutIcon( /** Value*/ typeKeyboard = "digit",
-                modifier = Modifier.width(90.dp),
-                enterValue = enterValue)
-            Spacer(Modifier.width(4.dp))
-            MyExposedDropdownMenuBox(/** Select unit*/
-                listItems = uiState.unitA.map{ Pair(it.idUnit, it.nameUnit) },
-                label = "Unit",
-                modifier = Modifier.width(120.dp),
-                enterValue = enterUnit,
-                filtering = false)
-        }
-        Spacer(Modifier.height(36.dp))
-        Row(Modifier.fillMaxWidth()) {
-            ButtonMy(Modifier.weight(1f),"Add") {
-                val article = ArticleEntity( idArticle = enterArticle.value.first,
-                    nameArticle = enterArticle.value.second )
-                article.group = GroupEntity( idGroup = enterGroup.value.first,
-                    nameGroup = enterGroup.value.second )
-                article.groupId = enterGroup.value.first
-                article.unitA = UnitEntity( idUnit = enterUnit.value.first,
-                    nameUnit = enterUnit.value.second )
-                article.unitId = enterUnit.value.first
-                val product = ProductEntity(
-                    value = if (enterValue.value.isEmpty()) 1.0 else enterValue.value.toDouble())
-                product.article = article
-                onAddProduct( product )
-                enterArticle.value = Pair(0,"")
-            }
-            Spacer(Modifier.width(12.dp))
-            ButtonMy(Modifier.weight(1f), "Cancel"){
-                enterArticle.value = Pair(0,"")
-                bottomSheetHide() }
-        }
-        Spacer(Modifier.height(72.dp))
-    }
-}
-
-@Composable
-fun LayoutAddEditArticle(
-    article: MutableState<Article>,
-    listUnit: List<UnitA>,
-    listGroup: List<GroupArticle>)
-{
-    Log.d("KDS", "LayoutAddEditArticle")
-    val enterNameArticle = remember{ mutableStateOf( article.value.nameArticle )}
-    val enterGroup = remember{
-        mutableStateOf( Pair(article.value.group.idGroup,article.value.group.nameGroup)) }
-    val enterUnit = remember{
-        mutableStateOf( Pair(article.value.unitA.idUnit,article.value.unitA.nameUnit)) }
-
-    article.value.unitA = if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
-        UnitEntity(nameUnit = enterUnit.value.second, idUnit = 0L)
-    } else listUnit.find { it.idUnit == enterUnit.value.first }!!
-
-    article.value.group = if (enterGroup.value.first == 0L && enterGroup.value.second != "") {
-        GroupEntity(nameGroup = enterGroup.value.second, idGroup = 0L)
-    } else listGroup.find { it.idGroup == enterGroup.value.first }!!
-
-    Column(
-        Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
-        MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameArticle, "text")
-        Spacer(Modifier.height(12.dp))
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-            MyExposedDropdownMenuBox(/** Select group*/
-                listItems = listGroup.map{ Pair(it.idGroup, it.nameGroup) },
-                label = "Group",
-                modifier = Modifier.weight(1f),
-                enterValue = enterGroup,
-                filtering = true)
-            Spacer(Modifier.width(4.dp))
-            MyExposedDropdownMenuBox(/** Select unit*/
-                listItems = listUnit.map{ Pair(it.idUnit, it.nameUnit) },
-                label = "Unit",
-                modifier = Modifier.width(120.dp),
-                enterValue = enterUnit,
-                filtering = false,
-                readOnly = true)
-        }
     }
 }
 

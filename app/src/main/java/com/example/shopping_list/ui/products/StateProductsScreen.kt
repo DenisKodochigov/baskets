@@ -9,6 +9,6 @@ data class StateProductsScreen(
     val products: List<Product> = emptyList(),
     val articles: List<Article> = emptyList(),
     val group: List<GroupArticle> = emptyList(),
-    var unitA: List<UnitA> = emptyList(),
+    val unitA: List<UnitA> = emptyList(),
     val nameBasket: String = ""
 )

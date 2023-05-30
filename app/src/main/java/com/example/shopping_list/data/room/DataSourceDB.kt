@@ -205,7 +205,10 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     private fun getAddGroup(group: GroupArticle): GroupArticle {
         return if (group.idGroup == 0L) {
-            val id = if (group.nameGroup != "") dataDao.addGroup(group as GroupEntity) else 1
+            val id = if (group.nameGroup != "") {
+                group.nameGroup = toUpFirstChar( group.nameGroup )
+                dataDao.addGroup(group as GroupEntity)
+            } else 1
             dataDao.getGroup(id)
         } else group
     }
@@ -222,29 +225,30 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.getUnits()
     }
 
-    private fun mapProduct(entity: ProductObj):ProductEntity{
+    private fun mapProduct(obj: ProductObj): Product {
 
-        val product = ProductEntity(
-            idProduct = entity.product.idProduct,
-            value = entity.product.value,
-            position = entity.product.position,
-            basketId = entity.product.basketId,
-            putInBasket = entity.product.putInBasket,
-            articleId = entity.article.article.idArticle,)
+        val product:Product = ProductEntity(
+            idProduct = obj.product.idProduct,
+            value = obj.product.value,
+            position = obj.product.position,
+            basketId = obj.product.basketId,
+            putInBasket = obj.product.putInBasket,
+            articleId = obj.article.article.idArticle,)
 
         product.article = ArticleEntity(
-            idArticle = entity.article.article.idArticle,
-            nameArticle = entity.article.article.nameArticle)
-        product.article.group = entity.article.group
-        product.article.unitA = entity.article.unitA
+            idArticle = obj.article.article.idArticle,
+            nameArticle = obj.article.article.nameArticle)
+        product.article.group = obj.article.group
+        product.article.unitA = obj.article.unitA
 
         return product
     }
 
-    private fun mapArticle(obj: ArticleObj): ArticleEntity{
+    private fun mapArticle(obj: ArticleObj): Article{
         val article = ArticleEntity(
             idArticle = obj.article.idArticle,
             nameArticle = obj.article.nameArticle,
+            position = obj.article.position,
             unitId = obj.unitA.idUnit,
             groupId = obj.group.idGroup)
         article.group = obj.group

@@ -40,19 +40,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun ArticlesScreen(
-    bottomSheetContent: MutableState<@Composable (() -> Unit)?>,
-    bottomSheetHide: () -> Unit,
-){
+fun ArticlesScreen( bottomSheetContent: MutableState<@Composable (() -> Unit)?>){
+
     val viewModel: ArticleViewModel = hiltViewModel()
     viewModel.getStateArticle()
-    val uiState by viewModel.stateArticlesScreen.collectAsState()
+    val uiState by viewModel.articleScreenState.collectAsState()
 
     if (uiState.article.isNotEmpty()) Log.d("KDS", "ArticlesScreen ${uiState.article[0].group.nameGroup}")
     bottomSheetContent.value = {
-        BottomSheetContentArticle1(
+        LayoutAddEditArticle(
             uiState = uiState,
-            bottomSheetHide = bottomSheetHide,
             onAddArticle = { article-> viewModel.addArticle( article )}
         )
     }
@@ -71,18 +68,19 @@ fun ArticlesScreen(
 @Composable
 fun LayoutArticleScreen(
     modifier: Modifier = Modifier,
-    uiState: StateArticlesScreen,
+    uiState: ArticleScreenState,
     changeArticle: (Article) -> Unit,
     doChangeGroupSelected: (List<Article>, Long) -> Unit,
     doDeleteSelected: (List<Article>) -> Unit,
     movePosition: (Int) -> Unit,
 ){
-    val isSelectedId: MutableState<Long> = remember {  mutableStateOf(0L) }
+    var isSelectedId: MutableState<Long> = remember {  mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val changeGroupSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
 //
     if (uiState.article.isNotEmpty()) Log.d("KDS", "ScreenLayoutArticle ${uiState.article[0].group.nameGroup}")
+
     val itemList = uiState.article
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idArticle == isSelectedId.value }
@@ -116,7 +114,7 @@ fun LayoutArticleScreen(
                     uiState = uiState,
                     doDeleteSelected = doDeleteSelected,
                     changeArticle = changeArticle,
-                    isSelected = isSelectedId )
+                    doSelected = { idItem -> isSelectedId.value = idItem})
             }
             ButtonSwipe( movePosition )
         }
@@ -135,10 +133,10 @@ fun LayoutArticleScreen(
 @Composable
 fun LazyColumnArticle(
     modifier: Modifier = Modifier,
-    uiState: StateArticlesScreen,
+    uiState: ArticleScreenState,
     doDeleteSelected: (List<Article>) -> Unit,
     changeArticle: (Article) -> Unit,
-    isSelected: MutableState<Long>)
+    doSelected: (Long)->Unit )
 {
     if (uiState.article.isNotEmpty()) Log.d(
         "KDS", "LazyColumnArticle ${uiState.article[0].group.nameGroup}")
@@ -161,7 +159,7 @@ fun LazyColumnArticle(
             },
         )
     }
-    val articleList: List<Article> = uiState.article.sortedBy { it.position }
+
     if (uiState.article.isNotEmpty()) {
         if (firstItem.value.first != uiState.article[0].position ||
             firstItem.value.second != uiState.article[0].idArticle) {
@@ -174,7 +172,7 @@ fun LazyColumnArticle(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-        items(items = articleList, key = {it.idArticle})
+        items(items = uiState.article, key = {it.idArticle})
         { item ->
             val dismissState = rememberDismissState(
                 confirmStateChange = {
@@ -228,11 +226,11 @@ fun LazyColumnArticle(
                             .clip(shape = RoundedCornerShape(6.dp))
                             .fillMaxWidth()
                             .background(Color.White)
-                            .clickable { isSelected.value = item.idArticle }
+                            .clickable { doSelected(item.idArticle) }
                         ) {
                             Spacer(
                                 modifier = Modifier
-                                    .background(if (item.isSelected) Color.Red else Color.LightGray)
+                                    .background( if (item.isSelected) Color.Red else Color.LightGray)
                                     .width(8.dp)
                                     .height(32.dp)
                                     .align(Alignment.CenterVertically)
@@ -262,10 +260,10 @@ fun LazyColumnArticle(
     }
 }
 
+
 @Composable
-fun BottomSheetContentArticle1(
-    uiState: StateArticlesScreen,
-    bottomSheetHide: () -> Unit,
+fun LayoutAddEditArticle(
+    uiState: ArticleScreenState,
     onAddArticle: (Article) -> Unit)
 {
     Log.d("KDS", "BottomSheetContentArticle")
@@ -322,24 +320,17 @@ fun BottomSheetContentArticle1(
                 filtering = false)
         }
         Spacer(Modifier.height(36.dp))
-        Row(Modifier.fillMaxWidth()) {
-            ButtonMy(Modifier.weight(1f),"Add") {
-                val article = ArticleEntity( idArticle = enterArticle.value.first,
-                    nameArticle = enterArticle.value.second )
-                article.group = GroupEntity( idGroup = enterGroup.value.first,
-                    nameGroup = enterGroup.value.second )
-                article.unitA = UnitEntity( idUnit = enterUnit.value.first,
-                    nameUnit = enterUnit.value.second )
-                article.groupId = enterGroup.value.first
-                article.unitId = enterUnit.value.first
-                onAddArticle( article )
-                enterArticle.value = Pair(0,"")
-            }
-            Spacer(Modifier.width(12.dp))
-            ButtonMy(Modifier.weight(1f), "Cancel"){
-                enterArticle.value = Pair(0,"")
-                bottomSheetHide() }
-        }
+        val article = ArticleEntity(
+            idArticle = enterArticle.value.first,
+            nameArticle = enterArticle.value.second,
+            groupId = enterGroup.value.first,
+            unitId = enterUnit.value.first)
+        article.group = GroupEntity( enterGroup.value.first, enterGroup.value.second )
+        article.unitA = UnitEntity( enterUnit.value.first, enterUnit.value.second )
+
+        TextButtonOK( onConfirm = {
+            onAddArticle(article)
+            enterArticle.value = Pair(0,"")})
         Spacer(Modifier.height(72.dp))
     }
 }
