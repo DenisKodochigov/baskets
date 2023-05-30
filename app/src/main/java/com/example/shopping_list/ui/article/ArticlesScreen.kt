@@ -33,6 +33,8 @@ import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.GroupEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.GroupArticle
+import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.components.dialog.EditArticleDialog
 import com.example.shopping_list.ui.components.dialog.SelectGroupDialog
@@ -41,14 +43,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ArticlesScreen( bottomSheetContent: MutableState<@Composable (() -> Unit)?>){
-
     val viewModel: ArticleViewModel = hiltViewModel()
     viewModel.getStateArticle()
     val uiState by viewModel.articleScreenState.collectAsState()
 
     if (uiState.article.isNotEmpty()) Log.d("KDS", "ArticlesScreen ${uiState.article[0].group.nameGroup}")
     bottomSheetContent.value = {
-        LayoutAddEditArticle(
+        BottomSheetContentArticle1(
             uiState = uiState,
             onAddArticle = { article-> viewModel.addArticle( article )}
         )
@@ -74,13 +75,12 @@ fun LayoutArticleScreen(
     doDeleteSelected: (List<Article>) -> Unit,
     movePosition: (Int) -> Unit,
 ){
-    var isSelectedId: MutableState<Long> = remember {  mutableStateOf(0L) }
+    val isSelectedId: MutableState<Long> = remember {  mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val changeGroupSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
 //
     if (uiState.article.isNotEmpty()) Log.d("KDS", "ScreenLayoutArticle ${uiState.article[0].group.nameGroup}")
-
     val itemList = uiState.article
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idArticle == isSelectedId.value }
@@ -159,7 +159,6 @@ fun LazyColumnArticle(
             },
         )
     }
-
     if (uiState.article.isNotEmpty()) {
         if (firstItem.value.first != uiState.article[0].position ||
             firstItem.value.second != uiState.article[0].idArticle) {
@@ -226,11 +225,11 @@ fun LazyColumnArticle(
                             .clip(shape = RoundedCornerShape(6.dp))
                             .fillMaxWidth()
                             .background(Color.White)
-                            .clickable { doSelected(item.idArticle) }
+                            .clickable { doSelected(item.idArticle)  }
                         ) {
                             Spacer(
                                 modifier = Modifier
-                                    .background( if (item.isSelected) Color.Red else Color.LightGray)
+                                    .background(if (item.isSelected) Color.Red else Color.LightGray)
                                     .width(8.dp)
                                     .height(32.dp)
                                     .align(Alignment.CenterVertically)
@@ -260,9 +259,8 @@ fun LazyColumnArticle(
     }
 }
 
-
 @Composable
-fun LayoutAddEditArticle(
+fun BottomSheetContentArticle1(
     uiState: ArticleScreenState,
     onAddArticle: (Article) -> Unit)
 {
@@ -320,6 +318,7 @@ fun LayoutAddEditArticle(
                 filtering = false)
         }
         Spacer(Modifier.height(36.dp))
+
         val article = ArticleEntity(
             idArticle = enterArticle.value.first,
             nameArticle = enterArticle.value.second,
@@ -334,3 +333,4 @@ fun LayoutAddEditArticle(
         Spacer(Modifier.height(72.dp))
     }
 }
+

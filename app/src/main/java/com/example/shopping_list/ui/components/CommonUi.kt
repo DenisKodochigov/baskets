@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.theme.BackgroundBottomBar
 
 @Composable
@@ -51,7 +50,7 @@ fun HeaderScreen(text: String, modifier: Modifier){
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(1f).onFocusChanged { focusItem = it.isFocused },
+            modifier = Modifier.fillMaxWidth(1f).onFocusChanged { focusItem = it.isFocused},
             value = enteredText,
             singleLine = true,
             readOnly = readOnly,
@@ -103,7 +102,18 @@ fun MyTextH1(text: String, modifier: Modifier){
         style = MaterialTheme.typography.h1,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        modifier = modifier,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun MyTextH2(text: String, modifier: Modifier){
+    Text(
+        text = text,
+        style = MaterialTheme.typography.h2,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier
     )
 }
 @Composable
@@ -125,17 +135,6 @@ fun TextButtonOK(onConfirm: ()->Unit){
         TextButton(onClick = onConfirm) { MyTextH2(stringResource(R.string.ok), Modifier) }
     }
 
-}
-
-@Composable
-fun MyTextH2(text: String, modifier: Modifier){
-        Text(
-            text = text,
-            style = MaterialTheme.typography.h2,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = modifier
-        )
 }
 
 @Composable

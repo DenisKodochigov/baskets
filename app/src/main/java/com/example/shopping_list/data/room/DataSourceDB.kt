@@ -12,6 +12,7 @@ import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.entity.UnitA
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -212,6 +213,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
             dataDao.getGroup(id)
         } else group
     }
+    fun groupsFlow(): Flow<List<GroupArticle>> = dataDao.getGroupsFlow()
 
     /** Unit*/
     private fun getAddUnit(unitA: UnitEntity): UnitA {
@@ -224,10 +226,10 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     fun getUnits(): List<UnitA>{
         return dataDao.getUnits()
     }
-
+    fun unitsFlow(): Flow<List<UnitA>> = dataDao.getUnitsFlow()
     private fun mapProduct(obj: ProductObj): Product {
 
-        val product:Product = ProductEntity(
+        val product = ProductEntity(
             idProduct = obj.product.idProduct,
             value = obj.product.value,
             position = obj.product.position,
@@ -244,7 +246,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return product
     }
 
-    private fun mapArticle(obj: ArticleObj): Article{
+    private fun mapArticle(obj: ArticleObj): Article {
         val article = ArticleEntity(
             idArticle = obj.article.idArticle,
             nameArticle = obj.article.nameArticle,

@@ -51,7 +51,7 @@ fun BasketsScreen(
 
     val viewModel: BasketViewModel = hiltViewModel()
     viewModel.getListBasket()
-    val uiState by viewModel.stateBasketScreen.collectAsState()
+    val uiState by viewModel.basketScreenState.collectAsState()
     bottomSheetContent.value = {
         BottomSheetContentBasket(
             onAddClick = {viewModel.addBasket(it)},

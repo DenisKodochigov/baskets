@@ -4,6 +4,7 @@ import androidx.room.*
 import com.example.shopping_list.data.room.tables.*
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DataDao {
@@ -34,22 +35,15 @@ interface DataDao {
     fun addProduct(product: ProductEntity): Long
 
     @Query("SELECT idProduct FROM tb_product JOIN tb_article ON tb_article.nameArticle = :name " +
-                "WHERE tb_product.articleId = tb_article.idArticle"
-    )
+                "WHERE tb_product.articleId = tb_article.idArticle")
     fun checkProductFromName(name: String): Long?
 
-    @Query(
-        "SELECT idProduct FROM tb_product " +
-                "WHERE idProduct = :productId AND basketId = :basketId"
-    )
+    @Query("SELECT idProduct FROM tb_product WHERE idProduct = :productId AND basketId = :basketId")
     fun checkProductInBasket(basketId: Long, productId: Long): Long?
 
     @Transaction
-    @Query(
-        "SELECT * FROM tb_product " +
-                "WHERE basketId = :basketId " +
-                "ORDER BY putInBasket DESC, position ASC"
-    )
+    @Query("SELECT * FROM tb_product WHERE basketId = :basketId " +
+                "ORDER BY putInBasket DESC, position ASC")
     fun getListProduct(basketId: Long): List<ProductObj>
 
     @Query("SELECT COUNT(idProduct) FROM tb_product WHERE basketId = :basketId")
@@ -63,11 +57,8 @@ interface DataDao {
     @Query("UPDATE tb_product SET value = :value WHERE  idProduct=:productId AND basketId =:basketId ")
     fun setValueProduct(productId: Long, basketId: Long, value: Double)
 
-    @Query(
-        "UPDATE tb_product " +
-                "SET putInBasket = NOT putInBasket " +
-                "WHERE idProduct=:productId AND basketId =:basketId "
-    )
+    @Query("UPDATE tb_product SET putInBasket = NOT putInBasket " +
+                "WHERE idProduct=:productId AND basketId =:basketId ")
     fun putProductInBasket(productId: Long, basketId: Long)
 
     @Query("UPDATE tb_product SET position = :position " +
@@ -116,11 +107,14 @@ interface DataDao {
 
     @Query("SELECT * FROM tb_group")
     fun getGroups(): List<GroupEntity>
-
+    @Query("SELECT * FROM tb_group")
+    fun getGroupsFlow(): Flow<List<GroupEntity>>
     @Insert
     fun addGroup(group: GroupEntity): Long
     @Query("SELECT * FROM tb_group WHERE idGroup = :id")
     fun getGroup(id: Long): GroupEntity
+
+
     /** Unit entity*/
 
     @Insert
@@ -131,6 +125,9 @@ interface DataDao {
 
     @Query("SELECT * FROM tb_unit WHERE idUnit = :id")
     fun getUnit(id: Long): UnitEntity
+    @Query("SELECT * FROM tb_unit")
+    fun getUnitsFlow(): Flow<List<UnitEntity>>
+
 }
 //    @Query("SELECT * FROM basket JOIN products ON basket.productId = products.idProduct" +
 //            "JOIN article ON products.articleId = article.idArticle " +

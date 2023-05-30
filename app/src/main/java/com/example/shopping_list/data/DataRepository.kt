@@ -5,6 +5,7 @@ import com.example.shopping_list.data.room.DataSourceDB
 import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.BasketEntity
 import com.example.shopping_list.entity.*
+import kotlinx.coroutines.flow.Flow
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -102,14 +103,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     fun setPositionArticle(direction: Int): List<Article> {
         return dataSourceDB.setPositionArticle(direction)
     }
-//    fun getBasketProducts(basket:BasketDB): List<ProductDB>{
-//        var listProduct = emptyList<ProductDB>()
-//        dataSourceDB.getBasketProducts(basket).forEach { item->
-//            listProduct = item.listProductDB
-//        }
-//        return listProduct
-//    }
-//    fun getGroupsWithProduct(): List<GroupWithArticle>{
-//        return dataSourceDB.getGroupsWithProduct()
-//    }
+
+    fun groupsFlow(): Flow<List<GroupArticle>> = dataSourceDB.groupsFlow()
+    fun unitsFlow(): Flow<List<UnitA>> = dataSourceDB.unitsFlow()
 }

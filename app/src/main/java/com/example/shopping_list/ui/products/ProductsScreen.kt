@@ -60,7 +60,6 @@ import com.example.shopping_list.data.room.tables.GroupEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.ui.components.ButtonMy
 import com.example.shopping_list.ui.components.ButtonSwipe
 import com.example.shopping_list.ui.components.FabChangeGroupProducts
 import com.example.shopping_list.ui.components.FabDeleteProducts
@@ -79,11 +78,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun ProductsScreen(basketId: Long, bottomSheetContent: MutableState<@Composable (() -> Unit)?>){
+fun ProductsScreen( basketId: Long, bottomSheetContent: MutableState<@Composable (() -> Unit)?>){
 
     val viewModel: ProductViewModel = hiltViewModel()
     viewModel.getStateProducts(basketId)
-    val uiState by viewModel.stateProductsScreen.collectAsState()
+    val uiState by viewModel.productsScreenState.collectAsState()
 
     Log.d("KDS", "ProductsScreen")
     bottomSheetContent.value = {
@@ -113,7 +112,7 @@ fun ProductsScreen(basketId: Long, bottomSheetContent: MutableState<@Composable 
 @Composable
 fun LayoutProductsScreen(
     modifier: Modifier = Modifier,
-    uiState: StateProductsScreen,
+    uiState: ProductsScreenState,
     putProductInBasket: (Product) -> Unit,
     changeProductInBasket: (Product) -> Unit,
     doChangeGroupSelected: (List<Product>, Long) -> Unit,
@@ -176,7 +175,7 @@ fun LayoutProductsScreen(
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun LazyColumnProduct(
-    uiState: StateProductsScreen,
+    uiState: ProductsScreenState,
     putProductInBasket: (Product) -> Unit,
     changeProductInBasket: (Product) -> Unit,
     doSelected: (Long)->Unit )
@@ -262,7 +261,7 @@ fun LazyColumnProduct(
                                 .clickable { doSelected(item.idProduct) }
                         )
                         MyTextH1( item.article.nameArticle, Modifier.weight(1f)
-                                .clickable {doSelected(item.idProduct) }
+                                .clickable { doSelected(item.idProduct) }
                                 .padding(
                                     start = dimensionResource(R.dimen.lazy_padding_hor),
                                     top = dimensionResource(R.dimen.lazy_padding_ver),
@@ -281,7 +280,7 @@ fun LazyColumnProduct(
                         MyTextH1(
                             item.article.unitA.nameUnit, Modifier.width(40.dp)
                                 .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                                .clickable { doSelected(item.idProduct)}
+                                .clickable { doSelected(item.idProduct) }
                         )
                     }
                     if (item.putInBasket) Divider(
@@ -296,10 +295,9 @@ fun LazyColumnProduct(
         }
     }
 }
-
 @Composable
 fun LayoutAddEditProduct(
-    uiState: StateProductsScreen,
+    uiState: ProductsScreenState,
     onAddProduct: (Product) -> Unit)
 {
 //    Log.d("KDS", "BottomSheetContentProduct")
@@ -378,7 +376,6 @@ fun LayoutAddEditProduct(
         Spacer(Modifier.height(72.dp))
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun ProductsScreenLayoutPreview(){
@@ -402,7 +399,7 @@ fun ProductsScreenLayoutPreview(){
 @Composable
 fun BottomSheetContentProductPreview(){
     LayoutAddEditProduct(
-        StateProductsScreen(),{})
+        ProductsScreenState(),{})
 }
 
 @Preview(showBackground = true)

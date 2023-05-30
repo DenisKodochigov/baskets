@@ -15,6 +15,7 @@ import com.example.shopping_list.R
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.shopping_list.ui.components.MyTextH2
+import com.example.shopping_list.ui.components.TextButtonOK
 
 @Composable
 fun EditBasketName(
@@ -28,15 +29,10 @@ fun EditBasketName(
         onDismissRequest = onDismiss ,
         title = { MyTextH2(stringResource(R.string.change_name_basket), Modifier) },
         text = { EditBasketNameDialogLayout(nameBasket) },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                MyTextH2(stringResource(R.string.exit), Modifier) }
-        },
         confirmButton = {
-            TextButton( onClick = {
+            TextButtonOK( onConfirm = {
                 basket.nameBasket = nameBasket.value
-                onConfirm(basket)
-            }) { MyTextH2(stringResource(R.string.ok), Modifier) }
+                onConfirm(basket) } )
         }
     )
 }

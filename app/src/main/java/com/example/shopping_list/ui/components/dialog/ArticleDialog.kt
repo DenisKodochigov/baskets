@@ -1,7 +1,6 @@
 package com.example.shopping_list.ui.components.dialog
 
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
@@ -46,18 +44,14 @@ fun EditArticleDialog(
         onDismissRequest = onDismiss ,
         title = {  MyTextH2(stringResource(R.string.change_article), Modifier) },
         text = { EditArticleDialogLayout(articleLocal, listUnit, listGroup) },
-        confirmButton = {
-            TextButtonOK( onConfirm = {
-                onConfirm(articleLocal.value)
-            })
-        }
+        confirmButton = { TextButtonOK( onConfirm = { onConfirm(articleLocal.value) } ) }
     )
 }
+
 @Composable
 fun EditArticleDialogLayout(
     article: MutableState<Article>, listUnit: List<UnitA>, listGroup: List<GroupArticle>,){
-
-    Column() {
+    Column {
         Text(text = "")
         LayoutAddEditArticle(article = article, listUnit = listUnit, listGroup = listGroup)
     }
@@ -78,11 +72,19 @@ fun LayoutAddEditArticle(
 
     article.value.unitA = if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
         UnitEntity(nameUnit = enterUnit.value.second, idUnit = 0L)
-    } else listUnit.find { it.idUnit == enterUnit.value.first }!!
+    } else {
+        if (listUnit.isNotEmpty()) {
+            listUnit.find { it.idUnit == enterUnit.value.first } ?: listUnit[0]}
+        else UnitEntity(nameUnit = "")
+    }
 
     article.value.group = if (enterGroup.value.first == 0L && enterGroup.value.second != "") {
         GroupEntity(nameGroup = enterGroup.value.second, idGroup = 0L)
-    } else listGroup.find { it.idGroup == enterGroup.value.first }!!
+    } else {
+        if (listGroup.isNotEmpty()) {
+            listGroup.find { it.idGroup == enterGroup.value.first } ?: listGroup[0]}
+        else GroupEntity(nameGroup = "")
+    }
     article.value.nameArticle = enterNameArticle.value
 
     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
