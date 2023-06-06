@@ -51,6 +51,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -84,7 +85,7 @@ fun ProductsScreen( basketId: Long, bottomSheetContent: MutableState<@Composable
     viewModel.getStateProducts(basketId)
     val uiState by viewModel.productsScreenState.collectAsState()
 
-    Log.d("KDS", "ProductsScreen")
+//    Log.d("KDS", "ProductsScreen")
     bottomSheetContent.value = {
         LayoutAddEditProduct(
             uiState = uiState,
@@ -124,7 +125,7 @@ fun LayoutProductsScreen(
     val unSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     val changeGroupSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
 
-    Log.d("KDS", "ProductsScreenLayout")
+//    Log.d("KDS", "ProductsScreenLayout")
     val itemList = uiState.products
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idProduct == isSelectedId.value }
@@ -150,8 +151,9 @@ fun LayoutProductsScreen(
 
     Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
         Column( modifier.fillMaxHeight()) {
-            HeaderScreen(text = "Products in basket: ${uiState.nameBasket} ", modifier)
-            Column(Modifier.fillMaxHeight().weight(1f)) {
+            HeaderScreen(
+                text = stringResource(R.string.products_in_basket) + ": " + uiState.nameBasket, modifier)
+            Column( Modifier.fillMaxHeight().weight(1f)) {
                 Spacer(modifier = Modifier.weight(1f))
                 LazyColumnProduct(
                     uiState = uiState,
@@ -223,7 +225,9 @@ fun LazyColumnProduct(
                     dismissState.reset() }
             }
             SwipeToDismiss(state = dismissState,
-                modifier = Modifier.padding(vertical = 1.dp).animateItemPlacement(),
+                modifier = Modifier
+                    .padding(vertical = 1.dp)
+                    .animateItemPlacement(),
                 directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
                 dismissThresholds = { direction ->
                     FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.1f else 0.4f)
@@ -260,17 +264,22 @@ fun LazyColumnProduct(
                                 .align(Alignment.CenterVertically)
                                 .clickable { doSelected(item.idProduct) }
                         )
-                        MyTextH1( item.article.nameArticle, Modifier.weight(1f)
+                        MyTextH1( item.article.nameArticle,
+                            Modifier
+                                .weight(1f)
                                 .clickable { doSelected(item.idProduct) }
                                 .padding(
                                     start = dimensionResource(R.dimen.lazy_padding_hor),
                                     top = dimensionResource(R.dimen.lazy_padding_ver),
-                                    bottom = dimensionResource(R.dimen.lazy_padding_ver))
+                                    bottom = dimensionResource(R.dimen.lazy_padding_ver)
+                                )
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         val num = if (item.value.rem(1).equals(0.0)) item.value.toInt()
                         else item.value
-                        MyTextH1End( num.toString(), Modifier.width(70.dp)
+                        MyTextH1End( num.toString(),
+                            Modifier
+                                .width(70.dp)
                                 .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
                                 .clickable {
                                     editProduct.value = item
@@ -278,7 +287,9 @@ fun LazyColumnProduct(
                                 })
                         Spacer(modifier = Modifier.width(4.dp))
                         MyTextH1(
-                            item.article.unitA.nameUnit, Modifier.width(40.dp)
+                            item.article.unitA.nameUnit,
+                            Modifier
+                                .width(40.dp)
                                 .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
                                 .clickable { doSelected(item.idProduct) }
                         )
@@ -301,11 +312,13 @@ fun LayoutAddEditProduct(
     onAddProduct: (Product) -> Unit)
 {
 //    Log.d("KDS", "BottomSheetContentProduct")
+    val nameGroup = stringResource(R.string.name_group)
+    val unitStuff = stringResource(R.string.name_unit1)
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val enterValue = remember{ mutableStateOf("1")}
     val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
-    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,"All"))}
-    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1,"шт"))}
+    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1, nameGroup))}
+    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1,unitStuff))}
     val focusRequesterSheet = remember { FocusRequester() }
 
 
@@ -316,15 +329,19 @@ fun LayoutAddEditProduct(
     val idArticle = uiState.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L
     enterArticle.value = Pair(idArticle, enterArticle.value.second )
 
-    Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
             .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.75).dp)) {
 //        Log.d("KDS", "BottomSheetContentProduct.Column")
-        HeaderScreen(text = "Add product", Modifier.focusRequester(focusRequesterSheet))
+        HeaderScreen( text = stringResource(R.string.add_product),
+            modifier = Modifier.focusRequester(focusRequesterSheet))
         Spacer(Modifier.height(24.dp))
         /** Select article*/
         MyExposedDropdownMenuBox(
             listItems = uiState.articles.map{ Pair(it.idArticle, it.nameArticle) },
-            label = "Select product",
+            label = stringResource(R.string.select_product),
             modifier = Modifier.fillMaxWidth(),
             enterValue = enterArticle,
             filtering = true )
@@ -338,7 +355,7 @@ fun LayoutAddEditProduct(
             /** Select group*/
             MyExposedDropdownMenuBox(
                 listItems = uiState.group.map{ Pair(it.idGroup, it.nameGroup) },
-                label = "Group",
+                label = stringResource(R.string.group),
                 modifier = Modifier.weight(1f),
                 enterValue = enterGroup,
                 filtering = true)
@@ -352,7 +369,7 @@ fun LayoutAddEditProduct(
             /** Select unit*/
             MyExposedDropdownMenuBox(
                 listItems = uiState.unitA.map{ Pair(it.idUnit, it.nameUnit) },
-                label = "Unit",
+                label = stringResource(R.string.units),
                 modifier = Modifier.width(120.dp),
                 enterValue = enterUnit,
                 readOnly = true,
@@ -379,20 +396,7 @@ fun LayoutAddEditProduct(
 @Preview(showBackground = true)
 @Composable
 fun ProductsScreenLayoutPreview(){
-//    ProductsScreenLayout(
-//        Modifier,
-//        uiState = StateProductsScreen( mutableListOf(
-//        ProductEntity(
-//            idProduct = 1, basketId = 1, value = 1.0, putInBasket = false,
-//            article = ArticleEntity(
-//                idArticle = 1, nameArticle = "Milk",
-//                group = GroupEntity(idGroup = 1, nameGroup = "All") as GroupArticle,
-//                unitA = UnitEntity(idUnit = 1, nameUnit = "in.") as UnitA
-//            )))),
-//        putProductInBasket = {},
-//        changeProductInBasket = { },
-//        doDeleteSelected = {}
-//    )
+
 }
 
 @Preview(showBackground = true)

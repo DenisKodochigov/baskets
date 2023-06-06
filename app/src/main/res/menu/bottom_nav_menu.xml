@@ -4,7 +4,7 @@
     <item
         android:id="@+id/nav_basket"
         android:icon="@drawable/ic_baseline_shopping_cart_24"
-        android:title="@string/title_box" />
+        android:title="@string/baskets" />
 
     <item
         android:id="@+id/nav_product"

@@ -24,25 +24,25 @@ fun SettingsScreen(
 @Composable
 fun SettingsScreenLayout(modifier: Modifier = Modifier, ){
 
-        Column(modifier = Modifier
-//            .fillMaxHeight()
-            .background(Color.LightGray)) {
-            Text("1 Text", modifier = Modifier.background(Color(0xffF44336)), color = Color.White)
-            Text("2 Text", modifier = Modifier.background(Color(0xff9C27B0)), color = Color.White)
-            Text("3 Text", modifier = Modifier.background(Color(0xff2196F3)), color = Color.White)
-            Column(Modifier.fillMaxHeight().weight(1f)) {
-                Spacer(modifier = Modifier.weight(1f))
-                LazyColumn(
-                ) {
-                    item { Text(text = "Header") }
-                    items(33) { index -> Text(text = "List items : $index") }
-                }
-            }
-
-            Button(onClick = { /*TODO*/ }) {
-                Text("Test")
-            }
-            Text("4 Text", modifier = Modifier.background(Color(0xff2196F3)), color = Color.White)
-        }
+//        Column(modifier = Modifier
+////            .fillMaxHeight()
+//            .background(Color.LightGray)) {
+//            Text("1 Text", modifier = Modifier.background(Color(0xffF44336)), color = Color.White)
+//            Text("2 Text", modifier = Modifier.background(Color(0xff9C27B0)), color = Color.White)
+//            Text("3 Text", modifier = Modifier.background(Color(0xff2196F3)), color = Color.White)
+//            Column(Modifier.fillMaxHeight().weight(1f)) {
+//                Spacer(modifier = Modifier.weight(1f))
+//                LazyColumn(
+//                ) {
+//                    item { Text(text = "Header") }
+//                    items(33) { index -> Text(text = "List items : $index") }
+//                }
+//            }
+//
+//            Button(onClick = { /*TODO*/ }) {
+//                Text("Test")
+//            }
+//            Text("4 Text", modifier = Modifier.background(Color(0xff2196F3)), color = Color.White)
+//        }
 
 }

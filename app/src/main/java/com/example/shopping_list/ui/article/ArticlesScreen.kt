@@ -26,6 +26,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
@@ -106,7 +107,7 @@ fun LayoutArticleScreen(
 
     Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
         Column( modifier.fillMaxHeight()) {
-            HeaderScreen(text = "Products", modifier)
+            HeaderScreen(text = stringResource(R.string.product), modifier)
             Column(Modifier.fillMaxHeight().weight(1f)) {
                 Spacer(modifier = Modifier.weight(1f))
                 LazyColumnArticle(
@@ -265,11 +266,13 @@ fun BottomSheetContentArticle1(
     onAddArticle: (Article) -> Unit)
 {
     Log.d("KDS", "BottomSheetContentArticle")
+    val nameGroup = stringResource(R.string.name_group)
+    val stuff = stringResource(R.string.name_unit1)
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val enterValue = remember{ mutableStateOf("1")}
     val enterArticle = remember{ mutableStateOf(Pair<Long,String>(0,""))}
-    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,"All"))}
-    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1,"шт"))}
+    val enterGroup = remember{ mutableStateOf(Pair<Long,String>(1,nameGroup))}
+    val enterUnit = remember{ mutableStateOf(Pair<Long,String>(1, stuff ))}
     val focusRequesterSheet = remember { FocusRequester() }
 
     if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
@@ -288,11 +291,11 @@ fun BottomSheetContentArticle1(
         Modifier.fillMaxWidth().padding(horizontal = 24.dp)
             .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.75).dp)) {
         Log.d("KDS", "BottomSheetContentProduct.Column")
-        HeaderScreen(text = "Add product", Modifier.focusRequester(focusRequesterSheet))
+        HeaderScreen(text = stringResource(R.string.add_product), Modifier.focusRequester(focusRequesterSheet))
         Spacer(Modifier.height(24.dp))
         MyExposedDropdownMenuBox(/** Select article*/
             listItems = uiState.article.map{ Pair(it.idArticle, it.nameArticle) },
-            label = "Select product",
+            label = stringResource(R.string.select_product),
             modifier = Modifier.fillMaxWidth(),
             enterValue = enterArticle,
             filtering = true )
@@ -305,14 +308,14 @@ fun BottomSheetContentArticle1(
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
             MyExposedDropdownMenuBox(/** Select group*/
                 listItems = uiState.group.map{ Pair(it.idGroup, it.nameGroup) },
-                label = "Group",
+                label = stringResource(R.string.group),
                 modifier = Modifier.weight(1f),
                 enterValue = enterGroup,
                 filtering = false)
             Spacer(Modifier.width(4.dp))
             MyExposedDropdownMenuBox(/** Select unit*/
                 listItems = uiState.unitA.map{ Pair(it.idUnit, it.nameUnit) },
-                label = "Unit",
+                label = stringResource(R.string.units),
                 modifier = Modifier.width(120.dp),
                 enterValue = enterUnit,
                 filtering = false)

@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -90,7 +91,7 @@ fun LayoutBasketsScreen(
     }
     Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column(modifier = modifier.fillMaxHeight()) {
-            HeaderScreen(text = "Baskets", modifier)
+            HeaderScreen(text = stringResource(R.string.baskets), modifier)
             Column(Modifier.fillMaxHeight().weight(1f)) {
                 Spacer(Modifier.weight(1f))
                 LazyColumnBasket(itemList, onClickBasket, deleteBasket, changeNameBasket)
@@ -245,7 +246,7 @@ fun BottomSheetContentBasket(onAddClick: (String) -> Unit, bottomSheetHide: () -
             value = nameNewBasket,
             singleLine = true,
             textStyle = MaterialTheme.typography.h1,
-            label = { Text(text = "New name basket") },
+            label = { Text(text = stringResource(R.string.new_name_basket)) },
             onValueChange = { nameNewBasket = it},
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),

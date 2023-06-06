@@ -39,7 +39,6 @@ fun EditArticleDialog(
     onDismiss: () -> Unit,)
 {
     val articleLocal = remember{ mutableStateOf(article) }
-    Log.d("KDS", "EditArticleDialog")
     AlertDialog(
         onDismissRequest = onDismiss ,
         title = {  MyTextH2(stringResource(R.string.change_article), Modifier) },
@@ -63,7 +62,7 @@ fun LayoutAddEditArticle(
     listUnit: List<UnitA>,
     listGroup: List<GroupArticle>)
 {
-    Log.d("KDS", "LayoutAddEditArticle")
+//    Log.d("KDS", "LayoutAddEditArticle")
     val enterNameArticle = remember{ mutableStateOf( article.value.nameArticle )}
     val enterGroup = remember{
         mutableStateOf( Pair(article.value.group.idGroup,article.value.group.nameGroup)) }
@@ -93,7 +92,7 @@ fun LayoutAddEditArticle(
         /** Select group*/
         MyExposedDropdownMenuBox(
             listItems = listGroup.map{ Pair(it.idGroup, it.nameGroup) },
-            label = "Group",
+            label = stringResource(R.string.group),
             modifier = Modifier.fillMaxWidth(), //.weight(1f),
             enterValue = enterGroup,
             filtering = true)
@@ -103,7 +102,7 @@ fun LayoutAddEditArticle(
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             MyExposedDropdownMenuBox(
                 listItems = listUnit.map{ Pair(it.idUnit, it.nameUnit) },
-                label = "Unit",
+                label = stringResource(R.string.units),
                 modifier = Modifier.width(120.dp),
                 enterValue = enterUnit,
                 filtering = false,

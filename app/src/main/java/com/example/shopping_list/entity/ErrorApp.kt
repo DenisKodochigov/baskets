@@ -16,23 +16,10 @@ class ErrorApp @Inject constructor(@ApplicationContext val context: Context) {
 
         val toastMessage: String
         when(errorMessage){
-            "HTTP 401 " -> {
-                toastMessage = context.getString(R.string.error401)
-            }
-            "HTTP 402 " -> {
-                toastMessage = context.getString(R.string.error402)
-            }
-            "HTTP 404 " -> {
-                toastMessage = context.getString(R.string.error404)
-            }
-            "HTTP 429 " -> {
-                toastMessage = context.getString(R.string.error429)
-            }
             else -> {
                 toastMessage = context.getString(R.string.errorUser)
                 Log.d("KDS", "Error $errorMessage")
             }
-
         }
         if (toastMessage.isNotEmpty()) {
             Handler(Looper.getMainLooper()).post {

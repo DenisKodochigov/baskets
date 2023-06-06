@@ -63,7 +63,7 @@ fun EditQuantityDialogLayout(
         /** Select unit*/
         MyExposedDropdownMenuBox(
             listItems = listUnit.map{ Pair(it.idUnit, it.nameUnit) },
-            label = "Unit",
+            label = stringResource(R.string.units),
             modifier = Modifier.width(120.dp),
             enterValue = enterUnit,
             filtering = false,
@@ -104,7 +104,7 @@ fun SelectGroupDialogLayout(
         /** Select group*/
         MyExposedDropdownMenuBox(
             listItems = listGroup.map{ Pair(it.idGroup, it.nameGroup) },
-            label = "Groups",
+            label = stringResource(R.string.groups),
             modifier = Modifier.fillMaxWidth(),
             enterValue = enterGroup,
             filtering = false,

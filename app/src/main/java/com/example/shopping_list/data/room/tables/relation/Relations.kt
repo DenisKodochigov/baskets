@@ -26,31 +26,3 @@ data class ProductObj (
         entity = ArticleEntity::class
     ) val article: ArticleObj
 )
-
-//data class BasketCountObj(
-//    @Embedded var basket: BasketEntity,
-//    @ColumnInfo var count: Int
-//)
-//data class ProductForBasket (
-//    @Embedded val basket: BasketTable,
-//    @Relation(
-//        parentColumn = "productId",
-//        entityColumn = "idProduct"
-//    ) val product: ProductTable
-//)
-//
-//data class BasketObj(
-//    var basket: Basket,
-//    var products: List<ProductObj>
-//)
-//
-//data class ProductObj(
-//    var product: Product,
-//    var article: ArticleObj,
-//)
-
-
-//data class ArticleRec(
-//    @Embedded val article: ArticleTable,
-//    @Embedded val unit: UnitTable
-//)

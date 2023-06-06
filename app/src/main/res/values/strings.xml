@@ -1,48 +1,30 @@
 <resources>
-
-    <string name="name_group">All</string>
+    <string name="name_unit1">st.</string>
     <string name="app_name">shopping_list</string>
-    <string name="title_box">Наборы</string>
-    <string name="title_products">Продукты</string>
-    <string name="title_settings">Настройки</string>
-    <string name="submit">Добавить</string>
-    <string name="kit_products">Наборы продуктов</string>
-    <string name="products">Введенные продукты</string>
-    <string name="textview">TextView</string>
-
-    <string name="error401">Запрос к удаленному ресурсу закончился неудачей, с кодом HTTP 401: Пустой или неправильный токен.</string>
-    <string name="error402">Запрос к удаленному ресурсу закончился неудачей, с кодом HTTP 402: Превышен лимит запросов(или дневной, или общий).</string>
-    <string name="error404">Запрос к удаленному ресурсу закончился неудачей, с кодом HTTP 404: Фильм не найден.)</string>
-    <string name="error429">Запрос к удаленному ресурсу закончился неудачей, с кодом HTTP 429: Слишком много запросов. Общий лимит - 20 запросов в секунду.</string>
-    <string name="errorUser">Ошибка операции.</string>
-    <string name="new_name_box">New name box</string>
-    <string name="create_new_box">Create new box</string>
-    <string name="text_and_image_in_linear_layout">Text and image in linear layout</string>
-    <string name="text_about_something">Text about something</string>
-    <string name="some_element_for_example_recyclerview">Some element, for example RecyclerView</string>
-    <string name="first_line">First Line</string>
-    <string name="second_line">Second Line</string>
-    <string name="third_line">Third Line</string>
-    <string name="some_bigger_element_for_example_bigger_recyclerview">Some bigger element, for example bigger RecyclerView</string>
-    <string name="search_products">Search products</string>
-    <string name="add_product">New product</string>
-    <string name="new_product">Add product</string>
-    <string name="select_product">Select product</string>
-    <string name="add_group">Add group</string>
-    <string name="total">Total</string>
-    <string name="due">Due</string>
-    <string name="account_redacted">• • • • • </string>
-    <string name="accounts">Accounts</string>
-    <string name="bills">Bills</string>
-    <string name="sort">Sort</string>
-    <string name="see_all">SEE ALL</string>
-
-    <string name="enter_your_word">enter your word</string>
-    <string name="congratulations">congratulations</string>
+    <string name="title_settings">Settings</string>
+    <string name="errorUser">Operation error.</string>
     <string name="change_quantity">Edit quantity</string>
-    <string name="change_name_basket">Edit name basket</string>
-    <string name="change_article">Edit article</string>
-    <string name="change_group">New group</string>
     <string name="exit">EXIT</string>
     <string name="ok">OK</string>
+    <string name="baskets">Baskets</string>
+    <string name="new_name_basket">New name basket</string>
+    <string name="change_name_basket">Edit name basket</string>
+
+    <string name="product">Product</string>
+    <string name="select_product">Select product</string>
+    <string name="products_in_basket">Products in basket:</string>
+    <string name="add_product">Add product</string>
+    <string name="title_products">Products</string>
+
+    <string name="change_article">Edit article</string>
+
+    <string name="group">Group</string>
+    <string name="groups">Groups</string>
+    <string name="name_group">All</string>
+    <string name="change_group">New group</string>
+
+    <string name="units">Units</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_l">L</string>
+    <string name="unit_gr">gr</string>
 </resources>
