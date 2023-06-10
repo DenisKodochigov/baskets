@@ -24,4 +24,5 @@
     <string name="unit_kg">кг</string>
     <string name="unit_l">л</string>
     <string name="unit_gr">гр</string>
+    <string name="add_basket">Новая корзина</string>
 </resources>

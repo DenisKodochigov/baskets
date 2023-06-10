@@ -1,6 +1,10 @@
 package com.example.shopping_list.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +21,7 @@ import com.example.shopping_list.ui.theme.AppTheme
 import com.example.shopping_list.ui.theme.BackgroundBottomSheet
 import kotlinx.coroutines.launch
 
-@SuppressLint("RememberReturnType")
+@SuppressLint("RememberReturnType", "UnrememberedMutableState")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MainApp() {
@@ -26,7 +30,10 @@ fun MainApp() {
         val currentBackStack by navController.currentBackStackEntryAsState()
         val currentDestination = currentBackStack?.destination
         val currentScreen = appTabRowScreens.find { it.route == currentDestination?.route } ?: Baskets
-        val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+        val bottomSheetState = rememberModalBottomSheetState(
+            initialValue = ModalBottomSheetValue.Hidden,
+//            animationSpec = spring(dampingRatio = Spring.DampingRatioHighBouncy)
+            animationSpec = tween(durationMillis = 500, delayMillis = 0, easing = FastOutLinearInEasing))
         val bottomSheetContent = remember { mutableStateOf<@Composable (() -> Unit)?>({ })  }
         val scope  = rememberCoroutineScope()
 
@@ -37,9 +44,7 @@ fun MainApp() {
             sheetContent = { bottomSheetContent.value?.invoke() },
         ) {
             Scaffold(
-                modifier = Modifier
-                    .background(MaterialTheme.colors.background)
-                    .padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 12.dp),
+                modifier = Modifier.background(MaterialTheme.colors.background).padding(12.dp),
                 bottomBar = {
                     BottomBarApp(
                         currentScreen = currentScreen,
@@ -52,9 +57,12 @@ fun MainApp() {
                 floatingActionButtonPosition = FabPosition.Center,
                 isFloatingActionButtonDocked = true,
             ) { innerPadding ->
-                AppNavHost(navController, modifier = Modifier.padding(innerPadding),
-                    bottomSheetContent = bottomSheetContent )
-                { scope.launch {bottomSheetState.hide() }}
+                val stateBS = bottomSheetState.currentValue != ModalBottomSheetValue.Hidden
+                AppNavHost(navController = navController,
+                    modifier = Modifier.padding(innerPadding),
+                    bottomSheetContent = bottomSheetContent,
+                    bottomSheetVisible = mutableStateOf( bottomSheetState.currentValue != ModalBottomSheetValue.Hidden),
+                    bottomSheetHide = { scope.launch {bottomSheetState.hide() }})
             }
         }
     }

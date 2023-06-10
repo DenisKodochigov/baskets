@@ -152,7 +152,7 @@ fun LayoutProductsScreen(
     Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))){
         Column( modifier.fillMaxHeight()) {
             HeaderScreen(
-                text = stringResource(R.string.products_in_basket) + ": " + uiState.nameBasket, modifier)
+                text = stringResource(R.string.products_in_basket) + uiState.nameBasket, modifier)
             Column( Modifier.fillMaxHeight().weight(1f)) {
                 Spacer(modifier = Modifier.weight(1f))
                 LazyColumnProduct(

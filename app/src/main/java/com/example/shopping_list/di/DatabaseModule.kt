@@ -23,7 +23,6 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase {
 
-        val nameGroup = appContext.getString(R.string.name_group)
         database = Room.inMemoryDatabaseBuilder(appContext, AppDatabase::class.java)
             .addCallback( object: RoomDatabase.Callback(){
                 override fun onCreate(db: SupportSQLiteDatabase) {
