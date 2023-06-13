@@ -25,12 +25,12 @@ val Typography = Typography(
     h1 = TextStyle(
         fontWeight = FontWeight.W100,
         fontSize = 24.sp,
-        letterSpacing = 1.5.sp
+//        letterSpacing = 1.5.sp
     ),
     h2 = TextStyle(
-        fontWeight = FontWeight.SemiBold,
+//        fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
-        letterSpacing = 1.5.sp
+//        letterSpacing = 1.5.sp
     ),
     h3 = TextStyle(
         fontWeight = FontWeight.W400,
@@ -51,17 +51,7 @@ val Typography = Typography(
 //        fontFamily = EczarFontFamily,
         letterSpacing = 3.sp
     ),
-    subtitle1 = TextStyle(
-        fontWeight = FontWeight.Light,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 3.sp
-    ),
-    subtitle2 = TextStyle(
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        letterSpacing = 0.1.em
-    ),
+
     body1 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,

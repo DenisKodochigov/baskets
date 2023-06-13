@@ -66,6 +66,9 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     /** Article entity*/
     fun getListArticle(): List<Article> = dataSourceDB.getListArticle()
 
+    fun sortingArticle(){
+        dataSourceDB.sortingArticle()
+    }
     fun addArticle(article: Article): List<Article> {
         dataSourceDB.getAddArticle(article as ArticleEntity)
         return getListArticle()

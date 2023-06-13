@@ -21,8 +21,11 @@
 
     <dimen name="corner_default">6dp</dimen>
     // LazyColumn
-    <dimen name="lazy_padding_ver">12dp</dimen>
+    <dimen name="lazy_padding_ver">10dp</dimen>
     <dimen name="lazy_padding_hor">12dp</dimen>
     <dimen name="screen_padding_hor">12dp</dimen>
+    <dimen name="lazy_padding_ver1">8dp</dimen>
+    <dimen name="lazy_padding_hor1">1dp</dimen>
+    <dimen name="screen_padding_hor1">12dp</dimen>
 
 </resources>

@@ -40,21 +40,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
             }
         }
     }
-    private fun reBuildPositionArticle(direction: Int){
-        val list = getListArticle()
-        val positionEnd = list.size
-        val positionStart = 1
-        var position = 1
-        if (list.isNotEmpty()) {
-            list.forEach {
-                if (position + direction < positionStart) it.position = positionEnd
-                else if (position + direction > positionEnd) it.position = positionStart
-                else it.position = position + direction
-                position++
-            }
-            list.forEach { dataDao.setPositionArticle(it.idArticle, it.position) }
-        }
-    }
+
     private fun reBuildPositionBasket(direction: Int){
         val list = getListBasketCount()
         val positionEnd = list.size
@@ -170,13 +156,30 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return getListArticle()
     }
 
+    fun sortingArticle(){
+        reBuildPositionArticle( 0 ,
+            dataDao.getListArticleSortName().map { item -> mapArticle(item) })
+    }
     fun getListArticle(): List<Article> = dataDao.getListArticle().map { item -> mapArticle(item) }
 
     fun setPositionArticle( direction: Int): List<Article>{
-        reBuildPositionArticle( direction)
+        reBuildPositionArticle( direction , getListArticle())
         return getListArticle()
     }
-
+    private fun reBuildPositionArticle(direction: Int, list: List<Article>){
+        val positionEnd = list.size
+        val positionStart = 1
+        var position = 1
+        if (list.isNotEmpty()) {
+            list.forEach {
+                if (position + direction < positionStart) it.position = positionEnd
+                else if (position + direction > positionEnd) it.position = positionStart
+                else it.position = position + direction
+                position++
+            }
+            list.forEach { dataDao.setPositionArticle(it.idArticle, it.position) }
+        }
+    }
     fun getAddArticle(article: ArticleEntity): ArticleEntity? {
         article.unitId = getAddUnit(article.unitA as UnitEntity).idUnit
         article.groupId = getAddGroup(article.group as GroupEntity).idGroup
@@ -198,6 +201,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         if (idGroup > 0) dataDao.changeGroupArticle(idGroup, articlesId)
         return getListArticle()
     }
+
 
     /** Group article*/
     fun getGroups(): List<GroupArticle>{

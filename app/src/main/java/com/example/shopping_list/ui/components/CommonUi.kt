@@ -1,23 +1,17 @@
 package com.example.shopping_list.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -26,14 +20,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.ui.theme.BackgroundBottomBar
-import com.example.shopping_list.ui.theme.BackgroundFab
-import com.example.shopping_list.ui.theme.BorderBottomBar
 import com.example.shopping_list.ui.theme.ButtonColorsMy
-import com.example.shopping_list.ui.theme.ContentFab
 
 @Composable
 fun HeaderScreen(text: String, modifier: Modifier) {
@@ -254,7 +243,7 @@ fun ButtonMove(modifier: Modifier, icon: ImageVector, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier,   //.height(36.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = BackgroundBottomBar)
+        colors = ButtonDefaults.buttonColors(backgroundColor = ButtonColorsMy)
     ) {
         Icon(icon, contentDescription = null)
     }

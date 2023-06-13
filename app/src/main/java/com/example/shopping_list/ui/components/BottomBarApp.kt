@@ -5,14 +5,20 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,12 +34,10 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.shopping_list.R
 import com.example.shopping_list.navigation.ScreenDestination
 import com.example.shopping_list.navigation.appTabRowScreens
 import com.example.shopping_list.ui.theme.BackgroundBottomBar
-import com.example.shopping_list.ui.theme.textBottomBar
-import java.util.*
-import com.example.shopping_list.R
 
 
 @Composable
@@ -114,9 +118,6 @@ private fun BottomTab(
             contentDescription = text,
             tint = tabTintColor,
             modifier = Modifier.size(IconSize))
-        if (selected) {
-            Text( text.uppercase(Locale.getDefault()), color = tabTintColor, style = textBottomBar)
-        }
     }
 }
 

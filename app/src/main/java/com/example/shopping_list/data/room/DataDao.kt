@@ -82,9 +82,11 @@ interface DataDao {
     fun addArticle(article: ArticleEntity): Long
 
     @Transaction
-    @Query("SELECT * FROM tb_article ORDER BY position ASC")
+    @Query("SELECT * FROM tb_article ORDER BY position ASC, nameArticle ASC")
     fun getListArticle(): List<ArticleObj>
-
+    @Transaction
+    @Query("SELECT * FROM tb_article ORDER BY nameArticle ASC")
+    fun getListArticleSortName(): List<ArticleObj>
     @Query("UPDATE tb_article SET unitId = :unitId WHERE idArticle =:articleId")
     fun setUnitInArticle(articleId: Long, unitId: Long)
 

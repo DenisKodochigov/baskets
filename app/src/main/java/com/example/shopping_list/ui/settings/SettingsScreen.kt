@@ -1,7 +1,6 @@
 package com.example.shopping_list.ui.settings
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,13 +23,10 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ChangeCircle
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -53,7 +49,6 @@ import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.components.ButtonCircle
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.MyTextH1
-import com.example.shopping_list.ui.components.dialog.EditQuantityDialog
 import com.example.shopping_list.ui.components.dialog.EditUnitDialog
 
 @Composable
@@ -103,7 +98,6 @@ fun LayoutSettingsScreen(
             }
         }
     }
-
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -155,11 +149,7 @@ fun LazyColumnUnits(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f)
-                                .padding(
-                                    start = dimensionResource(R.dimen.lazy_padding_hor),
-                                    top = dimensionResource(R.dimen.lazy_padding_ver),
-                                    bottom = dimensionResource(R.dimen.lazy_padding_ver)
-                                )
+                                .padding(bottom = dimensionResource(R.dimen.lazy_padding_ver1))
                         )
                     }
                 }

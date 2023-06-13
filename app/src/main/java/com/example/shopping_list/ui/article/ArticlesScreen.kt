@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
@@ -35,8 +34,6 @@ import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.GroupEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.GroupArticle
-import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.components.dialog.EditArticleDialog
 import com.example.shopping_list.ui.components.dialog.SelectGroupDialog
@@ -250,7 +247,9 @@ fun LazyColumnArticle(
                 },
                 dismissContent = {
                     Box {
-                        Row(modifier = Modifier
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
                             .clip(shape = RoundedCornerShape(6.dp))
                             .fillMaxWidth()
                             .background(Color.White)
@@ -263,9 +262,8 @@ fun LazyColumnArticle(
                                     .height(32.dp)
                                     .align(Alignment.CenterVertically)
                             )
-                            MyTextH1(
+                            MyTextH2(
                                 text = item.nameArticle,
-                                textAlign = TextAlign.Start,
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(
@@ -275,17 +273,15 @@ fun LazyColumnArticle(
                                     )
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            MyTextH1(
+                            MyTextH2(
                                 text = item.group.nameGroup,
-                                textAlign = TextAlign.Start,
                                 modifier = Modifier
                                     .width(100.dp)
                                     .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            MyTextH1(
+                            MyTextH2(
                                 text = item.unitA.nameUnit,
-                                textAlign = TextAlign.Start,
                                 modifier = Modifier
                                     .width(40.dp)
                                     .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
