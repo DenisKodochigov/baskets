@@ -69,7 +69,7 @@ object DatabaseModule {
                         database.dataDao().addProduct(ProductEntity(articleId = 8, value = 1.0, basketId = 1))
                         database.dataDao().addProduct(ProductEntity(articleId = 9, value = 1.0, basketId = 1))
                         database.dataDao().addProduct(ProductEntity(articleId = 10, value = 1.0, basketId = 1))
-
+                        database.dataDao().addProduct(ProductEntity(articleId = 10, value = 1.0, basketId = 2))
                     }
                 }
             })
@@ -79,7 +79,7 @@ object DatabaseModule {
 //                override fun onCreate(db: SupportSQLiteDatabase) {
 //                    super.onCreate(db)
 //                    ioThread {
-//                        database.dataDao().newBasket(BasketEntity(nameBasket = "Test"))
+////                        database.dataDao().newBasket(BasketEntity(nameBasket = "Test"))
 //                        database.dataDao().addGroup(GroupEntity(nameGroup = appContext.getString(R.string.name_group)))
 //                        database.dataDao().addUnit(UnitEntity(nameUnit = appContext.getString(R.string.name_unit1)))
 //                        database.dataDao().addUnit(UnitEntity(nameUnit = appContext.getString(R.string.unit_gr)))

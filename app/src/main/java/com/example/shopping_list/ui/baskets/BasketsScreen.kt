@@ -27,16 +27,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
@@ -60,7 +57,6 @@ fun BasketsScreen(
     val viewModel: BasketViewModel = hiltViewModel()
     viewModel.getListBasket()
     val uiState by viewModel.basketScreenState.collectAsState()
-    val sizeBottomSheet = mutableStateOf(0.dp)
 
     bottomSheetContent.value = {
         BottomSheetContentBasket(
@@ -240,9 +236,10 @@ fun LazyColumnBasket(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BottomSheetContentBasket( onAddClick: (String) -> Unit, bottomSheetHide: () -> Unit){
+fun BottomSheetContentBasket( onAddClick: (String) -> Unit, bottomSheetHide: () -> Unit) {
 
-    var nameNewBasket by remember { mutableStateOf("")}
+    var nameNewBasket by remember { mutableStateOf(
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date().time)) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
     val screenHeight = LocalConfiguration.current.screenHeightDp
@@ -252,15 +249,19 @@ fun BottomSheetContentBasket( onAddClick: (String) -> Unit, bottomSheetHide: () 
         Modifier
             .fillMaxWidth()
             .heightIn((screenHeight * 0.35).dp, (screenHeight * 0.75).dp)
-            .padding(24.dp, 24.dp, 24.dp, 32.dp)) {
+            .padding(24.dp, 24.dp, 24.dp, 32.dp)
+    ) {
         Spacer(Modifier.height(1.dp))
-        HeaderScreen(text = stringResource(R.string.add_basket), Modifier.focusRequester(focusRequesterSheet))
+        HeaderScreen(
+            text = stringResource(R.string.add_basket),
+            Modifier.focusRequester(focusRequesterSheet)
+        )
         OutlinedTextField(
             value = nameNewBasket,
             singleLine = true,
             textStyle = MaterialTheme.typography.h1,
             label = { Text(text = stringResource(R.string.new_name_basket)) },
-            onValueChange = { nameNewBasket = it},
+            onValueChange = { nameNewBasket = it },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
@@ -271,27 +272,9 @@ fun BottomSheetContentBasket( onAddClick: (String) -> Unit, bottomSheetHide: () 
                     localFocusManager.clearFocus()
                     bottomSheetHide()
                 }
-            ) ,
+            ),
         )
         Spacer(Modifier.width(36.dp))
-    }
-}
-
-@Composable
-fun OnGloballyPositionedExample() {
-    val localDensity = LocalDensity.current
-    var columnHeightPx by remember { mutableStateOf(0f) }
-    var columnHeightDp by remember { mutableStateOf(0.dp) }
-
-    Column(modifier = Modifier
-            .onGloballyPositioned { coordinates ->
-                // Set column height using the LayoutCoordinates
-                columnHeightPx = coordinates.size.height.toFloat()
-                columnHeightDp = with(localDensity) { coordinates.size.height.toDp() }
-            }
-    ) {
-        Text(text = "Column height in pixel: $columnHeightPx")
-        Text(text = "Column height in dp: $columnHeightDp")
     }
 }
 

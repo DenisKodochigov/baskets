@@ -35,12 +35,17 @@ fun AppNavHost(
         { navBackStackEntry ->
             val basketId = navBackStackEntry.arguments?.getLong(ProductsBasket.basketIdArg)
             if (basketId != null) {
-                ProductsScreen(basketId = basketId, bottomSheetContent = bottomSheetContent)
+                ProductsScreen(
+                    basketId = basketId,
+                    bottomSheetVisible = bottomSheetVisible,
+                    bottomSheetContent = bottomSheetContent)
             }
         }
 
         composable( route = Articles.route) {
-            ArticlesScreen(bottomSheetContent = bottomSheetContent)
+            ArticlesScreen(
+                bottomSheetContent = bottomSheetContent,
+                bottomSheetVisible = bottomSheetVisible,)
         }
         composable( route = Setting.route) {
             SettingsScreen(

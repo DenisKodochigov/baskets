@@ -129,12 +129,11 @@ fun MyTextH1End(text: String, modifier: Modifier){
 }
 
 @Composable
-fun TextButtonOK(onConfirm: ()->Unit){
+fun TextButtonOK(onConfirm: ()->Unit, enabled: Boolean = true){
     Column( horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth() ) {
-        TextButton(onClick = onConfirm) { MyTextH2(stringResource(R.string.ok), Modifier) }
+        TextButton(onClick = onConfirm, enabled = enabled) { MyTextH2(stringResource(R.string.ok), Modifier) }
     }
-
 }
 
 @Composable

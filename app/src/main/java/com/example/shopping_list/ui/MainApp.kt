@@ -32,7 +32,7 @@ fun MainApp() {
         val currentScreen = appTabRowScreens.find { it.route == currentDestination?.route } ?: Baskets
         val bottomSheetState = rememberModalBottomSheetState(
             initialValue = ModalBottomSheetValue.Hidden,
-//            animationSpec = spring(dampingRatio = Spring.DampingRatioHighBouncy)
+            skipHalfExpanded = true,
             animationSpec = tween(durationMillis = 500, delayMillis = 0, easing = FastOutLinearInEasing))
         val bottomSheetContent = remember { mutableStateOf<@Composable (() -> Unit)?>({ })  }
         val scope  = rememberCoroutineScope()
@@ -57,7 +57,6 @@ fun MainApp() {
                 floatingActionButtonPosition = FabPosition.Center,
                 isFloatingActionButtonDocked = true,
             ) { innerPadding ->
-                val stateBS = bottomSheetState.currentValue != ModalBottomSheetValue.Hidden
                 AppNavHost(navController = navController,
                     modifier = Modifier.padding(innerPadding),
                     bottomSheetContent = bottomSheetContent,
