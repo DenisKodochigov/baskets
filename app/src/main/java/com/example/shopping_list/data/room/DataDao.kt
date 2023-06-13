@@ -119,7 +119,8 @@ interface DataDao {
 
     @Insert
     fun addUnit(unit: UnitEntity): Long
-
+    @Update
+    fun changeUnit(unitA: UnitEntity)
     @Query("SELECT * FROM tb_unit")
     fun getUnits(): List<UnitEntity>
 
@@ -127,7 +128,8 @@ interface DataDao {
     fun getUnit(id: Long): UnitEntity
     @Query("SELECT * FROM tb_unit")
     fun getUnitsFlow(): Flow<List<UnitEntity>>
-
+    @Query("DELETE FROM tb_unit WHERE idUnit IN (:listId)")
+    fun deleteUnits(listId: List<Long>)
 }
 //    @Query("SELECT * FROM basket JOIN products ON basket.productId = products.idProduct" +
 //            "JOIN article ON products.articleId = article.idArticle " +

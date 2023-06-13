@@ -50,6 +50,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -66,6 +67,7 @@ import com.example.shopping_list.ui.components.FabUnSelectProducts
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
+import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIconClearing
 import com.example.shopping_list.ui.components.MyTextH1
 import com.example.shopping_list.ui.components.MyTextH1End
 import com.example.shopping_list.ui.components.TextButtonOK
@@ -278,8 +280,10 @@ fun LazyColumnProduct(
                                 .align(Alignment.CenterVertically)
                                 .clickable { doSelected(item.idProduct) }
                         )
-                        MyTextH1(item.article.nameArticle,
-                            Modifier
+                        MyTextH1(
+                            item.article.nameArticle,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
                                 .weight(1f)
                                 .clickable { doSelected(item.idProduct) }
                                 .padding(
@@ -302,7 +306,8 @@ fun LazyColumnProduct(
                         Spacer(modifier = Modifier.width(4.dp))
                         MyTextH1(
                             item.article.unitA.nameUnit,
-                            Modifier
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
                                 .width(50.dp)
                                 .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
                                 .clickable { doSelected(item.idProduct) }
@@ -363,7 +368,6 @@ fun LayoutAddEditProduct(
         if (enterArticle.value.first > 0) {
             enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.articles)
             enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
-            enterValue.value = "1"
         }
         Spacer(Modifier.height(12.dp))
         /** Select group*/
@@ -377,7 +381,7 @@ fun LayoutAddEditProduct(
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Center,) {
             /** Value*/
-            MyOutlinedTextFieldWithoutIcon(
+            MyOutlinedTextFieldWithoutIconClearing(
                 typeKeyboard = "digit",
                 modifier = Modifier.width(90.dp),
                 enterValue = enterValue
@@ -413,6 +417,7 @@ fun LayoutAddEditProduct(
             onConfirm = {
             onAddProduct(product)
             enterArticle.value = Pair(0, "")
+            enterValue.value = "1"
         })
         Spacer(Modifier.height(36.dp))
     }

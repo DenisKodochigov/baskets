@@ -1,9 +1,9 @@
 package com.example.shopping_list.data
 
-import android.util.Log
 import com.example.shopping_list.data.room.DataSourceDB
 import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.BasketEntity
+import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.*
 import kotlinx.coroutines.flow.Flow
 import java.util.*
@@ -92,8 +92,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
 
     fun changeGroupSelectedArticle(articles: List<Article>, idGroup: Long): List<Article> {
         val articlesId = articles.filter { it.isSelected }.map { it.idArticle }
-        val listArticle = dataSourceDB.changeGroupArticle(idGroup, articlesId)
-        return listArticle
+        return dataSourceDB.changeGroupArticle(idGroup, articlesId)
     }
 
     fun deleteSelectedArticle(articles: List<Article>): List<Article> {
@@ -102,6 +101,15 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
 
     fun setPositionArticle(direction: Int): List<Article> {
         return dataSourceDB.setPositionArticle(direction)
+    }
+
+    fun deleteUnits(deleteUnits: List<UnitA>): List<UnitA> {
+        dataSourceDB.deleteUnits(deleteUnits)
+        return getUnits()
+    }
+    fun changeUnit(unit: UnitA): List<UnitA> {
+        dataSourceDB.getAddUnit(unit as UnitEntity)
+        return getUnits()
     }
 
     fun groupsFlow(): Flow<List<GroupArticle>> = dataSourceDB.groupsFlow()

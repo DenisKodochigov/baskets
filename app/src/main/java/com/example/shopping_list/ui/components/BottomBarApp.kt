@@ -43,7 +43,7 @@ fun BottomBarApp(currentScreen: ScreenDestination,
     BottomAppBar(
         backgroundColor = BackgroundBottomBar,
         elevation = 6.dp,
-        modifier = Modifier.clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
+        modifier = Modifier.height(TabHeight).clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
     ){
         BottomTabRow(
             allScreens = appTabRowScreens,
@@ -93,10 +93,10 @@ private fun BottomTab(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(top = 16.dp, start = 14.dp, end = 14.dp)
+            .padding(top = 6.dp, start = 14.dp, end = 14.dp)
             .width(35.dp)
             .animateContentSize()
-            .height(TabHeight)
+//            .height(TabHeight)
             .selectable(
                 selected = selected,
                 onClick = onSelected,
@@ -109,17 +109,19 @@ private fun BottomTab(
             .clearAndSetSemantics { contentDescription = text }
 
     ) {
-        Icon(imageVector = icon, contentDescription = text, tint = tabTintColor)
+        Icon(
+            imageVector = icon,
+            contentDescription = text,
+            tint = tabTintColor,
+            modifier = Modifier.size(IconSize))
         if (selected) {
-            Text( text.uppercase(Locale.getDefault()),
-                color = tabTintColor,
-                style = textBottomBar
-            )
+            Text( text.uppercase(Locale.getDefault()), color = tabTintColor, style = textBottomBar)
         }
     }
 }
 
-private val TabHeight = 56.dp
+private val TabHeight = 70.dp
+private val IconSize = 50.dp
 private const val InactiveTabOpacity = 0.60f
 private const val TabFadeInAnimationDuration = 150
 private const val TabFadeInAnimationDelay = 100

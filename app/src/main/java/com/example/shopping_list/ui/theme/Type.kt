@@ -90,6 +90,6 @@ val Typography = Typography(
 )
 
 val textBottomBar = TextStyle(
-    fontSize = 8.sp,
+    fontSize = 14.sp,
     fontFamily = RobotoCondensed
 )

@@ -216,11 +216,15 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     fun groupsFlow(): Flow<List<GroupArticle>> = dataDao.getGroupsFlow()
 
     /** Unit*/
-    private fun getAddUnit(unitA: UnitEntity): UnitA {
-        return if (unitA.idUnit == 0L) {
-            val id = if (unitA.nameUnit != "") dataDao.addUnit(unitA) else 1
-            dataDao.getUnit(id)
-        } else unitA
+    fun getAddUnit(unitA: UnitEntity): UnitA {
+        if (unitA.idUnit == 0L) unitA.idUnit = if (unitA.nameUnit != "") dataDao.addUnit(unitA) else 1
+        else if (unitA.nameUnit != dataDao.getUnit(unitA.idUnit).nameUnit) dataDao.changeUnit(unitA)
+        return unitA
+    }
+
+    fun deleteUnits(units: List<UnitA>) {
+        val listId = units.filter { it.isSelected }.map { it.idUnit }
+        dataDao.deleteUnits(listId)
     }
 
     fun getUnits(): List<UnitA>{

@@ -50,7 +50,8 @@ fun FabChangeGroupProducts(changeGroupSelected: MutableState<Boolean>){
 
     FloatingActionButton(
         onClick =  { changeGroupSelected.value = true },
-        modifier = Modifier.padding(bottom = 16.dp)
+        modifier = Modifier
+            .padding(bottom = 16.dp)
             .border(2.dp, color = BorderBottomBar, shape = RoundedCornerShape(50.dp)),
         backgroundColor = BackgroundFab,
         contentColor = ContentFab)
@@ -61,7 +62,7 @@ fun FabChangeGroupProducts(changeGroupSelected: MutableState<Boolean>){
 @Composable
 fun FabUnSelectProducts(unSelected: MutableState<Boolean>){
 
-    FloatingActionButton(onClick = { unSelected.value = true },
+    FloatingActionButton( onClick = { unSelected.value = true },
         modifier = Modifier
             .padding(bottom = 16.dp)
             .border(2.dp, color = BorderBottomBar, shape = RoundedCornerShape(50.dp)),

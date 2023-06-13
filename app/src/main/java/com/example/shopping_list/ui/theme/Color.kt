@@ -15,10 +15,11 @@ val OnPrimaryOnSecondaryOnError = Color(0xFF009688)
 val BackgroundBottomSheet = Color(0xFFF0F0F0)
 val TextIcon = Color(0xFF464646)
 val TextDate = Color(0xFF9C9C9C)
-val BackgroundBottomBar = Color(0xFFE0E0E0)
+val BackgroundBottomBar = Color(0xFFCECECE)
 val BorderBottomBar = Color(0xFF464646)
 val BackgroundFab = BackgroundBottomBar
 val ContentFab = BorderBottomBar
+val ButtonColorsMy = Color.LightGray
 /**
  *
 primary - Основной цвет - это цвет, который чаще всего отображается на экранах и компонентах вашего приложения.

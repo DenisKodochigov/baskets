@@ -48,9 +48,7 @@ fun AppNavHost(
                 bottomSheetVisible = bottomSheetVisible,)
         }
         composable( route = Setting.route) {
-            SettingsScreen(
-                onSettingsClick = { navController.navigateToScreen(it) },
-                bottomSheetContent = bottomSheetContent)
+            SettingsScreen()
         }
 //        composable(
 //            route = SingleAccount.routeWithArgs,

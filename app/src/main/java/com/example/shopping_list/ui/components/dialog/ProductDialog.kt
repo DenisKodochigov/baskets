@@ -30,14 +30,17 @@ fun EditQuantityDialog(
     product: Product,
     listUnit: List<UnitA>,
     onConfirm: (Product) -> Unit,
-    onDismiss: () -> Unit,)
-{
-    val enterUnit = remember { mutableStateOf(
-        Pair(product.article.unitA.idUnit, product.article.unitA.nameUnit)) }
-    val enterValue = remember{ mutableStateOf(product.value.toString()) }
+    onDismiss: () -> Unit,
+) {
+    val enterUnit = remember {
+        mutableStateOf(
+            Pair(product.article.unitA.idUnit, product.article.unitA.nameUnit)
+        )
+    }
+    val enterValue = remember { mutableStateOf(product.value.toString()) }
 
     AlertDialog(
-        onDismissRequest = onDismiss ,
+        onDismissRequest = onDismiss,
         title = { MyTextH2(stringResource(R.string.change_quantity), Modifier) },
         text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
         confirmButton = {
@@ -53,16 +56,23 @@ fun EditQuantityDialog(
 fun EditQuantityDialogLayout(
     enterValue: MutableState<String>,
     enterUnit: MutableState<Pair<Long, String>>,
-    listUnit: List<UnitA>){
+    listUnit: List<UnitA>
+) {
 
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         /** Value*/
-        MyOutlinedTextFieldWithoutIconClearing( enterValue = enterValue, typeKeyboard = "digit",
-            modifier = Modifier.align(Alignment.CenterVertically).width(120.dp).padding(top = 8.dp),)
+        MyOutlinedTextFieldWithoutIconClearing(
+            enterValue = enterValue,
+            typeKeyboard = "digit",
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .width(120.dp)
+                .padding(top = 8.dp),
+        )
         Spacer(Modifier.width(4.dp))
         /** Select unit*/
         MyExposedDropdownMenuBox(
-            listItems = listUnit.map{ Pair(it.idUnit, it.nameUnit) },
+            listItems = listUnit.map { Pair(it.idUnit, it.nameUnit) },
             label = stringResource(R.string.units),
             modifier = Modifier.width(120.dp),
             enterValue = enterUnit,
@@ -77,33 +87,36 @@ fun EditQuantityDialogLayout(
 fun SelectGroupDialog(
     listGroup: List<GroupArticle>,
     onConfirm: (Long) -> Unit,
-    onDismiss: () -> Unit)
-{
+    onDismiss: () -> Unit
+) {
     val enterGroup = remember { mutableStateOf(Pair(listGroup[0].idGroup, listGroup[0].nameGroup)) }
 
     AlertDialog(
-        onDismissRequest = onDismiss ,
-        title = { MyTextH2(stringResource(R.string.change_group), Modifier)},
+        onDismissRequest = onDismiss,
+        title = { MyTextH2(stringResource(R.string.change_group), Modifier) },
         text = { SelectGroupDialogLayout(enterGroup, listGroup) },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                MyTextH2(stringResource(R.string.exit), Modifier) }
+                MyTextH2(stringResource(R.string.exit), Modifier)
+            }
         },
         confirmButton = {
-            TextButton( onClick = { onConfirm(enterGroup.value.first) })
+            TextButton(onClick = { onConfirm(enterGroup.value.first) })
             { MyTextH2(stringResource(R.string.ok), Modifier) }
         }
     )
 }
+
 @Composable
 fun SelectGroupDialogLayout(
     enterGroup: MutableState<Pair<Long, String>>,
-    listGroup: List<GroupArticle>){
+    listGroup: List<GroupArticle>
+) {
 
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         /** Select group*/
         MyExposedDropdownMenuBox(
-            listItems = listGroup.map{ Pair(it.idGroup, it.nameGroup) },
+            listItems = listGroup.map { Pair(it.idGroup, it.nameGroup) },
             label = stringResource(R.string.groups),
             modifier = Modifier.fillMaxWidth(),
             enterValue = enterGroup,
