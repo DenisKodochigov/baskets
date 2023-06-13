@@ -227,8 +227,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     }
 
     fun deleteUnits(units: List<UnitA>) {
-        val listId = units.filter { it.isSelected }.map { it.idUnit }
-        dataDao.deleteUnits(listId)
+        units.forEach { if (dataDao.checkUnit( it.idUnit ) == null) dataDao.deleteUnit(it.idUnit) }
     }
 
     fun getUnits(): List<UnitA>{

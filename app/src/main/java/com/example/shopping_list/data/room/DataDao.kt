@@ -132,6 +132,10 @@ interface DataDao {
     fun getUnitsFlow(): Flow<List<UnitEntity>>
     @Query("DELETE FROM tb_unit WHERE idUnit IN (:listId)")
     fun deleteUnits(listId: List<Long>)
+    @Query("DELETE FROM tb_unit WHERE idUnit = :id")
+    fun deleteUnit(id: Long)
+    @Query("SELECT idArticle FROM tb_article WHERE unitId = :id")
+    fun checkUnit(id: Long): Long?
 }
 //    @Query("SELECT * FROM basket JOIN products ON basket.productId = products.idProduct" +
 //            "JOIN article ON products.articleId = article.idArticle " +
