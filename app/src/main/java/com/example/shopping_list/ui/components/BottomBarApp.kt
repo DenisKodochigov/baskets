@@ -97,10 +97,9 @@ private fun BottomTab(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(top = 6.dp, start = 14.dp, end = 14.dp)
+            .padding( start = 14.dp, end = 14.dp)
             .width(35.dp)
             .animateContentSize()
-//            .height(TabHeight)
             .selectable(
                 selected = selected,
                 onClick = onSelected,
@@ -123,7 +122,7 @@ private fun BottomTab(
 
 private val TabHeight = 70.dp
 private val IconSize = 50.dp
-private const val InactiveTabOpacity = 0.60f
+private const val InactiveTabOpacity = 0.50f
 private const val TabFadeInAnimationDuration = 150
 private const val TabFadeInAnimationDelay = 100
 private const val TabFadeOutAnimationDuration = 100

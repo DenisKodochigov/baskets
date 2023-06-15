@@ -340,15 +340,21 @@ fun LayoutAddEditProduct(
     val enterUnit = remember { mutableStateOf(Pair<Long, String>(1, unitStuff)) }
     val focusRequesterSheet = remember { FocusRequester() }
 
+    enterArticle.value = Pair(
+        uiState.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L,
+        enterArticle.value.second)
 
-    val idUnit = uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
-    enterUnit.value = Pair(idUnit, enterUnit.value.second)
-    val idGroup = uiState.group.find { it.nameGroup == enterGroup.value.second }?.idGroup ?: 0L
-    enterGroup.value = Pair(idGroup, enterGroup.value.second)
-    val idArticle =
-        uiState.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L
-    enterArticle.value = Pair(idArticle, enterArticle.value.second)
-
+    if (enterArticle.value.first > 0) {
+        enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.articles)
+        enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
+    } else  {
+        enterUnit.value = Pair(
+            uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L,
+            enterUnit.value.second)
+        enterGroup.value = Pair(
+            uiState.group.find { it.nameGroup == enterGroup.value.second }?.idGroup ?: 0L,
+            enterGroup.value.second)
+    }
     Column(
         Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
@@ -357,6 +363,7 @@ fun LayoutAddEditProduct(
             text = stringResource(R.string.add_product),
             modifier = Modifier.focusRequester(focusRequesterSheet)
         )
+        Spacer(Modifier.height(12.dp))
         /** Select article*/
         MyExposedDropdownMenuBox(
             listItems = uiState.articles.map { Pair(it.idArticle, it.nameArticle) },
@@ -365,10 +372,7 @@ fun LayoutAddEditProduct(
             enterValue = enterArticle,
             filtering = true
         )
-        if (enterArticle.value.first > 0) {
-            enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.articles)
-            enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
-        }
+
         Spacer(Modifier.height(12.dp))
         /** Select group*/
         MyExposedDropdownMenuBox(
@@ -376,7 +380,9 @@ fun LayoutAddEditProduct(
             label = stringResource(R.string.group),
             modifier = Modifier.fillMaxWidth(),
             enterValue = enterGroup,
-            filtering = true
+            filtering = true,
+            readOnly = enterArticle.value.first > 0,
+            enabled = enterArticle.value.first <= 0
         )
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Center,) {
@@ -394,7 +400,8 @@ fun LayoutAddEditProduct(
                 modifier = Modifier.width(120.dp),
                 enterValue = enterUnit,
                 readOnly = true,
-                filtering = false
+                filtering = false,
+                enabled = enterArticle.value.first <= 0
             )
         }
         Spacer(Modifier.height(36.dp))

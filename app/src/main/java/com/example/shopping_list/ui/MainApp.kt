@@ -44,7 +44,7 @@ fun MainApp() {
             sheetContent = { bottomSheetContent.value?.invoke() },
         ) {
             Scaffold(
-                modifier = Modifier.background(MaterialTheme.colors.background).padding(12.dp),
+                modifier = Modifier.background(MaterialTheme.colors.background).padding(14.dp),
                 bottomBar = {
                     BottomBarApp(
                         currentScreen = currentScreen,

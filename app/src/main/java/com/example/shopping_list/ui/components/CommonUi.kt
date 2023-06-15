@@ -41,17 +41,18 @@ fun MyExposedDropdownMenuBox(
     filtering: Boolean,
     enterValue: MutableState<Pair<Long, String>>?,
     readOnly: Boolean = false,
+    enabled: Boolean = true
 ) {
 
     var focusItem by remember { mutableStateOf(false) }
     val localFocusManager = LocalFocusManager.current
-    var expanded by remember { mutableStateOf(false) }
+    var expandedLocal by remember { mutableStateOf(false) }
     var enteredText by remember { mutableStateOf("") }
     enteredText = if (enterValue != null && !focusItem) enterValue.value.second else ""
     ExposedDropdownMenuBox(
-        expanded = expanded,
+        expanded = expandedLocal && enabled,
         modifier = modifier,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = { expandedLocal = !expandedLocal }
     ) {
         OutlinedTextField(
             modifier = Modifier
@@ -59,23 +60,24 @@ fun MyExposedDropdownMenuBox(
                 .onFocusChanged { focusItem = it.isFocused },
             value = enteredText,
             singleLine = true,
+            enabled = enabled,
             readOnly = readOnly,
             textStyle = MaterialTheme.typography.h1,
             onValueChange = {
                 enteredText = it
                 focusItem = false
                 enterValue!!.value = Pair(0, it)
-                expanded = true
+                expandedLocal = true
             },
             label = { if (label != null) Text(text = label, style = MaterialTheme.typography.h3) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedLocal) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
                     localFocusManager.clearFocus()
                     enterValue!!.value = Pair(0, enteredText)
-                    expanded = false
+                    expandedLocal = false
                 }
             ),
         )
@@ -83,13 +85,14 @@ fun MyExposedDropdownMenuBox(
         if (filtering) filteringOptions =
             listItems.filter { it.second.contains(enteredText, ignoreCase = true) }
         if (filteringOptions.isNotEmpty()) {
-            ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }
-            ) {
+            ExposedDropdownMenu(
+                expanded = expandedLocal && enabled,
+                onDismissRequest = { expandedLocal = false }) {
                 filteringOptions.forEach { item ->
                     DropdownMenuItem(
                         onClick = {
                             enteredText = item.second
-                            expanded = false
+                            expandedLocal = false
                             enterValue!!.value = item
                             localFocusManager.clearFocus()
                         }
@@ -98,7 +101,7 @@ fun MyExposedDropdownMenuBox(
                     }
                 }
             }
-        } else expanded = false
+        } else expandedLocal = false
     }
 }
 
