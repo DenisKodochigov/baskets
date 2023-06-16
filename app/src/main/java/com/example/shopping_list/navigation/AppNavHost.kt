@@ -31,10 +31,10 @@ fun AppAnimatedNavHost(
         navController = navController, startDestination = Baskets.route, modifier = modifier ) {
 
         val enterTransition = slideInHorizontally(
-            animationSpec = tween(durationMillis = 1200)) { it / 2 } +
-                fadeIn( animationSpec = tween(durationMillis = 1200))
+            animationSpec = tween(durationMillis = 1200)) { it / 1 } //+
+//                fadeIn( animationSpec = tween(durationMillis = 1200))
         val exitTransition = slideOutHorizontally(
-            animationSpec = tween(durationMillis = 1200)) + fadeOut()
+            animationSpec = tween(durationMillis = 1000)) { it / -1 }//+ fadeOut()
         composable(route = Baskets.route,
             enterTransition = { enterTransition },
             exitTransition = { exitTransition }){
