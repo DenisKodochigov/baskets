@@ -220,7 +220,7 @@ fun LazyColumnArticle(
                     .animateItemPlacement(),
                 directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
                 dismissThresholds = { direction ->
-                    FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.1f else 0.4f)
+                    FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.4f else 0.4f)
                 },
                 background = {
                     val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
