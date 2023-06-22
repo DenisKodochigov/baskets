@@ -4,9 +4,6 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 
-val Transparent = Color(0xFFFFFF)
-val Green500 = Color(0xFF1EB980)
-val DarkBlue900 = Color(0xFF26282F)
 val ScaffoldColor = Color(0xFFECECEC)
 val SelectedColor = Color(0xFF595F7E)
 val Secondary = Color(0xFF03A9F4)
@@ -69,13 +66,4 @@ val DarkColorPalette = darkColors(
     onBackground = TextIcon,
     onSurface = TextIcon,
     onError = OnPrimaryOnSecondaryOnError,
-)
-
-// Rally is always dark themed.
-val BottomColorPalette = darkColors(
-    primary = SelectedColor,
-    surface = ScaffoldColor,
-    onSurface = Color.Black,
-    background = ScaffoldColor,
-    onBackground = Color.Black
 )

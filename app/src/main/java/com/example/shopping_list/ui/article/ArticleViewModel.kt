@@ -10,7 +10,6 @@ import com.example.shopping_list.entity.GroupArticle
 import com.example.shopping_list.entity.UnitA
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,8 +27,8 @@ class ArticleViewModel @Inject constructor(
 
     private val _articleScreenState = MutableStateFlow(ArticleScreenState())
     val articleScreenState: StateFlow<ArticleScreenState> = _articleScreenState.asStateFlow()
-    lateinit var unitsFlow: StateFlow<List<UnitA>>
-    lateinit var groupsFlow: StateFlow<List<GroupArticle>>
+    private lateinit var unitsFlow: StateFlow<List<UnitA>>
+    private lateinit var groupsFlow: StateFlow<List<GroupArticle>>
 
     init {
         getUnitsFlow()

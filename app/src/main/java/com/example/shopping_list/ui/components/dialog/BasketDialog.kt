@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +38,7 @@ fun EditBasketName(
 
 @Composable
 fun EditBasketNameDialogLayout( enterValue: MutableState<String>){
-    Column() {
+    Column {
         Text(text = "")
         MyOutlinedTextFieldWithoutIcon( enterValue = enterValue, typeKeyboard = "text",
             modifier = Modifier.fillMaxWidth() )

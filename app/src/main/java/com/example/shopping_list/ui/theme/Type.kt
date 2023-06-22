@@ -48,7 +48,6 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 6.sp,
         lineHeight = 20.sp,
-//        fontFamily = EczarFontFamily,
         letterSpacing = 3.sp
     ),
 
@@ -77,9 +76,4 @@ val Typography = Typography(
         fontWeight = FontWeight.W500,
         fontSize = 10.sp
     )
-)
-
-val textBottomBar = TextStyle(
-    fontSize = 14.sp,
-    fontFamily = RobotoCondensed
 )

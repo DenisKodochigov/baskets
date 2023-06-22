@@ -1,3 +1,0 @@
-
-3. java.lang.NullPointerException at com.example.shopping_list.ui.components.dialog.ArticleDialogKt.LayoutAddEditArticle(ArticleDialog.kt:85)
-4. При добавлении продукта, если название пустое блокировать ОК.

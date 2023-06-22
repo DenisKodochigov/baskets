@@ -295,5 +295,4 @@ fun BottomSheetContentBasketPreview(){
 @Preview(showBackground = true)
 @Composable
 fun BasketsScreenLayoutPreview(){
-//    BasketsScreenLayout(Modifier, listOf(BasketDB(nameBasket = "Fruicts"), BasketDB(nameBasket = "Auto"))) {}
 }

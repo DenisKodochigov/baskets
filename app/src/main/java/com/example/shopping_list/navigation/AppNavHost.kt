@@ -37,7 +37,7 @@ fun AppAnimatedNavHost(
         val exitTransition = slideOutHorizontally(
             animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / -1 } +
                 fadeOut(animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
-        
+
         composable(route = Baskets.route,
             enterTransition = { enterTransition },
             exitTransition = { exitTransition },){
@@ -76,43 +76,4 @@ fun AppAnimatedNavHost(
     }
 }
 
-//
-
-//@ExperimentalAnimationApi
-//@Composable
-//fun AnimationScreen() {
-//    val navController = rememberAnimatedNavController()
-//val slideEffect = spring<IntOffset>(dampingRatio = Spring.DampingRatioMediumBouncy)
-//val popupEffect = tween<IntOffset>(durationMillis = 2000, easing = CubicBezierEasing(0.08f,0.93f,0.68f,1.27f))
-//
-//    AnimatedNavHost(navController, startDestination = "main") {
-//        composable(
-//            Baskets.route,
-//            enterTransition = {
-//                slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = slideEffect) },
-//            exitTransition = {
-//                slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = slideEffect) },
-//            popEnterTransition = {
-//                slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = slideEffect) },
-//            popExitTransition = {
-//                slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = slideEffect) }
-//        ) { }
-//
-//
-//        composable(
-//            Articles.route,
-//            enterTransition = {
-//                slideInVertically(initialOffsetY = { 1000 }, animationSpec = popupEffect) },
-//            exitTransition = {
-//                slideOutVertically(targetOffsetY = { -1000 }, animationSpec = popupEffect) },
-//            popEnterTransition = {
-//                slideInVertically(initialOffsetY = { -1000 }, animationSpec = popupEffect) },
-//            popExitTransition = {
-//                slideOutVertically(targetOffsetY = { 1000 }, animationSpec = popupEffect) }
-//        ) {}
-//        composable("main") {
-//
-//        }
-//    }
-//}
 
