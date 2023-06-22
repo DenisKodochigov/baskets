@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -33,10 +32,7 @@ fun EditQuantityDialog(
     onDismiss: () -> Unit,
 ) {
     val enterUnit = remember {
-        mutableStateOf(
-            Pair(product.article.unitA.idUnit, product.article.unitA.nameUnit)
-        )
-    }
+        mutableStateOf(Pair(product.article.unitA.idUnit, product.article.unitA.nameUnit)) }
     val enterValue = remember { mutableStateOf(product.value.toString()) }
 
     AlertDialog(
@@ -95,15 +91,8 @@ fun SelectGroupDialog(
         onDismissRequest = onDismiss,
         title = { MyTextH2(stringResource(R.string.change_group), Modifier) },
         text = { SelectGroupDialogLayout(enterGroup, listGroup) },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                MyTextH2(stringResource(R.string.exit), Modifier)
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = { onConfirm(enterGroup.value.first) })
-            { MyTextH2(stringResource(R.string.ok), Modifier) }
-        }
+        dismissButton = { },
+        confirmButton = { TextButtonOK(onConfirm = { onConfirm(enterGroup.value.first) }) }
     )
 }
 

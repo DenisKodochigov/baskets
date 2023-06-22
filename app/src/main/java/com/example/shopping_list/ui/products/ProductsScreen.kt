@@ -32,6 +32,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddShoppingCart
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Dns
+import androidx.compose.material.icons.filled.RemoveDone
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,12 +65,9 @@ import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.components.ButtonSwipe
-import com.example.shopping_list.ui.components.FabChangeGroupProducts
-import com.example.shopping_list.ui.components.FabDeleteProducts
-import com.example.shopping_list.ui.components.FabUnSelectProducts
+import com.example.shopping_list.ui.components.FabAnimation
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
-import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIconClearing
 import com.example.shopping_list.ui.components.MyTextH1
 import com.example.shopping_list.ui.components.MyTextH1End
@@ -124,6 +125,7 @@ fun LayoutProductsScreen(
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeGroupSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
+    var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
 
 //    Log.d("KDS", "ProductsScreenLayout")
     val itemList = uiState.products
@@ -172,10 +174,17 @@ fun LayoutProductsScreen(
             ButtonSwipe(movePosition)
         }
         if (itemList.find { it.isSelected } != null) {
-            Column(Modifier.align(alignment = Alignment.BottomCenter)) {
-                FabDeleteProducts(deleteSelected)
-                FabChangeGroupProducts(changeGroupSelected)
-                FabUnSelectProducts(unSelected)
+            startScreen = true
+            Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
+                FabAnimation(show = true, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
+                FabAnimation(show = true, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeGroupSelected.value = true })
+                FabAnimation(show = true, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
+            }
+        } else if (startScreen){
+            Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
+                FabAnimation(show = false, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
+                FabAnimation(show = false, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeGroupSelected.value = true })
+                FabAnimation(show = false, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
             }
         }
     }
@@ -385,7 +394,11 @@ fun LayoutAddEditProduct(
             enabled = enterArticle.value.first <= 0
         )
         Spacer(Modifier.height(12.dp))
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Center,) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.Center,
+        ) {
             /** Value*/
             MyOutlinedTextFieldWithoutIconClearing(
                 typeKeyboard = "digit",
@@ -439,7 +452,7 @@ fun ProductsScreenLayoutPreview() {
 @Preview(showBackground = true)
 @Composable
 fun LayoutAddEditProductPreview() {
-    LayoutAddEditProduct( ProductsScreenState(), {})
+    LayoutAddEditProduct( ProductsScreenState()) {}
 }
 
 

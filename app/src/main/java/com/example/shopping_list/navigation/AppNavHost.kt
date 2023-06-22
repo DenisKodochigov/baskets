@@ -29,15 +29,18 @@ fun AppAnimatedNavHost(
 
     AnimatedNavHost(
         navController = navController, startDestination = Baskets.route, modifier = modifier ) {
-
+        val durationMillis = 1500
+        val delayMillis = 200
         val enterTransition = slideInHorizontally(
-            animationSpec = tween(durationMillis = 1200)) { it / 1 } //+
-//                fadeIn( animationSpec = tween(durationMillis = 1200))
+            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / 1 } +
+                fadeIn( animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
         val exitTransition = slideOutHorizontally(
-            animationSpec = tween(durationMillis = 1000)) { it / -1 }//+ fadeOut()
+            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / -1 } +
+                fadeOut(animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
+        
         composable(route = Baskets.route,
             enterTransition = { enterTransition },
-            exitTransition = { exitTransition }){
+            exitTransition = { exitTransition },){
             BasketsScreen(
                 bottomSheetContent = bottomSheetContent,
                 bottomSheetHide = bottomSheetHide,
@@ -46,7 +49,7 @@ fun AppAnimatedNavHost(
         }
         composable(route = ProductsBasket.routeWithArgs, arguments = ProductsBasket.arguments,
             enterTransition = { enterTransition },
-            exitTransition = { exitTransition })
+            exitTransition = { exitTransition },)
         { navBackStackEntry ->
             val basketId = navBackStackEntry.arguments?.getLong(ProductsBasket.basketIdArg)
             if (basketId != null) {
@@ -59,19 +62,57 @@ fun AppAnimatedNavHost(
         }
         composable(route = Articles.route,
             enterTransition = { enterTransition },
-            exitTransition = { exitTransition }){
+            exitTransition = { exitTransition },){
             ArticlesScreen(
                 bottomSheetContent = bottomSheetContent,
                 bottomSheetVisible = bottomSheetVisible,)
         }
         composable(route = Setting.route,
             enterTransition = { enterTransition },
-            exitTransition = { exitTransition }){
+            exitTransition = { exitTransition },){
             SettingsScreen()
         }
 
     }
 }
 
+//
 
+//@ExperimentalAnimationApi
+//@Composable
+//fun AnimationScreen() {
+//    val navController = rememberAnimatedNavController()
+//val slideEffect = spring<IntOffset>(dampingRatio = Spring.DampingRatioMediumBouncy)
+//val popupEffect = tween<IntOffset>(durationMillis = 2000, easing = CubicBezierEasing(0.08f,0.93f,0.68f,1.27f))
+//
+//    AnimatedNavHost(navController, startDestination = "main") {
+//        composable(
+//            Baskets.route,
+//            enterTransition = {
+//                slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = slideEffect) },
+//            exitTransition = {
+//                slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = slideEffect) },
+//            popEnterTransition = {
+//                slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = slideEffect) },
+//            popExitTransition = {
+//                slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = slideEffect) }
+//        ) { }
+//
+//
+//        composable(
+//            Articles.route,
+//            enterTransition = {
+//                slideInVertically(initialOffsetY = { 1000 }, animationSpec = popupEffect) },
+//            exitTransition = {
+//                slideOutVertically(targetOffsetY = { -1000 }, animationSpec = popupEffect) },
+//            popEnterTransition = {
+//                slideInVertically(initialOffsetY = { -1000 }, animationSpec = popupEffect) },
+//            popExitTransition = {
+//                slideOutVertically(targetOffsetY = { 1000 }, animationSpec = popupEffect) }
+//        ) {}
+//        composable("main") {
+//
+//        }
+//    }
+//}
 

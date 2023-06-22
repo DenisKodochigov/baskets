@@ -15,7 +15,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.RemoveDone
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,6 +87,8 @@ fun LayoutArticleScreen(
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeGroupSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
 
+    var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
+
     val itemList = uiState.article
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idArticle == isSelectedId.value }
@@ -134,10 +138,17 @@ fun LayoutArticleScreen(
             ButtonSwipe(movePosition)
         }
         if (itemList.find { it.isSelected } != null) {
-            Column(Modifier.align(alignment = Alignment.BottomCenter)) {
-                FabDeleteProducts(deleteSelected)
-                FabChangeGroupProducts(changeGroupSelected)
-                FabUnSelectProducts(unSelected)
+            startScreen = true
+            Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
+                FabAnimation(show = true, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
+                FabAnimation(show = true, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeGroupSelected.value = true })
+                FabAnimation(show = true, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
+            }
+        } else if (startScreen){
+            Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
+                FabAnimation(show = false, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
+                FabAnimation(show = false, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeGroupSelected.value = true })
+                FabAnimation(show = false, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
             }
         }
     }

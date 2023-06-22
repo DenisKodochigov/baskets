@@ -40,6 +40,7 @@ import com.example.shopping_list.R
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.ui.components.ButtonSwipe
 import com.example.shopping_list.ui.components.HeaderScreen
+import com.example.shopping_list.ui.components.TextButtonOK
 import com.example.shopping_list.ui.components.dialog.EditBasketName
 import com.example.shopping_list.ui.theme.TextDate
 import kotlinx.coroutines.delay
@@ -274,7 +275,14 @@ fun BottomSheetContentBasket( onAddClick: (String) -> Unit, bottomSheetHide: () 
                 }
             ),
         )
-        Spacer(Modifier.width(36.dp))
+        Spacer(Modifier.height(36.dp))
+        TextButtonOK(
+            enabled = nameNewBasket != "",
+            onConfirm = {
+                onAddClick(nameNewBasket)
+                bottomSheetHide()
+            })
+        Spacer(Modifier.height(36.dp))
     }
 }
 

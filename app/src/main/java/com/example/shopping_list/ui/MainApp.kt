@@ -13,6 +13,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,7 +66,8 @@ fun MainApp() {
                         onTabSelection = { newScreen ->
                             animatedNavController.navigateToScreen(newScreen.route) }) },
                 floatingActionButton = {
-                    FloatingActionButtonApp( onClick = { scope.launch {
+                    FloatingActionButtonApp(offset = 0.dp, top = 70.dp, icon = Icons.Filled.Add,
+                        onClick = { scope.launch {
                         if (bottomSheetContent.value != null) { bottomSheetState.show() }}})
                 },
                 floatingActionButtonPosition = FabPosition.Center,

@@ -74,7 +74,6 @@ fun LayoutSettingsScreen(
 ){
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
     val itemList = uiState.unitA
-
     if (isSelectedId.value > 0L) {
         itemList.find { it.idUnit == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
         isSelectedId.value = 0
@@ -99,6 +98,8 @@ fun LayoutSettingsScreen(
         }
     }
 }
+
+
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
