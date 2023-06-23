@@ -60,7 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
 import com.example.shopping_list.data.room.tables.ArticleEntity
-import com.example.shopping_list.data.room.tables.GroupEntity
+import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Product
@@ -73,8 +73,8 @@ import com.example.shopping_list.ui.components.MyTextH1
 import com.example.shopping_list.ui.components.MyTextH1End
 import com.example.shopping_list.ui.components.TextButtonOK
 import com.example.shopping_list.ui.components.dialog.EditQuantityDialog
-import com.example.shopping_list.ui.components.dialog.SelectGroupDialog
-import com.example.shopping_list.ui.components.selectGroupWithArticle
+import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
+import com.example.shopping_list.ui.components.selectSectionWithArticle
 import com.example.shopping_list.ui.components.selectUnitWithArticle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -102,7 +102,7 @@ fun ProductsScreen(
         uiState = uiState,
         putProductInBasket = { product -> viewModel.putProductInBasket(product, basketId) },
         changeProductInBasket = { product -> viewModel.changeProductInBasket(product, basketId) },
-        doChangeGroupSelected = { productList, idGroup -> viewModel.changeGroupSelectedProduct(productList, idGroup) },
+        doChangeSectionSelected = { productList, idSection -> viewModel.changeSectionSelectedProduct(productList, idSection) },
         doDeleteSelected = { productList -> viewModel.deleteSelectedProducts(productList) },
         movePosition = { direction -> viewModel.movePositionProductInBasket(basketId, direction) },
         bottomSheetVisible = bottomSheetVisible
@@ -117,14 +117,14 @@ fun LayoutProductsScreen(
     bottomSheetVisible: MutableState<Boolean>,
     putProductInBasket: (Product) -> Unit,
     changeProductInBasket: (Product) -> Unit,
-    doChangeGroupSelected: (List<Product>, Long) -> Unit,
+    doChangeSectionSelected: (List<Product>, Long) -> Unit,
     doDeleteSelected: (List<Product>) -> Unit,
     movePosition: (Int) -> Unit,
 ) {
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
-    val changeGroupSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
+    val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
 
 //    Log.d("KDS", "ProductsScreenLayout")
@@ -140,13 +140,13 @@ fun LayoutProductsScreen(
         itemList.forEach { it.isSelected = false }
         unSelected.value = false
     }
-    if (changeGroupSelected.value) {
-        SelectGroupDialog(
-            listGroup = uiState.group,
-            onDismiss = { changeGroupSelected.value = false },
+    if (changeSectionSelected.value) {
+        SelectSectionDialog(
+            listSection = uiState.sections,
+            onDismiss = { changeSectionSelected.value = false },
             onConfirm = {
-                if (it != 0L) doChangeGroupSelected(itemList, it)
-                changeGroupSelected.value = false
+                if (it != 0L) doChangeSectionSelected(itemList, it)
+                changeSectionSelected.value = false
             },
         )
     }
@@ -177,13 +177,13 @@ fun LayoutProductsScreen(
             startScreen = true
             Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
                 FabAnimation(show = true, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
-                FabAnimation(show = true, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeGroupSelected.value = true })
+                FabAnimation(show = true, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeSectionSelected.value = true })
                 FabAnimation(show = true, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
             }
         } else if (startScreen){
             Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
                 FabAnimation(show = false, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
-                FabAnimation(show = false, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeGroupSelected.value = true })
+                FabAnimation(show = false, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeSectionSelected.value = true })
                 FabAnimation(show = false, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
             }
         }
@@ -341,11 +341,11 @@ fun LayoutAddEditProduct(
     onAddProduct: (Product) -> Unit
 ) {
 //    Log.d("KDS", "BottomSheetContentProduct")
-    val nameGroup = stringResource(R.string.name_group)
+    val nameSection = stringResource(R.string.name_section)
     val unitStuff = stringResource(R.string.name_unit1)
     val enterValue = remember { mutableStateOf("1") }
     val enterArticle = remember { mutableStateOf(Pair<Long, String>(0, "")) }
-    val enterGroup = remember { mutableStateOf(Pair<Long, String>(1, nameGroup)) }
+    val enterSection = remember { mutableStateOf(Pair<Long, String>(1, nameSection)) }
     val enterUnit = remember { mutableStateOf(Pair<Long, String>(1, unitStuff)) }
     val focusRequesterSheet = remember { FocusRequester() }
 
@@ -354,15 +354,15 @@ fun LayoutAddEditProduct(
         enterArticle.value.second)
 
     if (enterArticle.value.first > 0) {
-        enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.articles)
+        enterSection.value = selectSectionWithArticle(enterArticle.value.first, uiState.articles)
         enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
     } else  {
         enterUnit.value = Pair(
             uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L,
             enterUnit.value.second)
-        enterGroup.value = Pair(
-            uiState.group.find { it.nameGroup == enterGroup.value.second }?.idGroup ?: 0L,
-            enterGroup.value.second)
+        enterSection.value = Pair(
+            uiState.sections.find { it.nameSection == enterSection.value.second }?.idSection ?: 0L,
+            enterSection.value.second)
     }
     Column(
         Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)
@@ -383,12 +383,12 @@ fun LayoutAddEditProduct(
         )
 
         Spacer(Modifier.height(12.dp))
-        /** Select group*/
+        /** Select section*/
         MyExposedDropdownMenuBox(
-            listItems = uiState.group.map { Pair(it.idGroup, it.nameGroup) },
-            label = stringResource(R.string.group),
+            listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) },
+            label = stringResource(R.string.section),
             modifier = Modifier.fillMaxWidth(),
-            enterValue = enterGroup,
+            enterValue = enterSection,
             filtering = true,
             readOnly = enterArticle.value.first > 0,
             enabled = enterArticle.value.first <= 0
@@ -421,10 +421,10 @@ fun LayoutAddEditProduct(
         val article = ArticleEntity(
             idArticle = enterArticle.value.first,
             nameArticle = enterArticle.value.second,
-            groupId = enterGroup.value.first,
+            sectionId = enterSection.value.first,
             unitId = enterUnit.value.first
         )
-        article.group = GroupEntity(enterGroup.value.first, enterGroup.value.second)
+        article.section = SectionEntity(enterSection.value.first, enterSection.value.second)
         article.unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second)
 
         val product = ProductEntity(

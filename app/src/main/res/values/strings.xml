@@ -18,10 +18,10 @@
 
     <string name="change_article">Edit article</string>
 
-    <string name="group">Group</string>
-    <string name="groups">Groups</string>
-    <string name="name_group">All</string>
-    <string name="change_group">New group</string>
+    <string name="section">Section</string>
+    <string name="sections">Sections</string>
+    <string name="name_section">All</string>
+    <string name="change_section">New section</string>
 
     <string name="units">Units</string>
     <string name="unit_kg">kg</string>

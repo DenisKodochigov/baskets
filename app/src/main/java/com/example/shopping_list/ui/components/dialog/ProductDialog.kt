@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
-import com.example.shopping_list.entity.GroupArticle
+import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
@@ -80,35 +80,35 @@ fun EditQuantityDialogLayout(
 
 
 @Composable
-fun SelectGroupDialog(
-    listGroup: List<GroupArticle>,
+fun SelectSectionDialog(
+    listSection: List<Section>,
     onConfirm: (Long) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val enterGroup = remember { mutableStateOf(Pair(listGroup[0].idGroup, listGroup[0].nameGroup)) }
+    val enterSection = remember { mutableStateOf(Pair(listSection[0].idSection, listSection[0].nameSection)) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { MyTextH2(stringResource(R.string.change_group), Modifier) },
-        text = { SelectGroupDialogLayout(enterGroup, listGroup) },
+        title = { MyTextH2(stringResource(R.string.change_section), Modifier) },
+        text = { SelectSectionDialogLayout(enterSection, listSection) },
         dismissButton = { },
-        confirmButton = { TextButtonOK(onConfirm = { onConfirm(enterGroup.value.first) }) }
+        confirmButton = { TextButtonOK(onConfirm = { onConfirm(enterSection.value.first) }) }
     )
 }
 
 @Composable
-fun SelectGroupDialogLayout(
-    enterGroup: MutableState<Pair<Long, String>>,
-    listGroup: List<GroupArticle>
+fun SelectSectionDialogLayout(
+    enterSection: MutableState<Pair<Long, String>>,
+    listSection: List<Section>
 ) {
 
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        /** Select group*/
+        /** Select section*/
         MyExposedDropdownMenuBox(
-            listItems = listGroup.map { Pair(it.idGroup, it.nameGroup) },
-            label = stringResource(R.string.groups),
+            listItems = listSection.map { Pair(it.idSection, it.nameSection) },
+            label = stringResource(R.string.sections),
             modifier = Modifier.fillMaxWidth(),
-            enterValue = enterGroup,
+            enterValue = enterSection,
             filtering = false,
             readOnly = true
         )

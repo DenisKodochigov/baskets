@@ -90,8 +90,8 @@ interface DataDao {
     @Query("UPDATE tb_article SET unitId = :unitId WHERE idArticle =:articleId")
     fun setUnitInArticle(articleId: Long, unitId: Long)
 
-    @Query("UPDATE tb_article SET groupId = :idGroup WHERE idArticle IN (:articles)")
-    fun changeGroupArticle(idGroup: Long, articles: List<Long>)
+    @Query("UPDATE tb_article SET sectionId = :id WHERE idArticle IN (:articles)")
+    fun changeSectionArticle(id: Long, articles: List<Long>)
 
     @Query("SELECT unitId FROM tb_article WHERE idArticle =:articleId")
     fun getIdUnitFromArticle(articleId: Long): Long
@@ -105,16 +105,16 @@ interface DataDao {
     @Query("UPDATE tb_article SET position = :position WHERE idArticle=:articleId ")
     fun setPositionArticle(articleId: Long, position: Int)
 
-    /** Group entity*/
+    /** Section entity*/
 
-    @Query("SELECT * FROM tb_group")
-    fun getGroups(): List<GroupEntity>
-    @Query("SELECT * FROM tb_group")
-    fun getGroupsFlow(): Flow<List<GroupEntity>>
+    @Query("SELECT * FROM tb_section")
+    fun getSections(): List<SectionEntity>
+    @Query("SELECT * FROM tb_section")
+    fun getSectionFlow(): Flow<List<SectionEntity>>
     @Insert
-    fun addGroup(group: GroupEntity): Long
-    @Query("SELECT * FROM tb_group WHERE idGroup = :id")
-    fun getGroup(id: Long): GroupEntity
+    fun addSection(section: SectionEntity): Long
+    @Query("SELECT * FROM tb_section WHERE idSection = :id")
+    fun getSection(id: Long): SectionEntity
 
 
     /** Unit entity*/

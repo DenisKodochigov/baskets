@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.ErrorApp
-import com.example.shopping_list.entity.GroupArticle
+import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitA
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -28,17 +28,17 @@ class ArticleViewModel @Inject constructor(
     private val _articleScreenState = MutableStateFlow(ArticleScreenState())
     val articleScreenState: StateFlow<ArticleScreenState> = _articleScreenState.asStateFlow()
     private lateinit var unitsFlow: StateFlow<List<UnitA>>
-    private lateinit var groupsFlow: StateFlow<List<GroupArticle>>
+    private lateinit var sectionsFlow: StateFlow<List<Section>>
 
     init {
         getUnitsFlow()
-        getGroupsFlow()
+        getSectionsFlow()
         _articleScreenState.value.unitA = unitsFlow.value
-        _articleScreenState.value.group = groupsFlow.value
+        _articleScreenState.value.sections = sectionsFlow.value
     }
     fun getStateArticle(){
         getArticles()
-        getListGroup()
+        getListSection()
         getListUnit()
     }
 
@@ -49,8 +49,8 @@ class ArticleViewModel @Inject constructor(
             initialValue = emptyList()
         )
     }
-    private fun getGroupsFlow(){
-        groupsFlow = dataRepository.groupsFlow().stateIn(
+    private fun getSectionsFlow(){
+        sectionsFlow = dataRepository.sectionsFlow().stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = emptyList()
@@ -63,16 +63,16 @@ class ArticleViewModel @Inject constructor(
                     _articleScreenState.update { currentState -> currentState.copy(article = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
-            getListGroup()
+            getListSection()
             getListUnit()
         }
     }
 
-    private fun getListGroup() {
+    private fun getListSection() {
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.getGroups() }.fold(
+            kotlin.runCatching { dataRepository.getSections() }.fold(
                 onSuccess = {
-                    _articleScreenState.update { currentState -> currentState.copy(group = it) } },
+                    _articleScreenState.update { currentState -> currentState.copy(sections = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -96,7 +96,7 @@ class ArticleViewModel @Inject constructor(
                     currentState.copy( article = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
-            getListGroup()
+            getListSection()
             getListUnit()
         }
     }
@@ -108,27 +108,25 @@ class ArticleViewModel @Inject constructor(
             }.fold(
                 onSuccess = {
                     Log.d("KDS", "##########################################################")
-                    if (it.isNotEmpty()) Log.d("KDS", "ViewModel.changeArticle ${it[0].group.nameGroup}")
+                    if (it.isNotEmpty()) Log.d("KDS", "ViewModel.changeArticle ${it[0].section.nameSection}")
                     _articleScreenState.update { currentState -> currentState.copy( article = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
-            getListGroup()
+            getListSection()
             getListUnit()
         }
     }
 
-    fun changeGroupSelectedArticle(articles: List<Article>, idGroup: Long){
+    fun changeSectionSelectedArticle(articles: List<Article>, idSection: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.changeGroupSelectedArticle(articles, idGroup)
+                dataRepository.changeSectionSelectedArticle(articles, idSection)
             }.fold(
                 onSuccess = {
-                    Log.d("KDS", "##########################################################")
-                    if (it.isNotEmpty()) Log.d("KDS", "ViewModel.changeGroupSelectedArticle ${it[0].group.nameGroup}")
                     _articleScreenState.update { currentState -> currentState.copy( article = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
-            getListGroup()
+            getListSection()
             getListUnit()
         }
     }

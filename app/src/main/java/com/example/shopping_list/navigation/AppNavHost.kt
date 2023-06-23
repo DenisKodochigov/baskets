@@ -29,7 +29,7 @@ fun AppAnimatedNavHost(
 
     AnimatedNavHost(
         navController = navController, startDestination = Baskets.route, modifier = modifier ) {
-        val durationMillis = 1500
+        val durationMillis = 800
         val delayMillis = 200
         val enterTransition = slideInHorizontally(
             animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / 1 } +

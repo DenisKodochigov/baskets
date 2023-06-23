@@ -27,6 +27,7 @@ import com.example.shopping_list.ui.theme.ButtonColorsMy
 @Composable
 fun HeaderScreen(text: String, modifier: Modifier) {
     val typography = MaterialTheme.typography
+    Spacer(modifier = Modifier.height(24.dp))
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(text, style = typography.h1)
     }
@@ -256,7 +257,9 @@ fun ButtonMove(modifier: Modifier, icon: ImageVector, onClick: () -> Unit) {
 fun ButtonCircle( modifier: Modifier, iconButton: ImageVector, onClick: () -> Unit) {
     val radius = 25.dp
     IconButton (
-        modifier = modifier.clip(RoundedCornerShape(radius, radius, radius, radius)).size(60.dp),
+        modifier = modifier
+            .clip(RoundedCornerShape(radius, radius, radius, radius))
+            .size(60.dp),
         onClick = { onClick() }) {
         Icon( imageVector = iconButton, null, tint = ButtonColorsMy , modifier = Modifier.size(60.dp))
     }
@@ -264,10 +267,10 @@ fun ButtonCircle( modifier: Modifier, iconButton: ImageVector, onClick: () -> Un
 
 
 @Composable
-fun selectGroupWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
+fun selectSectionWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
     val article = listArticle.find { it.idArticle == id }
     return if (article != null) {
-        Pair(article.group.idGroup, article.group.nameGroup)
+        Pair(article.section.idSection, article.section.nameSection)
     } else Pair(0L, "")
 }
 

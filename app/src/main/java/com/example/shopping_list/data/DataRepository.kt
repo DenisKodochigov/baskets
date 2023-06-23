@@ -76,11 +76,11 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
 
     fun changeArticle(article: Article): List<Article> = dataSourceDB.changeArticle(article as ArticleEntity)
 
-    fun getGroups(): List<GroupArticle> = dataSourceDB.getGroups()
+    fun getSections(): List<Section> = dataSourceDB.getSections()
 
     fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
 
-    fun changeGroupSelectedProduct(productList: List<Product>, idGroup: Long): List<Product> {
+    fun changeSectionSelectedProduct(productList: List<Product>, idSection: Long): List<Product> {
         val articles = mutableListOf<Article>()
         productList.forEach {
             if (it.isSelected) {
@@ -88,14 +88,14 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
                 articles.add(it.article)
             }
         }
-        changeGroupSelectedArticle(articles, idGroup)
+        changeSectionSelectedArticle(articles, idSection)
         return if (productList[0].basketId > 0) getListProducts(productList[0].basketId)
         else emptyList()
     }
 
-    fun changeGroupSelectedArticle(articles: List<Article>, idGroup: Long): List<Article> {
+    fun changeSectionSelectedArticle(articles: List<Article>, idSection: Long): List<Article> {
         val articlesId = articles.filter { it.isSelected }.map { it.idArticle }
-        return dataSourceDB.changeGroupArticle(idGroup, articlesId)
+        return dataSourceDB.changeSectionArticle(idSection, articlesId)
     }
 
     fun deleteSelectedArticle(articles: List<Article>): List<Article> {
@@ -115,6 +115,6 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         return getUnits()
     }
 
-    fun groupsFlow(): Flow<List<GroupArticle>> = dataSourceDB.groupsFlow()
+    fun sectionsFlow(): Flow<List<Section>> = dataSourceDB.sectionFlow()
     fun unitsFlow(): Flow<List<UnitA>> = dataSourceDB.unitsFlow()
 }

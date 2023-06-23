@@ -26,7 +26,7 @@ class ProductViewModel  @Inject constructor(
     fun getStateProducts(basketId: Long){
         getListProducts(basketId)
         getListArticle()
-        getListGroup()
+        getListSection()
         getListUnit()
         getNameBasket(basketId)
     }
@@ -51,11 +51,11 @@ class ProductViewModel  @Inject constructor(
         }
     }
 
-    private fun getListGroup() {
+    private fun getListSection() {
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.getGroups() }.fold(
+            kotlin.runCatching { dataRepository.getSections() }.fold(
                 onSuccess = { _productsScreenState.update { currentState ->
-                    currentState.copy(group = it) } },
+                    currentState.copy(sections = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -91,7 +91,7 @@ class ProductViewModel  @Inject constructor(
             )
         }
         getListArticle()
-        getListGroup()
+        getListSection()
         getListUnit()
     }
 
@@ -125,9 +125,9 @@ class ProductViewModel  @Inject constructor(
         }
     }
 
-    fun changeGroupSelectedProduct(productList: List<Product>, idGroup: Long){
+    fun changeSectionSelectedProduct(productList: List<Product>, idSection: Long){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.changeGroupSelectedProduct(productList, idGroup) }.fold(
+            kotlin.runCatching { dataRepository.changeSectionSelectedProduct(productList, idSection) }.fold(
                 onSuccess = {_productsScreenState.update { currentState ->
                     currentState.copy(products = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}

@@ -2,14 +2,14 @@ package com.example.shopping_list.data.room
 
 import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.BasketEntity
-import com.example.shopping_list.data.room.tables.GroupEntity
+import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.Basket
-import com.example.shopping_list.entity.GroupArticle
+import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.entity.UnitA
 import kotlinx.coroutines.flow.Flow
@@ -182,7 +182,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     }
     fun getAddArticle(article: ArticleEntity): ArticleEntity? {
         article.unitId = getAddUnit(article.unitA as UnitEntity).idUnit
-        article.groupId = getAddGroup(article.group as GroupEntity).idGroup
+        article.sectionId = getAddSection(article.section as SectionEntity).idSection
         article.nameArticle = toUpFirstChar(article.nameArticle)
         if (article.idArticle == 0L && article.nameArticle != "") {
                 article.idArticle = dataDao.addArticle(article)
@@ -192,32 +192,32 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     fun changeArticle(articleEntity: ArticleEntity): List<Article>{
         articleEntity.unitId = getAddUnit(articleEntity.unitA as UnitEntity).idUnit
-        articleEntity.groupId = getAddGroup(articleEntity.group as GroupEntity).idGroup
+        articleEntity.sectionId = getAddSection(articleEntity.section as SectionEntity).idSection
         dataDao.changeArticle(articleEntity)
         return getListArticle()
     }
 
-    fun changeGroupArticle( idGroup: Long, articlesId: List<Long>): List<Article>{
-        if (idGroup > 0) dataDao.changeGroupArticle(idGroup, articlesId)
+    fun changeSectionArticle(idSection: Long, articlesId: List<Long>): List<Article>{
+        if (idSection > 0) dataDao.changeSectionArticle(idSection, articlesId)
         return getListArticle()
     }
 
 
-    /** Group article*/
-    fun getGroups(): List<GroupArticle>{
-        return dataDao.getGroups()
+    /** Section article*/
+    fun getSections(): List<Section>{
+        return dataDao.getSections()
     }
 
-    private fun getAddGroup(group: GroupArticle): GroupArticle {
-        return if (group.idGroup == 0L) {
-            val id = if (group.nameGroup != "") {
-                group.nameGroup = toUpFirstChar( group.nameGroup )
-                dataDao.addGroup(group as GroupEntity)
+    private fun getAddSection(section: Section): Section {
+        return if (section.idSection == 0L) {
+            val id = if (section.nameSection != "") {
+                section.nameSection = toUpFirstChar( section.nameSection )
+                dataDao.addSection(section as SectionEntity)
             } else 1
-            dataDao.getGroup(id)
-        } else group
+            dataDao.getSection(id)
+        } else section
     }
-    fun groupsFlow(): Flow<List<GroupArticle>> = dataDao.getGroupsFlow()
+    fun sectionFlow(): Flow<List<Section>> = dataDao.getSectionFlow()
 
     /** Unit*/
     fun getAddUnit(unitA: UnitEntity): UnitA {
@@ -247,7 +247,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         product.article = ArticleEntity(
             idArticle = obj.article.article.idArticle,
             nameArticle = obj.article.article.nameArticle)
-        product.article.group = obj.article.group
+        product.article.section = obj.article.section
         product.article.unitA = obj.article.unitA
 
         return product
@@ -259,8 +259,8 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
             nameArticle = obj.article.nameArticle,
             position = obj.article.position,
             unitId = obj.unitA.idUnit,
-            groupId = obj.group.idGroup)
-        article.group = obj.group
+            sectionId = obj.section.idSection)
+        article.section = obj.section
         article.unitA = obj.unitA
 
         return article

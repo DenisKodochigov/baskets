@@ -33,12 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
 import com.example.shopping_list.data.room.tables.ArticleEntity
-import com.example.shopping_list.data.room.tables.GroupEntity
+import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.components.dialog.EditArticleDialog
-import com.example.shopping_list.ui.components.dialog.SelectGroupDialog
+import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -62,8 +62,8 @@ fun ArticlesScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         uiState = uiState,
         changeArticle = { article -> viewModel.changeArticle(article) },
-        doChangeGroupSelected = { articles, idGroup ->
-            viewModel.changeGroupSelectedArticle(articles, idGroup)
+        doChangeSectionSelected = { articles, idSection ->
+            viewModel.changeSectionSelectedArticle(articles, idSection)
         },
         doDeleteSelected = { articles -> viewModel.deleteSelectedArticle(articles) },
         movePosition = { direction -> viewModel.movePositionArticle(direction) },
@@ -78,14 +78,14 @@ fun LayoutArticleScreen(
     uiState: ArticleScreenState,
     bottomSheetVisible: MutableState<Boolean>,
     changeArticle: (Article) -> Unit,
-    doChangeGroupSelected: (List<Article>, Long) -> Unit,
+    doChangeSectionSelected: (List<Article>, Long) -> Unit,
     doDeleteSelected: (List<Article>) -> Unit,
     movePosition: (Int) -> Unit,
 ) {
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
-    val changeGroupSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
+    val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
 
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
 
@@ -101,13 +101,13 @@ fun LayoutArticleScreen(
         itemList.forEach { it.isSelected = false }
         unSelected.value = false
     }
-    if (changeGroupSelected.value) {
-        SelectGroupDialog(
-            listGroup = uiState.group,
-            onDismiss = { changeGroupSelected.value = false },
+    if (changeSectionSelected.value) {
+        SelectSectionDialog(
+            listSection = uiState.sections,
+            onDismiss = { changeSectionSelected.value = false },
             onConfirm = {
-                if (it != 0L) doChangeGroupSelected(itemList, it)
-                changeGroupSelected.value = false
+                if (it != 0L) doChangeSectionSelected(itemList, it)
+                changeSectionSelected.value = false
             },
         )
     }
@@ -141,13 +141,13 @@ fun LayoutArticleScreen(
             startScreen = true
             Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
                 FabAnimation(show = true, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
-                FabAnimation(show = true, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeGroupSelected.value = true })
+                FabAnimation(show = true, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeSectionSelected.value = true })
                 FabAnimation(show = true, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
             }
         } else if (startScreen){
             Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
                 FabAnimation(show = false, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
-                FabAnimation(show = false, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeGroupSelected.value = true })
+                FabAnimation(show = false, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeSectionSelected.value = true })
                 FabAnimation(show = false, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
             }
         }
@@ -165,7 +165,7 @@ fun LazyColumnArticle(
     doSelected: (Long) -> Unit
 ) {
     if (uiState.article.isNotEmpty()) Log.d(
-        "KDS", "LazyColumnArticle ${uiState.article[0].group.nameGroup}"
+        "KDS", "LazyColumnArticle ${uiState.article[0].section.nameSection}"
     )
 
     val listState = rememberLazyListState()
@@ -178,7 +178,7 @@ fun LazyColumnArticle(
         EditArticleDialog(
             article = editArticle.value!!,
             listUnit = uiState.unitA,
-            listGroup = uiState.group,
+            listSection = uiState.sections,
             onDismiss = { showDialog.value = false },
             onConfirm = {
                 changeArticle(editArticle.value!!)
@@ -285,7 +285,7 @@ fun LazyColumnArticle(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             MyTextH2(
-                                text = item.group.nameGroup,
+                                text = item.section.nameSection,
                                 modifier = Modifier
                                     .width(100.dp)
                                     .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
@@ -311,12 +311,12 @@ fun BottomSheetContentArticle1(
     onAddArticle: (Article) -> Unit
 ) {
     Log.d("KDS", "BottomSheetContentArticle")
-    val nameGroup = stringResource(R.string.name_group)
+    val nameSection = stringResource(R.string.name_section)
     val stuff = stringResource(R.string.name_unit1)
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val enterValue = remember { mutableStateOf("1") }
     val enterArticle = remember { mutableStateOf(Pair<Long, String>(0, "")) }
-    val enterGroup = remember { mutableStateOf(Pair<Long, String>(1, nameGroup)) }
+    val enterSection = remember { mutableStateOf(Pair<Long, String>(1, nameSection)) }
     val enterUnit = remember { mutableStateOf(Pair<Long, String>(1, stuff)) }
     val focusRequesterSheet = remember { FocusRequester() }
 
@@ -324,9 +324,9 @@ fun BottomSheetContentArticle1(
         val id: Long = uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
         enterUnit.value = Pair(id, enterUnit.value.second)
     }
-    if (enterGroup.value.first == 0L && enterGroup.value.second != "") {
-        val id: Long = uiState.group.find { it.nameGroup == enterGroup.value.second }?.idGroup ?: 0L
-        enterGroup.value = Pair(id, enterGroup.value.second)
+    if (enterSection.value.first == 0L && enterSection.value.second != "") {
+        val id: Long = uiState.sections.find { it.nameSection == enterSection.value.second }?.idSection ?: 0L
+        enterSection.value = Pair(id, enterSection.value.second)
     }
     if (enterArticle.value.first == 0L && enterArticle.value.second != "") {
         val id: Long =
@@ -352,18 +352,18 @@ fun BottomSheetContentArticle1(
             filtering = true
         )
         if (enterArticle.value.first > 0) {
-            enterGroup.value = selectGroupWithArticle(enterArticle.value.first, uiState.article)
+            enterSection.value = selectSectionWithArticle(enterArticle.value.first, uiState.article)
             enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.article)
             enterValue.value = "1"
         }
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
             MyExposedDropdownMenuBox(
-                /** Select group*/
-                listItems = uiState.group.map { Pair(it.idGroup, it.nameGroup) },
-                label = stringResource(R.string.group),
+                /** Select section*/
+                listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) },
+                label = stringResource(R.string.section),
                 modifier = Modifier.weight(1f),
-                enterValue = enterGroup,
+                enterValue = enterSection,
                 filtering = false
             )
             Spacer(Modifier.width(4.dp))
@@ -381,10 +381,10 @@ fun BottomSheetContentArticle1(
         val article = ArticleEntity(
             idArticle = enterArticle.value.first,
             nameArticle = enterArticle.value.second,
-            groupId = enterGroup.value.first,
+            sectionId = enterSection.value.first,
             unitId = enterUnit.value.first
         )
-        article.group = GroupEntity(enterGroup.value.first, enterGroup.value.second)
+        article.section = SectionEntity(enterSection.value.first, enterSection.value.second)
         article.unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second)
 
         TextButtonOK(

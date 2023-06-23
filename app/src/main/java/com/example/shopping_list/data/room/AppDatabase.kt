@@ -8,7 +8,7 @@ import com.example.shopping_list.data.room.tables.*
     BasketEntity::class,
     ProductEntity::class,
     ArticleEntity::class,
-    GroupEntity::class,
+    SectionEntity::class,
     UnitEntity::class,], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dataDao(): DataDao

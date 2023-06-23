@@ -17,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.GroupEntity
+import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.GroupArticle
+import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
@@ -31,7 +31,7 @@ import com.example.shopping_list.ui.components.TextButtonOK
 fun EditArticleDialog(
     article: Article,
     listUnit: List<UnitA>,
-    listGroup: List<GroupArticle>,
+    listSection: List<Section>,
     onConfirm: (Article) -> Unit,
     onDismiss: () -> Unit,)
 {
@@ -39,17 +39,17 @@ fun EditArticleDialog(
     AlertDialog(
         onDismissRequest = onDismiss ,
         title = {  MyTextH2(stringResource(R.string.change_article), Modifier) },
-        text = { EditArticleDialogLayout(articleLocal, listUnit, listGroup) },
+        text = { EditArticleDialogLayout(articleLocal, listUnit, listSection) },
         confirmButton = { TextButtonOK( onConfirm = { onConfirm(articleLocal.value) } ) }
     )
 }
 
 @Composable
 fun EditArticleDialogLayout(
-    article: MutableState<Article>, listUnit: List<UnitA>, listGroup: List<GroupArticle>,){
+    article: MutableState<Article>, listUnit: List<UnitA>, listSection: List<Section>,){
     Column {
         Text(text = "")
-        LayoutAddEditArticle(article = article, listUnit = listUnit, listGroup = listGroup)
+        LayoutAddEditArticle(article = article, listUnit = listUnit, listSection = listSection)
     }
 }
 
@@ -57,12 +57,12 @@ fun EditArticleDialogLayout(
 fun LayoutAddEditArticle(
     article: MutableState<Article>,
     listUnit: List<UnitA>,
-    listGroup: List<GroupArticle>)
+    listSection: List<Section>)
 {
 //    Log.d("KDS", "LayoutAddEditArticle")
     val enterNameArticle = remember{ mutableStateOf( article.value.nameArticle )}
-    val enterGroup = remember{
-        mutableStateOf( Pair(article.value.group.idGroup,article.value.group.nameGroup)) }
+    val enterSection = remember{
+        mutableStateOf( Pair(article.value.section.idSection,article.value.section.nameSection)) }
     val enterUnit = remember{
         mutableStateOf( Pair(article.value.unitA.idUnit,article.value.unitA.nameUnit)) }
 
@@ -74,24 +74,24 @@ fun LayoutAddEditArticle(
         else UnitEntity(nameUnit = "")
     }
 
-    article.value.group = if (enterGroup.value.first == 0L && enterGroup.value.second != "") {
-        GroupEntity(nameGroup = enterGroup.value.second, idGroup = 0L)
+    article.value.section = if (enterSection.value.first == 0L && enterSection.value.second != "") {
+        SectionEntity(nameSection = enterSection.value.second, idSection = 0L)
     } else {
-        if (listGroup.isNotEmpty()) {
-            listGroup.find { it.idGroup == enterGroup.value.first } ?: listGroup[0]}
-        else GroupEntity(nameGroup = "")
+        if (listSection.isNotEmpty()) {
+            listSection.find { it.idSection == enterSection.value.first } ?: listSection[0]}
+        else SectionEntity(nameSection = "")
     }
     article.value.nameArticle = enterNameArticle.value
 
     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
         MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameArticle, "text")
         Spacer(Modifier.height(12.dp))
-        /** Select group*/
+        /** Select section*/
         MyExposedDropdownMenuBox(
-            listItems = listGroup.map{ Pair(it.idGroup, it.nameGroup) },
-            label = stringResource(R.string.group),
+            listItems = listSection.map{ Pair(it.idSection, it.nameSection) },
+            label = stringResource(R.string.section),
             modifier = Modifier.fillMaxWidth(), //.weight(1f),
-            enterValue = enterGroup,
+            enterValue = enterSection,
             filtering = true)
 //        Spacer(Modifier.width(4.dp))
         Spacer(Modifier.height(12.dp))
