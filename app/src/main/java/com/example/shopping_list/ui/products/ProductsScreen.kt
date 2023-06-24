@@ -39,6 +39,7 @@ import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -87,19 +88,15 @@ fun ProductsScreen(
 
     val viewModel: ProductViewModel = hiltViewModel()
     viewModel.getStateProducts(basketId)
-    val uiState by viewModel.productsScreenState.collectAsState()
-
 //    Log.d("KDS", "ProductsScreen")
     bottomSheetContent.value = {
         LayoutAddEditProduct(
-            uiState = uiState,
-            onAddProduct = { product -> viewModel.addProduct(product, basketId) }
-        )
+            uiState = viewModel.productsScreenState.collectAsState()
+        ) { product -> viewModel.addProduct(product, basketId) }
     }
-//    Log.d("KDS", "basketId = $basketId") ProductsScreenLayout
     LayoutProductsScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
-        uiState = uiState,
+        uiState = viewModel.productsScreenState.collectAsState(),
         putProductInBasket = { product -> viewModel.putProductInBasket(product, basketId) },
         changeProductInBasket = { product -> viewModel.changeProductInBasket(product, basketId) },
         doChangeSectionSelected = { productList, idSection -> viewModel.changeSectionSelectedProduct(productList, idSection) },
@@ -113,7 +110,7 @@ fun ProductsScreen(
 @Composable
 fun LayoutProductsScreen(
     modifier: Modifier = Modifier,
-    uiState: ProductsScreenState,
+    uiState: State<ProductsScreenState>,
     bottomSheetVisible: MutableState<Boolean>,
     putProductInBasket: (Product) -> Unit,
     changeProductInBasket: (Product) -> Unit,
@@ -126,9 +123,9 @@ fun LayoutProductsScreen(
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
-
-//    Log.d("KDS", "ProductsScreenLayout")
-    val itemList = uiState.products
+//
+    Log.d("KDS", "ProductsScreenLayout")
+    val itemList = uiState.value.products
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idProduct == isSelectedId.value }
         if (item != null) {
@@ -142,7 +139,7 @@ fun LayoutProductsScreen(
     }
     if (changeSectionSelected.value) {
         SelectSectionDialog(
-            listSection = uiState.sections,
+            listSection = uiState.value.sections,
             onDismiss = { changeSectionSelected.value = false },
             onConfirm = {
                 if (it != 0L) doChangeSectionSelected(itemList, it)
@@ -161,12 +158,12 @@ fun LayoutProductsScreen(
             .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column(modifier.fillMaxHeight()) {
             HeaderScreen(
-                text = stringResource(R.string.products_in_basket) + " " + uiState.nameBasket, modifier)
+                text = stringResource(R.string.products_in_basket) + " " + uiState.value.nameBasket, modifier)
             Column(Modifier.fillMaxHeight().weight(1f) ) {
 
                 Spacer(modifier = Modifier.weight(1f, !bottomSheetVisible.value))
                 LazyColumnProduct(
-                    uiState = uiState,
+                    uiState = uiState.value,
                     putProductInBasket = putProductInBasket,
                     changeProductInBasket = changeProductInBasket,
                     doSelected = { idItem -> isSelectedId.value = idItem })
@@ -199,7 +196,7 @@ fun LazyColumnProduct(
     changeProductInBasket: (Product) -> Unit,
     doSelected: (Long) -> Unit
 ) {
-    Log.d("KDS", "LazyColumnProduct")
+//    Log.d("KDS", "LazyColumnProduct")
     val listState = rememberLazyListState()
     val showDialog = remember { mutableStateOf(false) }
     val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
@@ -337,7 +334,7 @@ fun LazyColumnProduct(
 
 @Composable
 fun LayoutAddEditProduct(
-    uiState: ProductsScreenState,
+    uiState: State<ProductsScreenState>,
     onAddProduct: (Product) -> Unit
 ) {
 //    Log.d("KDS", "BottomSheetContentProduct")
@@ -350,18 +347,18 @@ fun LayoutAddEditProduct(
     val focusRequesterSheet = remember { FocusRequester() }
 
     enterArticle.value = Pair(
-        uiState.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L,
+        uiState.value.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L,
         enterArticle.value.second)
 
     if (enterArticle.value.first > 0) {
-        enterSection.value = selectSectionWithArticle(enterArticle.value.first, uiState.articles)
-        enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
+        enterSection.value = selectSectionWithArticle(enterArticle.value.first, uiState.value.articles)
+        enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.value.articles)
     } else  {
         enterUnit.value = Pair(
-            uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L,
+            uiState.value.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L,
             enterUnit.value.second)
         enterSection.value = Pair(
-            uiState.sections.find { it.nameSection == enterSection.value.second }?.idSection ?: 0L,
+            uiState.value.sections.find { it.nameSection == enterSection.value.second }?.idSection ?: 0L,
             enterSection.value.second)
     }
     Column(
@@ -375,7 +372,7 @@ fun LayoutAddEditProduct(
         Spacer(Modifier.height(12.dp))
         /** Select article*/
         MyExposedDropdownMenuBox(
-            listItems = uiState.articles.map { Pair(it.idArticle, it.nameArticle) },
+            listItems = uiState.value.articles.map { Pair(it.idArticle, it.nameArticle) },
             label = stringResource(R.string.select_product),
             modifier = Modifier.fillMaxWidth(),
             enterValue = enterArticle,
@@ -385,7 +382,7 @@ fun LayoutAddEditProduct(
         Spacer(Modifier.height(12.dp))
         /** Select section*/
         MyExposedDropdownMenuBox(
-            listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) },
+            listItems = uiState.value.sections.map { Pair(it.idSection, it.nameSection) },
             label = stringResource(R.string.section),
             modifier = Modifier.fillMaxWidth(),
             enterValue = enterSection,
@@ -408,7 +405,7 @@ fun LayoutAddEditProduct(
             Spacer(Modifier.width(4.dp))
             /** Select unit*/
             MyExposedDropdownMenuBox(
-                listItems = uiState.unitA.map { Pair(it.idUnit, it.nameUnit) },
+                listItems = uiState.value.unitA.map { Pair(it.idUnit, it.nameUnit) },
                 label = stringResource(R.string.units),
                 modifier = Modifier.width(120.dp),
                 enterValue = enterUnit,
@@ -452,7 +449,7 @@ fun ProductsScreenLayoutPreview() {
 @Preview(showBackground = true)
 @Composable
 fun LayoutAddEditProductPreview() {
-    LayoutAddEditProduct( ProductsScreenState()) {}
+//    LayoutAddEditProduct( ProductsScreenState()) {}
 }
 
 

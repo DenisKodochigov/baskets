@@ -50,17 +50,17 @@ fun ArticlesScreen(
 
     val viewModel: ArticleViewModel = hiltViewModel()
     viewModel.getStateArticle()
-    val uiState by viewModel.articleScreenState.collectAsState()
+//    val uiState by viewModel.articleScreenState.collectAsState()
 
     bottomSheetContent.value = {
         BottomSheetContentArticle1(
-            uiState = uiState,
+            uiState = viewModel.articleScreenState.collectAsState().value,
             onAddArticle = { article -> viewModel.addArticle(article) }
         )
     }
     LayoutArticleScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
-        uiState = uiState,
+        uiState = viewModel.articleScreenState.collectAsState().value,
         changeArticle = { article -> viewModel.changeArticle(article) },
         doChangeSectionSelected = { articles, idSection ->
             viewModel.changeSectionSelectedArticle(articles, idSection)

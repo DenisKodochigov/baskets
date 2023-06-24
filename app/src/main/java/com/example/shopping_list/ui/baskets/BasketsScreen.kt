@@ -3,6 +3,7 @@ package com.example.shopping_list.ui.baskets
 import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
 import android.os.Looper
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -56,9 +57,10 @@ fun BasketsScreen(
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>) {
 
     val viewModel: BasketViewModel = hiltViewModel()
-    viewModel.getListBasket()
-    val uiState by viewModel.basketScreenState.collectAsState()
+//    viewModel.getListBasket()
+//    val uiState by viewModel.basketScreenState.collectAsState()
 
+    Log.d("KDS", "BasketsScreen")
     bottomSheetContent.value = {
         BottomSheetContentBasket(
             onAddClick = {viewModel.addBasket(it)}, bottomSheetHide = bottomSheetHide) }
@@ -66,7 +68,7 @@ fun BasketsScreen(
     LayoutBasketsScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         onClickBasket = onClickBasket,
-        itemList = uiState.baskets,
+        itemList = viewModel.basketScreenState.collectAsState().value.baskets,
         changeNameBasket = { basket -> viewModel.changeNameBasket(basket)},
         deleteBasket = { basketId -> viewModel.deleteBasket(basketId)},
         refreshPosition = { direction -> viewModel.setPositionBasket(direction)},

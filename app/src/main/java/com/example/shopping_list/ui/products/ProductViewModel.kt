@@ -1,5 +1,6 @@
 package com.example.shopping_list.ui.products
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
@@ -24,7 +25,8 @@ class ProductViewModel  @Inject constructor(
     val productsScreenState: StateFlow<ProductsScreenState> = _productsScreenState.asStateFlow()
 
     fun getStateProducts(basketId: Long){
-        getListProducts(basketId)
+        Log.d("KDS", "ProductViewModel.getStateProducts")
+        getListProductsInit(basketId)
         getListArticle()
         getListSection()
         getListUnit()
@@ -40,7 +42,15 @@ class ProductViewModel  @Inject constructor(
             )
         }
     }
-
+    private fun getListProductsInit(basketId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching { dataRepository.getListProductsInit(basketId) }.fold(
+                onSuccess = { _productsScreenState.update { currentState ->
+                    currentState.copy(products = it as MutableList<Product>) } },
+                onFailure = { errorApp.errorApi(it.message!!) }
+            )
+        }
+    }
     private fun getListArticle() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListArticle() }.fold(

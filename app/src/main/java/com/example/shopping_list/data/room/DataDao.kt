@@ -53,7 +53,6 @@ interface DataDao {
     @Query("SELECT * FROM tb_product")
     fun getListProductAll(): List<ProductObj>
 
-
     @Query("UPDATE tb_product SET value = :value WHERE  idProduct=:productId AND basketId =:basketId ")
     fun setValueProduct(productId: Long, basketId: Long, value: Double)
 

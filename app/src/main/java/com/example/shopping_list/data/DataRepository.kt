@@ -37,6 +37,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
 
     /** Product entity*/
     fun getListProducts(basketId: Long): List<Product> = dataSourceDB.getListProducts(basketId)
+    fun getListProductsInit(basketId: Long): List<Product> = dataSourceDB.getListProductsInit(basketId)
 
     fun addProduct(product: Product): List<Product> {
 //        Log.d("KDS", " ${product}")

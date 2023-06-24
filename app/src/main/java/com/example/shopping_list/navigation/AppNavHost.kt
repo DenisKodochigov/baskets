@@ -1,5 +1,7 @@
 package com.example.shopping_list.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -29,27 +31,34 @@ fun AppAnimatedNavHost(
 
     AnimatedNavHost(
         navController = navController, startDestination = Baskets.route, modifier = modifier ) {
-        val durationMillis = 800
-        val delayMillis = 200
-        val enterTransition = slideInHorizontally(
-            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / 1 } +
-                fadeIn( animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
-        val exitTransition = slideOutHorizontally(
-            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / -1 } +
-                fadeOut(animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
+//        val durationMillis = 800
+//        val delayMillis = 200
+//        val enterTransition = slideInHorizontally(
+//            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / 1 } +
+//                fadeIn( animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
+//        val exitTransition = slideOutHorizontally(
+//            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / -1 } +
+//                fadeOut(animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
 
         composable(route = Baskets.route,
-            enterTransition = { enterTransition },
-            exitTransition = { exitTransition },){
+            enterTransition = {
+                targetState.destination.route?.let { enterTransition(Baskets.route, it) } },
+            exitTransition = {
+                targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }) {
             BasketsScreen(
                 bottomSheetContent = bottomSheetContent,
                 bottomSheetHide = bottomSheetHide,
                 bottomSheetVisible = bottomSheetVisible,
-                onClickBasket = { navController.navigateToProducts(it) },)
+                onClickBasket = { navController.navigateToProducts(it) },
+            )
         }
-        composable(route = ProductsBasket.routeWithArgs, arguments = ProductsBasket.arguments,
-            enterTransition = { enterTransition },
-            exitTransition = { exitTransition },)
+        composable(
+            route = ProductsBasket.routeWithArgs, arguments = ProductsBasket.arguments,
+            enterTransition = {
+                targetState.destination.route?.let { enterTransition(Baskets.route, it) } },
+            exitTransition = {
+                targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
+        )
         { navBackStackEntry ->
             val basketId = navBackStackEntry.arguments?.getLong(ProductsBasket.basketIdArg)
             if (basketId != null) {
@@ -60,20 +69,54 @@ fun AppAnimatedNavHost(
                 )
             }
         }
-        composable(route = Articles.route,
-            enterTransition = { enterTransition },
-            exitTransition = { exitTransition },){
+        composable(
+            route = Articles.route,
+            enterTransition = {
+                targetState.destination.route?.let { enterTransition(Baskets.route, it) } },
+            exitTransition = {
+                targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
+        ) {
             ArticlesScreen(
                 bottomSheetContent = bottomSheetContent,
-                bottomSheetVisible = bottomSheetVisible,)
+                bottomSheetVisible = bottomSheetVisible,
+            )
         }
-        composable(route = Setting.route,
-            enterTransition = { enterTransition },
-            exitTransition = { exitTransition },){
+        composable(
+            route = Setting.route,
+            enterTransition = {
+                targetState.destination.route?.let { enterTransition(Baskets.route, it) } },
+            exitTransition = {
+                targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
+        ) {
             SettingsScreen()
         }
-
     }
 }
 
+fun enterTransition(defaultScreen: String, targetScreen: String): EnterTransition{
+    val durationMillis = 800
+    val delayMillis = 200
+    return if (targetScreen == defaultScreen) {
+        slideInHorizontally(
+            animationSpec = tween( durationMillis = durationMillis, delayMillis = delayMillis)) { it / -1 } +
+                fadeIn( animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
+    } else {
+        slideInHorizontally(
+            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / 1 } +
+                fadeIn( animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
+    }
+}
+fun exitTransition(defaultScreen: String, targetScreen: String): ExitTransition {
+    val durationMillis = 800
+    val delayMillis = 200
+    return if (targetScreen == defaultScreen) {
+        slideOutHorizontally(
+            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / 1 } +
+                fadeOut(animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
+    } else {
+        slideOutHorizontally(
+            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / -1 } +
+                fadeOut(animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
+    }
+}
 

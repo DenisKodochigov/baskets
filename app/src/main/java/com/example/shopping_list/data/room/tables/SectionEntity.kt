@@ -9,4 +9,10 @@ import com.example.shopping_list.entity.Section
 data class SectionEntity(
     @PrimaryKey(autoGenerate = true) override var idSection: Long = 0,
     override var nameSection:String = ""
-): Section
+): Section {
+    override fun compareTo(other: Section): Int {
+        return if (this.nameSection > other.nameSection) -1
+                else if (this.nameSection < other.nameSection) 1
+                else 0
+    }
+}

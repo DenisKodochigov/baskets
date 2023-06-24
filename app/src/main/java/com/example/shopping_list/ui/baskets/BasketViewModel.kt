@@ -1,5 +1,6 @@
 package com.example.shopping_list.ui.baskets
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
@@ -24,6 +25,7 @@ class BasketViewModel @Inject constructor(
     val basketScreenState: StateFlow<BasketScreenState> = _basketScreenState.asStateFlow()
 
     init {
+        getListBasket()
         sortingArticle()
     }
 
@@ -36,9 +38,12 @@ class BasketViewModel @Inject constructor(
         }
     }
     fun getListBasket() {
+        Log.d("KDS", "BasketViewModel.getListBasket")
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListBasket() }.fold(
-                onSuccess = { _basketScreenState.update { currentState ->
+                onSuccess = {
+                    Log.d("KDS", "BasketViewModel.getListBasket.onSuccess")
+                    _basketScreenState.update { currentState ->
                     currentState.copy(baskets = it as MutableList<Basket>) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
