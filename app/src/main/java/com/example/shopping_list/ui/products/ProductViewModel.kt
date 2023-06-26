@@ -26,31 +26,25 @@ class ProductViewModel  @Inject constructor(
 
     fun getStateProducts(basketId: Long){
         Log.d("KDS", "ProductViewModel.getStateProducts")
-        getListProductsInit(basketId)
+        getProductsOnStart(basketId)
         getListArticle()
         getListSection()
         getListUnit()
         getNameBasket(basketId)
     }
 
-    private fun getListProducts(basketId: Long) {
+    private fun getProductsOnStart(basketId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.getListProducts(basketId) }.fold(
+            kotlin.runCatching {
+                dataRepository.buildPositionProduct(basketId)
+                dataRepository.getListProducts(basketId) }.fold(
                 onSuccess = { _productsScreenState.update { currentState ->
                     currentState.copy(products = it as MutableList<Product>) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
     }
-    private fun getListProductsInit(basketId: Long) {
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.getListProductsInit(basketId) }.fold(
-                onSuccess = { _productsScreenState.update { currentState ->
-                    currentState.copy(products = it as MutableList<Product>) } },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-        }
-    }
+
     private fun getListArticle() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListArticle() }.fold(

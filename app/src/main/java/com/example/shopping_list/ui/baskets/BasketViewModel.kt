@@ -24,10 +24,7 @@ class BasketViewModel @Inject constructor(
     private val _basketScreenState = MutableStateFlow(BasketScreenState())
     val basketScreenState: StateFlow<BasketScreenState> = _basketScreenState.asStateFlow()
 
-    init {
-        getListBasket()
-        sortingArticle()
-    }
+    init {  sortingArticle() }
 
     private fun sortingArticle(){
         viewModelScope.launch(Dispatchers.IO) {
@@ -38,12 +35,9 @@ class BasketViewModel @Inject constructor(
         }
     }
     fun getListBasket() {
-        Log.d("KDS", "BasketViewModel.getListBasket")
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListBasket() }.fold(
-                onSuccess = {
-                    Log.d("KDS", "BasketViewModel.getListBasket.onSuccess")
-                    _basketScreenState.update { currentState ->
+                onSuccess = { _basketScreenState.update { currentState ->
                     currentState.copy(baskets = it as MutableList<Basket>) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
@@ -72,9 +66,7 @@ class BasketViewModel @Inject constructor(
 
     fun addBasket(basketName: String){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching {
-                dataRepository.addBasket(basketName)
-            }.fold(
+            kotlin.runCatching { dataRepository.addBasket(basketName) }.fold(
                 onSuccess = {_basketScreenState.update { currentState ->
                     currentState.copy(baskets = it as MutableList<Basket>) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
@@ -84,9 +76,7 @@ class BasketViewModel @Inject constructor(
 
     fun setPositionBasket( direction: Int){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching {
-                dataRepository.setPositionBasket(direction)
-            }.fold(
+            kotlin.runCatching { dataRepository.setPositionBasket(direction) }.fold(
                 onSuccess = {_basketScreenState.update { currentState ->
                     currentState.copy(baskets = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}

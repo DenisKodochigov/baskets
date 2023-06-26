@@ -21,8 +21,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     /** Manage position product */
     private fun reBuildPositionProduct(basketId: Long, direction: Int): List<Product>{
-        val listProduct = dataDao.getListProduct(basketId).map { item -> mapProduct(item) }.sortedWith(
-            compareBy ( {!it.putInBasket}, {it.article.section.idSection}, {it.position}))
+        val listProduct = dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
         val positionEnd = listProduct.size
         var position = 1
         if (listProduct.isNotEmpty()) {
@@ -41,6 +40,18 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
             }
         }
         return listProduct
+    }
+
+    fun buildPositionProduct(basketId: Long){
+        val listProduct = dataDao.getListProduct(basketId).map { item -> mapProduct(item) }.sortedWith(
+            compareBy ( {!it.putInBasket}, {it.article.section.idSection}, {it.position}))
+        var position = 1
+        if (listProduct.isNotEmpty()) {
+            listProduct.forEach {
+                it.position = position++
+                dataDao.setPositionProductInBasket( it.idProduct, basketId, it.position )
+            }
+        }
     }
 
     private fun reBuildPositionBasket(direction: Int){
@@ -122,10 +133,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return if (basketId > 0) dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
                 else emptyList()
     }
-    fun getListProductsInit(basketId: Long): List<Product>{
-        return if (basketId > 0) reBuildPositionProduct(basketId,0)
-        else emptyList()
-    }
+
     fun putProductInBasket(product: Product, basketId: Long): List<Product>{
         dataDao.putProductInBasket(product.idProduct, basketId)
         return reBuildPositionProduct(basketId, 0)

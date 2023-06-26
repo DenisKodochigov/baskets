@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Looper
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,12 +38,10 @@ import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,18 +53,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
 import com.example.shopping_list.data.room.tables.ArticleEntity
-import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
+import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.components.ButtonSwipe
 import com.example.shopping_list.ui.components.FabAnimation
 import com.example.shopping_list.ui.components.HeaderScreen
+import com.example.shopping_list.ui.components.HeaderSection
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIconClearing
 import com.example.shopping_list.ui.components.MyTextH1
@@ -77,8 +74,9 @@ import com.example.shopping_list.ui.components.dialog.EditQuantityDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import com.example.shopping_list.ui.components.selectSectionWithArticle
 import com.example.shopping_list.ui.components.selectUnitWithArticle
+import com.example.shopping_list.ui.theme.SectionColor
+import com.example.shopping_list.utils.createDoubleListProduct
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun ProductsScreen(
@@ -88,15 +86,31 @@ fun ProductsScreen(
 
     val viewModel: ProductViewModel = hiltViewModel()
     viewModel.getStateProducts(basketId)
-//    Log.d("KDS", "ProductsScreen")
+
+    ProductScreenCreateView(
+        basketId = basketId,
+        viewModel = viewModel,
+        bottomSheetVisible = bottomSheetVisible,
+        bottomSheetContent = bottomSheetContent
+    )
+}
+
+@Composable
+fun ProductScreenCreateView(
+    basketId: Long,
+    viewModel: ProductViewModel,
+    bottomSheetVisible: MutableState<Boolean>,
+    bottomSheetContent: MutableState<@Composable (() -> Unit)?>
+){
+    val uiState by viewModel.productsScreenState.collectAsState()
     bottomSheetContent.value = {
         LayoutAddEditProduct(
-            uiState = viewModel.productsScreenState.collectAsState()
-        ) { product -> viewModel.addProduct(product, basketId) }
+            uiState = uiState,
+            onAddProduct = { product: Product -> viewModel.addProduct(product, basketId) })
     }
     LayoutProductsScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
-        uiState = viewModel.productsScreenState.collectAsState(),
+        uiState = uiState,
         putProductInBasket = { product -> viewModel.putProductInBasket(product, basketId) },
         changeProductInBasket = { product -> viewModel.changeProductInBasket(product, basketId) },
         doChangeSectionSelected = { productList, idSection -> viewModel.changeSectionSelectedProduct(productList, idSection) },
@@ -106,11 +120,13 @@ fun ProductsScreen(
     )
 }
 
+
+
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Composable
 fun LayoutProductsScreen(
     modifier: Modifier = Modifier,
-    uiState: State<ProductsScreenState>,
+    uiState: ProductsScreenState,
     bottomSheetVisible: MutableState<Boolean>,
     putProductInBasket: (Product) -> Unit,
     changeProductInBasket: (Product) -> Unit,
@@ -125,12 +141,11 @@ fun LayoutProductsScreen(
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
 //
     Log.d("KDS", "ProductsScreenLayout")
-    val itemList = uiState.value.products
+    val itemList = uiState.products
+
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idProduct == isSelectedId.value }
-        if (item != null) {
-            item.isSelected = !item.isSelected
-        }
+        if (item != null) { item.isSelected = !item.isSelected }
         isSelectedId.value = 0
     }
     if (unSelected.value) {
@@ -139,7 +154,7 @@ fun LayoutProductsScreen(
     }
     if (changeSectionSelected.value) {
         SelectSectionDialog(
-            listSection = uiState.value.sections,
+            listSection = uiState.sections,
             onDismiss = { changeSectionSelected.value = false },
             onConfirm = {
                 if (it != 0L) doChangeSectionSelected(itemList, it)
@@ -152,18 +167,14 @@ fun LayoutProductsScreen(
         deleteSelected.value = false
     }
 
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+    Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column(modifier.fillMaxHeight()) {
             HeaderScreen(
-                text = stringResource(R.string.products_in_basket) + " " + uiState.value.nameBasket, modifier)
+                text = stringResource(R.string.products_in_basket) + " " + uiState.nameBasket, modifier)
             Column(Modifier.fillMaxHeight().weight(1f) ) {
-
                 Spacer(modifier = Modifier.weight(1f, !bottomSheetVisible.value))
                 LazyColumnProduct(
-                    uiState = uiState.value,
+                    uiState = uiState,
                     putProductInBasket = putProductInBasket,
                     changeProductInBasket = changeProductInBasket,
                     doSelected = { idItem -> isSelectedId.value = idItem })
@@ -172,13 +183,15 @@ fun LayoutProductsScreen(
         }
         if (itemList.find { it.isSelected } != null) {
             startScreen = true
-            Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
+            Box(
+                Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
                 FabAnimation(show = true, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
                 FabAnimation(show = true, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeSectionSelected.value = true })
                 FabAnimation(show = true, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
             }
         } else if (startScreen){
-            Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
+            Box(
+                Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
                 FabAnimation(show = false, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
                 FabAnimation(show = false, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeSectionSelected.value = true })
                 FabAnimation(show = false, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
@@ -187,8 +200,96 @@ fun LayoutProductsScreen(
     }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+//@SuppressLint("CoroutineCreationDuringComposition")
+//@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+//@Composable
+//fun LazyColumnProduct(
+//    uiState: ProductsScreenState,
+//    putProductInBasket: (Product) -> Unit,
+//    changeProductInBasket: (Product) -> Unit,
+//    doSelected: (Long) -> Unit
+//) {
+////    Log.d("KDS", "LazyColumnProduct")
+//    val listState = rememberLazyListState()
+//    val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
+//    val firstItem = remember { mutableStateOf(Pair<Int, Long>(0, 0)) }
+//    val coroutineScope = rememberCoroutineScope()
+//
+//        if (editProduct.value != null ) {
+//            EditQuantityDialog(
+//                product = editProduct.value!!,
+//                listUnit = uiState.unitA,
+//                onDismiss = { editProduct.value = null },
+//                onConfirm = {
+//                    changeProductInBasket(editProduct.value!!)
+//                    editProduct.value = null
+//                }
+//            )
+//        }
+//
+//    if (uiState.products.isNotEmpty()) {
+//        if (firstItem.value.first != uiState.products[0].position ||
+//            firstItem.value.second != uiState.products[0].idProduct
+//        ) {
+//            coroutineScope.launch { listState.animateScrollToItem(index = 0) }
+//            firstItem.value = Pair(uiState.products[0].position, uiState.products[0].idProduct)
+//        }
+//    }
+//    val listSection = uiState.products.map {
+//        SectionWithProduct(nameSection = it.article.section.nameSection, product = it) }
+//    LazyColumn(
+//        state = listState,
+//        verticalArrangement = Arrangement.spacedBy(4.dp),
+//        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+//    ) {
+//        items(items = uiState.products, key = { it.idProduct }) { item ->
+//            val dismissState = rememberDismissState(confirmStateChange = {
+//                if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
+//                    android.os.Handler(Looper.getMainLooper()).postDelayed({
+//                        putProductInBasket(item)
+//                    }, 1000)
+//                }
+//                true
+//            })
+//            if (dismissState.isDismissed(DismissDirection.EndToStart) || dismissState.isDismissed(
+//                    DismissDirection.StartToEnd)) {
+//                LaunchedEffect(Unit) {
+//                    delay(300)
+//                    dismissState.reset()
+//                }
+//            }
+//            SwipeToDismiss(state = dismissState,
+//                modifier = Modifier.padding(vertical = 1.dp).animateItemPlacement(),
+//                directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+//                dismissThresholds = { direction ->
+//                    FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.4f else 0.4f)
+//                },
+//                background = {
+//                    val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
+//                    val alignment = when (direction) {
+//                        DismissDirection.StartToEnd -> Alignment.CenterStart
+//                        DismissDirection.EndToStart -> Alignment.CenterEnd
+//                    }
+//                    val icon = when (direction) {
+//                        DismissDirection.StartToEnd -> Icons.Default.AddShoppingCart
+//                        DismissDirection.EndToStart -> Icons.Default.AddShoppingCart
+//                    }
+//                    val scale by animateFloatAsState(
+//                        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f)
+//                    Box(Modifier.fillMaxSize(), contentAlignment = alignment) {
+//                        Icon(icon, null, modifier = Modifier.scale(scale)) }
+//                }
+//            ) {
+//                ElementLazyColum(
+//                    item = item,
+//                    doSelected = doSelected,
+//                    editProduct = { product -> editProduct.value = product},
+//                )
+//            }
+//        }
+//    }
+//}
+
 @Composable
 fun LazyColumnProduct(
     uiState: ProductsScreenState,
@@ -198,57 +299,64 @@ fun LazyColumnProduct(
 ) {
 //    Log.d("KDS", "LazyColumnProduct")
     val listState = rememberLazyListState()
-    val showDialog = remember { mutableStateOf(false) }
     val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
-    val firstItem = remember { mutableStateOf(Pair<Int, Long>(0, 0)) }
-    val coroutineScope = rememberCoroutineScope()
 
-    if (editProduct.value != null && showDialog.value) {
+    if (editProduct.value != null ) {
         EditQuantityDialog(
             product = editProduct.value!!,
             listUnit = uiState.unitA,
-            onDismiss = { showDialog.value = false },
+            onDismiss = { editProduct.value = null },
             onConfirm = {
                 changeProductInBasket(editProduct.value!!)
-                showDialog.value = false
+                editProduct.value = null
             }
         )
     }
-    if (uiState.products.isNotEmpty()) {
-        if (firstItem.value.first != uiState.products[0].position ||
-            firstItem.value.second != uiState.products[0].idProduct
-        ) {
-            coroutineScope.launch { listState.animateScrollToItem(index = 0) }
-            firstItem.value = Pair(uiState.products[0].position, uiState.products[0].idProduct)
-        }
-    }
+    val listSection = createDoubleListProduct(uiState.products)
+
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-        items(items = uiState.products, key = { it.idProduct }) { item ->
+        items(items = listSection) { item ->
+            Column(modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(SectionColor)) {
+                HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
+                LayoutColumProducts(item, putProductInBasket, { product -> editProduct.value = product }, doSelected)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun LayoutColumProducts(
+    products: List<Product> ,
+    putProductInBasket: (Product) -> Unit,
+    editProductValue: (Product) -> Unit,
+    doSelected: (Long) -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+    ) {
+        products.forEach { product ->
             val dismissState = rememberDismissState(confirmStateChange = {
                 if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
                     android.os.Handler(Looper.getMainLooper()).postDelayed({
-                        putProductInBasket(item)
+                        putProductInBasket(product)
                     }, 1000)
                 }
                 true
             })
-            if (dismissState.isDismissed(DismissDirection.EndToStart) || dismissState.isDismissed(
-                    DismissDirection.StartToEnd
-                )
-            ) {
-                LaunchedEffect(Unit) {
+            if (dismissState.isDismissed( DismissDirection.EndToStart ) ||
+                dismissState.isDismissed( DismissDirection.StartToEnd ))
+                { LaunchedEffect(Unit) {
                     delay(300)
                     dismissState.reset()
-                }
-            }
+                } }
             SwipeToDismiss(state = dismissState,
-                modifier = Modifier
-                    .padding(vertical = 1.dp)
-                    .animateItemPlacement(),
+                modifier = Modifier.padding(vertical = 1.dp),
                 directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
                 dismissThresholds = { direction ->
                     FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.4f else 0.4f)
@@ -263,81 +371,82 @@ fun LazyColumnProduct(
                         DismissDirection.StartToEnd -> Icons.Default.AddShoppingCart
                         DismissDirection.EndToStart -> Icons.Default.AddShoppingCart
                     }
-                    val scale by animateFloatAsState(if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f)
-                    Box(
-                        Modifier.fillMaxSize(), contentAlignment = alignment
-                    ) {
+                    val scale by animateFloatAsState(
+                        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
+                    )
+                    Box(Modifier.fillMaxSize(), contentAlignment = alignment) {
                         Icon(icon, null, modifier = Modifier.scale(scale))
                     }
                 }
             ) {
-                Box {
-                    Row(
-                        modifier = Modifier
-                            .clip(shape = RoundedCornerShape(6.dp))
-                            .fillMaxWidth()
-                            .background(Color.White)
-                    ) {
-                        Spacer(
-                            modifier = Modifier
-                                .background(if (item.isSelected) Color.Red else Color.LightGray)
-                                .width(8.dp)
-                                .height(32.dp)
-                                .align(Alignment.CenterVertically)
-                                .clickable { doSelected(item.idProduct) }
-                        )
-                        MyTextH1(
-                            item.article.nameArticle,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { doSelected(item.idProduct) }
-                                .padding(
-                                    start = dimensionResource(R.dimen.lazy_padding_hor),
-                                    top = dimensionResource(R.dimen.lazy_padding_ver),
-                                    bottom = dimensionResource(R.dimen.lazy_padding_ver)
-                                )
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        val num = if (item.value.rem(1).equals(0.0)) item.value.toInt()
-                        else item.value
-                        MyTextH1End(num.toString(),
-                            Modifier
-                                .width(70.dp)
-                                .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                                .clickable {
-                                    editProduct.value = item
-                                    showDialog.value = true
-                                })
-                        Spacer(modifier = Modifier.width(4.dp))
-                        MyTextH1(
-                            item.article.unitA.nameUnit,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .width(50.dp)
-                                .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                                .clickable { doSelected(item.idProduct) }
-                        )
-                    }
-                    if (item.putInBasket) Divider(
-                        color = MaterialTheme.colors.onSurface,
-                        thickness = 1.dp,
-                        modifier = Modifier
-                            .padding(top = 36.dp, start = 8.dp, end = 8.dp)
-                            .fillMaxWidth()
-                    )
-                }
+                ElementColum(product, doSelected, editProductValue) //{ product -> editProductValue( product )}
             }
         }
     }
 }
 
 @Composable
-fun LayoutAddEditProduct(
-    uiState: State<ProductsScreenState>,
-    onAddProduct: (Product) -> Unit
-) {
-//    Log.d("KDS", "BottomSheetContentProduct")
+fun ElementColum(
+    item: Product,
+    doSelected: (Long)->Unit,
+    editProduct: (Product) -> Unit,
+){
+    Box(Modifier.padding(horizontal = 6.dp)) {
+        Row(
+            modifier = Modifier
+                .clip(shape = RoundedCornerShape(6.dp))
+                .fillMaxWidth()
+                .background(Color.White)
+        ) {
+            Spacer(
+                modifier = Modifier
+                    .background(if (item.isSelected) Color.Red else Color.LightGray)
+                    .width(8.dp)
+                    .height(32.dp)
+                    .align(Alignment.CenterVertically)
+                    .clickable { doSelected(item.idProduct) }
+            )
+            MyTextH1(
+                item.article.nameArticle,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { doSelected(item.idProduct) }
+                    .padding(
+                        start = dimensionResource(R.dimen.lazy_padding_hor),
+                        top = dimensionResource(R.dimen.lazy_padding_ver),
+                        bottom = dimensionResource(R.dimen.lazy_padding_ver)
+                    )
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            val num = if (item.value.rem(1).equals(0.0)) item.value.toInt()
+            else item.value
+            MyTextH1End(num.toString(),
+                Modifier
+                    .width(70.dp)
+                    .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+                    .clickable { editProduct(item) })
+            Spacer(modifier = Modifier.width(4.dp))
+            MyTextH1(
+                item.article.unitA.nameUnit,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .width(50.dp)
+                    .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+                    .clickable { doSelected(item.idProduct) }
+            )
+        }
+        if (item.putInBasket) Divider(
+            color = MaterialTheme.colors.onSurface,
+            thickness = 1.dp,
+            modifier = Modifier.padding(top = 36.dp, start = 8.dp, end = 8.dp).fillMaxWidth()
+        )
+    }
+}
+@Composable
+fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -> Unit) {
+
+    Log.d("KDS", "BottomSheetContentProduct")
     val nameSection = stringResource(R.string.name_section)
     val unitStuff = stringResource(R.string.name_unit1)
     val enterValue = remember { mutableStateOf("1") }
@@ -347,22 +456,24 @@ fun LayoutAddEditProduct(
     val focusRequesterSheet = remember { FocusRequester() }
 
     enterArticle.value = Pair(
-        uiState.value.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L,
+        uiState.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L,
         enterArticle.value.second)
 
     if (enterArticle.value.first > 0) {
-        enterSection.value = selectSectionWithArticle(enterArticle.value.first, uiState.value.articles)
-        enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.value.articles)
+        enterSection.value = selectSectionWithArticle(enterArticle.value.first, uiState.articles)
+        enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
     } else  {
         enterUnit.value = Pair(
-            uiState.value.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L,
+            uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L,
             enterUnit.value.second)
         enterSection.value = Pair(
-            uiState.value.sections.find { it.nameSection == enterSection.value.second }?.idSection ?: 0L,
+            uiState.sections.find { it.nameSection == enterSection.value.second }?.idSection ?: 0L,
             enterSection.value.second)
     }
     Column(
-        Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
 //        Log.d("KDS", "BottomSheetContentProduct.Column")
         HeaderScreen(
@@ -372,7 +483,7 @@ fun LayoutAddEditProduct(
         Spacer(Modifier.height(12.dp))
         /** Select article*/
         MyExposedDropdownMenuBox(
-            listItems = uiState.value.articles.map { Pair(it.idArticle, it.nameArticle) },
+            listItems = uiState.articles.map { Pair(it.idArticle, it.nameArticle) },
             label = stringResource(R.string.select_product),
             modifier = Modifier.fillMaxWidth(),
             enterValue = enterArticle,
@@ -382,7 +493,7 @@ fun LayoutAddEditProduct(
         Spacer(Modifier.height(12.dp))
         /** Select section*/
         MyExposedDropdownMenuBox(
-            listItems = uiState.value.sections.map { Pair(it.idSection, it.nameSection) },
+            listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) },
             label = stringResource(R.string.section),
             modifier = Modifier.fillMaxWidth(),
             enterValue = enterSection,
@@ -405,7 +516,7 @@ fun LayoutAddEditProduct(
             Spacer(Modifier.width(4.dp))
             /** Select unit*/
             MyExposedDropdownMenuBox(
-                listItems = uiState.value.unitA.map { Pair(it.idUnit, it.nameUnit) },
+                listItems = uiState.unitA.map { Pair(it.idUnit, it.nameUnit) },
                 label = stringResource(R.string.units),
                 modifier = Modifier.width(120.dp),
                 enterValue = enterUnit,
@@ -432,24 +543,25 @@ fun LayoutAddEditProduct(
         TextButtonOK(
             enabled = enterArticle.value.second != "",
             onConfirm = {
-            onAddProduct(product)
-            enterArticle.value = Pair(0, "")
-            enterValue.value = "1"
-        })
+                onAddProduct(product)
+                enterArticle.value = Pair(0, "")
+                enterValue.value = "1"
+            })
         Spacer(Modifier.height(36.dp))
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProductsScreenLayoutPreview() {
 
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LayoutAddEditProductPreview() {
-//    LayoutAddEditProduct( ProductsScreenState()) {}
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ProductsScreenLayoutPreview() {
+//
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun LayoutAddEditProductPreview() {
+////    LayoutAddEditProduct( ProductsScreenState()) {}
+//}
 
 

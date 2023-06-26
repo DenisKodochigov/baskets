@@ -5,6 +5,6 @@ interface Product {
     var article: Article
     var value: Double
     var putInBasket: Boolean
-    var isSelected:Boolean
+    var isSelected: Boolean
     var position: Int
 }

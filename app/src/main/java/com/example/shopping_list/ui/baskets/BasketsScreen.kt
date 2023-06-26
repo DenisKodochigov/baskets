@@ -57,10 +57,28 @@ fun BasketsScreen(
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>) {
 
     val viewModel: BasketViewModel = hiltViewModel()
-//    viewModel.getListBasket()
-//    val uiState by viewModel.basketScreenState.collectAsState()
+    viewModel.getListBasket()
 
-    Log.d("KDS", "BasketsScreen")
+    BasketScreenCreateView(
+        onClickBasket = onClickBasket,
+        viewModel = viewModel,
+        bottomSheetHide = bottomSheetHide,
+        bottomSheetVisible = bottomSheetVisible,
+        bottomSheetContent = bottomSheetContent
+    )
+}
+
+@Composable
+fun BasketScreenCreateView(
+    onClickBasket: (Long) -> Unit,
+    viewModel: BasketViewModel,
+    bottomSheetHide: () -> Unit,
+    bottomSheetVisible: MutableState<Boolean>,
+    bottomSheetContent: MutableState <@Composable (() -> Unit)?>
+){
+
+    val uiState by viewModel.basketScreenState.collectAsState()
+
     bottomSheetContent.value = {
         BottomSheetContentBasket(
             onAddClick = {viewModel.addBasket(it)}, bottomSheetHide = bottomSheetHide) }
@@ -68,7 +86,7 @@ fun BasketsScreen(
     LayoutBasketsScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         onClickBasket = onClickBasket,
-        itemList = viewModel.basketScreenState.collectAsState().value.baskets,
+        itemList = uiState.baskets,
         changeNameBasket = { basket -> viewModel.changeNameBasket(basket)},
         deleteBasket = { basketId -> viewModel.deleteBasket(basketId)},
         refreshPosition = { direction -> viewModel.setPositionBasket(direction)},
@@ -98,10 +116,16 @@ fun LayoutBasketsScreen(
         itemList.forEach { it.isSelected = false }
         unSelected.value = false
     }
-    Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column(modifier = modifier.fillMaxHeight()) {
             HeaderScreen(text = stringResource(R.string.baskets), modifier)
-            Column(Modifier.fillMaxHeight().weight(1f)) {
+            Column(
+                Modifier
+                    .fillMaxHeight()
+                    .weight(1f)) {
                 if (!bottomSheetVisible.value) Spacer(Modifier.weight(1f))
                 LazyColumnBasket(itemList, onClickBasket, deleteBasket, changeNameBasket)
             }

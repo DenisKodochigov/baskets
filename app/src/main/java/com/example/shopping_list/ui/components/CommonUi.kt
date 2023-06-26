@@ -32,6 +32,15 @@ fun HeaderScreen(text: String, modifier: Modifier) {
         Text(text, style = typography.h1)
     }
 }
+@Composable
+fun HeaderSection(text: String, modifier: Modifier) {
+    val typography = MaterialTheme.typography
+    Spacer(modifier = Modifier.height(12.dp))
+    Row(modifier.fillMaxWidth().padding(start = 12.dp), horizontalArrangement = Arrangement.Start) {
+        Text(text, style = typography.h2)
+    }
+}
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
