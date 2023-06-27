@@ -71,7 +71,6 @@ object DatabaseModule {
                         database.dataDao().addProduct(ProductEntity(articleId = 8, value = 1.0, basketId = 1))
                         database.dataDao().addProduct(ProductEntity(articleId = 9, value = 1.0, basketId = 1))
                         database.dataDao().addProduct(ProductEntity(articleId = 10, value = 1.0, basketId = 1))
-                        database.dataDao().addProduct(ProductEntity(articleId = 10, value = 1.0, basketId = 2))
                     }
                 }
             })

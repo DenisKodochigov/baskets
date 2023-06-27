@@ -1,7 +1,6 @@
 package com.example.shopping_list.ui.products
 
 import android.annotation.SuppressLint
-import android.os.Looper
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -36,10 +35,10 @@ import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.RemoveDone
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -77,7 +76,7 @@ import com.example.shopping_list.ui.components.selectSectionWithArticle
 import com.example.shopping_list.ui.components.selectUnitWithArticle
 import com.example.shopping_list.ui.theme.SectionColor
 import com.example.shopping_list.utils.createDoubleListProduct
-import kotlinx.coroutines.delay
+import com.example.shopping_list.utils.log
 
 @Composable
 fun ProductsScreen(
@@ -103,6 +102,7 @@ fun ProductScreenCreateView(
     bottomSheetVisible: MutableState<Boolean>,
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>
 ){
+//    log("ProductScreenCreateView")
     val uiState by viewModel.productsScreenState.collectAsState()
     bottomSheetContent.value = {
         LayoutAddEditProduct(
@@ -138,8 +138,8 @@ fun LayoutProductsScreen(
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
-//
-    Log.d("KDS", "ProductsScreenLayout")
+
+//    log("LayoutProductsScreen")
     val itemList = uiState.products
 
     if (isSelectedId.value > 0L) {
@@ -166,11 +166,14 @@ fun LayoutProductsScreen(
         deleteSelected.value = false
     }
 
-    Box( Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+    Box( Modifier.fillMaxSize()) {
         Column(modifier.fillMaxHeight()) {
             HeaderScreen(
                 text = stringResource(R.string.products_in_basket) + " " + uiState.nameBasket, modifier)
-            Column(Modifier.fillMaxHeight().weight(1f) ) {
+            Column(
+                Modifier
+                    .fillMaxHeight()
+                    .weight(1f) ) {
                 Spacer(modifier = Modifier.weight(1f, !bottomSheetVisible.value))
                 LazyColumnProduct(
                     uiState = uiState,
@@ -183,14 +186,18 @@ fun LayoutProductsScreen(
         if (itemList.find { it.isSelected } != null) {
             startScreen = true
             Box(
-                Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
+                Modifier
+                    .align(alignment = Alignment.BottomCenter)
+                    .height(200.dp)) {
                 FabAnimation(show = true, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
                 FabAnimation(show = true, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeSectionSelected.value = true })
                 FabAnimation(show = true, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
             }
         } else if (startScreen){
             Box(
-                Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
+                Modifier
+                    .align(alignment = Alignment.BottomCenter)
+                    .height(200.dp)) {
                 FabAnimation(show = false, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
                 FabAnimation(show = false, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeSectionSelected.value = true })
                 FabAnimation(show = false, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
@@ -206,7 +213,7 @@ fun LazyColumnProduct(
     changeProductInBasket: (Product) -> Unit,
     doSelected: (Long) -> Unit
 ) {
-//    Log.d("KDS", "LazyColumnProduct")
+//    log("LazyColumnProduct")
     val listState = rememberLazyListState()
     val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
 
@@ -221,17 +228,25 @@ fun LazyColumnProduct(
             }
         )
     }
+
     val listSection = createDoubleListProduct(uiState.products)
 
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+        modifier = Modifier.clip(RoundedCornerShape(8.dp))
+            .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
         items(items = listSection) { item ->
-            Column(modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(SectionColor)) {
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(SectionColor)) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
-                LayoutColumProducts( item, putProductInBasket, { product -> editProduct.value = product }, doSelected)
+                LayoutColumProducts(
+                    item,
+                    putProductInBasket,
+                    { product -> editProduct.value = product },
+                    doSelected)
             }
         }
     }
@@ -245,50 +260,49 @@ fun LayoutColumProducts(
     editProductValue: (Product) -> Unit,
     doSelected: (Long) -> Unit
 ) {
+//    log("LayoutColumProducts")
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-        products.forEach { product ->
-            val dismissState = rememberDismissState(confirmStateChange = {
-                if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
-                    android.os.Handler(Looper.getMainLooper()).postDelayed({
-                        putProductInBasket(product)
-                    }, 1000)
+        for (product in products){
+            key(product.idProduct){
+                val dismissState = rememberDismissState(
+                    confirmStateChange = {
+                        if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
+                            putProductInBasket( product ) }
+                        false
+                    }
+                )
+                SwipeToDismiss(
+                    state = dismissState,
+                    modifier = Modifier.padding(vertical = 1.dp),
+                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+                    dismissThresholds = { direction ->
+                        FractionalThreshold( if (direction == DismissDirection.StartToEnd) 0.4f else 0.4f)
+                    },
+                    background = {
+                        val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
+                        val alignment = when (direction) {
+                            DismissDirection.StartToEnd -> Alignment.CenterStart
+                            DismissDirection.EndToStart -> Alignment.CenterEnd
+                        }
+                        val icon = when (direction) {
+                            DismissDirection.StartToEnd -> Icons.Default.AddShoppingCart
+                            DismissDirection.EndToStart -> Icons.Default.AddShoppingCart
+                        }
+                        val scale by animateFloatAsState(
+                            if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
+                        )
+                        Box(
+                            Modifier.fillMaxSize().padding(horizontal = 12.dp),
+                            contentAlignment = alignment ) {
+                            Icon(icon, null, modifier = Modifier.scale(scale))
+                        }
+                    }
+                ) {
+                    ElementColum(product, doSelected, editProductValue) //{ product -> editProductValue( product )}
                 }
-                true
-            })
-            if (dismissState.isDismissed( DismissDirection.EndToStart ) ||
-                dismissState.isDismissed( DismissDirection.StartToEnd ))
-                { LaunchedEffect(Unit) {
-                    delay(300)
-                    dismissState.reset()
-                } }
-            SwipeToDismiss(state = dismissState,
-                modifier = Modifier.padding(vertical = 1.dp),
-                directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                dismissThresholds = { direction ->
-                    FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.4f else 0.4f)
-                },
-                background = {
-                    val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
-                    val alignment = when (direction) {
-                        DismissDirection.StartToEnd -> Alignment.CenterStart
-                        DismissDirection.EndToStart -> Alignment.CenterEnd
-                    }
-                    val icon = when (direction) {
-                        DismissDirection.StartToEnd -> Icons.Default.AddShoppingCart
-                        DismissDirection.EndToStart -> Icons.Default.AddShoppingCart
-                    }
-                    val scale by animateFloatAsState(
-                        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-                    )
-                    Box(Modifier.fillMaxSize(), contentAlignment = alignment) {
-                        Icon(icon, null, modifier = Modifier.scale(scale))
-                    }
-                }
-            ) {
-                ElementColum(product, doSelected, editProductValue) //{ product -> editProductValue( product )}
             }
         }
     }
@@ -300,6 +314,7 @@ fun ElementColum(
     doSelected: (Long)->Unit,
     editProduct: (Product) -> Unit,
 ){
+//    log("ElementColum")
     Box(Modifier.padding(horizontal = 6.dp)) {
         Row(
             modifier = Modifier
@@ -348,7 +363,9 @@ fun ElementColum(
         if (item.putInBasket) Divider(
             color = MaterialTheme.colors.onSurface,
             thickness = 1.dp,
-            modifier = Modifier.padding(top = 36.dp, start = 8.dp, end = 8.dp).fillMaxWidth()
+            modifier = Modifier
+                .padding(top = 36.dp, start = 8.dp, end = 8.dp)
+                .fillMaxWidth()
         )
     }
 }
@@ -356,7 +373,7 @@ fun ElementColum(
 @Composable
 fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -> Unit) {
 
-    Log.d("KDS", "BottomSheetContentProduct")
+    Log.d("KDS", "LayoutAddEditProduct")
     val nameSection = stringResource(R.string.name_section)
     val unitStuff = stringResource(R.string.name_unit1)
     val enterValue = remember { mutableStateOf("1") }

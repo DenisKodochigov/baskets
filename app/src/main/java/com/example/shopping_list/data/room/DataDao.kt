@@ -38,12 +38,12 @@ interface DataDao {
                 "WHERE tb_product.articleId = tb_article.idArticle")
     fun checkProductFromName(name: String): Long?
 
-    @Query("SELECT idProduct FROM tb_product WHERE idProduct = :productId AND basketId = :basketId")
-    fun checkProductInBasket(basketId: Long, productId: Long): Long?
+    @Query("SELECT idProduct FROM tb_product WHERE articleId = :id AND basketId = :basketId")
+    fun checkArticleInBasket(basketId: Long, id: Long): Long?
 
     @Transaction
-    @Query("SELECT * FROM tb_product WHERE basketId = :basketId " +
-                "ORDER BY putInBasket DESC, position ASC")
+    @Query("SELECT * FROM tb_product WHERE basketId = :basketId ORDER BY position ASC")
+//                "ORDER BY putInBasket DESC, position ASC")
     fun getListProduct(basketId: Long): List<ProductObj>
 
     @Query("SELECT COUNT(idProduct) FROM tb_product WHERE basketId = :basketId")

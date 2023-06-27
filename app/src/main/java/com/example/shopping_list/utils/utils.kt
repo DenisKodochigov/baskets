@@ -1,5 +1,7 @@
 package com.example.shopping_list.utils
 
+import android.util.Log
+import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.Product
 
 fun createDoubleListProduct(products: List<Product>): List<List<Product>>{
@@ -20,9 +22,31 @@ fun createDoubleListProduct(products: List<Product>): List<List<Product>>{
     }
     return doubleList
 }
+fun createDoubleLisArticle(articles: List<Article>): List<List<Article>>{
+    val doubleList = mutableListOf<List<Article>>()
+    val listArticle = mutableListOf<Article>()
+    if (articles.isNotEmpty()) {
+        var currentSection = articles[0].section.idSection
+        articles.forEach { item->
+            if (currentSection == item.section.idSection) listArticle.add(item)
+            else {
+                doubleList.add(listArticle.toList())
+                currentSection = item.section.idSection
+                listArticle.clear()
+                listArticle.add(item)
+            }
+        }
+        if (listArticle.isNotEmpty()) doubleList.add(listArticle)
+    }
+    return doubleList
+}
 
 enum class SwipeDirection(val raw: Int) {
     Left(0),
     Initial(1),
     Right(2),
+}
+
+fun log(text: String){
+    Log.d("KDS", text)
 }

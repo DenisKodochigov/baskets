@@ -20,31 +20,32 @@ import javax.inject.Singleton
 class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     /** Manage position product */
-    private fun reBuildPositionProduct(basketId: Long, direction: Int): List<Product>{
+    private fun movePositionProduct(basketId: Long, direction: Int): List<Product>{
         val listProduct = dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
         val positionEnd = listProduct.size
         var position = 1
         if (listProduct.isNotEmpty()) {
-            listProduct.forEach { if (it.putInBasket) it.position = position++ }
+           //listProduct.forEach { if (it.putInBasket) it.position = position++ }
             val positionStart = position
             listProduct.forEach {
-                if (!it.putInBasket) {
+//                if (!it.putInBasket) {
                     if (position + direction < positionStart) it.position = positionEnd
                     else if (position + direction > positionEnd) it.position = positionStart
                     else it.position = position + direction
                     position++
-                }
+//                }
             }
             listProduct.forEach {
                 dataDao.setPositionProductInBasket( it.idProduct, basketId, it.position )
             }
         }
-        return listProduct
+        return listProduct.sortedBy { it.position }
     }
 
     fun buildPositionProduct(basketId: Long){
-        val listProduct = dataDao.getListProduct(basketId).map { item -> mapProduct(item) }.sortedWith(
-            compareBy ( {!it.putInBasket}, {it.article.section.idSection}, {it.position}))
+        val listProduct = dataDao.getListProduct(basketId)
+            .map { item -> mapProduct(item) }
+            .sortedWith( compareBy ( {it.article.section.idSection}, {it.position}))
         var position = 1
         if (listProduct.isNotEmpty()) {
             listProduct.forEach {
@@ -114,7 +115,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         if (product.basketId > 0L ) {
             product.article.idArticle = getAddArticle(product.article as ArticleEntity)?.idArticle ?: 0
             if (product.article.idArticle != 0L) {
-                if (dataDao.checkProductInBasket(product.basketId, product.idProduct) == null) {
+                if (dataDao.checkArticleInBasket(product.basketId, product.article.idArticle) == null) {
                     dataDao.addProduct(
                         ProductEntity(
                             value = product.value,
@@ -123,6 +124,8 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
                             position = product.position
                         )
                     )
+                }  else {
+                    throw IllegalArgumentException("error_addProduct")
                 }
             }
         }
@@ -136,11 +139,13 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     fun putProductInBasket(product: Product, basketId: Long): List<Product>{
         dataDao.putProductInBasket(product.idProduct, basketId)
-        return reBuildPositionProduct(basketId, 0)
+//        buildPositionProduct(basketId)
+        return getListProducts(basketId)
+//        return reBuildPositionProduct(basketId, 0)
     }
 
     fun setPositionProductInBasket(basketId: Long, direction: Int): List<Product>{
-        return if (basketId > 0) reBuildPositionProduct(basketId, direction)
+        return if (basketId > 0) movePositionProduct(basketId, direction)
                 else emptyList()
     }
     fun changeProductInBasket(product: Product, basketId: Long): List<Product>{
@@ -153,13 +158,14 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         val basketId = products[0].basketId
         val listId = products.filter { it.isSelected }.map { it.idProduct }
         dataDao.deleteProducts(listId, basketId)
-        return reBuildPositionProduct(basketId, 0)
+        buildPositionProduct(basketId)
+        return getListProducts(basketId)
     }
     /** Article*/
     fun deleteSelectedArticle(articles: List<Article>): List<Article>{
         articles.forEach {
             if (it.isSelected) {
-                if (dataDao.checkArticleWithProduct(it.idArticle).isEmpty())
+                if ( dataDao.checkArticleWithProduct(it.idArticle).isEmpty() )
                     dataDao.delArticle(it.idArticle)
             }
         }

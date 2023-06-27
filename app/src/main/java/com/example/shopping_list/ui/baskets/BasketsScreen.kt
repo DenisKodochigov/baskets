@@ -3,7 +3,6 @@ package com.example.shopping_list.ui.baskets
 import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
 import android.os.Looper
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -119,7 +118,8 @@ fun LayoutBasketsScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+//            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))
+    ) {
         Column(modifier = modifier.fillMaxHeight()) {
             HeaderScreen(text = stringResource(R.string.baskets), modifier)
             Column(

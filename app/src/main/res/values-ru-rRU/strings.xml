@@ -28,4 +28,5 @@
     <string name="settings_page">Настройки</string>
     <string name="change_unit">Изменить ед.изм.</string>
     <string name="add_unit">Добавить ед.изм.</string>
+    <string name="error_addProduct">Такой товар в корзине уже есть.</string>
 </resources>
