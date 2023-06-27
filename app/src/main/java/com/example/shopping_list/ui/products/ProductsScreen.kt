@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
@@ -120,8 +121,6 @@ fun ProductScreenCreateView(
     )
 }
 
-
-
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Composable
 fun LayoutProductsScreen(
@@ -177,7 +176,7 @@ fun LayoutProductsScreen(
                     uiState = uiState,
                     putProductInBasket = putProductInBasket,
                     changeProductInBasket = changeProductInBasket,
-                    doSelected = { idItem -> isSelectedId.value = idItem })
+                    doSelected = { idItem -> isSelectedId.value = idItem } )
             }
             ButtonSwipe(movePosition)
         }
@@ -199,96 +198,6 @@ fun LayoutProductsScreen(
         }
     }
 }
-
-//@SuppressLint("CoroutineCreationDuringComposition")
-//@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
-//@Composable
-//fun LazyColumnProduct(
-//    uiState: ProductsScreenState,
-//    putProductInBasket: (Product) -> Unit,
-//    changeProductInBasket: (Product) -> Unit,
-//    doSelected: (Long) -> Unit
-//) {
-////    Log.d("KDS", "LazyColumnProduct")
-//    val listState = rememberLazyListState()
-//    val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
-//    val firstItem = remember { mutableStateOf(Pair<Int, Long>(0, 0)) }
-//    val coroutineScope = rememberCoroutineScope()
-//
-//        if (editProduct.value != null ) {
-//            EditQuantityDialog(
-//                product = editProduct.value!!,
-//                listUnit = uiState.unitA,
-//                onDismiss = { editProduct.value = null },
-//                onConfirm = {
-//                    changeProductInBasket(editProduct.value!!)
-//                    editProduct.value = null
-//                }
-//            )
-//        }
-//
-//    if (uiState.products.isNotEmpty()) {
-//        if (firstItem.value.first != uiState.products[0].position ||
-//            firstItem.value.second != uiState.products[0].idProduct
-//        ) {
-//            coroutineScope.launch { listState.animateScrollToItem(index = 0) }
-//            firstItem.value = Pair(uiState.products[0].position, uiState.products[0].idProduct)
-//        }
-//    }
-//    val listSection = uiState.products.map {
-//        SectionWithProduct(nameSection = it.article.section.nameSection, product = it) }
-//    LazyColumn(
-//        state = listState,
-//        verticalArrangement = Arrangement.spacedBy(4.dp),
-//        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-//    ) {
-//        items(items = uiState.products, key = { it.idProduct }) { item ->
-//            val dismissState = rememberDismissState(confirmStateChange = {
-//                if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
-//                    android.os.Handler(Looper.getMainLooper()).postDelayed({
-//                        putProductInBasket(item)
-//                    }, 1000)
-//                }
-//                true
-//            })
-//            if (dismissState.isDismissed(DismissDirection.EndToStart) || dismissState.isDismissed(
-//                    DismissDirection.StartToEnd)) {
-//                LaunchedEffect(Unit) {
-//                    delay(300)
-//                    dismissState.reset()
-//                }
-//            }
-//            SwipeToDismiss(state = dismissState,
-//                modifier = Modifier.padding(vertical = 1.dp).animateItemPlacement(),
-//                directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-//                dismissThresholds = { direction ->
-//                    FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.4f else 0.4f)
-//                },
-//                background = {
-//                    val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
-//                    val alignment = when (direction) {
-//                        DismissDirection.StartToEnd -> Alignment.CenterStart
-//                        DismissDirection.EndToStart -> Alignment.CenterEnd
-//                    }
-//                    val icon = when (direction) {
-//                        DismissDirection.StartToEnd -> Icons.Default.AddShoppingCart
-//                        DismissDirection.EndToStart -> Icons.Default.AddShoppingCart
-//                    }
-//                    val scale by animateFloatAsState(
-//                        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f)
-//                    Box(Modifier.fillMaxSize(), contentAlignment = alignment) {
-//                        Icon(icon, null, modifier = Modifier.scale(scale)) }
-//                }
-//            ) {
-//                ElementLazyColum(
-//                    item = item,
-//                    doSelected = doSelected,
-//                    editProduct = { product -> editProduct.value = product},
-//                )
-//            }
-//        }
-//    }
-//}
 
 @Composable
 fun LazyColumnProduct(
@@ -322,7 +231,7 @@ fun LazyColumnProduct(
         items(items = listSection) { item ->
             Column(modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(SectionColor)) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
-                LayoutColumProducts(item, putProductInBasket, { product -> editProduct.value = product }, doSelected)
+                LayoutColumProducts( item, putProductInBasket, { product -> editProduct.value = product }, doSelected)
             }
         }
     }
@@ -443,6 +352,7 @@ fun ElementColum(
         )
     }
 }
+
 @Composable
 fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -> Unit) {
 
@@ -551,17 +461,16 @@ fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun ProductsScreenLayoutPreview() {
 
-//@Preview(showBackground = true)
-//@Composable
-//fun ProductsScreenLayoutPreview() {
-//
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun LayoutAddEditProductPreview() {
-////    LayoutAddEditProduct( ProductsScreenState()) {}
-//}
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LayoutAddEditProductPreview() {
+    LayoutAddEditProduct( ProductsScreenState()) {}
+}
 
 
