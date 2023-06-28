@@ -10,6 +10,6 @@ import com.example.shopping_list.entity.UnitA
 data class UnitEntity(
     @PrimaryKey(autoGenerate = true) override var idUnit: Long = 0,
     override var nameUnit: String =""
-): UnitA{
+): UnitA {
     @Ignore override var isSelected: Boolean = false
 }

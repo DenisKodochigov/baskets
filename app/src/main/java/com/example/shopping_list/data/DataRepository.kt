@@ -81,13 +81,8 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
 
     fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
 
-    fun changeSectionSelectedProduct(productList: List<Product>, idSection: Long): List<Product> {
-        val articles = productList.filter { it.isSelected }
-            .map { it.article.isSelected = it.isSelected; it.article }
-        changeSectionSelectedArticle(articles, idSection)
-        return if (productList[0].basketId > 0) getListProducts(productList[0].basketId)
-        else emptyList()
-    }
+    fun changeSectionSelectedProduct(productList: List<Product>, idSection: Long): List<Product> =
+        dataSourceDB.changeSectionSelectedProduct(productList, idSection)
 
     fun changeSectionSelectedArticle(articles: List<Article>, idSection: Long): List<Article> {
         val articlesId = articles.filter { it.isSelected }.map { it.idArticle }
@@ -111,6 +106,6 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         return getUnits()
     }
 
-    fun sectionsFlow(): Flow<List<Section>> = dataSourceDB.sectionFlow()
-    fun unitsFlow(): Flow<List<UnitA>> = dataSourceDB.unitsFlow()
+//    fun sectionsFlow(): Flow<List<Section>> = dataSourceDB.sectionFlow()
+//    fun unitsFlow(): Flow<List<UnitA>> = dataSourceDB.unitsFlow()
 }

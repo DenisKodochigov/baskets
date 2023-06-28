@@ -31,10 +31,10 @@ class ArticleViewModel @Inject constructor(
     private lateinit var sectionsFlow: StateFlow<List<Section>>
 
     init {
-        getUnitsFlow()
-        getSectionsFlow()
-        _articleScreenState.value.unitA = unitsFlow.value
-        _articleScreenState.value.sections = sectionsFlow.value
+//        getUnitsFlow()
+//        getSectionsFlow()
+//        _articleScreenState.value.unitA = unitsFlow.value
+//        _articleScreenState.value.sections = sectionsFlow.value
     }
     fun getStateArticle(){
         getArticles()
@@ -42,20 +42,20 @@ class ArticleViewModel @Inject constructor(
         getListUnit()
     }
 
-    private fun getUnitsFlow(){
-        unitsFlow = dataRepository.unitsFlow().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = emptyList()
-        )
-    }
-    private fun getSectionsFlow(){
-        sectionsFlow = dataRepository.sectionsFlow().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = emptyList()
-        )
-    }
+//    private fun getUnitsFlow(){
+//        unitsFlow = dataRepository.unitsFlow().stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5000L),
+//            initialValue = emptyList()
+//        )
+//    }
+//    private fun getSectionsFlow(){
+//        sectionsFlow = dataRepository.sectionsFlow().stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5000L),
+//            initialValue = emptyList()
+//        )
+//    }
     private fun getArticles() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListArticle() }.fold(

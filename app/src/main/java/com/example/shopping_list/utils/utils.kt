@@ -41,12 +41,6 @@ fun createDoubleLisArticle(articles: List<Article>): List<List<Article>>{
     return doubleList
 }
 
-enum class SwipeDirection(val raw: Int) {
-    Left(0),
-    Initial(1),
-    Right(2),
-}
-
 fun log(text: String){
     Log.d("KDS", text)
 }

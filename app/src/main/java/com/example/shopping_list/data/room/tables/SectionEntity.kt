@@ -10,10 +10,4 @@ data class SectionEntity(
     @PrimaryKey(autoGenerate = true) override var idSection: Long = 0,
     override var nameSection:String = "",
     override var colorSection: String = ""
-): Section {
-    override fun compareTo(other: Section): Int {
-        return if (this.nameSection > other.nameSection) -1
-                else if (this.nameSection < other.nameSection) 1
-                else 0
-    }
-}
+): Section

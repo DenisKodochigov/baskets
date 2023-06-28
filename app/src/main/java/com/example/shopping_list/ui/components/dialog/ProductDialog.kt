@@ -16,8 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
+import com.example.shopping_list.data.room.tables.ProductEntity
+import com.example.shopping_list.data.room.tables.UnitEntity
+import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.ArticleClass
 import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
+import com.example.shopping_list.entity.ProductClass
 import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIconClearing
@@ -40,10 +45,28 @@ fun EditQuantityDialog(
         title = { MyTextH2(stringResource(R.string.change_quantity), Modifier) },
         text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
         confirmButton = {
-            product.value = enterValue.value.toDouble()
-            product.article.unitA.idUnit = enterUnit.value.first
-            product.article.unitA.nameUnit = enterUnit.value.second
-            TextButtonOK(onConfirm = { onConfirm(product) })
+//            product.value = enterValue.value.toDouble()
+//            product.article.unitA.idUnit = enterUnit.value.first
+//            product.article.unitA.nameUnit = enterUnit.value.second
+            val localProduct = ProductClass(
+                idProduct = product.idProduct,
+                basketId = product.basketId,
+                article = ArticleClass(
+                    idArticle = product.article.idArticle,
+                    nameArticle = product.article.nameArticle,
+                    unitA = UnitEntity( idUnit = enterUnit.value.first,nameUnit = enterUnit.value.second),
+                    section = product.article.section,
+                    isSelected = product.article.isSelected,
+                    position = product.article.position,
+                ),
+                value = enterValue.value.toDouble(),
+                putInBasket = product.putInBasket,
+                isSelected = product.isSelected,
+                position = product.position
+            )
+
+
+            TextButtonOK( onConfirm = { onConfirm(localProduct) })
         }
     )
 }

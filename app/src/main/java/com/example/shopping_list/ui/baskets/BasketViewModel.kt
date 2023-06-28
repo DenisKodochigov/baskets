@@ -38,7 +38,7 @@ class BasketViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListBasket() }.fold(
                 onSuccess = { _basketScreenState.update { currentState ->
-                    currentState.copy(baskets = it as MutableList<Basket>) } },
+                    currentState.copy(baskets = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -48,7 +48,7 @@ class BasketViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeNameBasket(basket) }.fold(
                 onSuccess = { _basketScreenState.update { currentState ->
-                    currentState.copy(baskets = it as MutableList<Basket>) } },
+                    currentState.copy(baskets = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -58,7 +58,7 @@ class BasketViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.deleteBasket(basketId) }.fold(
                 onSuccess = { _basketScreenState.update { currentState ->
-                    currentState.copy(baskets = it as MutableList<Basket>) } },
+                    currentState.copy( baskets = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -68,7 +68,7 @@ class BasketViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.addBasket(basketName) }.fold(
                 onSuccess = {_basketScreenState.update { currentState ->
-                    currentState.copy(baskets = it as MutableList<Basket>) }},
+                    currentState.copy( baskets = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }

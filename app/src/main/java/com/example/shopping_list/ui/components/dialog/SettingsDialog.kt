@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
+import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.shopping_list.ui.components.MyTextH2
@@ -53,7 +54,8 @@ fun LayoutAddEditUnit( unitA: MutableState<UnitA>)
 
     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
         MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameUnit, "text")
-        unitA.value.nameUnit = enterNameUnit.value
+//        unitA.value.nameUnit = enterNameUnit.value
+        unitA.value = UnitEntity(nameUnit = enterNameUnit.value)
         Spacer(Modifier.height(12.dp))
     }
 }

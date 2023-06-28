@@ -8,11 +8,12 @@ import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
 import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.ArticleClass
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
+import com.example.shopping_list.entity.ProductClass
 import com.example.shopping_list.entity.UnitA
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -111,18 +112,37 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     }
 
     /** Product*/
+//    fun addProduct(product: Product): List<Product> {
+//        if (product.basketId > 0L ) {
+//            product.article.idArticle = getAddArticle(product.article as ArticleEntity)?.idArticle ?: 0
+//            if (product.article.idArticle != 0L) {
+//                if (dataDao.checkArticleInBasket(product.basketId, product.article.idArticle) == null) {
+//                    dataDao.addProduct(
+//                        ProductEntity(
+//                            value = product.value,
+//                            basketId = product.basketId,
+//                            articleId = product.article.idArticle,
+//                            position = product.position
+//                        )
+//                    )
+//                }  else {
+//                    throw IllegalArgumentException("error_addProduct")
+//                }
+//            }
+//        }
+//        return getListProducts(product.basketId)
+//    }
     fun addProduct(product: Product): List<Product> {
         if (product.basketId > 0L ) {
-            product.article.idArticle = getAddArticle(product.article as ArticleEntity)?.idArticle ?: 0
-            if (product.article.idArticle != 0L) {
-                if (dataDao.checkArticleInBasket(product.basketId, product.article.idArticle) == null) {
+            val idArticle = getAddArticle(product.article as ArticleEntity)?.idArticle ?: 0
+            if (idArticle != 0L) {
+                if (dataDao.checkArticleInBasket(product.basketId, idArticle) == null) {
                     dataDao.addProduct(
                         ProductEntity(
                             value = product.value,
                             basketId = product.basketId,
-                            articleId = product.article.idArticle,
-                            position = product.position
-                        )
+                            articleId = idArticle,
+                            position = product.position )
                     )
                 }  else {
                     throw IllegalArgumentException("error_addProduct")
@@ -131,10 +151,12 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         }
         return getListProducts(product.basketId)
     }
-
     fun getListProducts(basketId: Long): List<Product>{
-        return if (basketId > 0) dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
-                else emptyList()
+
+        val  listObj = dataDao.getListProduct(basketId)
+        return listObj.map {  item -> mapProduct(item) }
+//        return if (basketId > 0) dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
+//                else emptyList()
     }
 
     fun putProductInBasket(product: Product, basketId: Long): List<Product>{
@@ -198,24 +220,38 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         }
     }
     fun getAddArticle(article: ArticleEntity): ArticleEntity? {
-        article.unitId = getAddUnit(article.unitA as UnitEntity).idUnit
-        article.sectionId = getAddSection(article.section as SectionEntity).idSection
-        article.nameArticle = toUpFirstChar(article.nameArticle)
-        if (article.idArticle == 0L && article.nameArticle != "") {
-                article.idArticle = dataDao.addArticle(article)
-        }
-        return if (article.idArticle == 0L) null else article
+        val localArticle = ArticleEntity(
+            unitId = getAddUnit(article.unitA as UnitEntity).idUnit,
+            sectionId = getAddSection(article.section as SectionEntity).idSection,
+            nameArticle = toUpFirstChar(article.nameArticle),
+            idArticle = if (article.idArticle == 0L && article.nameArticle != "") dataDao.addArticle(article)
+                        else article.idArticle
+        )
+        return if (localArticle.idArticle == 0L) null else localArticle
     } //&&
 
-    fun changeArticle(articleEntity: ArticleEntity): List<Article>{
-        articleEntity.unitId = getAddUnit(articleEntity.unitA as UnitEntity).idUnit
-        articleEntity.sectionId = getAddSection(articleEntity.section as SectionEntity).idSection
-        dataDao.changeArticle(articleEntity)
+    fun changeArticle(article: ArticleEntity): List<Article>{
+
+        val localArticle = ArticleEntity(
+            unitId = getAddUnit(article.unitA as UnitEntity).idUnit,
+            sectionId = getAddSection(article.section).idSection,
+            nameArticle = toUpFirstChar(article.nameArticle),
+            idArticle = article.idArticle,
+            position = article.position
+        )
+        dataDao.changeArticle(localArticle)
         return getListArticle()
     }
-
+    fun changeSectionSelectedProduct(productList: List<Product>, idSection: Long): List<Product>{
+        val articlesId = productList.filter { it.isSelected }.map { it.article.idArticle }
+        dataDao.changeSectionArticle( articlesId, idSection )
+        return if (productList[0].basketId > 0) {
+            buildPositionProduct(productList[0].basketId)
+            getListProducts(productList[0].basketId)
+        } else emptyList()
+    }
     fun changeSectionArticle(idSection: Long, articlesId: List<Long>): List<Article>{
-        if (idSection > 0) dataDao.changeSectionArticle(idSection, articlesId)
+        if (idSection > 0) dataDao.changeSectionArticle( articlesId, idSection )
         return getListArticle()
     }
 
@@ -227,13 +263,17 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     private fun getAddSection(section: Section): Section {
         return if (section.idSection == 0L) {
             val id = if (section.nameSection != "") {
-                section.nameSection = toUpFirstChar( section.nameSection )
-                dataDao.addSection(section as SectionEntity)
+//                section.nameSection = toUpFirstChar( section.nameSection )
+//                dataDao.addSection(section as SectionEntity)
+                dataDao.addSection(SectionEntity(
+                    nameSection = toUpFirstChar( section.nameSection ),
+                    colorSection = section.colorSection
+                ))
             } else 1
             dataDao.getSection(id)
         } else section
     }
-    fun sectionFlow(): Flow<List<Section>> = dataDao.getSectionFlow()
+//    fun sectionFlow(): Flow<List<Section>> = dataDao.getSectionFlow()
 
     /** Unit*/
     fun getAddUnit(unitA: UnitEntity): UnitA {
@@ -249,37 +289,38 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     fun getUnits(): List<UnitA>{
         return dataDao.getUnits()
     }
-    fun unitsFlow(): Flow<List<UnitA>> = dataDao.getUnitsFlow()
+
+    //    fun unitsFlow(): Flow<List<UnitA>> = dataDao.getUnitsFlow()
     private fun mapProduct(obj: ProductObj): Product {
 
-        val product = ProductEntity(
+        return ProductClass(
             idProduct = obj.product.idProduct,
-            value = obj.product.value,
-            position = obj.product.position,
             basketId = obj.product.basketId,
+            article = ArticleClass(
+                idArticle = obj.article.article.idArticle,
+                nameArticle = obj.article.article.nameArticle,
+                unitA = obj.article.unitA,
+                section = obj.article.section,
+                isSelected = obj.article.article.isSelected,
+                position = obj.article.article.position,
+            ),
+            value = obj.product.value,
             putInBasket = obj.product.putInBasket,
-            articleId = obj.article.article.idArticle,)
-
-        product.article = ArticleEntity(
-            idArticle = obj.article.article.idArticle,
-            nameArticle = obj.article.article.nameArticle)
-        product.article.section = obj.article.section
-        product.article.unitA = obj.article.unitA
-
-        return product
+            isSelected = obj.product.isSelected,
+            position = obj.product.position,
+        )
     }
 
     private fun mapArticle(obj: ArticleObj): Article {
-        val article = ArticleEntity(
+
+        return ArticleClass(
             idArticle = obj.article.idArticle,
             nameArticle = obj.article.nameArticle,
+            unitA = obj.unitA,
+            section = obj.section,
+            isSelected = obj.article.isSelected,
             position = obj.article.position,
-            unitId = obj.unitA.idUnit,
-            sectionId = obj.section.idSection)
-        article.section = obj.section
-        article.unitA = obj.unitA
-
-        return article
+        )
     }
     private fun toUpFirstChar (text: String): String{
         return (text[0].uppercase() + text.substring(1)).trim()

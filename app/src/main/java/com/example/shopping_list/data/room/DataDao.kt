@@ -90,7 +90,7 @@ interface DataDao {
     fun setUnitInArticle(articleId: Long, unitId: Long)
 
     @Query("UPDATE tb_article SET sectionId = :id WHERE idArticle IN (:articles)")
-    fun changeSectionArticle(id: Long, articles: List<Long>)
+    fun changeSectionArticle( articles: List<Long>, id: Long)
 
     @Query("SELECT unitId FROM tb_article WHERE idArticle =:articleId")
     fun getIdUnitFromArticle(articleId: Long): Long
@@ -108,8 +108,8 @@ interface DataDao {
 
     @Query("SELECT * FROM tb_section")
     fun getSections(): List<SectionEntity>
-    @Query("SELECT * FROM tb_section")
-    fun getSectionFlow(): Flow<List<SectionEntity>>
+//    @Query("SELECT * FROM tb_section")
+//    fun getSectionFlow(): Flow<List<SectionEntity>>
     @Insert
     fun addSection(section: SectionEntity): Long
     @Query("SELECT * FROM tb_section WHERE idSection = :id")
@@ -127,8 +127,8 @@ interface DataDao {
 
     @Query("SELECT * FROM tb_unit WHERE idUnit = :id")
     fun getUnit(id: Long): UnitEntity
-    @Query("SELECT * FROM tb_unit")
-    fun getUnitsFlow(): Flow<List<UnitEntity>>
+//    @Query("SELECT * FROM tb_unit")
+//    fun getUnitsFlow(): Flow<List<UnitEntity>>
     @Query("DELETE FROM tb_unit WHERE idUnit IN (:listId)")
     fun deleteUnits(listId: List<Long>)
     @Query("DELETE FROM tb_unit WHERE idUnit = :id")

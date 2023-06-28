@@ -35,6 +35,7 @@ import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.ArticleClass
 import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.components.dialog.EditArticleDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
@@ -389,14 +390,16 @@ fun LayoutAddEditArticle(
         }
         Spacer(Modifier.height(36.dp))
 
-        val article = ArticleEntity(
+        val article = ArticleClass(
             idArticle = enterArticle.value.first,
             nameArticle = enterArticle.value.second,
-            sectionId = enterSection.value.first,
-            unitId = enterUnit.value.first
+            section = SectionEntity(enterSection.value.first, enterSection.value.second),
+            unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second),
+            isSelected = false,
+            position = 0
         )
-        article.section = SectionEntity(enterSection.value.first, enterSection.value.second)
-        article.unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second)
+//        article.section = SectionEntity(enterSection.value.first, enterSection.value.second)
+//        article.unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second)
 
         TextButtonOK(
             enabled = enterArticle.value.second != "",

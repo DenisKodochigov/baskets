@@ -20,6 +20,7 @@ import com.example.shopping_list.R
 import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.ArticleClass
 import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitA
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
@@ -66,22 +67,27 @@ fun LayoutAddEditArticle(
     val enterUnit = remember{
         mutableStateOf( Pair(article.value.unitA.idUnit,article.value.unitA.nameUnit)) }
 
-    article.value.unitA = if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
-        UnitEntity(nameUnit = enterUnit.value.second, idUnit = 0L)
-    } else {
-        if (listUnit.isNotEmpty()) {
-            listUnit.find { it.idUnit == enterUnit.value.first } ?: listUnit[0]}
-        else UnitEntity(nameUnit = "")
-    }
+    article.value = ArticleClass(
+        idArticle = article.value.idArticle,
+        nameArticle = enterNameArticle.value,
+        unitA = if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
+            UnitEntity(nameUnit = enterUnit.value.second, idUnit = 0L)
+        } else {
+            if (listUnit.isNotEmpty()) {
+                listUnit.find { it.idUnit == enterUnit.value.first } ?: listUnit[0]}
+            else UnitEntity(nameUnit = "")
+        },
+        section = if (enterSection.value.first == 0L && enterSection.value.second != "") {
+            SectionEntity(nameSection = enterSection.value.second, idSection = 0L)
+        } else {
+            if (listSection.isNotEmpty()) {
+                listSection.find { it.idSection == enterSection.value.first } ?: listSection[0]}
+            else SectionEntity(nameSection = "")
+        },
+        isSelected = article.value.isSelected,
+        position = article.value.position,
+    )
 
-    article.value.section = if (enterSection.value.first == 0L && enterSection.value.second != "") {
-        SectionEntity(nameSection = enterSection.value.second, idSection = 0L)
-    } else {
-        if (listSection.isNotEmpty()) {
-            listSection.find { it.idSection == enterSection.value.first } ?: listSection[0]}
-        else SectionEntity(nameSection = "")
-    }
-    article.value.nameArticle = enterNameArticle.value
 
     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
         MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameArticle, "text")

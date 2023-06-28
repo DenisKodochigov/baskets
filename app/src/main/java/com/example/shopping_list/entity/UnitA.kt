@@ -1,7 +1,7 @@
 package com.example.shopping_list.entity
 
 interface UnitA {
-    var idUnit: Long
-    var nameUnit: String
+    val idUnit: Long
+    val nameUnit: String
     var isSelected: Boolean
 }

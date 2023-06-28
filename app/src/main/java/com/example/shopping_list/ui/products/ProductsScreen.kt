@@ -57,6 +57,7 @@ import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
+import com.example.shopping_list.entity.ArticleClass
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.components.ButtonMove
 import com.example.shopping_list.ui.components.FabAnimation
@@ -142,6 +143,7 @@ fun LayoutProductsScreen(
     if (isSelectedId.value > 0L) {
         val item = itemList.find { it.idProduct == isSelectedId.value }
         if (item != null) { item.isSelected = !item.isSelected }
+//        log("${itemList[2].article.nameArticle} is selected ${itemList[2].isSelected}")
         isSelectedId.value = 0
     }
     if (unSelected.value) {
@@ -223,7 +225,7 @@ fun LazyColumnProduct(
             }
         )
     }
-
+    if (uiState.products.isNotEmpty()) log("LazyColumnProduct ${uiState.products[2].article.nameArticle} # ${uiState.products[2].article.section.idSection} ")
     val listSection = createDoubleListProduct(uiState.products)
 
     LazyColumn(
@@ -445,14 +447,14 @@ fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -
             )
         }
         Spacer(Modifier.height(36.dp))
-        val article = ArticleEntity(
+        val article = ArticleClass(
             idArticle = enterArticle.value.first,
             nameArticle = enterArticle.value.second,
-            sectionId = enterSection.value.first,
-            unitId = enterUnit.value.first
+            section = SectionEntity(enterSection.value.first, enterSection.value.second),
+            unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second),
+            isSelected = false,
+            position = 0,
         )
-        article.section = SectionEntity(enterSection.value.first, enterSection.value.second)
-        article.unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second)
 
         val product = ProductEntity(
             articleId = article.idArticle,
