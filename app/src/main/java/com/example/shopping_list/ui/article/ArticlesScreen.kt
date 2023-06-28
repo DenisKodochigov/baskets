@@ -3,7 +3,6 @@ package com.example.shopping_list.ui.article
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
@@ -162,7 +160,6 @@ fun LayoutArticleScreen(
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun LazyColumnArticle(
     modifier: Modifier = Modifier,
@@ -173,8 +170,6 @@ fun LazyColumnArticle(
 ) {
     val listState = rememberLazyListState()
     val editArticle: MutableState<Article?> = remember { mutableStateOf(null) }
-    val firstItem = remember { mutableStateOf(Pair<Int, Long>(0, 0)) }
-    val coroutineScope = rememberCoroutineScope()
 
     if (editArticle.value != null) {
         EditArticleDialog(
@@ -213,7 +208,6 @@ fun LazyColumnArticle(
                 HeaderSection(text = item[0].section.nameSection, modifier = Modifier)
                 LayoutColumArticles(
                     item,
-                    doDeleteSelected,
                     { article -> editArticle.value = article },
                     doSelected)
             }
@@ -225,7 +219,6 @@ fun LazyColumnArticle(
 @Composable
 fun LayoutColumArticles(
     articles: List<Article>,
-    doDeleteSelected: (List<Article>) -> Unit,
     editArticle: (Article) -> Unit,
     doSelected: (Long) -> Unit
 ) {

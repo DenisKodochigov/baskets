@@ -53,7 +53,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.ProductEntity
 import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
@@ -72,10 +71,10 @@ import com.example.shopping_list.ui.components.dialog.EditQuantityDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import com.example.shopping_list.ui.components.selectSectionWithArticle
 import com.example.shopping_list.ui.components.selectUnitWithArticle
-import com.example.shopping_list.ui.theme.BackgroundElementList
 import com.example.shopping_list.ui.theme.SectionColor
 import com.example.shopping_list.utils.createDoubleListProduct
 import com.example.shopping_list.utils.log
+
 @Composable
 fun ProductsScreen(
     basketId: Long,

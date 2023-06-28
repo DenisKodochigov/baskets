@@ -4,7 +4,6 @@ import androidx.room.*
 import com.example.shopping_list.data.room.tables.*
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DataDao {

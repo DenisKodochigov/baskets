@@ -134,11 +134,7 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeSectionSelectedProduct(productList, idSection) }.fold(
                 onSuccess = {
-                    _productsScreenState.update{ currentState -> currentState.copy(products = it) }
-//                    val uiState = _productsScreenState.value
-//                    uiState.products = it
-//                    _productsScreenState.value = uiState
-                },
+                    _productsScreenState.update{ currentState -> currentState.copy(products = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }

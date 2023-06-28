@@ -45,9 +45,7 @@ fun EditQuantityDialog(
         title = { MyTextH2(stringResource(R.string.change_quantity), Modifier) },
         text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
         confirmButton = {
-//            product.value = enterValue.value.toDouble()
-//            product.article.unitA.idUnit = enterUnit.value.first
-//            product.article.unitA.nameUnit = enterUnit.value.second
+
             val localProduct = ProductClass(
                 idProduct = product.idProduct,
                 basketId = product.basketId,
@@ -64,8 +62,6 @@ fun EditQuantityDialog(
                 isSelected = product.isSelected,
                 position = product.position
             )
-
-
             TextButtonOK( onConfirm = { onConfirm(localProduct) })
         }
     )
