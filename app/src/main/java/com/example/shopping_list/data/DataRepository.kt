@@ -82,13 +82,8 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
 
     fun changeSectionSelectedProduct(productList: List<Product>, idSection: Long): List<Product> {
-        val articles = mutableListOf<Article>()
-        productList.forEach {
-            if (it.isSelected) {
-                it.article.isSelected = it.isSelected
-                articles.add(it.article)
-            }
-        }
+        val articles = productList.filter { it.isSelected }
+            .map { it.article.isSelected = it.isSelected; it.article }
         changeSectionSelectedArticle(articles, idSection)
         return if (productList[0].basketId > 0) getListProducts(productList[0].basketId)
         else emptyList()

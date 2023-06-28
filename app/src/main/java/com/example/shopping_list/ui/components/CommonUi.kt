@@ -242,7 +242,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(
 }
 
 @Composable
-fun ButtonSwipe(sortingList: (Int) -> Unit) {
+fun ButtonMove(sortingList: (Int) -> Unit) {
 //    Log.d("KDS", "ButtonSwipeArticle")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(1) }

@@ -1,7 +1,6 @@
 package com.example.shopping_list.ui.article
 
 import android.annotation.SuppressLint
-import android.os.Looper
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -14,7 +13,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Edit
@@ -37,17 +35,12 @@ import com.example.shopping_list.data.room.tables.ArticleEntity
 import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.Product
 import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.components.dialog.EditArticleDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
-import com.example.shopping_list.ui.products.ElementColum
-import com.example.shopping_list.ui.products.LayoutColumProducts
+import com.example.shopping_list.ui.theme.BackgroundElementList
 import com.example.shopping_list.ui.theme.SectionColor
 import com.example.shopping_list.utils.createDoubleLisArticle
-import com.example.shopping_list.utils.createDoubleListProduct
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun ArticlesScreen(
@@ -148,7 +141,7 @@ fun LayoutArticleScreen(
                     changeArticle = changeArticle,
                     doSelected = { idItem -> isSelectedId.value = idItem })
             }
-            ButtonSwipe(movePosition)
+            ButtonMove(movePosition)
         }
         if (itemList.find { it.isSelected } != null) {
             startScreen = true
@@ -296,7 +289,7 @@ fun ElementColum( item: Article, doSelected: (Long)->Unit ){
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(6.dp))
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(BackgroundElementList)
                 .clickable { doSelected(item.idArticle) }
         ) {
             Spacer(

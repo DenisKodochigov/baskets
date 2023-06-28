@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Basket
-import com.example.shopping_list.ui.components.ButtonSwipe
+import com.example.shopping_list.ui.components.ButtonMove
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.TextButtonOK
 import com.example.shopping_list.ui.components.dialog.EditBasketName
@@ -129,7 +129,7 @@ fun LayoutBasketsScreen(
                 if (!bottomSheetVisible.value) Spacer(Modifier.weight(1f))
                 LazyColumnBasket(itemList, onClickBasket, deleteBasket, changeNameBasket)
             }
-            ButtonSwipe(refreshPosition)
+            ButtonMove(refreshPosition)
         }
     }
  }
