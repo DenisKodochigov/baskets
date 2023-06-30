@@ -78,17 +78,17 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
     debugImplementation 'androidx.compose.ui:ui-tooling:1.4.3'
     //Adaptive
-    implementation 'androidx.compose.material3:material3-window-size-class:1.1.0'
+    implementation 'androidx.compose.material3:material3-window-size-class:1.1.1'
 
     //LifeCycle
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'androidx.fragment:fragment-ktx:1.6.0'
     // Room
-    implementation 'androidx.room:room-runtime:2.5.1'
-    implementation 'androidx.room:room-ktx:2.5.1'
-    implementation 'androidx.room:room-rxjava2:2.5.1'
-    ksp 'androidx.room:room-compiler:2.5.1'
+    implementation 'androidx.room:room-runtime:2.5.2'
+    implementation 'androidx.room:room-ktx:2.5.2'
+    implementation 'androidx.room:room-rxjava2:2.5.2'
+    ksp 'androidx.room:room-compiler:2.5.2'
     // Hilt dependencies
     implementation 'com.google.dagger:hilt-android:2.46.1'
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'

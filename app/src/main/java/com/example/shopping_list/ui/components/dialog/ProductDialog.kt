@@ -16,14 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.ProductEntity
-import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.ArticleClass
-import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.entity.ProductClass
-import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.entity.UnitApp
+import com.example.shopping_list.entity.interfaces.SectionInterface
+import com.example.shopping_list.entity.interfaces.UnitInterface
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIconClearing
 import com.example.shopping_list.ui.components.MyTextH2
@@ -32,7 +29,7 @@ import com.example.shopping_list.ui.components.TextButtonOK
 @Composable
 fun EditQuantityDialog(
     product: Product,
-    listUnit: List<UnitA>,
+    listUnit: List<UnitApp>,
     onConfirm: (Product) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -46,13 +43,13 @@ fun EditQuantityDialog(
         text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
         confirmButton = {
 
-            val localProduct = ProductClass(
+            val localProduct = Product(
                 idProduct = product.idProduct,
                 basketId = product.basketId,
-                article = ArticleClass(
+                article = Article(
                     idArticle = product.article.idArticle,
                     nameArticle = product.article.nameArticle,
-                    unitA = UnitEntity( idUnit = enterUnit.value.first,nameUnit = enterUnit.value.second),
+                    unitA = UnitApp( idUnit = enterUnit.value.first,nameUnit = enterUnit.value.second),
                     section = product.article.section,
                     isSelected = product.article.isSelected,
                     position = product.article.position,
@@ -71,7 +68,7 @@ fun EditQuantityDialog(
 fun EditQuantityDialogLayout(
     enterValue: MutableState<String>,
     enterUnit: MutableState<Pair<Long, String>>,
-    listUnit: List<UnitA>
+    listUnit: List<UnitInterface>
 ) {
 
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
@@ -100,7 +97,7 @@ fun EditQuantityDialogLayout(
 
 @Composable
 fun SelectSectionDialog(
-    listSection: List<Section>,
+    listSection: List<SectionInterface>,
     onConfirm: (Long) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -118,7 +115,7 @@ fun SelectSectionDialog(
 @Composable
 fun SelectSectionDialogLayout(
     enterSection: MutableState<Pair<Long, String>>,
-    listSection: List<Section>
+    listSection: List<SectionInterface>
 ) {
 
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {

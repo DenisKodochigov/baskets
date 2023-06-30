@@ -30,16 +30,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.SectionEntity
-import com.example.shopping_list.data.room.tables.UnitEntity
+import com.example.shopping_list.entity.interfaces.ArticleInterface
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.ArticleClass
+import com.example.shopping_list.entity.Section
+import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.components.dialog.EditArticleDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import com.example.shopping_list.ui.theme.BackgroundElementList
 import com.example.shopping_list.ui.theme.SectionColor
-import com.example.shopping_list.utils.createDoubleLisArticle
+import com.example.shopping_list.utilites.createDoubleLisArticle
 
 @Composable
 fun ArticlesScreen(
@@ -207,9 +207,9 @@ fun LazyColumnArticle(
                 .background(SectionColor)) {
                 HeaderSection(text = item[0].section.nameSection, modifier = Modifier)
                 LayoutColumArticles(
-                    item,
-                    { article -> editArticle.value = article },
-                    doSelected)
+                    articles = item,
+                    editArticle = { article -> editArticle.value = article },
+                    doSelected = doSelected)
             }
         }
     }
@@ -276,7 +276,7 @@ fun LayoutColumArticles(
 }
 
 @Composable
-fun ElementColum( item: Article, doSelected: (Long)->Unit ){
+fun ElementColum(item: ArticleInterface, doSelected: (Long)->Unit ){
     Box (Modifier.padding(horizontal = 6.dp)){
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -383,11 +383,11 @@ fun LayoutAddEditArticle(
         }
         Spacer(Modifier.height(36.dp))
 
-        val article = ArticleClass(
+        val article = Article(
             idArticle = enterArticle.value.first,
             nameArticle = enterArticle.value.second,
-            section = SectionEntity(enterSection.value.first, enterSection.value.second),
-            unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second),
+            section = Section(enterSection.value.first, enterSection.value.second),
+            unitA = UnitApp(enterUnit.value.first, enterUnit.value.second),
             isSelected = false,
             position = 0
         )

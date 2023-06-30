@@ -100,7 +100,7 @@ fun LayoutBasketsScreen(
     bottomSheetVisible: MutableState<Boolean>,
     onClickBasket: (Long) -> Unit,
     refreshPosition: (Int) -> Unit,
-    changeNameBasket: (Basket) -> Unit,
+    changeNameBasket: ( Basket ) -> Unit,
     deleteBasket: (Long) -> Unit,
 ){
 //    Log.d("KDS", "New state BasketsScreenLayout, ${itemList.size}")
@@ -115,19 +115,13 @@ fun LayoutBasketsScreen(
         itemList.forEach { it.isSelected = false }
         unSelected.value = false
     }
-    Box(
-        Modifier
-            .fillMaxSize()
-//            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))
+    Box(Modifier.fillMaxSize()
     ) {
         Column(modifier = modifier.fillMaxHeight()) {
             HeaderScreen(text = stringResource(R.string.baskets), modifier)
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .weight(1f)) {
+            Column(Modifier.fillMaxHeight().weight(1f)) {
                 if (!bottomSheetVisible.value) Spacer(Modifier.weight(1f))
-                LazyColumnBasket(itemList, onClickBasket, deleteBasket, changeNameBasket)
+                LazyColumnBasket( itemList, onClickBasket, deleteBasket, changeNameBasket)
             }
             ButtonMove(refreshPosition)
         }

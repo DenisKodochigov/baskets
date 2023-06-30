@@ -53,11 +53,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.ProductEntity
-import com.example.shopping_list.data.room.tables.SectionEntity
-import com.example.shopping_list.data.room.tables.UnitEntity
-import com.example.shopping_list.entity.ArticleClass
+import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.Product
+import com.example.shopping_list.entity.Section
+import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.ButtonMove
 import com.example.shopping_list.ui.components.FabAnimation
 import com.example.shopping_list.ui.components.HeaderScreen
@@ -72,8 +71,8 @@ import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import com.example.shopping_list.ui.components.selectSectionWithArticle
 import com.example.shopping_list.ui.components.selectUnitWithArticle
 import com.example.shopping_list.ui.theme.SectionColor
-import com.example.shopping_list.utils.createDoubleListProduct
-import com.example.shopping_list.utils.log
+import com.example.shopping_list.utilites.createDoubleListProduct
+import com.example.shopping_list.utilites.log
 
 @Composable
 fun ProductsScreen(
@@ -163,7 +162,7 @@ fun LayoutProductsScreen(
         doDeleteSelected(itemList)
         deleteSelected.value = false
     }
-
+//    log(" Article: ${uiState.products[2].article.nameArticle}, section: ${uiState.products[2].article.section.nameSection}")
     Box( Modifier.fillMaxSize()) {
         Column(modifier.fillMaxHeight()) {
             HeaderScreen(
@@ -177,7 +176,9 @@ fun LayoutProductsScreen(
                     uiState = uiState,
                     putProductInBasket = putProductInBasket,
                     changeProductInBasket = changeProductInBasket,
-                    doSelected = { idItem -> isSelectedId.value = idItem } )
+                    doSelected = {
+                            idItem -> isSelectedId.value = idItem
+                    } )
             }
             ButtonMove(movePosition)
         }
@@ -239,10 +240,10 @@ fun LazyColumnProduct(
                 .background(SectionColor)) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
                 LayoutColumProducts(
-                    item,
-                    putProductInBasket,
-                    { product -> editProduct.value = product },
-                    doSelected)
+                    products = item,
+                    putProductInBasket = putProductInBasket,
+                    editProductValue = { product -> editProduct.value = product },
+                    doSelected = doSelected )
             }
         }
     }
@@ -251,7 +252,7 @@ fun LazyColumnProduct(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LayoutColumProducts(
-    products: List<Product> ,
+    products: List<Product>,
     putProductInBasket: (Product) -> Unit,
     editProductValue: (Product) -> Unit,
     doSelected: (Long) -> Unit
@@ -315,6 +316,7 @@ fun ElementColum(
                 .fillMaxWidth()
                 .background(Color.White)
         ) {
+            log("product: ${item.article.nameArticle}; ${item.isSelected}")
             Spacer(
                 modifier = Modifier
                     .background(if (item.isSelected) Color.Red else Color.LightGray)
@@ -446,20 +448,19 @@ fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -
             )
         }
         Spacer(Modifier.height(36.dp))
-        val article = ArticleClass(
-            idArticle = enterArticle.value.first,
-            nameArticle = enterArticle.value.second,
-            section = SectionEntity(enterSection.value.first, enterSection.value.second),
-            unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second),
-            isSelected = false,
-            position = 0,
-        )
 
-        val product = ProductEntity(
-            articleId = article.idArticle,
+        val product = Product(
+            article = Article(
+                idArticle = enterArticle.value.first,
+                nameArticle = enterArticle.value.second,
+                section = Section(enterSection.value.first, enterSection.value.second),
+                unitA = UnitApp(enterUnit.value.first, enterUnit.value.second),
+                isSelected = false,
+                position = 0,
+            ),
             value = if (enterValue.value.isEmpty()) 1.0 else enterValue.value.toDouble()
         )
-        product.article = article
+
         TextButtonOK(
             enabled = enterArticle.value.second != "",
             onConfirm = {

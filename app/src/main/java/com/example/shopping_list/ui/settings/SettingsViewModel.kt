@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.ErrorApp
-import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.entity.interfaces.UnitInterface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +34,7 @@ class SettingsViewModel @Inject constructor(
             )
         }
     }
-    fun changeUnit(unit: UnitA) {
+    fun changeUnit(unit: UnitInterface) {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeUnit(unit) }.fold(
                 onSuccess = {
@@ -44,7 +44,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun doDeleteUnits(units: List<UnitA>) {
+    fun doDeleteUnits(units: List<UnitInterface>) {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.deleteUnits(units) }.fold(
                 onSuccess = {

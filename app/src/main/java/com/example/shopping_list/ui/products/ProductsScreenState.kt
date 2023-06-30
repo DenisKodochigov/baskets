@@ -1,14 +1,14 @@
 package com.example.shopping_list.ui.products
 
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.entity.Section
+import com.example.shopping_list.entity.UnitApp
 
 data class ProductsScreenState(
     var products: List<Product> = emptyList(),
     val articles: List<Article> = emptyList(),
     val sections: List<Section> = emptyList(),
-    val unitA: List<UnitA> = emptyList(),
+    val unitA: List<UnitApp> = emptyList(),
     val nameBasket: String = ""
 )

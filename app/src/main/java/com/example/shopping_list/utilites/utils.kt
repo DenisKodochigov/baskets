@@ -1,4 +1,4 @@
-package com.example.shopping_list.utils
+package com.example.shopping_list.utilites
 
 import android.util.Log
 import com.example.shopping_list.entity.Article

@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.ErrorApp
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.utils.log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -89,7 +88,7 @@ class ProductViewModel  @Inject constructor(
     fun addProduct(product: Product, basketId: Long){
         product.basketId = basketId
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.addProduct(product) }.fold(
+            kotlin.runCatching { dataRepository.addProduct( product) }.fold(
                 onSuccess = {_productsScreenState.update { currentState ->
                     currentState.copy(products = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}

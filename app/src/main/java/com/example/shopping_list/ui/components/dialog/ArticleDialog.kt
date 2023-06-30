@@ -17,12 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.SectionEntity
-import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.ArticleClass
 import com.example.shopping_list.entity.Section
-import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.entity.UnitApp
+import com.example.shopping_list.entity.interfaces.ArticleInterface
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.shopping_list.ui.components.MyTextH2
@@ -31,9 +29,9 @@ import com.example.shopping_list.ui.components.TextButtonOK
 @Composable
 fun EditArticleDialog(
     article: Article,
-    listUnit: List<UnitA>,
+    listUnit: List<UnitApp>,
     listSection: List<Section>,
-    onConfirm: (Article) -> Unit,
+    onConfirm: (ArticleInterface) -> Unit,
     onDismiss: () -> Unit,)
 {
     val articleLocal = remember{ mutableStateOf(article) }
@@ -47,7 +45,7 @@ fun EditArticleDialog(
 
 @Composable
 fun EditArticleDialogLayout(
-    article: MutableState<Article>, listUnit: List<UnitA>, listSection: List<Section>,){
+    article: MutableState<Article>, listUnit: List<UnitApp>, listSection: List<Section>,){
     Column {
         Text(text = "")
         LayoutAddEditArticle(article = article, listUnit = listUnit, listSection = listSection)
@@ -57,7 +55,7 @@ fun EditArticleDialogLayout(
 @Composable
 fun LayoutAddEditArticle(
     article: MutableState<Article>,
-    listUnit: List<UnitA>,
+    listUnit: List<UnitApp>,
     listSection: List<Section>)
 {
 //    Log.d("KDS", "LayoutAddEditArticle")
@@ -67,22 +65,22 @@ fun LayoutAddEditArticle(
     val enterUnit = remember{
         mutableStateOf( Pair(article.value.unitA.idUnit,article.value.unitA.nameUnit)) }
 
-    article.value = ArticleClass(
+    article.value = Article(
         idArticle = article.value.idArticle,
         nameArticle = enterNameArticle.value,
         unitA = if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
-            UnitEntity(nameUnit = enterUnit.value.second, idUnit = 0L)
+            UnitApp(nameUnit = enterUnit.value.second, idUnit = 0L)
         } else {
             if (listUnit.isNotEmpty()) {
                 listUnit.find { it.idUnit == enterUnit.value.first } ?: listUnit[0]}
-            else UnitEntity(nameUnit = "")
+            else UnitApp(nameUnit = "")
         },
         section = if (enterSection.value.first == 0L && enterSection.value.second != "") {
-            SectionEntity(nameSection = enterSection.value.second, idSection = 0L)
+            Section(nameSection = enterSection.value.second, idSection = 0L)
         } else {
             if (listSection.isNotEmpty()) {
                 listSection.find { it.idSection == enterSection.value.first } ?: listSection[0]}
-            else SectionEntity(nameSection = "")
+            else Section(nameSection = "")
         },
         isSelected = article.value.isSelected,
         position = article.value.position,

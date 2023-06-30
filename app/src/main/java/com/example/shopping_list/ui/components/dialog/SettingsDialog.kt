@@ -15,16 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.UnitEntity
-import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.data.room.tables.UnitTable
+import com.example.shopping_list.entity.interfaces.UnitInterface
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.shopping_list.ui.components.MyTextH2
 import com.example.shopping_list.ui.components.TextButtonOK
 
 @Composable
 fun EditUnitDialog(
-    unitA: UnitA,
-    onConfirm: (UnitA) -> Unit,
+    unitA: UnitInterface,
+    onConfirm: (UnitInterface) -> Unit,
     onDismiss: () -> Unit,)
 {
     val unitLocal = remember{ mutableStateOf(unitA) }
@@ -40,7 +40,7 @@ fun EditUnitDialog(
 }
 
 @Composable
-fun EditUnitDialogLayout( unitA: MutableState<UnitA>){
+fun EditUnitDialogLayout( unitA: MutableState<UnitInterface>){
     Column {
         Text(text = "")
         LayoutAddEditUnit( unitA = unitA)
@@ -48,14 +48,14 @@ fun EditUnitDialogLayout( unitA: MutableState<UnitA>){
 }
 
 @Composable
-fun LayoutAddEditUnit( unitA: MutableState<UnitA>)
+fun LayoutAddEditUnit( unitA: MutableState<UnitInterface>)
 {
     val enterNameUnit = remember{ mutableStateOf( unitA.value.nameUnit )}
 
     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
         MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameUnit, "text")
 //        unitA.value.nameUnit = enterNameUnit.value
-        unitA.value = UnitEntity(nameUnit = enterNameUnit.value)
+        unitA.value = UnitTable(nameUnit = enterNameUnit.value)
         Spacer(Modifier.height(12.dp))
     }
 }

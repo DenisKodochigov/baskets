@@ -11,15 +11,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.shopping_list.R
-import com.example.shopping_list.entity.Basket
+import com.example.shopping_list.entity.interfaces.BasketInterface
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.shopping_list.ui.components.MyTextH2
 import com.example.shopping_list.ui.components.TextButtonOK
 
 @Composable
 fun EditBasketName(
-    basket: Basket,
-    onConfirm: (Basket) -> Unit,
+    basket: BasketInterface,
+    onConfirm: (BasketInterface) -> Unit,
     onDismiss: () -> Unit,)
 {
     val nameBasket = remember{ mutableStateOf(basket.nameBasket) }

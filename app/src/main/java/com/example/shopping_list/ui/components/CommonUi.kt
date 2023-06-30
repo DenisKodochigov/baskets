@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
-import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.interfaces.ArticleInterface
 import com.example.shopping_list.ui.theme.ButtonColorsMy
 
 @Composable
@@ -276,7 +276,7 @@ fun ButtonCircle( modifier: Modifier, iconButton: ImageVector, onClick: () -> Un
 
 
 @Composable
-fun selectSectionWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
+fun selectSectionWithArticle(id: Long, listArticle: List<ArticleInterface>): Pair<Long, String> {
     val article = listArticle.find { it.idArticle == id }
     return if (article != null) {
         Pair(article.section.idSection, article.section.nameSection)
@@ -284,7 +284,7 @@ fun selectSectionWithArticle(id: Long, listArticle: List<Article>): Pair<Long, S
 }
 
 @Composable
-fun selectUnitWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
+fun selectUnitWithArticle(id: Long, listArticle: List<ArticleInterface>): Pair<Long, String> {
     val article = listArticle.find { it.idArticle == id }
     return if (article != null) Pair(article.unitA.idUnit, article.unitA.nameUnit)
     else Pair(0L, "")

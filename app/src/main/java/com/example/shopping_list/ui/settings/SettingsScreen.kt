@@ -44,8 +44,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.UnitEntity
-import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.data.room.tables.UnitTable
+import com.example.shopping_list.entity.interfaces.UnitInterface
 import com.example.shopping_list.ui.components.ButtonCircle
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.MyTextH1
@@ -69,8 +69,8 @@ fun SettingsScreen() {
 fun LayoutSettingsScreen(
     modifier: Modifier = Modifier,
     uiState: SettingsScreenState,
-    doChangeUnit: (UnitA) -> Unit,
-    doDeleteUnits: (List<UnitA>) -> Unit,
+    doChangeUnit: (UnitInterface) -> Unit,
+    doDeleteUnits: (List<UnitInterface>) -> Unit,
 ){
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
     val itemList = uiState.unitA
@@ -102,11 +102,11 @@ fun LayoutSettingsScreen(
 @Composable
 fun LazyColumnUnits(
     uiState: SettingsScreenState,
-    doDeleteSelected: (List<UnitA>) -> Unit,
-    changeUnit: (UnitA) -> Unit,
+    doDeleteSelected: (List<UnitInterface>) -> Unit,
+    changeUnit: (UnitInterface) -> Unit,
     doSelected: (Long) -> Unit
 ) {
-    val editUnit: MutableState<UnitA?> = remember { mutableStateOf(null) }
+    val editUnit: MutableState<UnitInterface?> = remember { mutableStateOf(null) }
 
     if (editUnit.value != null) {
         EditUnitDialog(
@@ -155,7 +155,7 @@ fun LazyColumnUnits(
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            ButtonCircle(Modifier, Icons.Filled.AddCircle) { editUnit.value = UnitEntity() }
+            ButtonCircle(Modifier, Icons.Filled.AddCircle) { editUnit.value = UnitTable() }
             Spacer(modifier = Modifier.width(12.dp))
             ButtonCircle(Modifier, Icons.Filled.ChangeCircle) {
                 uiState.unitA.find { it.isSelected }?.let { editUnit.value = it } }
