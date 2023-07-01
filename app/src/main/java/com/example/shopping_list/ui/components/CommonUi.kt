@@ -1,5 +1,6 @@
 package com.example.shopping_list.ui.components
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -7,12 +8,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Dns
+import androidx.compose.material.icons.filled.RemoveDone
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -22,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Article
+import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.ui.theme.ButtonColorsMy
 
 @Composable
@@ -36,7 +43,10 @@ fun HeaderScreen(text: String, modifier: Modifier) {
 fun HeaderSection(text: String, modifier: Modifier) {
     val typography = MaterialTheme.typography
     Spacer(modifier = Modifier.height(12.dp))
-    Row(modifier.fillMaxWidth().padding(start = 12.dp), horizontalArrangement = Arrangement.Start) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp), horizontalArrangement = Arrangement.Start) {
         Text(text, style = typography.h2)
     }
 }
@@ -241,8 +251,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(
     )
 }
 
-@Composable
-fun ButtonMove(sortingList: (Int) -> Unit) {
+@Composable fun ButtonMove(sortingList: (Int) -> Unit) {
 //    Log.d("KDS", "ButtonSwipeArticle")
     Row(Modifier.fillMaxWidth()) {
         ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(1) }
@@ -251,8 +260,7 @@ fun ButtonMove(sortingList: (Int) -> Unit) {
     }
 }
 
-@Composable
-fun ButtonMove(modifier: Modifier, icon: ImageVector, onClick: () -> Unit) {
+@Composable fun ButtonMove(modifier: Modifier, icon: ImageVector, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier,   //.height(36.dp),
@@ -262,8 +270,7 @@ fun ButtonMove(modifier: Modifier, icon: ImageVector, onClick: () -> Unit) {
     }
 }
 
-@Composable
-fun ButtonCircle( modifier: Modifier, iconButton: ImageVector, onClick: () -> Unit) {
+@Composable fun ButtonCircle( modifier: Modifier, iconButton: ImageVector, onClick: () -> Unit) {
     val radius = 25.dp
     IconButton (
         modifier = modifier
@@ -275,35 +282,66 @@ fun ButtonCircle( modifier: Modifier, iconButton: ImageVector, onClick: () -> Un
 }
 
 
-@Composable
-fun selectSectionWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
+@Composable fun selectSectionWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
     val article = listArticle.find { it.idArticle == id }
     return if (article != null) {
         Pair(article.section.idSection, article.section.nameSection)
     } else Pair(0L, "")
 }
 
-@Composable
-fun selectUnitWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
+@Composable fun selectUnitWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
     val article = listArticle.find { it.idArticle == id }
     return if (article != null) Pair(article.unitA.idUnit, article.unitA.nameUnit)
     else Pair(0L, "")
 }
 
-//@OptIn(ExperimentalComposeUiApi::class)
-//@Composable
-//fun onAddIconEditText( onNewArticle: (String) -> Unit, nameNewArticle: String): String {
-//    val keyboardController = LocalSoftwareKeyboardController.current
-//    val localFocusManager = LocalFocusManager.current
-//    Icon(
-//        Icons.Filled.Add,
-//        contentDescription = "Add",
-//        Modifier.clickable(
-//            onClick = {
-//                keyboardController?.hide()
-//                onNewArticle(nameNewArticle)
-//                localFocusManager.clearFocus() }
-//        )
-//    )
-//    return ""
-//}
+@Composable fun showFABs(startScreen: Boolean, isSelected: Boolean, modifier: Modifier, doDeleted: ()->Unit,
+             doChangeSection: ()->Unit, doUnSelected:()->Unit):Boolean {
+    var startScreenLocal = startScreen
+    if (isSelected) {
+        startScreenLocal = true
+        ShowFABs_(show = true,
+            modifier = modifier,
+            doDeleted = doDeleted,
+            doChangeSection = doChangeSection,
+            doUnSelected = doUnSelected)
+    } else if (startScreenLocal){
+        ShowFABs_(show = false, doDeleted = {}, doChangeSection = {}, doUnSelected = {}, modifier = modifier)
+    }
+    return startScreenLocal
+}
+
+@Composable fun ShowFABs_(show: Boolean, modifier: Modifier, doDeleted: ()->Unit, doChangeSection: ()->Unit, doUnSelected:()->Unit){
+    Box( modifier ) {
+        FabAnimation(show = show, offset = 0.dp, icon = Icons.Filled.Delete, onClick = doDeleted)
+        FabAnimation(show = show, offset = 64.dp, icon = Icons.Filled.Dns, onClick = doChangeSection)
+        FabAnimation(show = show, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = doUnSelected)
+    }
+}
+
+@Composable fun SwitchSorting(doChangeSorting: (SortingBy) -> Unit){
+    Row( Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically )
+    {
+        val checkedState = remember { mutableStateOf(false) }
+        Text(text = stringResource(R.string.by_name), style = MaterialTheme.typography.h3 )
+        Spacer(Modifier.width(30.dp))
+        Switch(
+            checked = checkedState.value,
+            modifier = Modifier.height(12.dp).width(30.dp),
+            onCheckedChange = {
+                checkedState.value = it
+                if (checkedState.value) doChangeSorting(SortingBy.BY_SECTION)
+                else doChangeSorting(SortingBy.BY_NAME)
+            },
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color(0xFF5E5E5E),
+                checkedTrackColor = Color(0xFF919191),
+                uncheckedThumbColor = Color(0xFF5E5E5E),
+                uncheckedTrackColor = Color(0xFF919191)
+            ))
+        Spacer(Modifier.width(30.dp))
+        Text(text = stringResource(R.string.by_section), style = MaterialTheme.typography.h3 )
+    }
+}
+

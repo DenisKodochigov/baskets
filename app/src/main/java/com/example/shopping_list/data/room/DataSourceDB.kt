@@ -112,35 +112,16 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     }
 
     /** Product*/
-//    fun addProduct(product: Product): List<Product> {
-//        if (product.basketId > 0L ) {
-//            product.article.idArticle = getAddArticle(product.article as ArticleEntity)?.idArticle ?: 0
-//            if (product.article.idArticle != 0L) {
-//                if (dataDao.checkArticleInBasket(product.basketId, product.article.idArticle) == null) {
-//                    dataDao.addProduct(
-//                        ProductEntity(
-//                            value = product.value,
-//                            basketId = product.basketId,
-//                            articleId = product.article.idArticle,
-//                            position = product.position
-//                        )
-//                    )
-//                }  else {
-//                    throw IllegalArgumentException("error_addProduct")
-//                }
-//            }
-//        }
-//        return getListProducts(product.basketId)
-//    }
-    fun addProduct(product: Product): List<Product> {
-        if (product.basketId > 0L ) {
+
+    fun addProduct(product: Product, basketId: Long): List<Product> {
+        if (basketId > 0L ) {
             val idArticle = getAddArticle(product.article as ArticleEntity)?.idArticle ?: 0
             if (idArticle != 0L) {
-                if (dataDao.checkArticleInBasket(product.basketId, idArticle) == null) {
+                if (dataDao.checkArticleInBasket( basketId, idArticle) == null) {
                     dataDao.addProduct(
                         ProductEntity(
                             value = product.value,
-                            basketId = product.basketId,
+                            basketId = basketId,
                             articleId = idArticle,
                             position = product.position )
                     )
@@ -149,21 +130,16 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
                 }
             }
         }
-        return getListProducts(product.basketId)
+        return getListProducts(basketId)
     }
     fun getListProducts(basketId: Long): List<Product>{
-
         val  listObj = dataDao.getListProduct(basketId)
         return listObj.map {  item -> mapProduct(item) }
-//        return if (basketId > 0) dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
-//                else emptyList()
     }
 
     fun putProductInBasket(product: Product, basketId: Long): List<Product>{
         dataDao.putProductInBasket(product.idProduct, basketId)
-//        buildPositionProduct(basketId)
         return getListProducts(basketId)
-//        return reBuildPositionProduct(basketId, 0)
     }
 
     fun setPositionProductInBasket(basketId: Long, direction: Int): List<Product>{
@@ -194,14 +170,14 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return getListArticle()
     }
 
-    fun sortingArticle(){
+    fun getListArticle(): List<Article> = dataDao.getListArticle().map { item -> mapArticle(item) }
+
+    fun buildPositionArticle(){
         reBuildPositionArticle( 0 ,
             dataDao.getListArticleSortName().map { item -> mapArticle(item) })
     }
 
-    fun getListArticle(): List<Article> = dataDao.getListArticle().map { item -> mapArticle(item) }
-
-    fun setPositionArticle( direction: Int): List<Article>{
+    fun movePositionArticle( direction: Int): List<Article>{
         reBuildPositionArticle( direction , getListArticle())
         return getListArticle()
     }
@@ -263,17 +239,12 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     private fun getAddSection(section: Section): Section {
         return if (section.idSection == 0L) {
             val id = if (section.nameSection != "") {
-//                section.nameSection = toUpFirstChar( section.nameSection )
-//                dataDao.addSection(section as SectionEntity)
-                dataDao.addSection(SectionEntity(
-                    nameSection = toUpFirstChar( section.nameSection ),
-                    colorSection = section.colorSection
-                ))
+                dataDao.addSection(SectionEntity( nameSection = toUpFirstChar( section.nameSection ),
+                    colorSection = section.colorSection ))
             } else 1
             dataDao.getSection(id)
         } else section
     }
-//    fun sectionFlow(): Flow<List<Section>> = dataDao.getSectionFlow()
 
     /** Unit*/
     fun getAddUnit(unitA: UnitEntity): UnitA {

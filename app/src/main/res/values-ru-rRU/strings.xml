@@ -29,4 +29,7 @@
     <string name="change_unit">Изменить ед.изм.</string>
     <string name="add_unit">Добавить ед.изм.</string>
     <string name="error_addProduct">Такой товар в корзине уже есть.</string>
+    <string name="by_name">По названию</string>
+    <string name="by_section">По отделу</string>
+    <string name="all">Все</string>
 </resources>

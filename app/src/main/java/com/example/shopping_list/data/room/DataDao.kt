@@ -91,6 +91,10 @@ interface DataDao {
     @Query("UPDATE tb_article SET sectionId = :id WHERE idArticle IN (:articles)")
     fun changeSectionArticle( articles: List<Long>, id: Long)
 
+
+//    @Query("UPDATE tb_article SET position = :items.first% WHERE idArticle IN (:articles)")
+//    fun setPositionArticle( items: List<Pair<Int,Long>>)
+
     @Query("SELECT unitId FROM tb_article WHERE idArticle =:articleId")
     fun getIdUnitFromArticle(articleId: Long): Long
 

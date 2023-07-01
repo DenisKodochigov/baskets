@@ -24,16 +24,16 @@ class BasketViewModel @Inject constructor(
     private val _basketScreenState = MutableStateFlow(BasketScreenState())
     val basketScreenState: StateFlow<BasketScreenState> = _basketScreenState.asStateFlow()
 
-    init {  sortingArticle() }
+//    init {  sortingArticle() }
 
-    private fun sortingArticle(){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.sortingArticle() }.fold(
-                onSuccess = {  },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-        }
-    }
+//    private fun sortingArticle(){
+//        viewModelScope.launch(Dispatchers.IO) {
+//            kotlin.runCatching { dataRepository.sortingArticle() }.fold(
+//                onSuccess = {  },
+//                onFailure = { errorApp.errorApi(it.message!!) }
+//            )
+//        }
+//    }
     fun getListBasket() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListBasket() }.fold(

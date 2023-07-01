@@ -13,9 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.RemoveDone
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,12 +32,14 @@ import com.example.shopping_list.data.room.tables.SectionEntity
 import com.example.shopping_list.data.room.tables.UnitEntity
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.ArticleClass
+import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.components.dialog.EditArticleDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import com.example.shopping_list.ui.theme.BackgroundElementList
 import com.example.shopping_list.ui.theme.SectionColor
 import com.example.shopping_list.utils.createDoubleLisArticle
+import com.example.shopping_list.utils.log
 
 @Composable
 fun ArticlesScreen(
@@ -49,7 +49,7 @@ fun ArticlesScreen(
     val viewModel: ArticleViewModel = hiltViewModel()
     viewModel.getStateArticle()
 
-    ArticleScreenCreateView(
+    ArticleScreenInitDate(
         viewModel = viewModel,
         bottomSheetVisible = bottomSheetVisible,
         bottomSheetContent = bottomSheetContent
@@ -57,17 +57,15 @@ fun ArticlesScreen(
 }
 
 @Composable
-fun ArticleScreenCreateView(
+fun ArticleScreenInitDate(
     viewModel: ArticleViewModel,
     bottomSheetVisible: MutableState<Boolean>,
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>
 ) {
     val uiState by viewModel.articleScreenState.collectAsState()
     bottomSheetContent.value = {
-        LayoutAddEditArticle(
-            uiState = uiState,
-            onAddArticle = { article -> viewModel.addArticle(article) }
-        )
+        LayoutAddEditArticle(uiState = uiState,
+            onAddArticle = { article -> viewModel.addArticle(article) })
     }
 
     LayoutArticleScreen(
@@ -75,10 +73,9 @@ fun ArticleScreenCreateView(
         uiState = viewModel.articleScreenState.collectAsState().value,
         changeArticle = { article -> viewModel.changeArticle(article) },
         doChangeSectionSelected = { articles, idSection ->
-            viewModel.changeSectionSelectedArticle(articles, idSection)
-        },
-        doDeleteSelected = { articles -> viewModel.deleteSelectedArticle(articles) },
-        movePosition = { direction -> viewModel.movePositionArticle(direction) },
+            viewModel.changeSectionSelected(articles, idSection) },
+        doDeleteSelected = { articles -> viewModel.deleteSelected(articles) },
+        movePosition = { direction -> viewModel.movePosition(direction) },
         bottomSheetVisible = bottomSheetVisible
     )
 }
@@ -94,16 +91,17 @@ fun LayoutArticleScreen(
     doDeleteSelected: (List<Article>) -> Unit,
     movePosition: (Int) -> Unit,
 ) {
+    log("LayoutArticleScreen")
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
+    val sortingBy: MutableState<SortingBy> = remember { mutableStateOf(SortingBy.BY_NAME) }
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
 
     val itemList = uiState.article
     if (isSelectedId.value > 0L) {
-        val item = itemList.find { it.idArticle == isSelectedId.value }
-        if (item != null) item.isSelected = !item.isSelected
+        itemList.find { it.idArticle == isSelectedId.value }?.let { it1-> it1.isSelected = !it1.isSelected }
         isSelectedId.value = 0
     }
     if (unSelected.value) {
@@ -128,47 +126,41 @@ fun LayoutArticleScreen(
     Box( Modifier.fillMaxSize() ) {
         Column(modifier.fillMaxHeight()) {
             HeaderScreen(text = stringResource(R.string.product), modifier)
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .weight(1f)) {
-                if (!bottomSheetVisible.value) Spacer(modifier = Modifier.weight(1f))
+            Column( Modifier.fillMaxHeight().weight(1f)) {
+                Spacer(modifier = Modifier.weight(1f, !bottomSheetVisible.value))
                 LazyColumnArticle(
-                    modifier = modifier,
                     uiState = uiState,
-                    doDeleteSelected = doDeleteSelected,
+                    sortingBy = sortingBy,
                     changeArticle = changeArticle,
-                    doSelected = { idItem -> isSelectedId.value = idItem })
+                    doSelected = { idItem -> isSelectedId.value = idItem },
+                    doDelete = { items -> doDeleteSelected( items ) })
             }
+            SwitchSorting { item -> sortingBy.value = item }
             ButtonMove(movePosition)
         }
-        if (itemList.find { it.isSelected } != null) {
-            startScreen = true
-            Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
-                FabAnimation(show = true, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
-                FabAnimation(show = true, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeSectionSelected.value = true })
-                FabAnimation(show = true, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
-            }
-        } else if (startScreen){
-            Box(Modifier.align(alignment = Alignment.BottomCenter).height(200.dp)) {
-                FabAnimation(show = false, offset = 0.dp, icon = Icons.Filled.Delete, onClick = { deleteSelected.value = true })
-                FabAnimation(show = false, offset = 64.dp, icon = Icons.Filled.Dns, onClick = { changeSectionSelected.value = true })
-                FabAnimation(show = false, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = { unSelected.value = true })
-            }
-        }
+        startScreen = showFABs(
+            startScreen = startScreen,
+            isSelected = itemList.find { it.isSelected } != null,
+            modifier = Modifier.height(200.dp).align(alignment = Alignment.BottomCenter),
+            doDeleted = { deleteSelected.value = true },
+            doChangeSection = { changeSectionSelected.value = true },
+            doUnSelected = { unSelected.value = true }
+        )
     }
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun LazyColumnArticle(
-    modifier: Modifier = Modifier,
     uiState: ArticleScreenState,
-    doDeleteSelected: (List<Article>) -> Unit,
+    sortingBy: MutableState<SortingBy>,
     changeArticle: (Article) -> Unit,
-    doSelected: (Long) -> Unit
+    doSelected: (Long) -> Unit,
+    doDelete: (List<Article>) -> Unit
 ) {
+    log("LazyColumnArticle")
     val listState = rememberLazyListState()
+    val listSection: MutableState<List<List<Article>>> = remember { mutableStateOf(emptyList()) }
     val editArticle: MutableState<Article?> = remember { mutableStateOf(null) }
 
     if (editArticle.value != null) {
@@ -184,32 +176,25 @@ fun LazyColumnArticle(
         )
     }
 
-//    if (uiState.article.isNotEmpty()) {
-//        if (firstItem.value.first != uiState.article[0].position ||
-//            firstItem.value.second != uiState.article[0].idArticle
-//        ) {
-//            coroutineScope.launch { listState.animateScrollToItem(index = 0) }
-//            firstItem.value = Pair(uiState.article[0].position, uiState.article[0].idArticle)
-//        }
-//    }
-    val listSection = createDoubleLisArticle(uiState.article)
+    listSection.value = createDoubleLisArticle(uiState.article, sortingBy.value)
 
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.clip(RoundedCornerShape(8.dp))
+        modifier = Modifier.clip(RoundedCornerShape(8.dp))
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-        items(items = listSection)
+        items(items = listSection.value)
         { item ->
-            Column(modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(SectionColor)) {
-                HeaderSection(text = item[0].section.nameSection, modifier = Modifier)
+            Column( modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(SectionColor)) {
+                HeaderSection(text = if (sortingBy.value == SortingBy.BY_SECTION) item[0].section.nameSection
+                    else stringResource(id = R.string.all), modifier = Modifier)
                 LayoutColumArticles(
-                    item,
-                    { article -> editArticle.value = article },
-                    doSelected)
+                    uiState = uiState,
+                    articles = item,
+                    editArticle = { article -> editArticle.value = article },
+                    doSelected = doSelected,
+                    doDelete = doDelete)
             }
         }
     }
@@ -218,11 +203,14 @@ fun LazyColumnArticle(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LayoutColumArticles(
+    uiState: ArticleScreenState,
     articles: List<Article>,
     editArticle: (Article) -> Unit,
-    doSelected: (Long) -> Unit
+    doSelected: (Long) -> Unit,
+    doDelete: (List<Article>) -> Unit
 ) {
-//    log("LayoutColumProducts")
+    log("LayoutColumArticles")
+
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
@@ -233,7 +221,7 @@ fun LayoutColumArticles(
                     confirmStateChange = {
                         if (it == DismissValue.DismissedToStart) {
                             article.isSelected = true
-//                            doDeleteSelected(mutableListOf(article))
+                            doDelete(mutableListOf(article))
                         } else if (it == DismissValue.DismissedToEnd) {
                             editArticle( article )
                         }
@@ -262,13 +250,17 @@ fun LayoutColumArticles(
                         val scale by animateFloatAsState(
                             if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
                         )
-                        Box( Modifier.fillMaxSize().padding(horizontal = 12.dp),
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 12.dp),
                             contentAlignment = alignment) {
-                            Icon(icon, null, modifier = Modifier.scale(scale), tint = colorIcon)
+                            if (dismissState.progress.fraction != 1.0f)
+                                Icon(icon, null, tint = colorIcon)
                         }
                     }
                 ){
-                    ElementColum(article, doSelected)
+                    ElementColum( article, doSelected, uiState)
                 }
             }
         }
@@ -276,7 +268,8 @@ fun LayoutColumArticles(
 }
 
 @Composable
-fun ElementColum( item: Article, doSelected: (Long)->Unit ){
+fun ElementColum( item: Article, doSelected: (Long)->Unit, uiState: ArticleScreenState,){
+    log("ElementColum Articles")
     Box (Modifier.padding(horizontal = 6.dp)){
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -287,13 +280,16 @@ fun ElementColum( item: Article, doSelected: (Long)->Unit ){
                 .clickable { doSelected(item.idArticle) }
         ) {
             Spacer(
-                modifier = Modifier.width(8.dp).height(32.dp)
+                modifier = Modifier
+                    .width(8.dp)
+                    .height(32.dp)
                     .background(if (item.isSelected) Color.Red else Color.LightGray)
                     .align(Alignment.CenterVertically)
             )
             MyTextH2(
                 text = item.nameArticle,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
                     .padding(
                         start = dimensionResource(R.dimen.lazy_padding_hor),
                         top = dimensionResource(R.dimen.lazy_padding_ver),
@@ -303,7 +299,8 @@ fun ElementColum( item: Article, doSelected: (Long)->Unit ){
             Spacer(modifier = Modifier.width(4.dp))
             MyTextH2(
                 text = item.unitA.nameUnit,
-                modifier = Modifier.width(40.dp)
+                modifier = Modifier
+                    .width(40.dp)
                     .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
             )
         }
@@ -315,7 +312,7 @@ fun LayoutAddEditArticle(
     uiState: ArticleScreenState,
     onAddArticle: (Article) -> Unit
 ) {
-    Log.d("KDS", "BottomSheetContentArticle")
+//    Log.d("KDS", "BottomSheetContentArticle")
     val nameSection = stringResource(R.string.name_section)
     val stuff = stringResource(R.string.name_unit1)
     val screenHeight = LocalConfiguration.current.screenHeightDp

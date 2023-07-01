@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.ErrorApp
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.utils.log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,9 +27,9 @@ class ProductViewModel  @Inject constructor(
     fun getStateProducts(basketId: Long){
         Log.d("KDS", "ProductViewModel.getStateProducts")
         getProductsOnStart(basketId)
-        getListArticle()
-        getListSection()
-        getListUnit()
+        getArticles()
+        getSections()
+        getUnits()
         getNameBasket(basketId)
     }
 
@@ -46,7 +45,7 @@ class ProductViewModel  @Inject constructor(
         }
     }
 
-    private fun getListArticle() {
+    private fun getArticles() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListArticle() }.fold(
                 onSuccess = { _productsScreenState.update { currentState ->
@@ -56,7 +55,7 @@ class ProductViewModel  @Inject constructor(
         }
     }
 
-    private fun getListSection() {
+    private fun getSections() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getSections() }.fold(
                 onSuccess = { _productsScreenState.update { currentState ->
@@ -66,7 +65,7 @@ class ProductViewModel  @Inject constructor(
         }
     }
 
-    private fun getListUnit() {
+    private fun getUnits() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getUnits() }.fold(
                 onSuccess = {
@@ -87,17 +86,16 @@ class ProductViewModel  @Inject constructor(
     }
 
     fun addProduct(product: Product, basketId: Long){
-        product.basketId = basketId
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.addProduct(product) }.fold(
+            kotlin.runCatching { dataRepository.addProduct(product, basketId) }.fold(
                 onSuccess = {_productsScreenState.update { currentState ->
                     currentState.copy(products = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
-        getListArticle()
-        getListSection()
-        getListUnit()
+        getArticles()
+        getSections()
+        getUnits()
     }
 
     fun putProductInBasket(product: Product, basketId: Long){
@@ -120,7 +118,7 @@ class ProductViewModel  @Inject constructor(
         }
     }
 
-    fun changeProductInBasket(product: Product, basketId: Long){
+    fun changeProduct(product: Product, basketId: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeProductInBasket(product, basketId) }.fold(
                 onSuccess = {_productsScreenState.update { currentState ->
@@ -130,7 +128,7 @@ class ProductViewModel  @Inject constructor(
         }
     }
 
-    fun changeSectionSelectedProduct(productList: List<Product>, idSection: Long){
+    fun changeSectionSelected(productList: List<Product>, idSection: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeSectionSelectedProduct(productList, idSection) }.fold(
                 onSuccess = {
@@ -138,7 +136,7 @@ class ProductViewModel  @Inject constructor(
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
-        getListArticle()
+        getArticles()
     }
 
     fun deleteSelectedProducts(productList: List<Product>){

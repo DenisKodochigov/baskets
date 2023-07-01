@@ -1,11 +1,11 @@
 package com.example.shopping_list.entity
 
 data class ProductClass(
-    override var idProduct: Long,
-    override var basketId: Long,
-    override var article: Article,
-    override var value: Double,
-    override var putInBasket: Boolean,
+    override val idProduct: Long,
+    override val basketId: Long,
+    override val article: Article,
+    override val value: Double,
+    override val putInBasket: Boolean,
     override var isSelected: Boolean,
     override var position: Int
 ): Product

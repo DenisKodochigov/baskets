@@ -10,13 +10,15 @@ import com.example.shopping_list.entity.UnitA
 
 @Entity(tableName = "tb_article", indices = [Index( value = ["nameArticle"], unique = true)])
 data class ArticleEntity(
-    @PrimaryKey(autoGenerate = true) override val idArticle: Long = 0,
-    override val nameArticle: String = "",
-    override var position: Int = 0,
-    val sectionId: Long = 0,
-    val unitId: Long = 0,
+    @PrimaryKey(autoGenerate = true) override val idArticle: Long,
+    override val nameArticle: String,
+    override var position: Int,
+    val sectionId: Long,
+    val unitId: Long,
+    @Ignore override val section: Section,
+    @Ignore override val unitA: UnitA,
+    @Ignore override var isSelected: Boolean ,
 ): Article {
-    @Ignore override val section: Section = SectionEntity()
-    @Ignore override val unitA: UnitA = UnitEntity()
-    @Ignore override var isSelected: Boolean = false
+    constructor(idArticle: Long, nameArticle: String, position: Int, sectionId: Long, unitId: Long)
+    :this(0,"", 0, 0, 0, SectionEntity(), UnitEntity(0,"", false), false)
 }

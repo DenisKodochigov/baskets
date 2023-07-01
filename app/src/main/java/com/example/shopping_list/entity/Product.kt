@@ -1,10 +1,10 @@
 package com.example.shopping_list.entity
 interface Product {
-    var idProduct: Long
-    var basketId: Long
-    var article: Article
-    var value: Double
-    var putInBasket: Boolean
+    val idProduct: Long
+    val basketId: Long
+    val article: Article
+    val value: Double
+    val putInBasket: Boolean
     var isSelected: Boolean
     var position: Int
 }

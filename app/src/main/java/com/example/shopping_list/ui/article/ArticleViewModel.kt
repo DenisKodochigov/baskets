@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.ErrorApp
+import com.example.shopping_list.entity.SortingBy
+import com.example.shopping_list.utils.log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,23 +28,25 @@ class ArticleViewModel @Inject constructor(
 
     fun getStateArticle(){
         getArticles()
-        getListSection()
-        getListUnit()
+        getSections()
+        getUnits()
     }
 
     private fun getArticles() {
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.getListArticle() }.fold(
+            kotlin.runCatching {
+                dataRepository.buildPositionArticles()
+                dataRepository.getListArticle() }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState -> currentState.copy(article = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
-            getListSection()
-            getListUnit()
+            getSections()
+            getUnits()
         }
     }
 
-    private fun getListSection() {
+    private fun getSections() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getSections() }.fold(
                 onSuccess = {
@@ -52,7 +56,7 @@ class ArticleViewModel @Inject constructor(
         }
     }
 
-    private fun getListUnit() {
+    private fun getUnits() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getUnits() }.fold(
                 onSuccess = {
@@ -70,8 +74,8 @@ class ArticleViewModel @Inject constructor(
                     currentState.copy( article = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
-            getListSection()
-            getListUnit()
+            getSections()
+            getUnits()
         }
     }
 
@@ -86,12 +90,12 @@ class ArticleViewModel @Inject constructor(
                     _articleScreenState.update { currentState -> currentState.copy( article = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
-            getListSection()
-            getListUnit()
+            getSections()
+            getUnits()
         }
     }
 
-    fun changeSectionSelectedArticle(articles: List<Article>, idSection: Long){
+    fun changeSectionSelected(articles: List<Article>, idSection: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
                 dataRepository.changeSectionSelectedArticle(articles, idSection)
@@ -100,12 +104,12 @@ class ArticleViewModel @Inject constructor(
                     _articleScreenState.update { currentState -> currentState.copy( article = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
-            getListSection()
-            getListUnit()
+            getSections()
+            getUnits()
         }
     }
 
-    fun deleteSelectedArticle(articles: List<Article>){
+    fun deleteSelected(articles: List<Article>){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.deleteSelectedArticle(articles) }.fold(
                 onSuccess = {_articleScreenState.update { currentState ->
@@ -115,9 +119,9 @@ class ArticleViewModel @Inject constructor(
         }
     }
 
-    fun movePositionArticle( direction: Int){
+    fun movePosition(direction: Int){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.setPositionArticle( direction) }.fold(
+            kotlin.runCatching { dataRepository.movePositionArticle( direction) }.fold(
                 onSuccess = {_articleScreenState.update { currentState ->
                     currentState.copy( article = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
