@@ -18,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -28,10 +27,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.SectionEntity
-import com.example.shopping_list.data.room.tables.UnitEntity
+import com.example.shopping_list.data.room.tables.ArticleDB
+import com.example.shopping_list.data.room.tables.SectionDB
+import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.ArticleClass
 import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.components.dialog.EditArticleDialog
@@ -166,7 +165,7 @@ fun LazyColumnArticle(
     if (editArticle.value != null) {
         EditArticleDialog(
             article = editArticle.value!!,
-            listUnit = uiState.unitA,
+            listUnit = uiState.unitApp,
             listSection = uiState.sections,
             onDismiss = { editArticle.value = null },
             onConfirm = {
@@ -298,7 +297,7 @@ fun ElementColum( item: Article, doSelected: (Long)->Unit, uiState: ArticleScree
             )
             Spacer(modifier = Modifier.width(4.dp))
             MyTextH2(
-                text = item.unitA.nameUnit,
+                text = item.unitApp.nameUnit,
                 modifier = Modifier
                     .width(40.dp)
                     .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
@@ -323,7 +322,7 @@ fun LayoutAddEditArticle(
     val focusRequesterSheet = remember { FocusRequester() }
 
     if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
-        val id: Long = uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
+        val id: Long = uiState.unitApp.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
         enterUnit.value = Pair(id, enterUnit.value.second)
     }
     if (enterSection.value.first == 0L && enterSection.value.second != "") {
@@ -371,7 +370,7 @@ fun LayoutAddEditArticle(
             Spacer(Modifier.width(4.dp))
             MyExposedDropdownMenuBox(
                 /** Select unit*/
-                listItems = uiState.unitA.map { Pair(it.idUnit, it.nameUnit) },
+                listItems = uiState.unitApp.map { Pair(it.idUnit, it.nameUnit) },
                 label = stringResource(R.string.units),
                 modifier = Modifier.width(120.dp),
                 enterValue = enterUnit,
@@ -380,11 +379,11 @@ fun LayoutAddEditArticle(
         }
         Spacer(Modifier.height(36.dp))
 
-        val article = ArticleClass(
+        val article = ArticleDB(
             idArticle = enterArticle.value.first,
             nameArticle = enterArticle.value.second,
-            section = SectionEntity(enterSection.value.first, enterSection.value.second),
-            unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second),
+            section = SectionDB(enterSection.value.first, enterSection.value.second),
+            unitApp = UnitDB(enterUnit.value.first, enterUnit.value.second),
             isSelected = false,
             position = 0
         )

@@ -1,9 +1,9 @@
 package com.example.shopping_list.data
 
 import com.example.shopping_list.data.room.DataSourceDB
-import com.example.shopping_list.data.room.tables.ArticleEntity
-import com.example.shopping_list.data.room.tables.BasketEntity
-import com.example.shopping_list.data.room.tables.UnitEntity
+import com.example.shopping_list.data.room.tables.ArticleDB
+import com.example.shopping_list.data.room.tables.BasketDB
+import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.*
 import java.util.*
 import javax.inject.Inject
@@ -19,7 +19,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
 
     fun addBasket(basketName: String): List<Basket> {
         val currentTime = Date().time
-        return dataSourceDB.addBasket(BasketEntity(nameBasket = basketName, dateB = currentTime))
+        return dataSourceDB.addBasket(BasketDB(nameBasket = basketName, dateB = currentTime))
     }
 
     fun changeNameBasket(basket: Basket): List<Basket> {
@@ -69,15 +69,15 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     fun getListArticle(): List<Article> = dataSourceDB.getListArticle()
 
     fun addArticle(article: Article): List<Article> {
-        dataSourceDB.getAddArticle(article as ArticleEntity)
+        dataSourceDB.getAddArticle(article as ArticleDB)
         return getListArticle()
     }
 
-    fun changeArticle(article: Article): List<Article> = dataSourceDB.changeArticle(article as ArticleEntity)
+    fun changeArticle(article: Article): List<Article> = dataSourceDB.changeArticle(article as ArticleDB)
 
     fun getSections(): List<Section> = dataSourceDB.getSections()
 
-    fun getUnits(): List<UnitA> = dataSourceDB.getUnits()
+    fun getUnits(): List<UnitApp> = dataSourceDB.getUnits()
 
     fun changeSectionSelectedProduct(productList: List<Product>, idSection: Long): List<Product> =
         dataSourceDB.changeSectionSelectedProduct(productList, idSection)
@@ -95,12 +95,12 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         return dataSourceDB.movePositionArticle(direction)
     }
 
-    fun deleteUnits(deleteUnits: List<UnitA>): List<UnitA> {
+    fun deleteUnits(deleteUnits: List<UnitApp>): List<UnitApp> {
         dataSourceDB.deleteUnits(deleteUnits)
         return getUnits()
     }
-    fun changeUnit(unit: UnitA): List<UnitA> {
-        dataSourceDB.getAddUnit(unit as UnitEntity)
+    fun changeUnit(unit: UnitApp): List<UnitApp> {
+        dataSourceDB.getAddUnit(unit as UnitDB)
         return getUnits()
     }
 

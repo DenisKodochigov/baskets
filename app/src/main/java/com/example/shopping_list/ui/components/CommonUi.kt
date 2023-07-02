@@ -1,6 +1,5 @@
 package com.example.shopping_list.ui.components
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -18,7 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -291,7 +289,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(
 
 @Composable fun selectUnitWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
     val article = listArticle.find { it.idArticle == id }
-    return if (article != null) Pair(article.unitA.idUnit, article.unitA.nameUnit)
+    return if (article != null) Pair(article.unitApp.idUnit, article.unitApp.nameUnit)
     else Pair(0L, "")
 }
 

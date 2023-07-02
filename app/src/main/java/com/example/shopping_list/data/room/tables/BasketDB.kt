@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.example.shopping_list.entity.Basket
 
 @Entity(tableName = "tb_basket", indices = [Index( value = ["nameBasket"], unique = true)])
-data class BasketEntity(
+data class BasketDB(
     @PrimaryKey(autoGenerate = true) override var idBasket: Long = 0,
     override var dateB: Long = 0,
     override var nameBasket: String = "",

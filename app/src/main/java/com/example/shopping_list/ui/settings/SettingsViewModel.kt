@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.ErrorApp
-import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.entity.UnitApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,26 +29,26 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getUnits() }.fold(
                 onSuccess = {
-                    _settingScreenState.update { currentState -> currentState.copy( unitA = it)}},
+                    _settingScreenState.update { currentState -> currentState.copy( unitApp = it)}},
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
     }
-    fun changeUnit(unit: UnitA) {
+    fun changeUnit(unit: UnitApp) {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeUnit(unit) }.fold(
                 onSuccess = {
-                    _settingScreenState.update { currentState -> currentState.copy( unitA = it)}},
+                    _settingScreenState.update { currentState -> currentState.copy( unitApp = it)}},
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
     }
 
-    fun doDeleteUnits(units: List<UnitA>) {
+    fun doDeleteUnits(units: List<UnitApp>) {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.deleteUnits(units) }.fold(
                 onSuccess = {
-                    _settingScreenState.update { currentState -> currentState.copy( unitA = it)}},
+                    _settingScreenState.update { currentState -> currentState.copy( unitApp = it)}},
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }

@@ -6,8 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.ErrorApp
-import com.example.shopping_list.entity.SortingBy
-import com.example.shopping_list.utils.log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,7 +58,7 @@ class ArticleViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getUnits() }.fold(
                 onSuccess = {
-                    _articleScreenState.update { currentState -> currentState.copy( unitA = it)}},
+                    _articleScreenState.update { currentState -> currentState.copy( unitApp = it)}},
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }

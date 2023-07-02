@@ -50,12 +50,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.ProductEntity
-import com.example.shopping_list.data.room.tables.SectionEntity
-import com.example.shopping_list.data.room.tables.UnitEntity
-import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.ArticleClass
+import com.example.shopping_list.data.room.tables.ArticleDB
+import com.example.shopping_list.data.room.tables.ProductDB
+import com.example.shopping_list.data.room.tables.SectionDB
+import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.Product
+import com.example.shopping_list.entity.Section
+import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.ButtonMove
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.HeaderSection
@@ -203,7 +204,7 @@ fun LazyColumnProduct(
     if (editProduct.value != null ) {
         EditQuantityDialog(
             product = editProduct.value!!,
-            listUnit = uiState.unitA,
+            listUnit = uiState.unitApp,
             onDismiss = { editProduct.value = null },
             onConfirm = {
                 changeProduct(editProduct.value!!)
@@ -336,7 +337,7 @@ fun ElementColum(
                     .clickable { editProduct(item) })
             Spacer(modifier = Modifier.width(4.dp))
             MyTextH1(
-                item.article.unitA.nameUnit,
+                item.article.unitApp.nameUnit,
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .width(50.dp)
@@ -375,7 +376,7 @@ fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -
         enterUnit.value = selectUnitWithArticle(enterArticle.value.first, uiState.articles)
     } else  {
         enterUnit.value = Pair(
-            uiState.unitA.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L,
+            uiState.unitApp.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L,
             enterUnit.value.second)
         enterSection.value = Pair(
             uiState.sections.find { it.nameSection == enterSection.value.second }?.idSection ?: 0L,
@@ -427,7 +428,7 @@ fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -
             Spacer(Modifier.width(4.dp))
             /** Select unit*/
             MyExposedDropdownMenuBox(
-                listItems = uiState.unitA.map { Pair(it.idUnit, it.nameUnit) },
+                listItems = uiState.unitApp.map { Pair(it.idUnit, it.nameUnit) },
                 label = stringResource(R.string.units),
                 modifier = Modifier.width(120.dp),
                 enterValue = enterUnit,
@@ -437,25 +438,24 @@ fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -
             )
         }
         Spacer(Modifier.height(36.dp))
-        val article = ArticleClass(
-            idArticle = enterArticle.value.first,
-            nameArticle = enterArticle.value.second,
-            section = SectionEntity(enterSection.value.first, enterSection.value.second),
-            unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second),
-            isSelected = false,
-            position = 0,
-        ) as Article
 
-        val product = ProductEntity(
-            articleId = article.idArticle,
-            value = if (enterValue.value.isEmpty()) 1.0 else enterValue.value.toDouble(),
-            putInBasket = false
-        )
-        product.article = article
         TextButtonOK(
             enabled = enterArticle.value.second != "",
             onConfirm = {
-                onAddProduct(product)
+                onAddProduct(
+                    ProductDB(
+                        articleId = enterArticle.value.first,
+                        value = if (enterValue.value.isEmpty()) 1.0 else enterValue.value.toDouble(),
+                        putInBasket = false,
+                        article = ArticleDB(
+                            idArticle = enterArticle.value.first,
+                            nameArticle = enterArticle.value.second,
+                            position = 0,
+                            section = SectionDB(enterSection.value.first, enterSection.value.second) as Section,
+                            unitApp = UnitDB(enterUnit.value.first, enterUnit.value.second) as UnitApp,
+                            isSelected = false,
+                        )
+                ))
                 enterArticle.value = Pair(0, "")
                 enterValue.value = "1"
             })

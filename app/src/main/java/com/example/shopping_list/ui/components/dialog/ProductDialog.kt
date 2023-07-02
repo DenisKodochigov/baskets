@@ -16,14 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.ProductEntity
-import com.example.shopping_list.data.room.tables.UnitEntity
-import com.example.shopping_list.entity.Article
-import com.example.shopping_list.entity.ArticleClass
+import com.example.shopping_list.data.room.tables.ArticleDB
+import com.example.shopping_list.data.room.tables.ProductDB
+import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.entity.ProductClass
-import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIconClearing
 import com.example.shopping_list.ui.components.MyTextH2
@@ -32,12 +30,12 @@ import com.example.shopping_list.ui.components.TextButtonOK
 @Composable
 fun EditQuantityDialog(
     product: Product,
-    listUnit: List<UnitA>,
+    listUnit: List<UnitApp>,
     onConfirm: (Product) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val enterUnit = remember {
-        mutableStateOf(Pair(product.article.unitA.idUnit, product.article.unitA.nameUnit)) }
+        mutableStateOf(Pair(product.article.unitApp.idUnit, product.article.unitApp.nameUnit)) }
     val enterValue = remember { mutableStateOf(product.value.toString()) }
 
     AlertDialog(
@@ -46,13 +44,13 @@ fun EditQuantityDialog(
         text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
         confirmButton = {
 
-            val localProduct = ProductClass(
+            val localProduct = ProductDB(
                 idProduct = product.idProduct,
                 basketId = product.basketId,
-                article = ArticleClass(
+                article = ArticleDB(
                     idArticle = product.article.idArticle,
                     nameArticle = product.article.nameArticle,
-                    unitA = UnitEntity( idUnit = enterUnit.value.first,nameUnit = enterUnit.value.second),
+                    unitApp = UnitDB( idUnit = enterUnit.value.first,nameUnit = enterUnit.value.second),
                     section = product.article.section,
                     isSelected = product.article.isSelected,
                     position = product.article.position,
@@ -71,7 +69,7 @@ fun EditQuantityDialog(
 fun EditQuantityDialogLayout(
     enterValue: MutableState<String>,
     enterUnit: MutableState<Pair<Long, String>>,
-    listUnit: List<UnitA>
+    listUnit: List<UnitApp>
 ) {
 
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {

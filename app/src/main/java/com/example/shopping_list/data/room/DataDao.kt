@@ -8,10 +8,10 @@ import com.example.shopping_list.data.room.tables.relation.ProductObj
 @Dao
 interface DataDao {
     @Update
-    fun update(basket: BasketEntity)
+    fun update(basket: BasketDB)
 
     @Insert
-    fun newBasket(basket: BasketEntity): Long
+    fun newBasket(basket: BasketDB): Long
 
     @Query("SELECT idBasket FROM tb_basket WHERE nameBasket = :basketName")
     fun checkBasketFromName(basketName: String): Long?
@@ -21,7 +21,7 @@ interface DataDao {
     @Query("DELETE FROM tb_product WHERE basketId = :id")
     fun deleteByIdBasketProduct(id: Long)
     @Query("SELECT * FROM tb_basket ORDER BY position ASC")
-    fun getListBasket(): List<BasketEntity>
+    fun getListBasket(): List<BasketDB>
     @Query("UPDATE tb_basket SET nameBasket = :newName WHERE idBasket =:basketId")
     fun changeNameBasket(basketId: Long, newName: String)
     @Query("SELECT nameBasket FROM tb_basket WHERE idBasket = :basketId")
@@ -31,7 +31,7 @@ interface DataDao {
 
     /** Product entity*/
     @Insert
-    fun addProduct(product: ProductEntity): Long
+    fun addProduct(product: ProductDB): Long
 
     @Query("SELECT idProduct FROM tb_product JOIN tb_article ON tb_article.nameArticle = :name " +
                 "WHERE tb_product.articleId = tb_article.idArticle")
@@ -70,14 +70,14 @@ interface DataDao {
     fun deleteProducts(listId: List<Long>, basketId: Long)
 
     @Delete
-    fun removeProduct(product: ProductEntity)
+    fun removeProduct(product: ProductDB)
 
     /** Article entity*/
     @Query("DELETE FROM tb_article WHERE idArticle =:articleId")
     fun delArticle(articleId: Long)
 
     @Insert
-    fun addArticle(article: ArticleEntity): Long
+    fun addArticle(article: ArticleDB): Long
 
     @Transaction
     @Query("SELECT * FROM tb_article ORDER BY position ASC, nameArticle ASC")
@@ -99,7 +99,7 @@ interface DataDao {
     fun getIdUnitFromArticle(articleId: Long): Long
 
     @Update
-    fun changeArticle(article: ArticleEntity)
+    fun changeArticle(article: ArticleDB)
 
     @Query("SELECT idProduct FROM tb_product WHERE articleId =:articleId")
     fun checkArticleWithProduct(articleId: Long): List<Long>
@@ -110,26 +110,26 @@ interface DataDao {
     /** Section entity*/
 
     @Query("SELECT * FROM tb_section")
-    fun getSections(): List<SectionEntity>
+    fun getSections(): List<SectionDB>
 //    @Query("SELECT * FROM tb_section")
 //    fun getSectionFlow(): Flow<List<SectionEntity>>
     @Insert
-    fun addSection(section: SectionEntity): Long
+    fun addSection(section: SectionDB): Long
     @Query("SELECT * FROM tb_section WHERE idSection = :id")
-    fun getSection(id: Long): SectionEntity
+    fun getSection(id: Long): SectionDB
 
 
     /** Unit entity*/
 
     @Insert
-    fun addUnit(unit: UnitEntity): Long
+    fun addUnit(unit: UnitDB): Long
     @Update
-    fun changeUnit(unitA: UnitEntity)
+    fun changeUnit(unitA: UnitDB)
     @Query("SELECT * FROM tb_unit")
-    fun getUnits(): List<UnitEntity>
+    fun getUnits(): List<UnitDB>
 
     @Query("SELECT * FROM tb_unit WHERE idUnit = :id")
-    fun getUnit(id: Long): UnitEntity
+    fun getUnit(id: Long): UnitDB
 //    @Query("SELECT * FROM tb_unit")
 //    fun getUnitsFlow(): Flow<List<UnitEntity>>
     @Query("DELETE FROM tb_unit WHERE idUnit IN (:listId)")

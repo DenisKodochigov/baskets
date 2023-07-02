@@ -44,8 +44,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
-import com.example.shopping_list.data.room.tables.UnitEntity
-import com.example.shopping_list.entity.UnitA
+import com.example.shopping_list.data.room.tables.UnitDB
+import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.ButtonCircle
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.MyTextH1
@@ -69,11 +69,11 @@ fun SettingsScreen() {
 fun LayoutSettingsScreen(
     modifier: Modifier = Modifier,
     uiState: SettingsScreenState,
-    doChangeUnit: (UnitA) -> Unit,
-    doDeleteUnits: (List<UnitA>) -> Unit,
+    doChangeUnit: (UnitApp) -> Unit,
+    doDeleteUnits: (List<UnitApp>) -> Unit,
 ){
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
-    val itemList = uiState.unitA
+    val itemList = uiState.unitApp
     if (isSelectedId.value > 0L) {
         itemList.find { it.idUnit == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
         isSelectedId.value = 0
@@ -102,15 +102,15 @@ fun LayoutSettingsScreen(
 @Composable
 fun LazyColumnUnits(
     uiState: SettingsScreenState,
-    doDeleteSelected: (List<UnitA>) -> Unit,
-    changeUnit: (UnitA) -> Unit,
+    doDeleteSelected: (List<UnitApp>) -> Unit,
+    changeUnit: (UnitApp) -> Unit,
     doSelected: (Long) -> Unit
 ) {
-    val editUnit: MutableState<UnitA?> = remember { mutableStateOf(null) }
+    val editUnit: MutableState<UnitApp?> = remember { mutableStateOf(null) }
 
     if (editUnit.value != null) {
         EditUnitDialog(
-            unitA = editUnit.value!!,
+            unitApp = editUnit.value!!,
             onDismiss = { editUnit.value = null },
             onConfirm = {
                 changeUnit( editUnit.value!!)
@@ -128,7 +128,7 @@ fun LazyColumnUnits(
             contentPadding = PaddingValues(8.dp),
             modifier = Modifier.heightIn(min = 0.dp, max = 300.dp)
         ) {
-            items(uiState.unitA) { item ->
+            items(uiState.unitApp) { item ->
                 Box {
                     Row(modifier = Modifier
                         .clip(shape = RoundedCornerShape(6.dp))
@@ -155,13 +155,13 @@ fun LazyColumnUnits(
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            ButtonCircle(Modifier, Icons.Filled.AddCircle) { editUnit.value = UnitEntity() }
+            ButtonCircle(Modifier, Icons.Filled.AddCircle) { editUnit.value = UnitDB() }
             Spacer(modifier = Modifier.width(12.dp))
             ButtonCircle(Modifier, Icons.Filled.ChangeCircle) {
-                uiState.unitA.find { it.isSelected }?.let { editUnit.value = it } }
+                uiState.unitApp.find { it.isSelected }?.let { editUnit.value = it } }
             Spacer(modifier = Modifier.width(12.dp))
             ButtonCircle(Modifier, Icons.Filled.Delete) {
-                uiState.unitA.find { it.isSelected }?.let { doDeleteSelected(uiState.unitA) }
+                uiState.unitApp.find { it.isSelected }?.let { doDeleteSelected(uiState.unitApp) }
             }
         }
     }
