@@ -313,7 +313,7 @@ fun LayoutAddEditArticle(
 ) {
 //    Log.d("KDS", "BottomSheetContentArticle")
     val nameSection = stringResource(R.string.name_section)
-    val stuff = stringResource(R.string.name_unit1)
+    val stuff = stringResource(R.string.unit_st)
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val enterValue = remember { mutableStateOf("1") }
     val enterArticle = remember { mutableStateOf(Pair<Long, String>(0, "")) }

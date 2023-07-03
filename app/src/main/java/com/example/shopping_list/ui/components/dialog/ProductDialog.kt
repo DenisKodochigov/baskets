@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
 import com.example.shopping_list.data.room.tables.ArticleDB
 import com.example.shopping_list.data.room.tables.ProductDB
+import com.example.shopping_list.data.room.tables.SectionDB
 import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
@@ -47,18 +48,19 @@ fun EditQuantityDialog(
             val localProduct = ProductDB(
                 idProduct = product.idProduct,
                 basketId = product.basketId,
+                value = enterValue.value.toDouble(),
+                putInBasket = product.putInBasket,
+                position = product.position,
+                articleId = product.article.idArticle,
                 article = ArticleDB(
                     idArticle = product.article.idArticle,
                     nameArticle = product.article.nameArticle,
                     unitApp = UnitDB( idUnit = enterUnit.value.first,nameUnit = enterUnit.value.second),
-                    section = product.article.section,
+                    section = product.article.section as SectionDB,
                     isSelected = product.article.isSelected,
                     position = product.article.position,
                 ),
-                value = enterValue.value.toDouble(),
-                putInBasket = product.putInBasket,
                 isSelected = product.isSelected,
-                position = product.position
             )
             TextButtonOK( onConfirm = { onConfirm(localProduct) })
         }

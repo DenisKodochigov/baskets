@@ -55,8 +55,6 @@ import com.example.shopping_list.data.room.tables.ProductDB
 import com.example.shopping_list.data.room.tables.SectionDB
 import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.entity.Section
-import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.ButtonMove
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.HeaderSection
@@ -360,7 +358,7 @@ fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -
 
     log( "LayoutAddEditProduct")
     val nameSection = stringResource(R.string.name_section)
-    val unitStuff = stringResource(R.string.name_unit1)
+    val unitStuff = stringResource(R.string.unit_st)
     val enterValue = remember { mutableStateOf("1") }
     val enterArticle = remember { mutableStateOf(Pair<Long, String>(0, "")) }
     val enterSection = remember { mutableStateOf(Pair<Long, String>(1, nameSection)) }
@@ -444,15 +442,15 @@ fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -
             onConfirm = {
                 onAddProduct(
                     ProductDB(
-                        articleId = enterArticle.value.first,
                         value = if (enterValue.value.isEmpty()) 1.0 else enterValue.value.toDouble(),
                         putInBasket = false,
+                        articleId = enterArticle.value.first,
                         article = ArticleDB(
                             idArticle = enterArticle.value.first,
                             nameArticle = enterArticle.value.second,
                             position = 0,
-                            section = SectionDB(enterSection.value.first, enterSection.value.second) as Section,
-                            unitApp = UnitDB(enterUnit.value.first, enterUnit.value.second) as UnitApp,
+                            section = SectionDB(enterSection.value.first, enterSection.value.second),
+                            unitApp = UnitDB(enterUnit.value.first, enterUnit.value.second),
                             isSelected = false,
                         )
                 ))

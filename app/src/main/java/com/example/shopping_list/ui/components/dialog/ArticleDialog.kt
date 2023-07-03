@@ -70,22 +70,26 @@ fun LayoutAddEditArticle(
     article.value = ArticleDB(
         idArticle = article.value.idArticle,
         nameArticle = enterNameArticle.value,
-        unitApp = if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
+        position = article.value.position,
+        isSelected = article.value.isSelected,
+        section =
+            if (enterSection.value.first == 0L && enterSection.value.second != "")
+            {
+                SectionDB(nameSection = enterSection.value.second, idSection = 0L)
+            } else {
+                if (listSection.isNotEmpty()) {
+                    (listSection.find { it.idSection == enterSection.value.first }
+                        ?: listSection[0]) as SectionDB
+                } else SectionDB(nameSection = "")
+            },
+        unitApp =
+        if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
             UnitDB(nameUnit = enterUnit.value.second, idUnit = 0L)
         } else {
             if (listUnit.isNotEmpty()) {
-                listUnit.find { it.idUnit == enterUnit.value.first } ?: listUnit[0]}
-            else UnitDB(nameUnit = "")
+                (listUnit.find { it.idUnit == enterUnit.value.first } ?: listUnit[0]) as UnitDB
+            } else UnitDB(nameUnit = "")
         },
-        section = if (enterSection.value.first == 0L && enterSection.value.second != "") {
-            SectionDB(nameSection = enterSection.value.second, idSection = 0L)
-        } else {
-            if (listSection.isNotEmpty()) {
-                listSection.find { it.idSection == enterSection.value.first } ?: listSection[0]}
-            else SectionDB(nameSection = "")
-        },
-        isSelected = article.value.isSelected,
-        position = article.value.position,
     )
 
 

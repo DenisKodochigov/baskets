@@ -12,7 +12,25 @@ data class UnitDB(
     override var nameUnit: String,
     @Ignore override var isSelected: Boolean
 ): UnitApp {
-    @Ignore constructor(nameUnit: String) :this(0,"",false)
-    constructor(idUnit: Long,nameUnit: String) :this(0,"",false)
-    @Ignore constructor() :this(0,"",false)
+    constructor(
+        nameUnit: String
+    ) :this(
+        idUnit = 0,
+        nameUnit = "",
+        isSelected = false)
+    {
+        this.nameUnit = nameUnit
+    }
+    @Ignore constructor(
+        idUnit: Long,
+        nameUnit: String
+    ) :this(
+        idUnit = 0,
+        nameUnit = "",
+        isSelected = false)
+    {
+        this.nameUnit = nameUnit
+        this.idUnit = idUnit
+    }
+    @Ignore constructor(): this(0,"",false)
 }

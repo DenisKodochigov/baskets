@@ -79,6 +79,9 @@ interface DataDao {
     @Insert
     fun addArticle(article: ArticleDB): Long
 
+    @Update
+    fun updateArticle(article: ArticleDB)
+
     @Transaction
     @Query("SELECT * FROM tb_article ORDER BY position ASC, nameArticle ASC")
     fun getListArticle(): List<ArticleObj>

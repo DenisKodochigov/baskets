@@ -20,7 +20,7 @@
     <string name="product">Продукты</string>
     <string name="new_name_basket">Имя корзины</string>
     <string name="baskets">Корзины</string>
-    <string name="name_unit1">шт</string>
+    <string name="unit_st">шт</string>
     <string name="unit_kg">кг</string>
     <string name="unit_l">л</string>
     <string name="unit_gr">гр</string>

@@ -1,5 +1,4 @@
 <resources>
-    <string name="name_unit1">st.</string>
     <string name="app_name">shopping_list</string>
     <string name="title_settings">Settings</string>
     <string name="errorUser">Operation error.</string>
@@ -24,6 +23,7 @@
     <string name="change_section">New section</string>
 
     <string name="units">Units</string>
+    <string name="unit_st">st.</string>
     <string name="unit_kg">kg</string>
     <string name="unit_l">L</string>
     <string name="unit_gr">gr</string>

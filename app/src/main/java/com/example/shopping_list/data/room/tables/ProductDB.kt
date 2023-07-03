@@ -9,60 +9,136 @@ import com.example.shopping_list.entity.Product
 @Entity(tableName = "tb_product")
 data class ProductDB(
     @PrimaryKey(autoGenerate = true) override var idProduct: Long,
-    override var value: Double,
     override var basketId: Long,
+    override var value: Double,
     override var putInBasket: Boolean,
     override var position: Int,
     var articleId: Long,
+    @Ignore override var isSelected: Boolean,
     @Ignore override var article: Article,
-    @Ignore override var isSelected: Boolean
 ) : Product {
-    constructor(value: Double, basketId: Long, putInBasket: Boolean, position: Int, articleId: Long)
-            : this(
-        0, 0.0, 0, false, 0, 0,
-        ArticleDB(
-            0, "", 0, 0, 0,
-            SectionDB(), UnitDB(0, "", false),
-            false
-        ), false
-    )
+//    @Ignore constructor(
+//        idProduct: Long,
+//        basketId: Long,
+//        value: Double,
+//        putInBasket: Boolean,
+//        position: Int,
+//        articleId: Long,
+//        article: Article,
+//        isSelected: Boolean
+//    ) : this(
+//        idProduct = 0,
+//        value = 0.0,
+//        basketId = 0,
+//        putInBasket = false,
+//        position = 0,
+//        articleId = 0,
+//        isSelected = false,
+//        article = ArticleDB(
+//            idArticle = 0,
+//            nameArticle = "",
+//            position = 0,
+//            sectionId = 0,
+//            unitId = 0,
+//            section = SectionDB(),
+//            unitApp =  UnitDB(),
+//            isSelected = false,
+//        )
+//    ) {
+//        this.idProduct = idProduct
+//        this.value = value
+//        this.basketId = basketId
+//        this.putInBasket = putInBasket
+//        this.position = position
+//        this.articleId = articleId
+//        this.isSelected = isSelected
+//        this.article = article
+//    }
 
-    @Ignore
-    constructor(value: Double, basketId: Long, position: Int, articleId: Long) :
-    this( 0, 0.0, 0, false, 0, 0,
-        ArticleDB(0, "", 0, 0, 0, SectionDB(), UnitDB(0, "", false), false), false)
-    @Ignore
-    constructor(articleId: Long, value: Double, basketId: Long) :
-            this( 0, 0.0, 0, false, 0, 0,
-                ArticleDB(0, "", 0, 0, 0, SectionDB(), UnitDB(0, "", false), false), false)
-//    @Ignore
-//    constructor(value: Double, putInBasket: Boolean, articleId: Long)
-//            : this(
-//        0, 0.0, 0, false, 0, 0,
-//        ArticleEntity(
-//            0, "", 0, 0, 0,
-//            SectionEntity(), UnitEntity(0, "", false),
-//            false
-//        ), false
-//    )
-
-    @Ignore
-    constructor(articleId: Long, value: Double, putInBasket: Boolean, article: ArticleDB)
-            : this(0, 0.0, 0, false, 0, 0,
-                ArticleDB( 0, "", 0, 0, 0, SectionDB(), UnitDB(0, "", false), false),
-                false
-    )
-
-    @Ignore
-    constructor(
-        idProduct: Long,
+    @Ignore constructor(
         basketId: Long,
-        article: ArticleDB,
+        value: Double,
+        position: Int,
+        articleId: Long,
+    ) : this(
+        idProduct = 0,
+        value = 0.0,
+        basketId = 0,
+        putInBasket = false,
+        position = 0,
+        articleId = 0,
+        isSelected = false,
+        article = ArticleDB(
+            idArticle = 0,
+            nameArticle = "",
+            position = 0,
+            sectionId = 0,
+            unitId = 0,
+            section = SectionDB(),
+            unitApp =  UnitDB(),
+            isSelected = false,
+        )
+    ) {
+        this.value = value
+        this.basketId = basketId
+        this.position = position
+        this.articleId = articleId
+    }
+    @Ignore constructor(
         value: Double,
         putInBasket: Boolean,
-        isSelected: Boolean,
-        position: Int
-    ) : this(0, 0.0, 0, false, 0, 0,
-        ArticleDB( 0, "", 0, 0, 0, SectionDB(), UnitDB(0, "", false), false), false
-    )
+        articleId: Long,
+        article: ArticleDB
+    ) : this(
+        idProduct = 0,
+        value = 0.0,
+        basketId = 0,
+        putInBasket = false,
+        position = 0,
+        articleId = 0,
+        isSelected = false,
+        article = ArticleDB(
+            idArticle = 0,
+            nameArticle = "",
+            position = 0,
+            sectionId = 0,
+            unitId = 0,
+            section = SectionDB(),
+            unitApp =  UnitDB(),
+            isSelected = false,
+        )
+    ) {
+        this.value = value
+        this.putInBasket = putInBasket
+        this.articleId = articleId
+        this.article = article
+    }
+
+    constructor(
+        value: Double,
+        basketId: Long,
+        articleId: Long,
+    ) : this(
+        idProduct = 0,
+        value = 0.0,
+        basketId = 0,
+        putInBasket = false,
+        position = 0,
+        articleId = 0,
+        isSelected = false,
+        article = ArticleDB(
+            idArticle = 0,
+            nameArticle = "",
+            position = 0,
+            sectionId = 0,
+            unitId = 0,
+            section = SectionDB(),
+            unitApp =  UnitDB(),
+            isSelected = false,
+        )
+    ) {
+        this.value = value
+        this.basketId = basketId
+        this.articleId = articleId
+    }
 }

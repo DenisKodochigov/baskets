@@ -193,26 +193,28 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
             list.forEach { dataDao.setPositionArticle(it.idArticle, it.position) }
         }
     }
-    fun getAddArticle(article: ArticleDB): ArticleDB? {
-        val localArticle = ArticleDB(
-            idArticle = if (article.idArticle == 0L && article.nameArticle != "") dataDao.addArticle(article)
-                        else article.idArticle,
-            unitId = getAddUnit(article.unitApp as UnitDB).idUnit,
-            sectionId = getAddSection(article.section as SectionDB).idSection,
-            nameArticle = toUpFirstChar(article.nameArticle),
+    fun getAddArticle(article: ArticleDB): ArticleDB {
 
-        )
-        return if (localArticle.idArticle == 0L) null else localArticle
+        if (article.idArticle == 0L || article.sectionId == 0L || article.unitId == 0L) {
+            if (article.unitId == 0L) article.unitId = getAddUnit(article.unitApp as UnitDB).idUnit
+            if (article.sectionId == 0L) article.sectionId =
+                getAddSection(article.section as SectionDB).idSection
+            article.nameArticle = toUpFirstChar(article.nameArticle)
+            if (article.idArticle == 0L)
+                article.idArticle = if (article.nameArticle != "") dataDao.addArticle(article) else 1
+            dataDao.updateArticle(article)
+        }
+        return article
     } //&&f
 
     fun changeArticle(article: ArticleDB): List<Article>{
 
         val localArticle = ArticleDB(
-            unitId = getAddUnit(article.unitApp as UnitDB).idUnit,
-            sectionId = getAddSection(article.section).idSection,
-            nameArticle = toUpFirstChar(article.nameArticle),
             idArticle = article.idArticle,
-            position = article.position
+            nameArticle = toUpFirstChar(article.nameArticle),
+            position = article.position,
+            sectionId = getAddSection(article.section).idSection,
+            unitId = getAddUnit(article.unitApp as UnitDB).idUnit,
         )
         dataDao.changeArticle(localArticle)
         return getListArticle()
@@ -246,12 +248,12 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     }
 
     /** Unit*/
+
     fun getAddUnit(unitA: UnitDB): UnitApp {
         if (unitA.idUnit == 0L) unitA.idUnit = if (unitA.nameUnit != "") dataDao.addUnit(unitA) else 1
         else if (unitA.nameUnit != dataDao.getUnit(unitA.idUnit).nameUnit) dataDao.changeUnit(unitA)
         return unitA
     }
-
     fun deleteUnits(units: List<UnitApp>) {
         units.forEach { if (dataDao.checkUnit( it.idUnit ) == null) dataDao.deleteUnit(it.idUnit) }
     }
@@ -266,18 +268,21 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return ProductDB(
             idProduct = obj.product.idProduct,
             basketId = obj.product.basketId,
+            value = obj.product.value,
+            putInBasket = obj.product.putInBasket,
+            position = obj.product.position,
+            articleId = obj.article.article.idArticle,
             article = ArticleDB(
                 idArticle = obj.article.article.idArticle,
                 nameArticle = obj.article.article.nameArticle,
-                unitApp = obj.article.unitA,
-                section = obj.article.section,
-                isSelected = obj.article.article.isSelected,
                 position = obj.article.article.position,
+                sectionId = obj.article.section.idSection,
+                unitId = obj.article.unitA.idUnit,
+                isSelected = obj.article.article.isSelected,
+                section = obj.article.section,
+                unitApp = obj.article.unitA,
             ),
-            value = obj.product.value,
-            putInBasket = obj.product.putInBasket,
             isSelected = obj.product.isSelected,
-            position = obj.product.position,
         )
     }
 
@@ -286,10 +291,12 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return ArticleDB(
             idArticle = obj.article.idArticle,
             nameArticle = obj.article.nameArticle,
-            unitApp = obj.unitA,
-            section = obj.section,
             isSelected = obj.article.isSelected,
             position = obj.article.position,
+            sectionId = obj.section.idSection,
+            unitId = obj.unitA.idUnit,
+            unitApp = obj.unitA,
+            section = obj.section,
         )
     }
     private fun toUpFirstChar (text: String): String{
