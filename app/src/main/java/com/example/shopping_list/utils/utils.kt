@@ -24,20 +24,14 @@ fun createDoubleListProduct(products: List<Product>): List<List<Product>>{
     return doubleList
 }
 fun createDoubleLisArticle(articles: List<Article>, sortingBy: SortingBy): List<List<Article>>{
-
     val doubleList = mutableListOf<List<Article>>()
     val listArticle = mutableListOf<Article>()
-
-//    log("createDoubleLisArticle")
-
     if (articles.isNotEmpty()) {
         when(sortingBy){
-            SortingBy.BY_NAME -> doubleList.add(articles.sortedBy { it.nameArticle }.toList())
+            SortingBy.BY_NAME -> doubleList.add(articles.sortedBy { it.position }.toList())
             SortingBy.BY_SECTION ->{
-                val localArticles = articles.sortedWith(
-                    compareBy ( {it.section.idSection},{it.nameArticle}, {it.position}))
-                var currentSection = localArticles[0].section.idSection
-                localArticles.forEach { item->
+                var currentSection = articles[0].section.idSection
+                articles.forEach { item->
                         if (currentSection == item.section.idSection) listArticle.add(item)
                         else {
                             doubleList.add(listArticle.toList())
@@ -53,6 +47,6 @@ fun createDoubleLisArticle(articles: List<Article>, sortingBy: SortingBy): List<
     return doubleList
 }
 
-fun log(text: String){
-    Log.d("KDS", text)
+fun log(showLog: Boolean, text: String){
+    if (showLog)Log.d("KDS", text)
 }

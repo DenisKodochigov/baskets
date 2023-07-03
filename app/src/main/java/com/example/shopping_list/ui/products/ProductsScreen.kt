@@ -72,6 +72,7 @@ import com.example.shopping_list.ui.theme.SectionColor
 import com.example.shopping_list.utils.createDoubleListProduct
 import com.example.shopping_list.utils.log
 
+val showLog = false
 @Composable
 fun ProductsScreen(
     basketId: Long,
@@ -97,7 +98,7 @@ fun ProductScreenCreateView(
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>
 ){
     val uiState by viewModel.productsScreenState.collectAsState()
-    log("ProductScreenCreateView. ${uiState.products.size}")
+    log( showLog,"ProductScreenCreateView. ${uiState.products.size}")
     bottomSheetContent.value = {
         LayoutAddEditProduct(
             uiState = uiState,
@@ -134,7 +135,7 @@ fun LayoutProductsScreen(
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
 
-    log("LayoutProductsScreen. ${uiState.products.size}")
+    log( showLog,"LayoutProductsScreen. ${uiState.products.size}")
     val itemList = uiState.products
 
     if (isSelectedId.value > 0L) {
@@ -198,7 +199,7 @@ fun LazyColumnProduct(
     changeProduct: (Product) -> Unit,
     doSelected: (Long) -> Unit
 ) {
-    log("LazyColumnProduct. ${uiState.products.size}")
+    log( showLog,"LazyColumnProduct. ${uiState.products.size}")
     val listState = rememberLazyListState()
     val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
 
@@ -246,7 +247,7 @@ fun LayoutColumProducts(
     doSelected: (Long) -> Unit
 ) {
 
-    log("LayoutColumProducts. ${products.size}")
+    log( showLog,"LayoutColumProducts. ${products.size}")
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
@@ -299,7 +300,7 @@ fun SectonProduct(
     doSelected: (Long)->Unit,
     editProduct: (Product) -> Unit,
 ){
-//    log("ElementColum")
+//    log( showLog,"ElementColum")
 
     Box(Modifier.padding(horizontal = 6.dp)) {
         Row(
@@ -308,7 +309,7 @@ fun SectonProduct(
                 .fillMaxWidth()
                 .background(Color.White)
         ) {
-//            log("product:${item.article.nameArticle}, selected = ${item.isSelected}")
+//            log( showLog,"product:${item.article.nameArticle}, selected = ${item.isSelected}")
             Spacer(
                 modifier = Modifier
                     .width(8.dp)
@@ -360,7 +361,7 @@ fun SectonProduct(
 @Composable
 fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -> Unit) {
 
-    log( "LayoutAddEditProduct")
+    log( showLog, "LayoutAddEditProduct")
     val nameSection = stringResource(R.string.name_section)
     val unitStuff = stringResource(R.string.unit_st)
     val enterValue = remember { mutableStateOf("1") }

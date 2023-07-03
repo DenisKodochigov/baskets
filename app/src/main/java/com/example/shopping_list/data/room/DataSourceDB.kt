@@ -11,6 +11,7 @@ import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.Basket
 import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
+import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.entity.UnitApp
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -49,8 +50,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         if (listProduct.isNotEmpty()) {
             listProduct.forEach {
                 it.position = position++
-                dataDao.setPositionProductInBasket( it.idProduct, basketId, it.position )
-            }
+                dataDao.setPositionProductInBasket( it.idProduct, basketId, it.position ) }
         }
     }
 
@@ -168,29 +168,40 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     fun getListArticle(): List<Article> = dataDao.getListArticle().map { item -> mapArticle(item) }
 
-    fun buildPositionArticle(){
-        reBuildPositionArticle( 0 ,
-            dataDao.getListArticleSortName().map { item -> mapArticle(item) })
+    fun buildPositionArticle( sortingBy: SortingBy ): List<Article>{
+        val listArticle = when (sortingBy){
+            SortingBy.BY_NAME -> {
+                dataDao.getListArticleSortName().map { item -> mapArticle(item) } }
+            SortingBy.BY_SECTION -> {
+                dataDao.getListArticleSortName().map { item -> mapArticle(item) }
+                    .sortedWith( compareBy ( {it.section.idSection}, {it.position} ))  }
+        }
+        var position = 1
+        if (listArticle.isNotEmpty()) {
+            listArticle.forEach {
+                it.position = position++
+                dataDao.setPositionArticle(it.idArticle, it.position)
+            } }
+        return listArticle
     }
 
     fun movePositionArticle( direction: Int): List<Article>{
-        reBuildPositionArticle( direction , getListArticle())
-        return getListArticle()
-    }
-    private fun reBuildPositionArticle(direction: Int, list: List<Article>){
-        val positionEnd = list.size
+        val listArticle = dataDao.getListArticle().map { item -> mapArticle(item) }
+        val positionEnd = listArticle.size
         val positionStart = 1
         var position = 1
-        if (list.isNotEmpty()) {
-            list.forEach {
+        if (listArticle.isNotEmpty()) {
+            listArticle.forEach {
                 if (position + direction < positionStart) it.position = positionEnd
                 else if (position + direction > positionEnd) it.position = positionStart
                 else it.position = position + direction
                 position++
             }
-            list.forEach { dataDao.setPositionArticle(it.idArticle, it.position) }
+            listArticle.forEach { dataDao.setPositionArticle(it.idArticle, it.position) }
         }
+        return getListArticle()
     }
+
     fun getAddArticle(article: ArticleDB): ArticleDB {
 
         if (article.idArticle == 0L || article.sectionId == 0L || article.unitId == 0L) {

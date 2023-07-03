@@ -56,8 +56,7 @@ fun LayoutAddEditUnit(unitApp: MutableState<UnitApp>)
 
     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
         MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameUnit, "text")
-//        unitA.value.nameUnit = enterNameUnit.value
-        unitApp.value = UnitDB(nameUnit = enterNameUnit.value)
+        unitApp.value = UnitDB(idUnit = unitApp.value.idUnit, nameUnit = enterNameUnit.value)
         Spacer(Modifier.height(12.dp))
     }
 }

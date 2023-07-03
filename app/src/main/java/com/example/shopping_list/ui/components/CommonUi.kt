@@ -330,7 +330,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(
             onCheckedChange = {
                 checkedState.value = it
                 if (checkedState.value) doChangeSorting(SortingBy.BY_SECTION)
-                else doChangeSorting(SortingBy.BY_NAME)
+                else doChangeSorting( SortingBy.BY_NAME )
             },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color(0xFF5E5E5E),

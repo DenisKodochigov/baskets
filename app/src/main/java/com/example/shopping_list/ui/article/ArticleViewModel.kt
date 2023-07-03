@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.ErrorApp
+import com.example.shopping_list.entity.SortingBy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,16 +26,15 @@ class ArticleViewModel @Inject constructor(
     val articleScreenState: StateFlow<ArticleScreenState> = _articleScreenState.asStateFlow()
 
     fun getStateArticle(){
-        getArticles()
+        getArticles(SortingBy.BY_NAME)
         getSections()
         getUnits()
     }
 
-    private fun getArticles() {
+    private fun getArticles( sortingBy: SortingBy ) {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.buildPositionArticles()
-                dataRepository.getListArticle() }.fold(
+                dataRepository.buildPositionArticles(sortingBy) }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState -> currentState.copy(article = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
@@ -116,8 +116,18 @@ class ArticleViewModel @Inject constructor(
     fun movePosition(direction: Int){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.movePositionArticle( direction) }.fold(
-                onSuccess = {_articleScreenState.update { currentState ->
-                    currentState.copy( article = it ) }},
+                onSuccess = {
+                    _articleScreenState.update { currentState -> currentState.copy( article = it ) }},
+                onFailure = { errorApp.errorApi(it.message!!)}
+            )
+        }
+    }
+    fun doChangeSortingBy(sortingBy: SortingBy){
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching { dataRepository.buildPositionArticles( sortingBy ) }.fold(
+                onSuccess = {
+                    _articleScreenState.update { currentState -> currentState.copy( article = it ) }
+                    _articleScreenState.update { currentState -> currentState.copy( sorting = sortingBy ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
