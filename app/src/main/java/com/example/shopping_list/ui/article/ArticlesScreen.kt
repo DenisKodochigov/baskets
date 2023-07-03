@@ -90,7 +90,7 @@ fun LayoutArticleScreen(
     doDeleteSelected: (List<Article>) -> Unit,
     movePosition: (Int) -> Unit,
 ) {
-    log("LayoutArticleScreen")
+//    log("LayoutArticleScreen")
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val sortingBy: MutableState<SortingBy> = remember { mutableStateOf(SortingBy.BY_NAME) }
@@ -100,6 +100,7 @@ fun LayoutArticleScreen(
 
     val itemList = uiState.article
     if (isSelectedId.value > 0L) {
+//        log("LayoutArticleScreen if (isSelectedId.value > 0L)   ${isSelectedId.value}")
         itemList.find { it.idArticle == isSelectedId.value }?.let { it1-> it1.isSelected = !it1.isSelected }
         isSelectedId.value = 0
     }
@@ -157,7 +158,7 @@ fun LazyColumnArticle(
     doSelected: (Long) -> Unit,
     doDelete: (List<Article>) -> Unit
 ) {
-    log("LazyColumnArticle")
+//    log("LazyColumnArticle")
     val listState = rememberLazyListState()
     val listSection: MutableState<List<List<Article>>> = remember { mutableStateOf(emptyList()) }
     val editArticle: MutableState<Article?> = remember { mutableStateOf(null) }
@@ -168,10 +169,7 @@ fun LazyColumnArticle(
             listUnit = uiState.unitApp,
             listSection = uiState.sections,
             onDismiss = { editArticle.value = null },
-            onConfirm = {
-                changeArticle(editArticle.value!!)
-                editArticle.value = null
-            },
+            onConfirm = changeArticle
         )
     }
 
@@ -208,8 +206,7 @@ fun LayoutColumArticles(
     doSelected: (Long) -> Unit,
     doDelete: (List<Article>) -> Unit
 ) {
-    log("LayoutColumArticles")
-
+//    log("LayoutColumArticles")
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
@@ -246,13 +243,7 @@ fun LayoutColumArticles(
                             DismissDirection.StartToEnd -> Color.Green
                             DismissDirection.EndToStart -> Color.Red
                         }
-                        val scale by animateFloatAsState(
-                            if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-                        )
-                        Box(
-                            Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 12.dp),
+                        Box( Modifier.fillMaxSize().padding(horizontal = 12.dp),
                             contentAlignment = alignment) {
                             if (dismissState.progress.fraction != 1.0f)
                                 Icon(icon, null, tint = colorIcon)
@@ -268,7 +259,7 @@ fun LayoutColumArticles(
 
 @Composable
 fun ElementColum( item: Article, doSelected: (Long)->Unit, uiState: ArticleScreenState,){
-    log("ElementColum Articles")
+//    log("ElementColum Articles")
     Box (Modifier.padding(horizontal = 6.dp)){
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -278,18 +269,14 @@ fun ElementColum( item: Article, doSelected: (Long)->Unit, uiState: ArticleScree
                 .background(BackgroundElementList)
                 .clickable { doSelected(item.idArticle) }
         ) {
-            Spacer(
-                modifier = Modifier
-                    .width(8.dp)
+            Spacer( modifier = Modifier.width(8.dp)
                     .height(32.dp)
                     .background(if (item.isSelected) Color.Red else Color.LightGray)
                     .align(Alignment.CenterVertically)
             )
             MyTextH2(
                 text = item.nameArticle,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(
+                modifier = Modifier.weight(1f).padding(
                         start = dimensionResource(R.dimen.lazy_padding_hor),
                         top = dimensionResource(R.dimen.lazy_padding_ver),
                         bottom = dimensionResource(R.dimen.lazy_padding_ver)
@@ -298,8 +285,7 @@ fun ElementColum( item: Article, doSelected: (Long)->Unit, uiState: ArticleScree
             Spacer(modifier = Modifier.width(4.dp))
             MyTextH2(
                 text = item.unitApp.nameUnit,
-                modifier = Modifier
-                    .width(40.dp)
+                modifier = Modifier.width(40.dp)
                     .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
             )
         }
@@ -340,7 +326,6 @@ fun LayoutAddEditArticle(
             .padding(horizontal = 24.dp, vertical = 12.dp)
             .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.85).dp)
     ) {
-        Log.d("KDS", "BottomSheetContentProduct.Column")
         HeaderScreen( text = stringResource(R.string.add_product),
             Modifier.focusRequester(focusRequesterSheet) )
 //        Spacer(Modifier.height(24.dp))
@@ -387,15 +372,14 @@ fun LayoutAddEditArticle(
             isSelected = false,
             position = 0
         )
-//        article.section = SectionEntity(enterSection.value.first, enterSection.value.second)
-//        article.unitA = UnitEntity(enterUnit.value.first, enterUnit.value.second)
 
         TextButtonOK(
             enabled = enterArticle.value.second != "",
             onConfirm = {
-            onAddArticle(article)
-            enterArticle.value = Pair(0, "")
-        })
+                onAddArticle(article)
+                enterArticle.value = Pair(0, "")
+            }
+        )
         Spacer(Modifier.height(72.dp))
     }
 }

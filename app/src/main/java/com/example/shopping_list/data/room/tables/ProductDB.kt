@@ -17,44 +17,6 @@ data class ProductDB(
     @Ignore override var isSelected: Boolean,
     @Ignore override var article: Article,
 ) : Product {
-//    @Ignore constructor(
-//        idProduct: Long,
-//        basketId: Long,
-//        value: Double,
-//        putInBasket: Boolean,
-//        position: Int,
-//        articleId: Long,
-//        article: Article,
-//        isSelected: Boolean
-//    ) : this(
-//        idProduct = 0,
-//        value = 0.0,
-//        basketId = 0,
-//        putInBasket = false,
-//        position = 0,
-//        articleId = 0,
-//        isSelected = false,
-//        article = ArticleDB(
-//            idArticle = 0,
-//            nameArticle = "",
-//            position = 0,
-//            sectionId = 0,
-//            unitId = 0,
-//            section = SectionDB(),
-//            unitApp =  UnitDB(),
-//            isSelected = false,
-//        )
-//    ) {
-//        this.idProduct = idProduct
-//        this.value = value
-//        this.basketId = basketId
-//        this.putInBasket = putInBasket
-//        this.position = position
-//        this.articleId = articleId
-//        this.isSelected = isSelected
-//        this.article = article
-//    }
-
     @Ignore constructor(
         basketId: Long,
         value: Double,

@@ -29,13 +29,15 @@ fun EditUnitDialog(
 {
     val unitLocal = remember{ mutableStateOf(unitApp) }
     AlertDialog(
-        onDismissRequest = onDismiss ,
+        onDismissRequest = onDismiss,
+        confirmButton = { TextButtonOK( onConfirm = {
+            onConfirm( unitLocal.value )
+        } ) },
+        text = { EditUnitDialogLayout(unitLocal) },
         title = {
             if (unitApp.idUnit > 0) MyTextH2(stringResource(R.string.change_unit), Modifier)
             else MyTextH2(stringResource(R.string.add_unit), Modifier)
         },
-        text = { EditUnitDialogLayout(unitLocal) },
-        confirmButton = { TextButtonOK( onConfirm = { onConfirm(unitLocal.value) } ) }
     )
 }
 

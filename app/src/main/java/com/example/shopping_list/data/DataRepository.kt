@@ -5,6 +5,7 @@ import com.example.shopping_list.data.room.tables.ArticleDB
 import com.example.shopping_list.data.room.tables.BasketDB
 import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.*
+import com.example.shopping_list.utils.log
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,10 +39,9 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     fun getListProducts(basketId: Long): List<Product> = dataSourceDB.getListProducts(basketId)
     fun buildPositionProduct(basketId: Long) = dataSourceDB.buildPositionProduct(basketId)
 
-    fun addProduct(product: Product, basketId: Long): List<Product> {
-//        Log.d("KDS", " ${product}")
-        return dataSourceDB.addProduct(product, basketId)
-    }
+    fun addProduct(product: Product, basketId: Long): List<Product> =
+        dataSourceDB.addProduct(product, basketId)
+
 
     fun putProductInBasket(product: Product, basketId: Long): List<Product> {
         return dataSourceDB.putProductInBasket(product, basketId)

@@ -112,10 +112,7 @@ fun LazyColumnUnits(
         EditUnitDialog(
             unitApp = editUnit.value!!,
             onDismiss = { editUnit.value = null },
-            onConfirm = {
-                changeUnit( editUnit.value!!)
-                editUnit.value = null
-            }
+            onConfirm = changeUnit
         )
     }
 

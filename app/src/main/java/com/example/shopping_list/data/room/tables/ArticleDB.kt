@@ -18,38 +18,8 @@ data class ArticleDB(
     @Ignore override var isSelected: Boolean,
     @Ignore override var section: Section,
     @Ignore override var unitApp: UnitApp,
-) : Article {
+): Article {
 
-//    constructor(
-//        nameArticle: String,
-//        position: Int,
-//        sectionId: Long,
-//        unitId: Long,
-//        isSelected: Boolean,
-//        section: SectionDB,
-//        unitApp: UnitDB
-//    ): this(
-//        idArticle= 0,
-//        nameArticle = "",
-//        position = 0,
-//        sectionId= 0,
-//        unitId= 0,
-//        isSelected = false,
-//        section = SectionDB(),
-//        unitApp = UnitDB(0, "", false)
-//    ){
-//        this.nameArticle = nameArticle
-//        this.position = position
-//        this.sectionId = sectionId
-//        this.unitId = unitId
-//        this.isSelected = isSelected
-//        this.section = section
-//        this.unitApp = unitApp
-//    }
-
-//    @Ignore
-//    constructor(idArticle: Long, nameArticle: String, position: Int, isSelected: Boolean, section: Section, unitApp: UnitApp,
-//    ) : this(0, "", 0, 0, 0, SectionDB() as Section, UnitDB(0, "", false) as UnitApp, false)
     constructor(
         nameArticle: String,
         sectionId: Long,

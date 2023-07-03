@@ -14,7 +14,7 @@ class ErrorApp @Inject constructor(@ApplicationContext val context: Context) {
     fun errorApi (errorMessage:String){
 
         val toastMessage: String
-        log(errorMessage)
+        log("Error: $errorMessage")
 
         when(errorMessage){
             "error_addProduct" -> toastMessage = context.getString(R.string.error_addProduct)

@@ -38,10 +38,10 @@ fun EditArticleDialog(
 {
     val articleLocal = remember{ mutableStateOf(article) }
     AlertDialog(
-        onDismissRequest = onDismiss ,
+        onDismissRequest = onDismiss,
+        confirmButton = { TextButtonOK( onConfirm = { onConfirm( articleLocal.value) } ) },
+        text = { EditArticleDialogLayout( articleLocal, listUnit, listSection ) },
         title = {  MyTextH2(stringResource(R.string.change_article), Modifier) },
-        text = { EditArticleDialogLayout(articleLocal, listUnit, listSection) },
-        confirmButton = { TextButtonOK( onConfirm = { onConfirm(articleLocal.value) } ) }
     )
 }
 
@@ -73,8 +73,7 @@ fun LayoutAddEditArticle(
         position = article.value.position,
         isSelected = article.value.isSelected,
         section =
-            if (enterSection.value.first == 0L && enterSection.value.second != "")
-            {
+            if (enterSection.value.first == 0L && enterSection.value.second != "") {
                 SectionDB(nameSection = enterSection.value.second, idSection = 0L)
             } else {
                 if (listSection.isNotEmpty()) {
@@ -103,7 +102,6 @@ fun LayoutAddEditArticle(
             modifier = Modifier.fillMaxWidth(), //.weight(1f),
             enterValue = enterSection,
             filtering = true)
-//        Spacer(Modifier.width(4.dp))
         Spacer(Modifier.height(12.dp))
         /** Select unit*/
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {

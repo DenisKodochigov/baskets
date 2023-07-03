@@ -113,7 +113,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     fun addProduct(product: Product, basketId: Long): List<Product> {
         if (basketId > 0L ) {
-            val idArticle = getAddArticle(product.article as ArticleDB)?.idArticle ?: 0
+            val idArticle = getAddArticle(product.article as ArticleDB).idArticle
             if (idArticle != 0L) {
                 if (dataDao.checkArticleInBasket( basketId, idArticle) == null) {
                     dataDao.addProduct(
@@ -123,9 +123,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
                             articleId = idArticle,
                             position = product.position )
                     )
-                }  else {
-                    throw IllegalArgumentException("error_addProduct")
-                }
+                }  else { throw IllegalArgumentException("error_addProduct") }
             }
         }
         return getListProducts(basketId)

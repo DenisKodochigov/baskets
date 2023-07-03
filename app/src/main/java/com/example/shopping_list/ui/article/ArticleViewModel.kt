@@ -79,13 +79,9 @@ class ArticleViewModel @Inject constructor(
 
     fun changeArticle(article: Article){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching {
-                dataRepository.changeArticle(article)
-            }.fold(
-                onSuccess = {
-                    Log.d("KDS", "##########################################################")
-                    if (it.isNotEmpty()) Log.d("KDS", "ViewModel.changeArticle ${it[0].section.nameSection}")
-                    _articleScreenState.update { currentState -> currentState.copy( article = it ) } },
+            kotlin.runCatching { dataRepository.changeArticle(article) }.fold(
+                onSuccess = { _articleScreenState.update {
+                        currentState -> currentState.copy( article = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
             getSections()
