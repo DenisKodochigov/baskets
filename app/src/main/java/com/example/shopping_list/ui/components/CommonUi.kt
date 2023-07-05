@@ -1,5 +1,7 @@
 package com.example.shopping_list.ui.components
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -17,7 +19,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale.Companion.FillBounds
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,6 +32,8 @@ import com.example.shopping_list.R
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.ui.theme.ButtonColorsMy
+import com.example.shopping_list.ui.theme.ScaffoldColor
+
 
 @Composable
 fun HeaderScreen(text: String, modifier: Modifier) {
@@ -35,6 +41,23 @@ fun HeaderScreen(text: String, modifier: Modifier) {
     Spacer(modifier = Modifier.height(24.dp))
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(text, style = typography.h1)
+    }
+}
+
+@Composable
+fun HeaderImScreen(text: String, idImage:Int ) {
+
+    Box(Modifier.fillMaxWidth().height(240.dp) ){
+        Image(
+            painter = painterResource(id = idImage),
+            contentDescription = "Photo",
+            contentScale = FillBounds,
+            modifier = Modifier.align(alignment = Alignment.Center))
+        Box(modifier = Modifier.background(ScaffoldColor, shape = RoundedCornerShape(6.dp))
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .align(alignment = Alignment.BottomCenter)) {
+            Text( text = text, style = MaterialTheme.typography.h1 )
+        }
     }
 }
 @Composable
@@ -249,25 +272,6 @@ fun MyOutlinedTextFieldWithoutIconClearing(
     )
 }
 
-@Composable fun ButtonMove(sortingList: (Int) -> Unit) {
-//    Log.d("KDS", "ButtonSwipeArticle")
-    Row(Modifier.fillMaxWidth()) {
-        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowDownward) { sortingList(1) }
-//        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.lazy_padding_hor)))
-//        ButtonMove(Modifier.weight(1f), Icons.Default.ArrowUpward) { sortingList(-1) }
-    }
-}
-
-@Composable fun ButtonMove(modifier: Modifier, icon: ImageVector, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        modifier,   //.height(36.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = ButtonColorsMy)
-    ) {
-        Icon(icon, contentDescription = null)
-    }
-}
-
 @Composable fun ButtonCircle( modifier: Modifier, iconButton: ImageVector, onClick: () -> Unit) {
     val radius = 25.dp
     IconButton (
@@ -326,7 +330,9 @@ fun MyOutlinedTextFieldWithoutIconClearing(
         Spacer(Modifier.width(30.dp))
         Switch(
             checked = checkedState.value,
-            modifier = Modifier.height(12.dp).width(30.dp),
+            modifier = Modifier
+                .height(12.dp)
+                .width(30.dp),
             onCheckedChange = {
                 checkedState.value = it
                 if (checkedState.value) doChangeSorting(SortingBy.BY_SECTION)

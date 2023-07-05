@@ -108,16 +108,6 @@ class ProductViewModel  @Inject constructor(
         }
     }
 
-    fun movePositionProductInBasket(basketId: Long, direction: Int){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.setPositionProductInBasket(basketId, direction) }.fold(
-                onSuccess = {_productsScreenState.update { currentState ->
-                    currentState.copy(products = it) }},
-                onFailure = { errorApp.errorApi(it.message!!)}
-            )
-        }
-    }
-
     fun changeProduct(product: Product, basketId: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeProductInBasket(product, basketId) }.fold(

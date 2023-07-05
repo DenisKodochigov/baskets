@@ -55,7 +55,7 @@ import com.example.shopping_list.data.room.tables.ProductDB
 import com.example.shopping_list.data.room.tables.SectionDB
 import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.ui.components.ButtonMove
+import com.example.shopping_list.ui.components.HeaderImScreen
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.HeaderSection
 import com.example.shopping_list.ui.components.MyExposedDropdownMenuBox
@@ -72,7 +72,7 @@ import com.example.shopping_list.ui.theme.SectionColor
 import com.example.shopping_list.utils.createDoubleListProduct
 import com.example.shopping_list.utils.log
 
-val showLog = false
+const val showLog = false
 @Composable
 fun ProductsScreen(
     basketId: Long,
@@ -112,7 +112,6 @@ fun ProductScreenCreateView(
         doChangeSectionSelected = { productList, idSection ->
             viewModel.changeSectionSelected(productList, idSection) },
         doDeleteSelected = { productList -> viewModel.deleteSelectedProducts(productList) },
-        movePosition = { direction -> viewModel.movePositionProductInBasket(basketId, direction) },
         bottomSheetVisible = bottomSheetVisible
     )
 }
@@ -127,7 +126,6 @@ fun LayoutProductsScreen(
     changeProduct: (Product) -> Unit,
     doChangeSectionSelected: (List<Product>, Long) -> Unit,
     doDeleteSelected: (List<Product>) -> Unit,
-    movePosition: (Int) -> Unit,
 ) {
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -164,12 +162,7 @@ fun LayoutProductsScreen(
 
     Box( Modifier.fillMaxSize()) {
         Column(modifier.fillMaxHeight()) {
-            HeaderScreen(
-                text = stringResource(R.string.products_in_basket) + " " + uiState.nameBasket, modifier)
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .weight(1f) ) {
+            Column(Modifier.fillMaxHeight().weight(1f) ) {
                 Spacer(modifier = Modifier.weight(1f, !bottomSheetVisible.value))
                 LazyColumnProduct(
                     uiState = uiState,
@@ -177,14 +170,11 @@ fun LayoutProductsScreen(
                     changeProduct = changeProduct,
                     doSelected = { idItem -> isSelectedId.value = idItem } )
             }
-            ButtonMove(movePosition)
         }
         startScreen = showFABs(
             startScreen = startScreen,
             isSelected = itemList.find { it.isSelected } != null,
-            modifier = Modifier
-                .height(200.dp)
-                .align(alignment = Alignment.BottomCenter),
+            modifier = Modifier.height(200.dp).align(alignment = Alignment.BottomCenter),
             doDeleted = { deleteSelected.value = true },
             doChangeSection = { changeSectionSelected.value = true },
             doUnSelected = { unSelected.value = true }
@@ -223,10 +213,12 @@ fun LazyColumnProduct(
             .clip(RoundedCornerShape(8.dp))
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
+        item {
+            HeaderImScreen(idImage = R.drawable.fon3,
+                text = stringResource(R.string.products_in_basket) + " " + uiState.nameBasket, )
+        }
         items(items = listSection) { item ->
-            Column(modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(SectionColor)) {
+            Column(modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(SectionColor)) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
                 LayoutColumProducts(
                     products = item,

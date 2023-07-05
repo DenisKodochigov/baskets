@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Basket
-import com.example.shopping_list.ui.components.ButtonMove
+import com.example.shopping_list.ui.components.HeaderImScreen
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.TextButtonOK
 import com.example.shopping_list.ui.components.dialog.EditBasketName
@@ -75,9 +75,7 @@ fun BasketScreenCreateView(
     bottomSheetVisible: MutableState<Boolean>,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>
 ){
-
     val uiState by viewModel.basketScreenState.collectAsState()
-
     bottomSheetContent.value = {
         BottomSheetContentBasket(
             onAddClick = {viewModel.addBasket(it)}, bottomSheetHide = bottomSheetHide) }
@@ -88,7 +86,6 @@ fun BasketScreenCreateView(
         itemList = uiState.baskets,
         changeNameBasket = { basket -> viewModel.changeNameBasket(basket)},
         deleteBasket = { basketId -> viewModel.deleteBasket(basketId)},
-        refreshPosition = { direction -> viewModel.setPositionBasket(direction)},
         bottomSheetVisible = bottomSheetVisible
     )
 }
@@ -99,7 +96,6 @@ fun LayoutBasketsScreen(
     itemList: List<Basket>,
     bottomSheetVisible: MutableState<Boolean>,
     onClickBasket: (Long) -> Unit,
-    refreshPosition: (Int) -> Unit,
     changeNameBasket: (Basket) -> Unit,
     deleteBasket: (Long) -> Unit,
 ){
@@ -115,21 +111,12 @@ fun LayoutBasketsScreen(
         itemList.forEach { it.isSelected = false }
         unSelected.value = false
     }
-    Box(
-        Modifier
-            .fillMaxSize()
-//            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))
-    ) {
+    Box(Modifier.fillMaxSize()) {
         Column(modifier = modifier.fillMaxHeight()) {
-            HeaderScreen(text = stringResource(R.string.baskets), modifier)
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .weight(1f)) {
+            Column(Modifier.fillMaxHeight().weight(1f)) {
                 if (!bottomSheetVisible.value) Spacer(Modifier.weight(1f))
                 LazyColumnBasket(itemList, onClickBasket, deleteBasket, changeNameBasket)
             }
-            ButtonMove(refreshPosition)
         }
     }
  }
@@ -171,6 +158,13 @@ fun LazyColumnBasket(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver)))
     {
+        item {
+//            Box(Modifier.height(240.dp)){
+                HeaderImScreen(text = stringResource(R.string.baskets), R.drawable.fon1_1)
+//                HeaderScreen(text = stringResource(R.string.baskets),
+//                    Modifier.align(alignment = Alignment.BottomCenter))
+//            }
+        }
         items(items = basketList, key = { it.idBasket })
         { item->
             val dismissState = rememberDismissState(

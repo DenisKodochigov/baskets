@@ -38,7 +38,7 @@ import com.example.shopping_list.ui.theme.SectionColor
 import com.example.shopping_list.utils.createDoubleLisArticle
 import com.example.shopping_list.utils.log
 
-val showLog = true
+const val showLog = true
 @Composable
 fun ArticlesScreen(
     bottomSheetVisible: MutableState<Boolean>,
@@ -72,7 +72,6 @@ fun ArticleScreenInitDate(
         uiState = viewModel.articleScreenState.collectAsState().value,
         changeArticle = { article -> viewModel.changeArticle(article) },
         doDeleteSelected = { articles -> viewModel.deleteSelected(articles) },
-        movePosition = { direction -> viewModel.movePosition(direction) },
         doChangeSortingBy = { sortingBy -> viewModel.doChangeSortingBy(sortingBy)},
         doChangeSectionSelected = { articles, idSection ->
             viewModel.changeSectionSelected(articles, idSection) },
@@ -88,7 +87,6 @@ fun LayoutArticleScreen(
     changeArticle: (Article) -> Unit,
     doChangeSectionSelected: (List<Article>, Long) -> Unit,
     doDeleteSelected: (List<Article>) -> Unit,
-    movePosition: (Int) -> Unit,
     doChangeSortingBy: (SortingBy) -> Unit,
 ) {
     log( showLog,"LayoutArticleScreen")
@@ -126,7 +124,7 @@ fun LayoutArticleScreen(
 
     Box( Modifier.fillMaxSize() ) {
         Column(modifier.fillMaxHeight()) {
-            HeaderScreen(text = stringResource(R.string.product), modifier)
+//            HeaderScreen(text = stringResource(R.string.product), modifier)
             Column( Modifier.fillMaxHeight().weight(1f)) {
                 Spacer(modifier = Modifier.weight(1f, !bottomSheetVisible.value))
                 LazyColumnArticle(
@@ -136,7 +134,6 @@ fun LayoutArticleScreen(
                     doDelete = { items -> doDeleteSelected( items ) })
             }
             SwitchSorting( doChangeSortingBy )
-            ButtonMove(movePosition)
         }
         startScreen = showFABs(
             startScreen = startScreen,
@@ -180,6 +177,12 @@ fun LazyColumnArticle(
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
+        item {
+            HeaderImScreen(text = stringResource(R.string.product), R.drawable.fon5_1)
+//            Box(Modifier.fillMaxWidth().height(240.dp)){
+//                HeaderScreen(text = stringResource(R.string.product), Modifier.align(alignment = Alignment.BottomCenter))
+//            }
+        }
         items(items = listSection.value)
         { item ->
             Column( modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(SectionColor)) {
