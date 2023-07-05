@@ -4,3 +4,8 @@ enum class SortingBy{
     BY_NAME,
     BY_SECTION
 }
+
+
+enum class SwitcherState {
+    Start, End
+}
