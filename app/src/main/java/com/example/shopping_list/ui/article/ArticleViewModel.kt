@@ -7,6 +7,7 @@ import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.ErrorApp
 import com.example.shopping_list.entity.SortingBy
+import com.example.shopping_list.utils.log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,9 +65,9 @@ class ArticleViewModel @Inject constructor(
         }
     }
 
-    fun addArticle(article: Article){
+    fun addArticle( article: Article, sortingBy: SortingBy ){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.addArticle(article) }.fold(
+            kotlin.runCatching { dataRepository.addArticle(article, sortingBy) }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState ->
                     currentState.copy( article = it ) }},
@@ -77,9 +78,9 @@ class ArticleViewModel @Inject constructor(
         }
     }
 
-    fun changeArticle(article: Article){
+    fun changeArticle( article: Article, sortingBy: SortingBy ){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.changeArticle(article) }.fold(
+            kotlin.runCatching { dataRepository.changeArticle(article, sortingBy) }.fold(
                 onSuccess = { _articleScreenState.update {
                         currentState -> currentState.copy( article = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
@@ -89,11 +90,10 @@ class ArticleViewModel @Inject constructor(
         }
     }
 
-    fun changeSectionSelected(articles: List<Article>, idSection: Long){
+    fun changeSectionSelected(articles: List<Article>, idSection: Long, sortingBy: SortingBy){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.changeSectionSelectedArticle(articles, idSection)
-            }.fold(
+                dataRepository.changeSectionSelectedArticle(articles, idSection, sortingBy) }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState -> currentState.copy( article = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
@@ -103,9 +103,9 @@ class ArticleViewModel @Inject constructor(
         }
     }
 
-    fun deleteSelected(articles: List<Article>){
+    fun deleteSelected(articles: List<Article>, sortingBy: SortingBy){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.deleteSelectedArticle(articles) }.fold(
+            kotlin.runCatching { dataRepository.deleteSelectedArticle(articles, sortingBy) }.fold(
                 onSuccess = {_articleScreenState.update { currentState ->
                     currentState.copy( article = it ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}

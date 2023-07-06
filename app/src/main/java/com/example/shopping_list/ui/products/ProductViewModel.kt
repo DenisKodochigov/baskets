@@ -1,6 +1,5 @@
 package com.example.shopping_list.ui.products
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository

@@ -69,7 +69,6 @@ import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import com.example.shopping_list.ui.components.selectSectionWithArticle
 import com.example.shopping_list.ui.components.selectUnitWithArticle
 import com.example.shopping_list.ui.theme.SectionColor
-import com.example.shopping_list.utils.createDoubleListProduct
 import com.example.shopping_list.utils.log
 
 const val showLog = false
@@ -137,12 +136,13 @@ fun LayoutProductsScreen(
     val itemList = uiState.products
 
     if (isSelectedId.value > 0L) {
-        itemList.find { it.idProduct == isSelectedId.value }?.let { item->
-            item.isSelected = !item.isSelected }
+        uiState.products.forEach { productList ->
+            productList.find { it.idProduct == isSelectedId.value }
+                ?.let { item -> item.isSelected = !item.isSelected } }
         isSelectedId.value = 0
     }
     if (unSelected.value) {
-        itemList.forEach { it.isSelected = false }
+        uiState.products.forEach { productList -> productList.forEach { it.isSelected = false } }
         unSelected.value = false
     }
     if (changeSectionSelected.value) {
@@ -150,13 +150,13 @@ fun LayoutProductsScreen(
             listSection = uiState.sections,
             onDismiss = { changeSectionSelected.value = false },
             onConfirm = {
-                if (it != 0L) doChangeSectionSelected(itemList, it)
+                if (it != 0L) doChangeSectionSelected( uiState.products.flatten(), it)
                 changeSectionSelected.value = false
             },
         )
     }
     if (deleteSelected.value) {
-        doDeleteSelected(itemList)
+        doDeleteSelected(uiState.products.flatten())
         deleteSelected.value = false
     }
 
@@ -173,7 +173,7 @@ fun LayoutProductsScreen(
         }
         startScreen = showFABs(
             startScreen = startScreen,
-            isSelected = itemList.find { it.isSelected } != null,
+            isSelected = uiState.products.flatten().find { it.isSelected } != null,
             modifier = Modifier.height(200.dp).align(alignment = Alignment.BottomCenter),
             doDeleted = { deleteSelected.value = true },
             doChangeSection = { changeSectionSelected.value = true },
@@ -204,7 +204,6 @@ fun LazyColumnProduct(
             }
         )
     }
-    val listSection: List<List<Product>> = createDoubleListProduct(uiState.products)
 
     LazyColumn(
         state = listState,
@@ -217,7 +216,7 @@ fun LazyColumnProduct(
             HeaderImScreen(idImage = R.drawable.fon3,
                 text = stringResource(R.string.products_in_basket) + " " + uiState.nameBasket, )
         }
-        items(items = listSection) { item ->
+        items(items = uiState.products) { item ->
             Column(modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(SectionColor)) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
                 LayoutColumProducts(

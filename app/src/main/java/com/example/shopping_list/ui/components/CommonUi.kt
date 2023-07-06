@@ -1,10 +1,9 @@
 package com.example.shopping_list.ui.components
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,7 +11,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.RemoveDone
@@ -20,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,12 +30,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.SortingBy
-import com.example.shopping_list.entity.SwitcherState
 import com.example.shopping_list.ui.theme.ButtonColorsMy
 import com.example.shopping_list.ui.theme.ScaffoldColor
 import kotlin.math.roundToInt
@@ -56,16 +53,21 @@ fun HeaderScreen(text: String, modifier: Modifier) {
 @Composable
 fun HeaderImScreen(text: String, idImage:Int ) {
 
-    Box(Modifier.fillMaxWidth().height(240.dp) ){
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(240.dp) ){
         Image(
             painter = painterResource(id = idImage),
             contentDescription = "Photo",
             contentScale = FillBounds,
             modifier = Modifier.align(alignment = Alignment.Center))
-        Box(modifier = Modifier.background(ScaffoldColor, shape = RoundedCornerShape(6.dp))
+        Box(modifier = Modifier.fillMaxWidth()
+            .background(ScaffoldColor)
             .padding(horizontal = 12.dp, vertical = 4.dp)
             .align(alignment = Alignment.BottomCenter)) {
-            Text( text = text, style = MaterialTheme.typography.h1 )
+            Text( text = text, style = MaterialTheme.typography.h1,
+                modifier = Modifier.align(alignment = Alignment.BottomCenter) )
         }
     }
 }
@@ -212,8 +214,6 @@ fun MyOutlinedTextFieldWithoutIcon(
 
     val localFocusManager = LocalFocusManager.current
     var enterText by remember { mutableStateOf(enterValue.value) }
-//    enterText = enterValue.value
-//    val keyboardController = LocalSoftwareKeyboardController.current
     var keyboardOptions =
         KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done)
     if (typeKeyboard == "text") keyboardOptions =
@@ -330,106 +330,70 @@ fun MyOutlinedTextFieldWithoutIconClearing(
     }
 }
 
-@Composable fun SwitchSorting(doChangeSorting: (SortingBy) -> Unit){
-    Row( Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically )
-    {
-        val checkedState = remember { mutableStateOf(false) }
-        Text(text = stringResource(R.string.by_name), style = MaterialTheme.typography.h3 )
-        Spacer(Modifier.width(30.dp))
-        Switch(
-            checked = checkedState.value,
-            modifier = Modifier
-                .height(12.dp)
-                .width(30.dp),
-            onCheckedChange = {
-                checkedState.value = it
-                if (checkedState.value) doChangeSorting(SortingBy.BY_SECTION)
-                else doChangeSorting( SortingBy.BY_NAME )
-            },
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = Color(0xFF5E5E5E),
-                checkedTrackColor = Color(0xFF919191),
-                uncheckedThumbColor = Color(0xFF5E5E5E),
-                uncheckedTrackColor = Color(0xFF919191)
-            ))
-        Spacer(Modifier.width(30.dp))
-        Text(text = stringResource(R.string.by_section), style = MaterialTheme.typography.h3 )
-    }
-}
-
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit, onClick: () -> Unit) {
+fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
+    val width = 350.dp
+    val frameSize = 120.dp
+    val cornerDp = 4.dp
 
-    val width = 190.dp
-    val buttonSize = 130.dp
-    val cornerDp = 8.dp
-    val swipeableState = rememberSwipeableState(SwitcherState.Start)
-    val sizePx = with(LocalDensity.current) { (width - buttonSize - 9.dp).toPx() }
-    val progress = derivedStateOf {
-        if (swipeableState.offset.value == 0f) 0f else swipeableState.offset.value / sizePx
-    }
+    val swipeableState = rememberSwipeableState(0)
+    var stateSortingBy by remember { mutableStateOf(SortingBy.BY_NAME) }
+    val sizePx = with(LocalDensity.current) { (width - frameSize).toPx() }
+    val anchors = mapOf(0f to 0, sizePx to 1) // Maps anchor points (in px) to states
 
-    Box( modifier = Modifier
-        .clickable(
-            enabled = true,
-            onClickLabel = null,
-            role = null,
-            onClick = onClick
-        )
-        .fillMaxWidth()
-//        .width(width)
-//        .clip(RoundedCornerShape(cornerDp))
-        .background(color = ButtonColorsMy, shape = RoundedCornerShape(cornerDp))
-//        .border(width = 2.dp, color = Color.LightGray)
-        .swipeable(
-            state = swipeableState,
-            anchors = mapOf(0f to SwitcherState.Start, sizePx to SwitcherState.End),
-            thresholds = { _, _ -> FractionalThreshold(0.5f) },
-            orientation = Orientation.Horizontal
-        ),
-    ) {
-        Icon(Icons.Default.ArrowDownward, contentDescription = null)
-        Row(Modifier
-            .align(alignment = Alignment.Center)
-            .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
-            .padding(4.dp)
-            .shadow(elevation = 2.dp, RoundedCornerShape(12.dp), clip = false)
-            .background(color = Color.White, shape = RoundedCornerShape(cornerDp - 2.dp)),
-            verticalAlignment = Alignment.CenterVertically
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .align(alignment = Alignment.Center)
+                .width(width)
+                .background(color = ButtonColorsMy, shape = RoundedCornerShape(cornerDp))
+                .swipeable(
+                    state = swipeableState,
+                    anchors = anchors,
+                    thresholds = { _, _ -> FractionalThreshold(0.3f) },
+                    orientation = Orientation.Horizontal
+                )
         ) {
-            val isConfirmed = derivedStateOf { progress.value >= 0.5f }
-            Crossfade(targetState = isConfirmed.value) {
-                if (it) {
-                    Box( modifier = Modifier
-                        .width(buttonSize)
-//                        .background(Color.LightGray, RoundedCornerShape(cornerDp - 2.dp))
-                    )
-                    {
-                        Text( text = stringResource(id = R.string.by_name),
-                            style = MaterialTheme.typography.h2,
-                            modifier = Modifier
-                                .align(alignment = Alignment.Center)
-                                .padding(horizontal = 8.dp, vertical = 4.dp))
-                    }
-                    doChangeSorting(SortingBy.BY_NAME)
-                } else {
-                    Box( modifier = Modifier
-                        .width(buttonSize)
-                        .background(Color.LightGray, RoundedCornerShape(cornerDp)))
-                    {
-                        Text( text = stringResource(id = R.string.by_section),
-                            style = MaterialTheme.typography.h2,
-                            modifier = Modifier
-                                .align(alignment = Alignment.Center)
-                                .padding(horizontal = 8.dp, vertical = 4.dp))
-                    }
-                    doChangeSorting(SortingBy.BY_SECTION)
-                }
+            TextForSwitchingButton( stringResource(id = R.string.by_name), frameSize,
+                Modifier.align(alignment = Alignment.CenterStart))
+            TextForSwitchingButton( stringResource(id = R.string.by_section), frameSize,
+                Modifier.align(alignment = Alignment.CenterEnd))
+            Box(
+                Modifier
+                    .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
+                    .width(frameSize)
+                    .padding(4.dp)
+                    .clip(shape = RoundedCornerShape(cornerDp))
+                    .border(width = 1.dp, color = Color.DarkGray)
+                    .background(Color.Transparent, RoundedCornerShape(cornerDp))
+            ) {
+                TextForSwitchingButton(" ", frameSize, Modifier)
+
             }
         }
-        Icon(Icons.Default.ArrowDownward, contentDescription = null)
+    }
+
+    if (swipeableState.targetValue == 1 && swipeableState.currentValue ==1 &&
+        stateSortingBy == SortingBy.BY_NAME) {
+        doChangeSorting(SortingBy.BY_SECTION)
+        stateSortingBy = SortingBy.BY_SECTION
+    }
+    else if (swipeableState.targetValue == 0 && swipeableState.currentValue == 0 &&
+        stateSortingBy == SortingBy.BY_SECTION){
+        doChangeSorting(SortingBy.BY_NAME)
+        stateSortingBy = SortingBy.BY_NAME
+    }
+}
+
+@Composable
+fun TextForSwitchingButton(text: String, frameSize: Dp, modifier: Modifier){
+    Box(modifier = modifier.width(frameSize)){
+        Text( text = text, style = MaterialTheme.typography.h3,
+            modifier = Modifier
+                .padding(horizontal = 4.dp, vertical = 4.dp)
+                .align(alignment = Alignment.Center)
+        )
     }
 }

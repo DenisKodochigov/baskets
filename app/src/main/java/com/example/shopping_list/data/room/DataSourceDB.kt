@@ -13,6 +13,7 @@ import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.entity.UnitApp
+import com.example.shopping_list.utils.createDoubleLisArticle
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -182,7 +183,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
                 it.position = position++
                 dataDao.setPositionArticle(it.idArticle, it.position)
             } }
-        return listArticle
+        return  listArticle
     }
 
     fun movePositionArticle( direction: Int): List<Article>{
