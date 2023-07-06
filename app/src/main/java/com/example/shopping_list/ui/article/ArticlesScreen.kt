@@ -39,16 +39,12 @@ import com.example.shopping_list.utils.log
 
 const val showLog = false
 @Composable
-fun ArticlesScreen(
-    bottomSheetVisible: MutableState<Boolean>,
-    bottomSheetContent: MutableState<@Composable (() -> Unit)?>
-) {
+fun ArticlesScreen( bottomSheetContent: MutableState<@Composable (() -> Unit)?>) {
     val viewModel: ArticleViewModel = hiltViewModel()
     viewModel.getStateArticle()
 
     ArticleScreenInitDate(
         viewModel = viewModel,
-        bottomSheetVisible = bottomSheetVisible,
         bottomSheetContent = bottomSheetContent
     )
 }
@@ -56,7 +52,6 @@ fun ArticlesScreen(
 @Composable
 fun ArticleScreenInitDate(
     viewModel: ArticleViewModel,
-    bottomSheetVisible: MutableState<Boolean>,
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>
 ) {
     log( showLog,"ArticleScreenInitDate")
@@ -68,7 +63,6 @@ fun ArticleScreenInitDate(
 
     LayoutArticleScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
-        bottomSheetVisible = bottomSheetVisible,
         uiState = viewModel.articleScreenState.collectAsState().value,
         changeArticle = { article -> viewModel.changeArticle(article, uiState.sorting) },
         doDeleteSelected = { articles -> viewModel.deleteSelected(articles, uiState.sorting) },
@@ -83,7 +77,6 @@ fun ArticleScreenInitDate(
 fun LayoutArticleScreen(
     modifier: Modifier = Modifier,
     uiState: ArticleScreenState,
-    bottomSheetVisible: MutableState<Boolean>,
     changeArticle: (Article) -> Unit,
     doChangeSectionSelected: (List<Article>, Long) -> Unit,
     doDeleteSelected: (List<Article>) -> Unit,
@@ -97,7 +90,7 @@ fun LayoutArticleScreen(
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
 
     if (isSelectedId.value > 0L) {
-        log( showLog,"LayoutArticleScreen if (isSelectedId.value > 0L)   ${isSelectedId.value}")
+        log( showLog,"LayoutArticleScreen if (isSelectedId.value > 0L) ${isSelectedId.value}")
         uiState.article.forEach {articles ->
             articles.find { it.idArticle == isSelectedId.value }
                 ?.let { it1-> it1.isSelected = !it1.isSelected }
@@ -126,7 +119,6 @@ fun LayoutArticleScreen(
     Box( Modifier.fillMaxSize() ) {
         Column(modifier.fillMaxHeight()) {
             Column( Modifier.fillMaxHeight().weight(1f)) {
-                Spacer(modifier = Modifier.weight(1f, !bottomSheetVisible.value))
                 LazyColumnArticle(
                     uiState = uiState,
                     changeArticle = changeArticle,
@@ -254,7 +246,7 @@ fun LayoutColumArticles(
 
 @Composable
 fun ElementColum( item: Article, doSelected: (Long)->Unit){
-//    log( showLog,"ElementColum Articles")
+    log( showLog,"ElementColum Articles")
     Box (Modifier.padding(horizontal = 6.dp)){
         Row(
             verticalAlignment = Alignment.CenterVertically,

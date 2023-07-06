@@ -41,8 +41,7 @@ interface DataDao {
     fun checkArticleInBasket(basketId: Long, id: Long): Long?
 
     @Transaction
-    @Query("SELECT * FROM tb_product WHERE basketId = :basketId ORDER BY position ASC")
-//                "ORDER BY putInBasket DESC, position ASC")
+    @Query("SELECT * FROM tb_product WHERE basketId = :basketId")
     fun getListProduct(basketId: Long): List<ProductObj>
 
     @Query("SELECT COUNT(idProduct) FROM tb_product WHERE basketId = :basketId")
@@ -111,14 +110,15 @@ interface DataDao {
 
     @Query("SELECT * FROM tb_section")
     fun getSections(): List<SectionDB>
-//    @Query("SELECT * FROM tb_section")
-//    fun getSectionFlow(): Flow<List<SectionEntity>>
+
     @Insert
     fun addSection(section: SectionDB): Long
     @Query("SELECT * FROM tb_section WHERE idSection = :id")
     fun getSection(id: Long): SectionDB
-
-
+    @Query("SELECT * FROM tb_section WHERE nameSection = :name")
+    fun getSection(name: String): SectionDB?
+    @Update
+    fun changeSection(section: SectionDB)
     /** Unit entity*/
 
     @Insert
@@ -130,6 +130,8 @@ interface DataDao {
 
     @Query("SELECT * FROM tb_unit WHERE idUnit = :id")
     fun getUnit(id: Long): UnitDB
+    @Query("SELECT * FROM tb_unit WHERE nameUnit = :name")
+    fun getUnit(name: String): UnitDB?
 //    @Query("SELECT * FROM tb_unit")
 //    fun getUnitsFlow(): Flow<List<UnitEntity>>
     @Query("DELETE FROM tb_unit WHERE idUnit IN (:listId)")

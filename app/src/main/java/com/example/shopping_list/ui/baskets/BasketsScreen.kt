@@ -52,7 +52,6 @@ import java.util.*
 fun BasketsScreen(
     onClickBasket: (Long) -> Unit,
     bottomSheetHide: () -> Unit,
-    bottomSheetVisible: MutableState<Boolean>,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>) {
 
     val viewModel: BasketViewModel = hiltViewModel()
@@ -62,7 +61,6 @@ fun BasketsScreen(
         onClickBasket = onClickBasket,
         viewModel = viewModel,
         bottomSheetHide = bottomSheetHide,
-        bottomSheetVisible = bottomSheetVisible,
         bottomSheetContent = bottomSheetContent
     )
 }
@@ -72,7 +70,6 @@ fun BasketScreenCreateView(
     onClickBasket: (Long) -> Unit,
     viewModel: BasketViewModel,
     bottomSheetHide: () -> Unit,
-    bottomSheetVisible: MutableState<Boolean>,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>
 ){
     val uiState by viewModel.basketScreenState.collectAsState()
@@ -86,7 +83,6 @@ fun BasketScreenCreateView(
         itemList = uiState.baskets,
         changeNameBasket = { basket -> viewModel.changeNameBasket(basket)},
         deleteBasket = { basketId -> viewModel.deleteBasket(basketId)},
-        bottomSheetVisible = bottomSheetVisible
     )
 }
 
@@ -94,12 +90,10 @@ fun BasketScreenCreateView(
 fun LayoutBasketsScreen(
     modifier: Modifier = Modifier,
     itemList: List<Basket>,
-    bottomSheetVisible: MutableState<Boolean>,
     onClickBasket: (Long) -> Unit,
     changeNameBasket: (Basket) -> Unit,
     deleteBasket: (Long) -> Unit,
 ){
-//    Log.d("KDS", "New state BasketsScreenLayout, ${itemList.size}")
     val isSelectedId: MutableState<Long> = remember {  mutableStateOf(0L) }
     val unSelected: MutableState<Boolean> = remember {  mutableStateOf(false) }
     if (isSelectedId.value > 0L) {
@@ -111,13 +105,8 @@ fun LayoutBasketsScreen(
         itemList.forEach { it.isSelected = false }
         unSelected.value = false
     }
-    Box(Modifier.fillMaxSize()) {
-        Column(modifier = modifier.fillMaxHeight()) {
-            Column(Modifier.fillMaxHeight().weight(1f)) {
-                if (!bottomSheetVisible.value) Spacer(Modifier.weight(1f))
-                LazyColumnBasket(itemList, onClickBasket, deleteBasket, changeNameBasket)
-            }
-        }
+    Column(Modifier.fillMaxHeight()) {
+        LazyColumnBasket(itemList, onClickBasket, deleteBasket, changeNameBasket)
     }
  }
 
@@ -158,13 +147,7 @@ fun LazyColumnBasket(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver)))
     {
-        item {
-//            Box(Modifier.height(240.dp)){
-                HeaderImScreen(text = stringResource(R.string.baskets), R.drawable.fon1_1)
-//                HeaderScreen(text = stringResource(R.string.baskets),
-//                    Modifier.align(alignment = Alignment.BottomCenter))
-//            }
-        }
+        item { HeaderImScreen(text = stringResource(R.string.baskets), R.drawable.bas) }
         items(items = basketList, key = { it.idBasket })
         { item->
             val dismissState = rememberDismissState(

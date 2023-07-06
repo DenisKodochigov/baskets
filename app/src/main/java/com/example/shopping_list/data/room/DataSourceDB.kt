@@ -2,18 +2,16 @@ package com.example.shopping_list.data.room
 
 import com.example.shopping_list.data.room.tables.ArticleDB
 import com.example.shopping_list.data.room.tables.BasketDB
-import com.example.shopping_list.data.room.tables.SectionDB
 import com.example.shopping_list.data.room.tables.ProductDB
+import com.example.shopping_list.data.room.tables.SectionDB
 import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.data.room.tables.relation.ArticleObj
 import com.example.shopping_list.data.room.tables.relation.ProductObj
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.Basket
-import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.Product
-import com.example.shopping_list.entity.SortingBy
+import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitApp
-import com.example.shopping_list.utils.createDoubleLisArticle
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,55 +19,6 @@ import javax.inject.Singleton
 class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
 
     /** Manage position product */
-    private fun movePositionProduct(basketId: Long, direction: Int): List<Product>{
-        val listProduct = dataDao.getListProduct(basketId).map { item -> mapProduct(item) }
-        val positionEnd = listProduct.size
-        var position = 1
-        if (listProduct.isNotEmpty()) {
-           //listProduct.forEach { if (it.putInBasket) it.position = position++ }
-            val positionStart = position
-            listProduct.forEach {
-//                if (!it.putInBasket) {
-                    if (position + direction < positionStart) it.position = positionEnd
-                    else if (position + direction > positionEnd) it.position = positionStart
-                    else it.position = position + direction
-                    position++
-//                }
-            }
-            listProduct.forEach {
-                dataDao.setPositionProductInBasket( it.idProduct, basketId, it.position )
-            }
-        }
-        return listProduct.sortedBy { it.position }
-    }
-
-    fun buildPositionProduct(basketId: Long){
-        val listProduct = dataDao.getListProduct(basketId)
-            .map { item -> mapProduct(item) }
-            .sortedWith( compareBy ( {it.article.section.idSection}, {it.position}))
-        var position = 1
-        if (listProduct.isNotEmpty()) {
-            listProduct.forEach {
-                it.position = position++
-                dataDao.setPositionProductInBasket( it.idProduct, basketId, it.position ) }
-        }
-    }
-
-    private fun reBuildPositionBasket(direction: Int){
-        val list = getListBasketCount()
-        val positionEnd = list.size
-        val positionStart = 1
-        var position = 1
-        if (list.isNotEmpty()) {
-            list.forEach {
-                if (position + direction < positionStart) it.position = positionEnd
-                else if (position + direction > positionEnd) it.position = positionStart
-                else it.position = position + direction
-                position++
-            }
-            list.forEach { dataDao.setPositionBasket(it.idBasket, it.position) }
-        }
-    }
 
     fun changeNameBasket(basket: Basket): List<Basket>{
         dataDao.changeNameBasket(basket.idBasket, basket.nameBasket)
@@ -101,11 +50,6 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return getListBasketCount()
     }
 
-    fun setPositionBasket( direction: Int): List<Basket>{
-            reBuildPositionBasket( direction )
-        return getListBasketCount()
-    }
-
     fun getNameBasket(basketId: Long): String {
         return dataDao.getNameBasket(basketId)
     }
@@ -130,8 +74,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return getListProducts(basketId)
     }
     fun getListProducts(basketId: Long): List<Product>{
-        val  listObj = dataDao.getListProduct(basketId)
-        return listObj.map {  item -> mapProduct(item) }
+        return dataDao.getListProduct(basketId).map {  item -> mapProduct(item) }
     }
 
     fun putProductInBasket(product: Product, basketId: Long): List<Product>{
@@ -139,10 +82,6 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return getListProducts(basketId)
     }
 
-    fun setPositionProductInBasket(basketId: Long, direction: Int): List<Product>{
-        return if (basketId > 0) movePositionProduct(basketId, direction)
-                else emptyList()
-    }
     fun changeProductInBasket(product: Product, basketId: Long): List<Product>{
         getAddArticle(product.article as ArticleDB)
         if (product.value > 0) dataDao.setValueProduct(product.idProduct, basketId, product.value)
@@ -153,7 +92,6 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         val basketId = products[0].basketId
         val listId = products.filter { it.isSelected }.map { it.idProduct }
         dataDao.deleteProducts(listId, basketId)
-        buildPositionProduct(basketId)
         return getListProducts(basketId)
     }
     /** Article*/
@@ -168,40 +106,6 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     }
 
     fun getListArticle(): List<Article> = dataDao.getListArticle().map { item -> mapArticle(item) }
-
-    fun buildPositionArticle( sortingBy: SortingBy ): List<Article>{
-        val listArticle = when (sortingBy){
-            SortingBy.BY_NAME -> {
-                dataDao.getListArticleSortName().map { item -> mapArticle(item) } }
-            SortingBy.BY_SECTION -> {
-                dataDao.getListArticleSortName().map { item -> mapArticle(item) }
-                    .sortedWith( compareBy ( {it.section.idSection}, {it.position} ))  }
-        }
-        var position = 1
-        if (listArticle.isNotEmpty()) {
-            listArticle.forEach {
-                it.position = position++
-                dataDao.setPositionArticle(it.idArticle, it.position)
-            } }
-        return  listArticle
-    }
-
-    fun movePositionArticle( direction: Int): List<Article>{
-        val listArticle = dataDao.getListArticle().map { item -> mapArticle(item) }
-        val positionEnd = listArticle.size
-        val positionStart = 1
-        var position = 1
-        if (listArticle.isNotEmpty()) {
-            listArticle.forEach {
-                if (position + direction < positionStart) it.position = positionEnd
-                else if (position + direction > positionEnd) it.position = positionStart
-                else it.position = position + direction
-                position++
-            }
-            listArticle.forEach { dataDao.setPositionArticle(it.idArticle, it.position) }
-        }
-        return getListArticle()
-    }
 
     fun getAddArticle(article: ArticleDB): ArticleDB {
 
@@ -223,7 +127,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
             idArticle = article.idArticle,
             nameArticle = toUpFirstChar(article.nameArticle),
             position = article.position,
-            sectionId = getAddSection(article.section).idSection,
+            sectionId = getAddSection(article.section as SectionDB).idSection,
             unitId = getAddUnit(article.unitApp as UnitDB).idUnit,
         )
         dataDao.changeArticle(localArticle)
@@ -233,7 +137,6 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         val articlesId = productList.filter { it.isSelected }.map { it.article.idArticle }
         dataDao.changeSectionArticle( articlesId, idSection )
         return if (productList[0].basketId > 0) {
-            buildPositionProduct(productList[0].basketId)
             getListProducts(productList[0].basketId)
         } else emptyList()
     }
@@ -247,21 +150,25 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.getSections()
     }
 
-    private fun getAddSection(section: Section): Section {
-        return if (section.idSection == 0L) {
-            val id = if (section.nameSection != "") {
-                dataDao.addSection(SectionDB( nameSection = toUpFirstChar( section.nameSection ),
-                    colorSection = section.colorSection ))
+    private fun getAddSection(section: SectionDB): Section {
+        if (section.idSection == 0L) {
+            section.idSection = if (section.nameSection != "") {
+                dataDao.getSection(section.nameSection)?.idSection ?: dataDao.addSection(section)
             } else 1
-            dataDao.getSection(id)
-        } else section
+        } else if(section.nameSection != dataDao.getSection(section.idSection).nameSection)
+            dataDao.changeSection(section)
+        return section
     }
 
     /** Unit*/
 
     fun getAddUnit(unitA: UnitDB): UnitApp {
-        if (unitA.idUnit == 0L) unitA.idUnit = if (unitA.nameUnit != "") dataDao.addUnit(unitA) else 1
-        else if (unitA.nameUnit != dataDao.getUnit(unitA.idUnit).nameUnit) dataDao.changeUnit(unitA)
+        if (unitA.idUnit == 0L) {
+            unitA.idUnit = if (unitA.nameUnit != "") {
+                dataDao.getUnit(unitA.nameUnit)?.idUnit ?: dataDao.addUnit(unitA)
+            } else 1
+        } else if (unitA.nameUnit != dataDao.getUnit(unitA.idUnit).nameUnit)
+            dataDao.changeUnit(unitA)
         return unitA
     }
     fun deleteUnits(units: List<UnitApp>) {

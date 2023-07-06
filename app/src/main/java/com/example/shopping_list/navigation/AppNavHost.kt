@@ -24,21 +24,12 @@ import com.google.accompanist.navigation.animation.composable
 fun AppAnimatedNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    bottomSheetVisible: MutableState<Boolean>,
     bottomSheetContent: MutableState <@Composable (() -> Unit)?>,
     bottomSheetHide: () -> Unit
 ){
 
     AnimatedNavHost(
         navController = navController, startDestination = Baskets.route, modifier = modifier ) {
-//        val durationMillis = 800
-//        val delayMillis = 200
-//        val enterTransition = slideInHorizontally(
-//            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / 1 } +
-//                fadeIn( animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
-//        val exitTransition = slideOutHorizontally(
-//            animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis)) { it / -1 } +
-//                fadeOut(animationSpec = tween(durationMillis = durationMillis, delayMillis = delayMillis))
 
         composable(route = Baskets.route,
             enterTransition = {
@@ -48,7 +39,6 @@ fun AppAnimatedNavHost(
             BasketsScreen(
                 bottomSheetContent = bottomSheetContent,
                 bottomSheetHide = bottomSheetHide,
-                bottomSheetVisible = bottomSheetVisible,
                 onClickBasket = { navController.navigateToProducts(it) },
             )
         }
@@ -62,11 +52,7 @@ fun AppAnimatedNavHost(
         { navBackStackEntry ->
             val basketId = navBackStackEntry.arguments?.getLong(ProductsBasket.basketIdArg)
             if (basketId != null) {
-                ProductsScreen(
-                    basketId = basketId,
-                    bottomSheetVisible = bottomSheetVisible,
-                    bottomSheetContent = bottomSheetContent
-                )
+                ProductsScreen(basketId = basketId, bottomSheetContent = bottomSheetContent)
             }
         }
         composable(
@@ -76,10 +62,7 @@ fun AppAnimatedNavHost(
             exitTransition = {
                 targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
         ) {
-            ArticlesScreen(
-                bottomSheetContent = bottomSheetContent,
-                bottomSheetVisible = bottomSheetVisible,
-            )
+            ArticlesScreen(bottomSheetContent = bottomSheetContent)
         }
         composable(
             route = Setting.route,

@@ -9,8 +9,10 @@ fun createDoubleListProduct(products: List<Product>): List<List<Product>>{
     val doubleList = mutableListOf<List<Product>>()
     val listProduct = mutableListOf<Product>()
     if (products.isNotEmpty()) {
-        var currentSection = products[0].article.section.idSection
-        products.forEach { item->
+        val productsLocal = products.sortedWith( compareBy ( {it.article.section.nameSection}
+            , {it.article.nameArticle} ))
+        var currentSection = productsLocal[0].article.section.idSection
+        productsLocal.forEach { item->
             if (currentSection == item.article.section.idSection) listProduct.add(item)
             else {
                 doubleList.add(listProduct.toList())
@@ -30,15 +32,17 @@ fun createDoubleLisArticle(articles: List<Article>, sortingBy: SortingBy): List<
         when(sortingBy){
             SortingBy.BY_NAME -> doubleList.add(articles.sortedBy { it.position }.toList())
             SortingBy.BY_SECTION ->{
-                var currentSection = articles[0].section.idSection
-                articles.forEach { item->
-                        if (currentSection == item.section.idSection) listArticle.add(item)
-                        else {
-                            doubleList.add(listArticle.toList())
-                            currentSection = item.section.idSection
-                            listArticle.clear()
-                            listArticle.add(item)
-                        }
+                val articlesLocal = articles.sortedWith( compareBy ( {it.section.nameSection},
+                    {it.nameArticle} ))
+                var currentSection = articlesLocal[0].section.idSection
+                articlesLocal.forEach{ item->
+                    if (currentSection == item.section.idSection) listArticle.add(item)
+                    else {
+                        doubleList.add(listArticle.toList())
+                        currentSection = item.section.idSection
+                        listArticle.clear()
+                        listArticle.add(item)
+                    }
                 }
                 if (listArticle.isNotEmpty()) doubleList.add(listArticle)
             }

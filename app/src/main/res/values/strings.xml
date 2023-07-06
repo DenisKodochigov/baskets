@@ -35,4 +35,5 @@
     <string name="by_name">By name</string>
     <string name="by_section">By section</string>
     <string name="all">All</string>
+    <string name="sorting">sorting</string>
 </resources>

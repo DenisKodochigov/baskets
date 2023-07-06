@@ -49,6 +49,7 @@ import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.ButtonCircle
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.MyTextH1
+import com.example.shopping_list.ui.components.SwitcherButton
 import com.example.shopping_list.ui.components.dialog.EditUnitDialog
 
 @Composable
@@ -93,6 +94,7 @@ fun LayoutSettingsScreen(
                     doDeleteSelected = doDeleteUnits,
                     changeUnit = doChangeUnit,
                     doSelected = { idItem -> isSelectedId.value = idItem })
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }

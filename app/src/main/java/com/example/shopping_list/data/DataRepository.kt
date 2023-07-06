@@ -40,7 +40,6 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
     /** Product entity*/
     fun getListProducts(basketId: Long): List<List<Product>> =
         createDoubleListProduct( dataSourceDB.getListProducts(basketId) )
-    fun buildPositionProduct(basketId: Long) = dataSourceDB.buildPositionProduct(basketId)
 
     fun addProduct(product: Product, basketId: Long): List<List<Product>> =
         createDoubleListProduct( dataSourceDB.addProduct(product, basketId))
@@ -48,10 +47,6 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
 
     fun putProductInBasket(product: Product, basketId: Long): List<List<Product>> {
         return createDoubleListProduct( dataSourceDB.putProductInBasket(product, basketId) )
-    }
-
-    fun setPositionBasket( direction: Int): List<Basket> {
-        return dataSourceDB.setPositionBasket(direction)
     }
 
     fun changeProductInBasket(product: Product, basketId: Long): List<List<Product>> {
@@ -64,9 +59,7 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
 
     /** Article entity*/
 
-    fun buildPositionArticles( sortingBy: SortingBy ): List<List<Article>> =
-        createDoubleLisArticle( dataSourceDB.buildPositionArticle(sortingBy), sortingBy)
-    private fun getListArticle(sortingBy: SortingBy ): List<List<Article>> =
+    fun getListArticle(sortingBy: SortingBy ): List<List<Article>> =
         createDoubleLisArticle( dataSourceDB.getListArticle(), sortingBy)
     fun getListArticle(): List<Article> = dataSourceDB.getListArticle()
 

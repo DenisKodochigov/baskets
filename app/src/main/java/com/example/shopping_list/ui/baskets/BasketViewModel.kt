@@ -1,6 +1,5 @@
 package com.example.shopping_list.ui.baskets
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
@@ -24,16 +23,6 @@ class BasketViewModel @Inject constructor(
     private val _basketScreenState = MutableStateFlow(BasketScreenState())
     val basketScreenState: StateFlow<BasketScreenState> = _basketScreenState.asStateFlow()
 
-//    init {  sortingArticle() }
-
-//    private fun sortingArticle(){
-//        viewModelScope.launch(Dispatchers.IO) {
-//            kotlin.runCatching { dataRepository.sortingArticle() }.fold(
-//                onSuccess = {  },
-//                onFailure = { errorApp.errorApi(it.message!!) }
-//            )
-//        }
-//    }
     fun getListBasket() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListBasket() }.fold(
@@ -69,16 +58,6 @@ class BasketViewModel @Inject constructor(
             kotlin.runCatching { dataRepository.addBasket(basketName) }.fold(
                 onSuccess = {_basketScreenState.update { currentState ->
                     currentState.copy( baskets = it ) }},
-                onFailure = { errorApp.errorApi(it.message!!)}
-            )
-        }
-    }
-
-    fun setPositionBasket( direction: Int){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.setPositionBasket(direction) }.fold(
-                onSuccess = {_basketScreenState.update { currentState ->
-                    currentState.copy(baskets = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }

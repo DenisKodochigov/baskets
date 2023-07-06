@@ -71,11 +71,10 @@ import com.example.shopping_list.ui.components.selectUnitWithArticle
 import com.example.shopping_list.ui.theme.SectionColor
 import com.example.shopping_list.utils.log
 
-const val showLog = false
+const val showLog = true
 @Composable
 fun ProductsScreen(
     basketId: Long,
-    bottomSheetVisible: MutableState<Boolean>,
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>) {
 
     val viewModel: ProductViewModel = hiltViewModel()
@@ -84,7 +83,6 @@ fun ProductsScreen(
     ProductScreenCreateView(
         basketId = basketId,
         viewModel = viewModel,
-        bottomSheetVisible = bottomSheetVisible,
         bottomSheetContent = bottomSheetContent
     )
 }
@@ -93,7 +91,6 @@ fun ProductsScreen(
 fun ProductScreenCreateView(
     basketId: Long,
     viewModel: ProductViewModel,
-    bottomSheetVisible: MutableState<Boolean>,
     bottomSheetContent: MutableState<@Composable (() -> Unit)?>
 ){
     val uiState by viewModel.productsScreenState.collectAsState()
@@ -104,23 +101,19 @@ fun ProductScreenCreateView(
             onAddProduct = { product: Product -> viewModel.addProduct(product, basketId) })
     }
     LayoutProductsScreen(
-        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         uiState = uiState,
         putProductInBasket = { product -> viewModel.putProductInBasket(product, basketId) },
         changeProduct = { product -> viewModel.changeProduct(product, basketId) },
         doChangeSectionSelected = { productList, idSection ->
             viewModel.changeSectionSelected(productList, idSection) },
         doDeleteSelected = { productList -> viewModel.deleteSelectedProducts(productList) },
-        bottomSheetVisible = bottomSheetVisible
     )
 }
 
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Composable
 fun LayoutProductsScreen(
-    modifier: Modifier = Modifier,
     uiState: ProductsScreenState,
-    bottomSheetVisible: MutableState<Boolean>,
     putProductInBasket: (Product) -> Unit,
     changeProduct: (Product) -> Unit,
     doChangeSectionSelected: (List<Product>, Long) -> Unit,
@@ -161,15 +154,12 @@ fun LayoutProductsScreen(
     }
 
     Box( Modifier.fillMaxSize()) {
-        Column(modifier.fillMaxHeight()) {
-            Column(Modifier.fillMaxHeight().weight(1f) ) {
-                Spacer(modifier = Modifier.weight(1f, !bottomSheetVisible.value))
-                LazyColumnProduct(
-                    uiState = uiState,
-                    putProductInBasket = putProductInBasket,
-                    changeProduct = changeProduct,
-                    doSelected = { idItem -> isSelectedId.value = idItem } )
-            }
+        Column(Modifier.fillMaxHeight() ) {
+            LazyColumnProduct(
+                uiState = uiState,
+                putProductInBasket = putProductInBasket,
+                changeProduct = changeProduct,
+                doSelected = { idItem -> isSelectedId.value = idItem } )
         }
         startScreen = showFABs(
             startScreen = startScreen,

@@ -34,9 +34,7 @@ class ProductViewModel  @Inject constructor(
 
     private fun getProductsOnStart(basketId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching {
-                dataRepository.buildPositionProduct(basketId)
-                dataRepository.getListProducts(basketId) }.fold(
+            kotlin.runCatching { dataRepository.getListProducts(basketId) }.fold(
                 onSuccess = { _productsScreenState.update { currentState ->
                     currentState.copy( products = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!) }

@@ -35,7 +35,7 @@ class ArticleViewModel @Inject constructor(
     private fun getArticles( sortingBy: SortingBy ) {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.buildPositionArticles(sortingBy) }.fold(
+                dataRepository.getListArticle(sortingBy) }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState -> currentState.copy(article = it) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
@@ -115,7 +115,7 @@ class ArticleViewModel @Inject constructor(
 
     fun doChangeSortingBy(sortingBy: SortingBy){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.buildPositionArticles( sortingBy ) }.fold(
+            kotlin.runCatching { dataRepository.getListArticle( sortingBy ) }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState -> currentState.copy( article = it ) }
                     _articleScreenState.update { currentState -> currentState.copy( sorting = sortingBy ) }},

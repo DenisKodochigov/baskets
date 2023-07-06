@@ -32,4 +32,5 @@
     <string name="by_name">По названию</string>
     <string name="by_section">По отделу</string>
     <string name="all">Все</string>
+    <string name="sorting">сортировка</string>
 </resources>
