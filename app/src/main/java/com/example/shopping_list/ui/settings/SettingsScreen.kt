@@ -51,6 +51,8 @@ import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.MyTextH1
 import com.example.shopping_list.ui.components.SwitcherButton
 import com.example.shopping_list.ui.components.dialog.EditUnitDialog
+import com.example.shopping_list.utils.ColorPicker
+import com.example.shopping_list.utils.ColorPicker1
 
 @Composable
 fun SettingsScreen() {
@@ -95,6 +97,7 @@ fun LayoutSettingsScreen(
                     changeUnit = doChangeUnit,
                     doSelected = { idItem -> isSelectedId.value = idItem })
                 Spacer(modifier = Modifier.height(20.dp))
+                ColorPicker1()
             }
         }
     }

@@ -81,7 +81,8 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling:1.4.3'
     //Adaptive
     implementation 'androidx.compose.material3:material3-window-size-class:1.1.1'
-
+    //Color Palette
+    implementation 'androidx.palette:palette-ktx:1.0.0'
     //LifeCycle
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'

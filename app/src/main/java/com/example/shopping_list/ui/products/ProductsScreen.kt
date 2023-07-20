@@ -189,8 +189,8 @@ fun LazyColumnProduct(
             listUnit = uiState.unitApp,
             onDismiss = { editProduct.value = null },
             onConfirm = {
-                changeProduct(editProduct.value!!)
                 editProduct.value = null
+                changeProduct (it)
             }
         )
     }
@@ -268,7 +268,7 @@ fun LayoutColumProducts(
                         }
                     }
                 ) {
-                    SectonProduct(product, doSelected, editProduct) //{ product -> editProductValue( product )}
+                    SectionProduct(product, doSelected, editProduct) //{ product -> editProductValue( product )}
                 }
             }
         }
@@ -276,7 +276,7 @@ fun LayoutColumProducts(
 }
 
 @Composable
-fun SectonProduct(
+fun SectionProduct(
     sectionItems: Product,
     doSelected: (Long)->Unit,
     editProduct: (Product) -> Unit,

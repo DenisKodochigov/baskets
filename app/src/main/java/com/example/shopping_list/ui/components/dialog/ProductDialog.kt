@@ -44,25 +44,29 @@ fun EditQuantityDialog(
         title = { MyTextH2(stringResource(R.string.change_quantity), Modifier) },
         text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
         confirmButton = {
-
-            val localProduct = ProductDB(
-                idProduct = product.idProduct,
-                basketId = product.basketId,
-                value = enterValue.value.toDouble(),
-                putInBasket = product.putInBasket,
-                position = product.position,
-                articleId = product.article.idArticle,
-                article = ArticleDB(
-                    idArticle = product.article.idArticle,
-                    nameArticle = product.article.nameArticle,
-                    unitApp = UnitDB( idUnit = enterUnit.value.first,nameUnit = enterUnit.value.second),
-                    section = product.article.section as SectionDB,
-                    isSelected = product.article.isSelected,
-                    position = product.article.position,
-                ),
-                isSelected = product.isSelected,
+            TextButtonOK(
+                onConfirm = {
+                    onConfirm(
+                        ProductDB(
+                            idProduct = product.idProduct,
+                            basketId = product.basketId,
+                            value = enterValue.value.toDouble(),
+                            putInBasket = product.putInBasket,
+                            position = product.position,
+                            isSelected = product.isSelected,
+                            articleId = product.article.idArticle,
+                            article = ArticleDB(
+                                idArticle = product.article.idArticle,
+                                nameArticle = product.article.nameArticle,
+                                unitApp = UnitDB( idUnit = enterUnit.value.first,nameUnit = enterUnit.value.second),
+                                section = product.article.section as SectionDB,
+                                isSelected = product.article.isSelected,
+                                position = product.article.position,
+                            )
+                        )
+                    )
+                }
             )
-            TextButtonOK( onConfirm = { onConfirm(localProduct) })
         }
     )
 }

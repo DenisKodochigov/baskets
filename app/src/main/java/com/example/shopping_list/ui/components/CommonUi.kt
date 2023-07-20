@@ -1,6 +1,7 @@
 package com.example.shopping_list.ui.components
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.shopping_list.MainActivity
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.SortingBy

@@ -1,6 +1,7 @@
 package com.example.shopping_list.ui.article
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -139,6 +140,7 @@ fun LayoutArticleScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun LazyColumnArticle(
@@ -157,25 +159,29 @@ fun LazyColumnArticle(
             listUnit = uiState.unitApp,
             listSection = uiState.sections,
             onDismiss = { editArticle.value = null },
-            onConfirm = changeArticle
+            onConfirm = {
+                changeArticle(it)
+                editArticle.value = null
+            }
         )
     }
 
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.clip(RoundedCornerShape(8.dp))
-            .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+        modifier = Modifier.clip(RoundedCornerShape(8.dp)).padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
         item {
             HeaderImScreen(text = stringResource(R.string.product), R.drawable.fon5_1) }
         items( items = uiState.article )
         { item ->
-            Column( modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(SectionColor)) {
+            Column( modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                .background(SectionColor).animateItemPlacement()) {
                 HeaderSection(
                     text = if ( uiState.sorting == SortingBy.BY_SECTION) item[0].section.nameSection
                     else stringResource(id = R.string.all), modifier = Modifier)
                 LayoutColumArticles(
+                    modifier = Modifier,
                     articles = item,
                     editArticle = { article -> editArticle.value = article },
                     doSelected = doSelected,
@@ -188,6 +194,7 @@ fun LazyColumnArticle(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LayoutColumArticles(
+    modifier: Modifier,
     articles: List<Article>,
     editArticle: (Article) -> Unit,
     doSelected: (Long) -> Unit,
@@ -196,7 +203,7 @@ fun LayoutColumArticles(
     log( showLog,"LayoutColumArticles")
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+        modifier = modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
         for (article in articles){
             key(article.idArticle){
@@ -211,7 +218,7 @@ fun LayoutColumArticles(
                         false
                     })
                 SwipeToDismiss(state = dismissState,
-                    modifier = Modifier.padding(vertical = 1.dp),
+                    modifier = modifier.padding(vertical = 1.dp),
                     directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
                     dismissThresholds = { direction ->
                         FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.4f else 0.4f)
@@ -237,7 +244,7 @@ fun LayoutColumArticles(
                         }
                     }
                 ){
-                    ElementColum( article, doSelected )
+                    ElementColum(modifier, article, doSelected )
                 }
             }
         }
@@ -245,34 +252,34 @@ fun LayoutColumArticles(
 }
 
 @Composable
-fun ElementColum( item: Article, doSelected: (Long)->Unit){
+fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
     log( showLog,"ElementColum Articles")
-    Box (Modifier.padding(horizontal = 6.dp)){
+    Box (modifier.padding(horizontal = 6.dp)){
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
+            modifier = modifier
                 .clip(shape = RoundedCornerShape(6.dp))
                 .fillMaxWidth()
                 .background(BackgroundElementList)
                 .clickable { doSelected(item.idArticle) }
         ) {
-            Spacer( modifier = Modifier.width(8.dp)
+            Spacer( modifier = modifier.width(8.dp)
                     .height(32.dp)
                     .background(if (item.isSelected) Color.Red else Color.LightGray)
                     .align(Alignment.CenterVertically)
             )
             MyTextH2(
                 text = item.nameArticle,
-                modifier = Modifier.weight(1f).padding(
+                modifier = modifier.weight(1f).padding(
                         start = dimensionResource(R.dimen.lazy_padding_hor),
                         top = dimensionResource(R.dimen.lazy_padding_ver),
                         bottom = dimensionResource(R.dimen.lazy_padding_ver)
                     )
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = modifier.width(4.dp))
             MyTextH2(
                 text = item.unitApp.nameUnit,
-                modifier = Modifier.width(40.dp)
+                modifier = modifier.width(40.dp)
                     .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
             )
         }
