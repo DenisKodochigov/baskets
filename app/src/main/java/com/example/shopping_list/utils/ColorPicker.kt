@@ -1,7 +1,6 @@
 package com.example.shopping_list.utils
 
 import android.graphics.Bitmap
-import android.graphics.SweepGradient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,12 +14,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,18 +25,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColor
 import androidx.palette.graphics.Palette
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 @Composable fun ColorPicker() {
     val color by remember { mutableStateOf(Color.Black)}
     var sliderPosition by remember{mutableStateOf(0f)}
 
-
+//    val listColor: List<String> = ColorList.list2.map { it.rgb() }
+    val listColor: List<Long> = createListSpectrumRGB()
     Column( modifier = Modifier.fillMaxWidth()) {
         Box( modifier = Modifier
             .background(color = color)
@@ -53,22 +48,9 @@ import androidx.palette.graphics.Palette
             .height(20.dp)
             .padding(horizontal = 32.dp)
             .background(
-                brush = Brush.horizontalGradient(
-                    colors = listOf(
-                        Color(0xFF800000),
-                        Color(0xFFFF0000),
-                        Color(0xFF800080),
-                        Color(0xFFFF00FF),
-                        Color(0xFF008000),
-                        Color(0xFF00FF00),
-                        Color(0xFF808000),
-                        Color(0xFFFFFF00),
-                        Color(0xFF000080),
-                        Color(0xFF0000FF),
-                        Color(0xFF008080),
-                        Color(0xFF00FFFF),
-                    )
-                )
+                brush = Brush.horizontalGradient( colors = listColor.map {
+                    Color(it)
+                })
             )){}
         Spacer(modifier = Modifier.height(12.dp))
         Slider(
@@ -117,6 +99,49 @@ import androidx.palette.graphics.Palette
     fun createPaletteSync(bitmap: Bitmap): Palette = Palette.from(bitmap).generate()
 }
 
+fun createListSpectrumRGB(): List<Long>{
+    val listColor = mutableListOf<Long>()
+    for (wave in 380..780 step 5) {
+        listColor.add(waveToRGB(wave))
+    }
+    return listColor
+}
+
+
+fun waveToRGB(wavelength: Int): Long{
+
+    val factor = if((wavelength >= 380) && (wavelength<420)) 0.3 + 0.7*(wavelength - 380) / (420 - 380)
+        else if((wavelength >= 420) && (wavelength<701)) 1.0
+        else if((wavelength >= 701) && (wavelength<781)) 0.3 + 0.7*(780 - wavelength) / (780 - 700)
+        else 0.0
+
+    return if((wavelength >= 380) && (wavelength<440)){
+        calculateColor((-(wavelength - 440) / (440 - 380.0)), 0.0, 1.0, factor)
+    } else if((wavelength >= 440) && (wavelength<490)){
+        calculateColor(0.0, (wavelength - 440) / (490 - 440.0), 1.0, factor)
+    }else if((wavelength >= 490) && (wavelength<510)){
+        calculateColor(0.0, 1.0, (-(wavelength - 510) / (510 - 490.0)), factor)
+    }else if((wavelength >= 510) && (wavelength<580)){
+        calculateColor((wavelength - 510) / (580 - 510.0), 1.0, 0.0, factor)
+    }else if((wavelength >= 580) && (wavelength<645)){
+        calculateColor(1.0, (-(wavelength - 645) / (645 - 580.0)), 0.0, factor)
+    }else if((wavelength >= 645) && (wavelength<781)){
+        calculateColor(1.0, 0.0, 0.0, factor)
+    } else calculateColor(0.0, 0.0, 0.0, factor)
+
+}
+
+fun calculateColor(red: Double, green: Double, blue: Double, factor: Double): Long {
+    val gamma = 0.80
+    val intensityMax = 255
+
+    var rgbHex = 4278190080
+    rgbHex += if (red != 0.0) (intensityMax * (red * factor).pow(gamma)).roundToInt() * 65536 else 0
+    rgbHex += if (green != 0.0) (intensityMax * (green * factor).pow(gamma)).roundToInt() * 256 else 0
+    rgbHex += if (blue != 0.0) (intensityMax * (blue * factor).pow(gamma)).roundToInt() else 0
+
+    return rgbHex
+}
 /*
 Если интересует именно "как бы максимум" - перейти от RGB (sRGB?) к xy (не путать с XYZ!)
 и найти на спектральной кривой точку, лежащую на одной прямой с заданной и белой точками.
@@ -293,6 +318,23 @@ y=Y/(X+Y+Z);
 770	0,7347	0,2653	0,0000	0,7347	0,2653
 775	0,7347	0,2653	0,0000	0,7347	0,2653
 780	0,7347	0,2653	0,0000	0,7347	0,2653
+
+R =  3.2404542*X - 1.5371385*Y - 0.4985314*Z
+G = -0.9692660*X + 1.8760108*Y + 0.0415560*Z
+B =  0.0556434*X - 0.2040259*Y + 1.0572252*Z
+Однако, если вы имели в виду пространство sRGB, то к каждому компоненту необходимо применить
+дополнительное нелинейное преобразование: R=adj(R), G=adj(G) и B=adj(B). adj
+Функция определяется следующим образом:
+function adj(C) {
+  if (Abs(C) < 0.0031308) {
+    return 12.92 * C;
+  }
+  return 1.055 * Math.pow(C, 0.41666) - 0.055;
+}
+
+1.0144665  0.0000000  0.0000000
+ 0.0000000  1.0000000  0.0000000
+ 0.0000000  0.0000000  0.7578869
 
 Colour matching functions
 nm	X	Y	Z

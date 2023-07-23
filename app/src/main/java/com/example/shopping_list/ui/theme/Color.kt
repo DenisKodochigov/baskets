@@ -19,6 +19,7 @@ val ContentFab = BorderBottomBar
 val ButtonColorsMy = Color.LightGray
 val BackgroundElementList = Color(0x9FFFFFFF)
 val SectionColor = Color(0x22909EE7)
+val SectionColor1 = Color(0xFFFFA200)
 /**
  *
 primary - Основной цвет - это цвет, который чаще всего отображается на экранах и компонентах вашего приложения.

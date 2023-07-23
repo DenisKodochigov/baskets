@@ -97,7 +97,7 @@ fun LayoutSettingsScreen(
                     changeUnit = doChangeUnit,
                     doSelected = { idItem -> isSelectedId.value = idItem })
                 Spacer(modifier = Modifier.height(20.dp))
-                ColorPicker1()
+                ColorPicker()
             }
         }
     }
