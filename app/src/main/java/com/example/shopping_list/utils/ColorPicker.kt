@@ -6,15 +6,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
@@ -31,38 +35,63 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @Composable fun ColorPicker() {
-    val color by remember { mutableStateOf(Color.Black)}
-    var sliderPosition by remember{mutableStateOf(0f)}
+    var colorIndex by remember { mutableStateOf(0)}
+    var colorPosition by remember{mutableStateOf(0f)}
+    var alfaPosition by remember{mutableStateOf(0f)}
 
 //    val listColor: List<String> = ColorList.list2.map { it.rgb() }
     val listColor: List<Long> = createListSpectrumRGB()
+    val spectrum: List<Color> = listColor.map { Color(it) }
     Column( modifier = Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            var color = listColor[colorIndex]
+            Box( modifier = Modifier
+                .background(color = Color(color))
+                .width(50.dp)
+                .height(50.dp)
+                .padding(horizontal = 32.dp))
+            color = listColor[colorIndex] - 4278190080 + 16777216 * alfaPosition.roundToInt()
+            Box( modifier = Modifier
+                .background(color = Color(color))
+                .width(50.dp)
+                .height(50.dp)
+                .padding(horizontal = 32.dp))
+        }
+        Spacer(modifier = Modifier.height(12.dp))
         Box( modifier = Modifier
-            .background(color = color)
             .fillMaxWidth()
             .height(50.dp)
-            .padding(horizontal = 32.dp)){}
-        Spacer(modifier = Modifier.height(12.dp))
-        Box( modifier = Modifier
-            .fillMaxWidth()
-            .height(20.dp)
-            .padding(horizontal = 32.dp)
-            .background(
-                brush = Brush.horizontalGradient( colors = listColor.map {
-                    Color(it)
-                })
-            )){}
-        Spacer(modifier = Modifier.height(12.dp))
+            .background(brush = Brush.horizontalGradient(colors = spectrum)))
+
+        Text(text = "Цвет", style = MaterialTheme.typography.h4)
         Slider(
-            value = sliderPosition,
-            onValueChange = { sliderPosition = it },
+            value = colorPosition,
+            valueRange = 0f..listColor.size.toFloat()-1,
+            steps = listColor.size,
+            onValueChange = {
+                colorPosition = it
+                colorIndex = it.roundToInt() },
             colors = SliderDefaults.colors(
-                thumbColor = Color(0xFFFF0000),
-                activeTrackColor = Color(0xFFEF9A9A),
-                inactiveTrackColor = Color(0xFFEF9A9A),
-                inactiveTickColor = Color(0xFFEF9A9A),
-                activeTickColor = Color(0xFFB71C1C)
+                thumbColor = Color(0xFF575757),
+                activeTrackColor = Color(0xFFA2A2A2),
+                inactiveTrackColor = Color(0xFFA2A2A2),
+                inactiveTickColor = Color(0xFFA2A2A2),
+                activeTickColor = Color(0xFF575757)
         ))
+        Text(text = "Прозрачность", style = MaterialTheme.typography.h4)
+        Slider(
+            value = alfaPosition,
+            valueRange = 0f..255f,
+            steps = listColor.size,
+            onValueChange = {
+                alfaPosition = it },
+            colors = SliderDefaults.colors(
+                thumbColor = Color(0xFF575757),
+                activeTrackColor = Color(0xFFA2A2A2),
+                inactiveTrackColor = Color(0xFFA2A2A2),
+                inactiveTickColor = Color(0xFFA2A2A2),
+                activeTickColor = Color(0xFF575757)
+            ))
     }
 }
 
@@ -101,7 +130,7 @@ import kotlin.math.roundToInt
 
 fun createListSpectrumRGB(): List<Long>{
     val listColor = mutableListOf<Long>()
-    for (wave in 380..780 step 5) {
+    for (wave in 380..780 step 2) {
         listColor.add(waveToRGB(wave))
     }
     return listColor
