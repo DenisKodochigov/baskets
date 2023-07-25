@@ -88,7 +88,7 @@ import com.example.shopping_list.ui.components.dialog.EditUnitDialog
     doDeleteUnits: (List<UnitApp>) -> Unit,
     doChangeColor:(Long, Long) -> Unit
 ){
-    Column( ) {
+    Column {
         HeaderScreen(text = stringResource(R.string.settings_page), modifier)
         AddEditUnits(modifier, uiState, doChangeUnit, doDeleteUnits)
         ChangeColorSection(modifier, uiState, doChangeColor)
@@ -106,7 +106,7 @@ import com.example.shopping_list.ui.components.dialog.EditUnitDialog
             .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column{
             HeaderSection(text = stringResource(R.string.edit_section_list), modifier)
-            LazyColumnSection( uiState = uiState, doChangeColor = doChangeColor,)
+            LazyColumnSection( uiState = uiState, doChangeColor = doChangeColor)
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
@@ -174,7 +174,7 @@ fun LazyColumnSection(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
-        Column( ) {
+        Column {
             HeaderSection(text = stringResource(R.string.edit_unit_list), modifier)
             LazyColumnUnits(
                 uiState = uiState,

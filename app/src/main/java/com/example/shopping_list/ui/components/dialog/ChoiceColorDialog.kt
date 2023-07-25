@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import com.example.shopping_list.R
 import com.example.shopping_list.ui.components.MyTextH2
 import com.example.shopping_list.ui.components.TextButtonOK
-import com.example.shopping_list.utils.ColorPicker
+import com.example.shopping_list.utils.colorPicker
 
 @Composable
 fun ChoiceColorDialog(
@@ -22,6 +22,6 @@ fun ChoiceColorDialog(
         onDismissRequest = onDismiss,
         confirmButton = { TextButtonOK( onConfirm = { onConfirm(colorInt.value) } ) },
         title = {  MyTextH2(stringResource(R.string.choise_color), Modifier) },
-        text = { colorInt.value = ColorPicker() },
+        text = { colorInt.value = colorPicker() },
     )
 }

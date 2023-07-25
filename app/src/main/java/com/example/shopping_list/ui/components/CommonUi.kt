@@ -1,7 +1,6 @@
 package com.example.shopping_list.ui.components
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.layout.ContentScale.Companion.FillBounds
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -34,7 +34,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.example.shopping_list.MainActivity
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.SortingBy
@@ -54,20 +53,15 @@ fun HeaderScreen(text: String, modifier: Modifier) {
 
 @Composable
 fun HeaderImScreen(text: String, idImage:Int ) {
-
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .height(340.dp) ){
+    Column( Modifier.fillMaxWidth() ){
         Image(
             painter = painterResource(id = idImage),
             contentDescription = "Photo",
-            contentScale = FillBounds,
-            modifier = Modifier.align(alignment = Alignment.Center))
-        Box(modifier = Modifier.fillMaxWidth()
-            .background(ScaffoldColor)
-            .padding(horizontal = 12.dp, vertical = 4.dp)
-            .align(alignment = Alignment.BottomCenter)) {
+            contentScale = Crop,
+            modifier = Modifier.height(340.dp)
+        )
+        Box(modifier = Modifier.fillMaxWidth().background(ScaffoldColor)
+            .padding(horizontal = 12.dp, vertical = 4.dp)) {
             Text( text = text, style = MaterialTheme.typography.h1,
                 modifier = Modifier.align(alignment = Alignment.BottomCenter) )
         }

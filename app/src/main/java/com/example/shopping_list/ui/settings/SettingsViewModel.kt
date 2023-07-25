@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.ErrorApp
-import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

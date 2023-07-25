@@ -28,7 +28,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
-@Composable fun ColorPicker(): Long {
+@Composable fun colorPicker(): Long {
     val listColor: List<Wave> = createListSpectrumRGB()
     val spectrum: List<Color> = listColor.map { Color(it.color) }
 
@@ -46,9 +46,7 @@ import kotlin.math.roundToInt
                 .width(50.dp)
                 .height(50.dp)
                 .padding(horizontal = 32.dp))
-//            val wave = waveToRGB(listColor[colorIndex].wave, intensityPosition.roundToInt(), alfaPosition.roundToInt() )
-            colorSelected = waveToRGB(listColor[colorIndex].wave, intensityPosition.roundToInt(), alfaPosition.roundToInt() ).color
-//            log(true, "wave = ${wave.wave}, r=${wave.X/ 65536} ,g=${wave.Y/ 256} ,b=${wave.Z}")
+            colorSelected = waveToRGB(listColor[colorIndex].wave, alfaPosition.roundToInt(), intensityPosition.roundToInt()).color
             Box( modifier = Modifier
                 .background(color = Color(colorSelected))
                 .width(50.dp)
@@ -63,7 +61,7 @@ import kotlin.math.roundToInt
 
         Text(text = "Цвет", style = MaterialTheme.typography.h4)
         Slider(
-            value = colorPosition.toFloat(),
+            value = colorPosition,
             valueRange = 0f..listColor.size.toFloat()-1,
             steps = listColor.size,
             onValueChange = {
@@ -109,7 +107,6 @@ import kotlin.math.roundToInt
 }
 
 
-
 fun createListSpectrumRGB(): List<Wave>{
     val listColor = mutableListOf<Wave>()
     for (wave in 380..780 step 2) {
@@ -117,18 +114,6 @@ fun createListSpectrumRGB(): List<Wave>{
     }
     return listColor
 }
-
-//fun findWave(color: Long, listColor: List<Wave>):Wave {
-//    val alpha = (color and 4278190080) / 16777216
-//    val r = (color and 16711680) / 65536
-//    val g = (color and 65280) / 256
-//    val b = color and 255
-//    log(true, "color = $color, alpha = $alpha, r=$r, g=$g, b=$b")
-//    listColor
-//    return listColor.find {
-//        (it.X.roundToLong() == r) and (it.Y.roundToLong() == g) and (it.Z.roundToLong() == b) and
-//                (it.alpha == alpha.toInt()) } ?: listColor[0]
-//}
 fun waveToRGB(wavelength: Int, alpha: Int, intensity: Int): Wave{
 
     val factor = if((wavelength >= 380) && (wavelength<420)) 0.3 + 0.7*(wavelength - 380) / (420 - 380)
