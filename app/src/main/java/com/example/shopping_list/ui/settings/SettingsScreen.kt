@@ -2,6 +2,7 @@ package com.example.shopping_list.ui.settings
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,20 +10,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ChangeCircle
@@ -33,48 +38,132 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
+import com.example.shopping_list.data.room.tables.SectionDB
 import com.example.shopping_list.data.room.tables.UnitDB
+import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.ButtonCircle
 import com.example.shopping_list.ui.components.HeaderScreen
+import com.example.shopping_list.ui.components.HeaderSection
 import com.example.shopping_list.ui.components.MyTextH1
-import com.example.shopping_list.ui.components.SwitcherButton
+import com.example.shopping_list.ui.components.dialog.ChoiceColorDialog
 import com.example.shopping_list.ui.components.dialog.EditUnitDialog
-import com.example.shopping_list.utils.ColorPicker
-import com.example.shopping_list.utils.ColorPicker1
 
-@Composable
-fun SettingsScreen() {
+@Composable fun SettingsScreen() {
     val viewModel: SettingsViewModel = hiltViewModel()
+    SettingsScreenInit(viewModel)
+}
+
+
+@Composable fun SettingsScreenInit(viewModel: SettingsViewModel){
     val uiState by viewModel.settingScreenState.collectAsState()
 
     LayoutSettingsScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         uiState = uiState,
         doChangeUnit = { unit -> viewModel.changeUnit(unit) },
+        doChangeColor = { sectionId, colorLong -> viewModel.changeSectionColor(sectionId, colorLong) },
         doDeleteUnits = { units -> viewModel.doDeleteUnits(units) },
     )
 }
-
 @SuppressLint("UnrememberedMutableState")
-@Composable
-fun LayoutSettingsScreen(
+@Composable fun LayoutSettingsScreen(
     modifier: Modifier = Modifier,
     uiState: SettingsScreenState,
     doChangeUnit: (UnitApp) -> Unit,
     doDeleteUnits: (List<UnitApp>) -> Unit,
+    doChangeColor:(Long, Long) -> Unit
 ){
+    Column( ) {
+        HeaderScreen(text = stringResource(R.string.settings_page), modifier)
+        AddEditUnits(modifier, uiState, doChangeUnit, doDeleteUnits)
+        ChangeColorSection(modifier, uiState, doChangeColor)
+    }
+}
+
+@Composable fun ChangeColorSection(
+    modifier: Modifier = Modifier,
+    uiState: SettingsScreenState,
+    doChangeColor:(Long, Long) -> Unit){
+
+    Box(
+        modifier
+            .fillMaxSize()
+            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+        Column{
+            HeaderSection(text = stringResource(R.string.edit_section_list), modifier)
+            LazyColumnSection( uiState = uiState, doChangeColor = doChangeColor,)
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+    }
+}
+@Composable
+fun LazyColumnSection(
+    uiState: SettingsScreenState,
+    doChangeColor:(Long, Long) -> Unit,
+) {
+    val listState = rememberLazyListState()
+    var runDialog by remember { mutableStateOf(false) }
+    var selectedSection: Section by remember { mutableStateOf( SectionDB() ) }
+    Column( Modifier.verticalScroll(rememberScrollState())) {
+        LazyColumn(
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.heightIn(min = 0.dp, max = 300.dp)
+        ) {
+            items(items = uiState.section) {item ->
+                Row(modifier = Modifier
+                    .clip(shape = RoundedCornerShape(6.dp))
+                    .fillMaxWidth()
+                    .background(color = Color(item.colorSection))
+                    .clickable {
+                        selectedSection = item
+                        runDialog = true },
+                ) {
+                    Text(
+                        text = item.nameSection,
+                        style = MaterialTheme.typography.h1,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                            .border(width = 1.dp, color = Color.LightGray,shape = RectangleShape)
+                            .padding(bottom = dimensionResource(R.dimen.lazy_padding_ver1)),
+                    )
+                    if (runDialog) {
+                        ChoiceColorDialog(
+                            onDismiss = {runDialog = false},
+                            onConfirm = {
+                                doChangeColor(selectedSection.idSection, it)
+                                runDialog = false
+                            },)
+                    }
+                }
+            }
+        }
+    }
+
+}
+@Composable fun AddEditUnits(
+    modifier: Modifier = Modifier,
+    uiState: SettingsScreenState,
+    doChangeUnit: (UnitApp) -> Unit,
+    doDeleteUnits: (List<UnitApp>) -> Unit,)
+{
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
     val itemList = uiState.unitApp
     if (isSelectedId.value > 0L) {
@@ -83,22 +172,16 @@ fun LayoutSettingsScreen(
     }
     Box(
         Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
-        Column(modifier.fillMaxHeight()) {
-            HeaderScreen(text = stringResource(R.string.settings_page), modifier)
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .weight(1f)) {
-                LazyColumnUnits(
-                    uiState = uiState,
-                    doDeleteSelected = doDeleteUnits,
-                    changeUnit = doChangeUnit,
-                    doSelected = { idItem -> isSelectedId.value = idItem })
-                Spacer(modifier = Modifier.height(20.dp))
-                ColorPicker()
-            }
+        Column( ) {
+            HeaderSection(text = stringResource(R.string.edit_unit_list), modifier)
+            LazyColumnUnits(
+                uiState = uiState,
+                doDeleteSelected = doDeleteUnits,
+                changeUnit = doChangeUnit,
+                doSelected = { idItem -> isSelectedId.value = idItem })
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
@@ -120,8 +203,8 @@ fun LazyColumnUnits(
             onConfirm = changeUnit
         )
     }
-
-    Column( Modifier.verticalScroll(rememberScrollState())) {
+//Modifier.verticalScroll(rememberScrollState())
+    Column {
         LazyVerticalGrid(
             state = rememberLazyGridState(),
             verticalArrangement = Arrangement.spacedBy(8.dp),

@@ -36,4 +36,7 @@
     <string name="by_section">By section</string>
     <string name="all">All</string>
     <string name="sorting">sorting</string>
+    <string name="choise_color">Choise color</string>
+    <string name="edit_unit_list">Edit units list</string>
+    <string name="edit_section_list">Edit sections list</string>
 </resources>

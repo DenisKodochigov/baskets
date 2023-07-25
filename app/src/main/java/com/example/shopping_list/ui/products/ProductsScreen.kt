@@ -207,7 +207,10 @@ fun LazyColumnProduct(
                 text = stringResource(R.string.products_in_basket) + " " + uiState.nameBasket, )
         }
         items(items = uiState.products) { item ->
-            Column(modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(SectionColor)) {
+            Column(modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                .background(
+                    if (item[0].article.section.colorSection > 0) Color( item[0].article.section.colorSection)
+                    else SectionColor)) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
                 LayoutColumProducts(
                     products = item,

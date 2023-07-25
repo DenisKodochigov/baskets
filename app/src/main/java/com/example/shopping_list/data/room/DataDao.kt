@@ -119,6 +119,10 @@ interface DataDao {
     fun getSection(name: String): SectionDB?
     @Update
     fun changeSection(section: SectionDB)
+    @Query("UPDATE tb_section SET colorSection = :colorLong WHERE idSection = :sectionId ")
+    fun changeSectionColor(sectionId: Long, colorLong: Long)
+
+
     /** Unit entity*/
 
     @Insert

@@ -9,5 +9,5 @@ import com.example.shopping_list.entity.Section
 data class SectionDB(
     @PrimaryKey(autoGenerate = true) override var idSection: Long = 0,
     override var nameSection:String = "",
-    override var colorSection: String = ""
+    override var colorSection: Long = 0L
 ): Section

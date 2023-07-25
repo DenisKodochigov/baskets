@@ -33,4 +33,7 @@
     <string name="by_section">По отделу</string>
     <string name="all">Все</string>
     <string name="sorting">сортировка</string>
+    <string name="choise_color">Выберите цвет</string>
+    <string name="edit_unit_list">Редактирование ед.измерений</string>
+    <string name="edit_section_list">Редактирование секций</string>
 </resources>

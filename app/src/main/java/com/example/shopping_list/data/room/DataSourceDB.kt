@@ -160,6 +160,11 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return section
     }
 
+    fun changeSectionColor(sectionId: Long, colorLong: Long): List<Section> {
+        dataDao.changeSectionColor(sectionId, colorLong)
+        return dataDao.getSections()
+    }
+
     /** Unit*/
 
     fun getAddUnit(unitA: UnitDB): UnitApp {

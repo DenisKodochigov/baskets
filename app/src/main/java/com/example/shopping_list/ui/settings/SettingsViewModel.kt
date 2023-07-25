@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.ErrorApp
+import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,12 +25,22 @@ class SettingsViewModel @Inject constructor(
 
     init {
         getListUnit()
+        getListSection()
     }
     private fun getListUnit() {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getUnits() }.fold(
                 onSuccess = {
                     _settingScreenState.update { currentState -> currentState.copy( unitApp = it)}},
+                onFailure = { errorApp.errorApi(it.message!!) }
+            )
+        }
+    }
+    private fun getListSection() {
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching { dataRepository.getSections() }.fold(
+                onSuccess = {
+                    _settingScreenState.update { currentState -> currentState.copy( section = it)}},
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -49,6 +60,15 @@ class SettingsViewModel @Inject constructor(
             kotlin.runCatching { dataRepository.deleteUnits(units) }.fold(
                 onSuccess = {
                     _settingScreenState.update { currentState -> currentState.copy( unitApp = it)}},
+                onFailure = { errorApp.errorApi(it.message!!) }
+            )
+        }
+    }
+    fun changeSectionColor(sectionId: Long, colorLong: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching { dataRepository.changeSectionColor(sectionId, colorLong) }.fold(
+                onSuccess = {
+                    _settingScreenState.update { currentState -> currentState.copy( section = it)}},
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }

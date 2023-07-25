@@ -58,7 +58,7 @@ fun HeaderImScreen(text: String, idImage:Int ) {
     Box(
         Modifier
             .fillMaxWidth()
-            .height(240.dp) ){
+            .height(340.dp) ){
         Image(
             painter = painterResource(id = idImage),
             contentDescription = "Photo",

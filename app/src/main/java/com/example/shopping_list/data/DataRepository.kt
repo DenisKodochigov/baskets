@@ -99,6 +99,8 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         dataSourceDB.getAddUnit(unit as UnitDB)
         return getUnits()
     }
+    fun changeSectionColor(sectionId: Long, colorLong: Long): List<Section> =
+        dataSourceDB.changeSectionColor(sectionId, colorLong)
 
 //    fun sectionsFlow(): Flow<List<Section>> = dataSourceDB.sectionFlow()
 //    fun unitsFlow(): Flow<List<UnitA>> = dataSourceDB.unitsFlow()
