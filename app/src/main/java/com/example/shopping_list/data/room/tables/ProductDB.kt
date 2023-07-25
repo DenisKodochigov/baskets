@@ -103,4 +103,24 @@ data class ProductDB(
         this.basketId = basketId
         this.articleId = articleId
     }
+
+    @Ignore     constructor() : this(
+        idProduct = 0,
+        value = 0.0,
+        basketId = 0,
+        putInBasket = false,
+        position = 0,
+        articleId = 0,
+        isSelected = false,
+        article = ArticleDB(
+            idArticle = 0,
+            nameArticle = "",
+            position = 0,
+            sectionId = 0,
+            unitId = 0,
+            section = SectionDB(),
+            unitApp =  UnitDB(),
+            isSelected = false,
+        )
+    )
 }

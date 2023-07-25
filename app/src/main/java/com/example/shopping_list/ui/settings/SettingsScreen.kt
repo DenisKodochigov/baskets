@@ -200,7 +200,10 @@ fun LazyColumnUnits(
         EditUnitDialog(
             unitApp = editUnit.value!!,
             onDismiss = { editUnit.value = null },
-            onConfirm = changeUnit
+            onConfirm = {
+                changeUnit(it)
+                editUnit.value = null
+            }
         )
     }
 //Modifier.verticalScroll(rememberScrollState())

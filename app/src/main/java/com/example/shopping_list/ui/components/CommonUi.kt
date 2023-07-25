@@ -331,7 +331,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(
 @Composable
 fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
     val width = 350.dp
-    val frameSize = 120.dp
+    val frameSize = 140.dp
     val cornerDp = 4.dp
 
     val swipeableState = rememberSwipeableState(0)

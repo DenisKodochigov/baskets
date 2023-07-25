@@ -151,6 +151,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     }
 
     private fun getAddSection(section: SectionDB): Section {
+        section.nameSection = toUpFirstChar(section.nameSection)
         if (section.idSection == 0L) {
             section.idSection = if (section.nameSection != "") {
                 dataDao.getSection(section.nameSection)?.idSection ?: dataDao.addSection(section)
@@ -177,7 +178,8 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return unitA
     }
     fun deleteUnits(units: List<UnitApp>) {
-        units.forEach { if (dataDao.checkUnit( it.idUnit ) == null) dataDao.deleteUnit(it.idUnit) }
+        units.filter{it.isSelected}.forEach {
+            if (dataDao.checkUnit( it.idUnit ) == null) dataDao.deleteUnit(it.idUnit) }
     }
 
     fun getUnits(): List<UnitApp>{
