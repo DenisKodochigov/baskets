@@ -1,11 +1,13 @@
 package com.example.shopping_list.ui.components
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,9 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
-import androidx.compose.ui.layout.ContentScale.Companion.FillBounds
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -39,8 +41,8 @@ import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.ui.theme.ButtonColorsMy
 import com.example.shopping_list.ui.theme.ScaffoldColor
+import com.example.shopping_list.ui.theme.SwitcherButtonColor
 import kotlin.math.roundToInt
-
 
 @Composable
 fun HeaderScreen(text: String, modifier: Modifier) {
@@ -60,7 +62,9 @@ fun HeaderImScreen(text: String, idImage:Int ) {
             contentScale = Crop,
             modifier = Modifier.height(340.dp)
         )
-        Box(modifier = Modifier.fillMaxWidth().background(ScaffoldColor)
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .background(ScaffoldColor)
             .padding(horizontal = 12.dp, vertical = 4.dp)) {
             Text( text = text, style = MaterialTheme.typography.h1,
                 modifier = Modifier.align(alignment = Alignment.BottomCenter) )
@@ -344,7 +348,7 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
             modifier = Modifier
                 .align(alignment = Alignment.Center)
                 .width(width)
-                .background(color = ButtonColorsMy, shape = RoundedCornerShape(cornerDp))
+                .background(color = SwitcherButtonColor, shape = RoundedCornerShape(cornerDp))
                 .swipeable(
                     state = swipeableState,
                     anchors = anchors,
@@ -391,5 +395,19 @@ fun TextForSwitchingButton(text: String, frameSize: Dp, modifier: Modifier){
                 .padding(horizontal = 4.dp, vertical = 4.dp)
                 .align(alignment = Alignment.Center)
         )
+    }
+}
+
+@Composable fun CircleMy(color: Color){
+//    Canvas(modifier = Modifier) {
+//        translate(left = -40f, top = 40f) {
+//            drawCircle(color, radius = 20.dp.toPx()) }}
+//    Image(painter = ColorPainter(color), contentDescription = "", modifier = Modifier.background(color= color, shape = CircleShape).size(30.dp))
+    Box(
+        modifier = Modifier
+            .size(size = 40.dp)
+            .clip(shape = CircleShape)
+            .background(color = color)
+    ) {
     }
 }

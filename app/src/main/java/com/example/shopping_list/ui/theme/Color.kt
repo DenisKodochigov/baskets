@@ -17,6 +17,7 @@ val BorderBottomBar = Color(0xFF464646)
 val BackgroundFab = BackgroundBottomBar
 val ContentFab = BorderBottomBar
 val ButtonColorsMy = Color.LightGray
+val SwitcherButtonColor = Color(0xFFDFDFDF)
 val BackgroundElementList = Color(0x9FFFFFFF)
 val SectionColor = Color(0x22909EE7)
 val SectionColor1 = Color(0xFFFFA200)

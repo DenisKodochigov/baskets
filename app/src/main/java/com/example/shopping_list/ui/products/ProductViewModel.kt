@@ -136,4 +136,13 @@ class ProductViewModel  @Inject constructor(
             )
         }
     }
+    fun changeSelected(productId: Long){
+        _productsScreenState.value.products.forEach {listArticles ->
+            listArticles.forEach {
+                if (it.idProduct == productId){
+                    it.isSelected = !it.isSelected
+                }
+            }
+        }
+    }
 }

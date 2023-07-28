@@ -123,4 +123,14 @@ class ArticleViewModel @Inject constructor(
             )
         }
     }
+    fun changeSelected(articleId: Long){
+
+        _articleScreenState.value.article.forEach {listArticles ->
+            listArticles.forEach {
+                if (it.idArticle == articleId){
+                    it.isSelected = !it.isSelected
+                }
+            }
+        }
+    }
 }

@@ -121,8 +121,10 @@ interface DataDao {
     fun changeSection(section: SectionDB)
     @Query("UPDATE tb_section SET colorSection = :colorLong WHERE idSection = :sectionId ")
     fun changeSectionColor(sectionId: Long, colorLong: Long)
-
-
+    @Query("DELETE FROM tb_section WHERE idSection = :id")
+    fun deleteSection(id: Long)
+    @Query("SELECT idArticle FROM tb_article WHERE sectionId = :id")
+    fun checkSection(id: Long): Long?
     /** Unit entity*/
 
     @Insert

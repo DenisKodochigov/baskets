@@ -70,6 +70,7 @@ fun ArticleScreenInitDate(
         doChangeSortingBy = { sortingBy -> viewModel.doChangeSortingBy(sortingBy) },
         doChangeSectionSelected = { articles, idSection ->
             viewModel.changeSectionSelected(articles, idSection, uiState.sorting) },
+        doSelected = { articleId -> viewModel.changeSelected(articleId) },
     )
 }
 
@@ -82,6 +83,7 @@ fun LayoutArticleScreen(
     doChangeSectionSelected: (List<Article>, Long) -> Unit,
     doDeleteSelected: (List<Article>) -> Unit,
     doChangeSortingBy: (SortingBy) -> Unit,
+    doSelected: (Long) -> Unit
 ) {
     log( showLog,"LayoutArticleScreen")
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
@@ -92,10 +94,7 @@ fun LayoutArticleScreen(
 
     if (isSelectedId.value > 0L) {
         log( showLog,"LayoutArticleScreen if (isSelectedId.value > 0L) ${isSelectedId.value}")
-        uiState.article.forEach {articles ->
-            articles.find { it.idArticle == isSelectedId.value }
-                ?.let { it1-> it1.isSelected = !it1.isSelected }
-        }
+        doSelected(isSelectedId.value)
         isSelectedId.value = 0
     }
     if (unSelected.value) {
@@ -363,7 +362,9 @@ fun LayoutAddEditArticle(
         val article = ArticleDB(
             idArticle = enterArticle.value.first,
             nameArticle = enterArticle.value.second,
-            section = SectionDB(enterSection.value.first, enterSection.value.second),
+            section = SectionDB(
+                idSection = enterSection.value.first,
+                nameSection = enterSection.value.second),
             unitApp = UnitDB(enterUnit.value.first, enterUnit.value.second),
             isSelected = false,
             position = 0

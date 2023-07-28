@@ -7,7 +7,6 @@ import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.*
 import com.example.shopping_list.utils.createDoubleLisArticle
 import com.example.shopping_list.utils.createDoubleListProduct
-import com.example.shopping_list.utils.log
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -99,8 +98,12 @@ class DataRepository @Inject constructor(private val dataSourceDB: DataSourceDB)
         dataSourceDB.getAddUnit(unit as UnitDB)
         return getUnits()
     }
-    fun changeSectionColor(sectionId: Long, colorLong: Long): List<Section> =
-        dataSourceDB.changeSectionColor(sectionId, colorLong)
+    fun changeSection(section: Section): List<Section> =
+        dataSourceDB.changeSection(section)
+    fun deleteSections(sections: List<Section>): List<Section> {
+        dataSourceDB.deleteSections(sections)
+        return getSections()
+    }
 
 //    fun sectionsFlow(): Flow<List<Section>> = dataSourceDB.sectionFlow()
 //    fun unitsFlow(): Flow<List<UnitA>> = dataSourceDB.unitsFlow()

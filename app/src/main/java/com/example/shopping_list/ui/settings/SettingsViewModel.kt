@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shopping_list.data.DataRepository
 import com.example.shopping_list.entity.ErrorApp
+import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -63,9 +64,18 @@ class SettingsViewModel @Inject constructor(
             )
         }
     }
-    fun changeSectionColor(sectionId: Long, colorLong: Long) {
+    fun changeSectionColor(section: Section) {
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.changeSectionColor(sectionId, colorLong) }.fold(
+            kotlin.runCatching { dataRepository.changeSection(section) }.fold(
+                onSuccess = {
+                    _settingScreenState.update { currentState -> currentState.copy( section = it)}},
+                onFailure = { errorApp.errorApi(it.message!!) }
+            )
+        }
+    }
+    fun doDeleteSections(sections: List<Section>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching { dataRepository.deleteSections(sections) }.fold(
                 onSuccess = {
                     _settingScreenState.update { currentState -> currentState.copy( section = it)}},
                 onFailure = { errorApp.errorApi(it.message!!) }

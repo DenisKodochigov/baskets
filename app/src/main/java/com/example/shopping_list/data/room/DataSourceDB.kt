@@ -161,9 +161,14 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return section
     }
 
-    fun changeSectionColor(sectionId: Long, colorLong: Long): List<Section> {
-        dataDao.changeSectionColor(sectionId, colorLong)
+    fun changeSection(section: Section): List<Section> {
+        dataDao.changeSection(section as SectionDB)
         return dataDao.getSections()
+    }
+
+    fun deleteSections(sections: List<Section>) {
+        sections.filter{it.isSelected}.forEach {
+            if (dataDao.checkSection( it.idSection ) == null) dataDao.deleteSection(it.idSection) }
     }
 
     /** Unit*/

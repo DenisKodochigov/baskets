@@ -25,7 +25,9 @@
     <dimen name="lazy_padding_hor">12dp</dimen>
     <dimen name="screen_padding_hor">12dp</dimen>
     <dimen name="lazy_padding_ver1">8dp</dimen>
+    <dimen name="lazy_padding_ver2">4dp</dimen>
     <dimen name="lazy_padding_hor1">1dp</dimen>
+    <dimen name="lazy_padding_hor2">16dp</dimen>
     <dimen name="screen_padding_hor1">12dp</dimen>
 
 </resources>

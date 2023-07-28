@@ -107,6 +107,7 @@ fun ProductScreenCreateView(
         doChangeSectionSelected = { productList, idSection ->
             viewModel.changeSectionSelected(productList, idSection) },
         doDeleteSelected = { productList -> viewModel.deleteSelectedProducts(productList) },
+        doSelected = { articleId -> viewModel.changeSelected(articleId) },
     )
 }
 
@@ -118,6 +119,7 @@ fun LayoutProductsScreen(
     changeProduct: (Product) -> Unit,
     doChangeSectionSelected: (List<Product>, Long) -> Unit,
     doDeleteSelected: (List<Product>) -> Unit,
+    doSelected: (Long) -> Unit
 ) {
     val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -126,12 +128,9 @@ fun LayoutProductsScreen(
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
 
     log( showLog,"LayoutProductsScreen. ${uiState.products.size}")
-    val itemList = uiState.products
 
     if (isSelectedId.value > 0L) {
-        uiState.products.forEach { productList ->
-            productList.find { it.idProduct == isSelectedId.value }
-                ?.let { item -> item.isSelected = !item.isSelected } }
+        doSelected(isSelectedId.value)
         isSelectedId.value = 0
     }
     if (unSelected.value) {
