@@ -39,4 +39,5 @@
     <string name="choise_color">Choise color</string>
     <string name="edit_unit_list">Edit units list</string>
     <string name="edit_section_list">Edit sections list</string>
+    <string name="add_change_section">Add, change section</string>
 </resources>

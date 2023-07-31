@@ -9,7 +9,7 @@ data class Wave(
     val X: Double,
     val Y: Double,
     val Z: Double,
-    val color: Long,
+    var color: Long,
     var alpha: Int = 255,
     var intensity: Int = 255
 ) {

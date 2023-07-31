@@ -2,7 +2,6 @@ package com.example.shopping_list.ui.settings
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,12 +39,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -59,11 +56,10 @@ import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.ButtonCircle
-import com.example.shopping_list.ui.components.CircleMy
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.HeaderSection
 import com.example.shopping_list.ui.components.MyTextH1
-import com.example.shopping_list.ui.components.dialog.ChoiceColorDialog
+import com.example.shopping_list.ui.components.dialog.AddChangeSectionDialog
 import com.example.shopping_list.ui.components.dialog.EditUnitDialog
 
 @Composable fun SettingsScreen() {
@@ -135,7 +131,7 @@ fun LazyColumnSection(
     val editItem: MutableState<Section?> = remember { mutableStateOf(null) }
 
     if (editItem.value != null) {
-        ChoiceColorDialog(
+        AddChangeSectionDialog(
             section = editItem.value!!,
             onDismiss = { editItem.value = null},
             onConfirm = {

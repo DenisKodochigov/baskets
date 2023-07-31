@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.entity.Wave
+import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -58,50 +59,55 @@ import kotlin.math.roundToInt
             .fillMaxWidth()
             .height(50.dp)
             .background(brush = Brush.horizontalGradient(colors = spectrum)))
-
-        Text(text = "Цвет", style = MaterialTheme.typography.h4)
-        Slider(
-            value = colorPosition,
-            valueRange = 0f..listColor.size.toFloat()-1,
-            steps = listColor.size,
-            onValueChange = {
-                colorPosition = it
-                colorIndex = it.roundToInt() },
-            colors = SliderDefaults.colors(
-                thumbColor = Color(0xFF575757),
-                activeTrackColor = Color(0xFFA2A2A2),
-                inactiveTrackColor = Color(0xFFA2A2A2),
-                inactiveTickColor = Color(0xFFA2A2A2),
-                activeTickColor = Color(0xFF575757)
-        ))
-        Text(text = "Интенсивность", style = MaterialTheme.typography.h4)
-        Slider(
-            value = intensityPosition,
-            valueRange = 0f..255f,
-            steps = listColor.size,
-            onValueChange = {
-                intensityPosition = it },
-            colors = SliderDefaults.colors(
-                thumbColor = Color(0xFF575757),
-                activeTrackColor = Color(0xFFA2A2A2),
-                inactiveTrackColor = Color(0xFFA2A2A2),
-                inactiveTickColor = Color(0xFFA2A2A2),
-                activeTickColor = Color(0xFF575757)
-            ))
-        Text(text = "Прозрачность", style = MaterialTheme.typography.h4)
-        Slider(
-            value = alfaPosition,
-            valueRange = 0f..255f,
-            steps = listColor.size,
-            onValueChange = {
-                alfaPosition = it },
-            colors = SliderDefaults.colors(
-                thumbColor = Color(0xFF575757),
-                activeTrackColor = Color(0xFFA2A2A2),
-                inactiveTrackColor = Color(0xFFA2A2A2),
-                inactiveTickColor = Color(0xFFA2A2A2),
-                activeTickColor = Color(0xFF575757)
-            ))
+        Box() {
+            Text(text = "Цвет", style = MaterialTheme.typography.h4)
+            Slider(
+                value = colorPosition,
+                valueRange = 0f..listColor.size.toFloat()-1,
+                steps = listColor.size,
+                onValueChange = {
+                    colorPosition = it
+                    colorIndex = it.roundToInt() },
+                colors = SliderDefaults.colors(
+                    thumbColor = Color(0xFF575757),
+                    activeTrackColor = Color(0xFFA2A2A2),
+                    inactiveTrackColor = Color(0xFFA2A2A2),
+                    inactiveTickColor = Color(0xFFA2A2A2),
+                    activeTickColor = Color(0xFF575757)
+                ))
+        }
+        Box() {
+            Text(text = "Интенсивность", style = MaterialTheme.typography.h4)
+            Slider(
+                value = intensityPosition,
+                valueRange = 0f..255f,
+                steps = listColor.size,
+                onValueChange = {
+                    intensityPosition = it },
+                colors = SliderDefaults.colors(
+                    thumbColor = Color(0xFF575757),
+                    activeTrackColor = Color(0xFFA2A2A2),
+                    inactiveTrackColor = Color(0xFFFFFFFF),
+                    inactiveTickColor = Color(0xFFA2A2A2),
+                    activeTickColor = Color(0xFF575757)
+                ))
+        }
+        Box() {
+            Text(text = "Прозрачность", style = MaterialTheme.typography.h4)
+            Slider(
+                value = alfaPosition,
+                valueRange = 0f..255f,
+                steps = listColor.size,
+                onValueChange = {
+                    alfaPosition = it },
+                colors = SliderDefaults.colors(
+                    thumbColor = Color(0xFF575757),
+                    activeTrackColor = Color(0xFFA2A2A2),
+                    inactiveTrackColor = Color(0xFFA2A2A2),
+                    inactiveTickColor = Color(0xFFA2A2A2),
+                    activeTickColor = Color(0xFF575757)
+                ))
+        }
     }
     return colorSelected
 }
@@ -109,12 +115,32 @@ import kotlin.math.roundToInt
 
 fun createListSpectrumRGB(): List<Wave>{
     val listColor = mutableListOf<Wave>()
-    for (wave in 380..780 step 2) {
+    val listColor1 = mutableListOf<Wave>()
+    val listColor2 = mutableListOf<Wave>()
+    for (wave in LEN_MIN..LEN_MAX step LEN_STEP) {
         listColor.add(waveToRGB(wave, 255, 255))
+        listColor1.add(waveToRGB1(wave))
+        listColor2.add(waveToRGB2(wave))
+    }
+    return listColor
+}
+fun createListSpectrumRGB1(): List<Wave>{
+    val listColor = mutableListOf<Wave>()
+    for (wave in LEN_MIN..LEN_MAX step LEN_STEP) {
+        listColor.add(waveToRGB1(wave))
+    }
+    return listColor
+}
+fun createListSpectrumRGB2(): List<Wave>{
+    val listColor = mutableListOf<Wave>()
+    for (wave in LEN_MIN..LEN_MAX step LEN_STEP) {
+        listColor.add(waveToRGB2(wave))
     }
     return listColor
 }
 fun waveToRGB(wavelength: Int, alpha: Int, intensity: Int): Wave{
+    val gamma = 0.08
+
 
     val factor = if((wavelength >= 380) && (wavelength<420)) 0.3 + 0.7*(wavelength - 380) / (420 - 380)
         else if((wavelength >= 420) && (wavelength<701)) 1.0
@@ -122,7 +148,7 @@ fun waveToRGB(wavelength: Int, alpha: Int, intensity: Int): Wave{
         else 0.0
 
     return if((wavelength >= 380) && (wavelength<440)){
-        calculateColor(wavelength,-(wavelength - 440) / (440 - 380.0), 0.0, 1.0, factor, alpha, intensity)
+        calculateColor(wavelength,-(wavelength - 440) / (440 - 380.0), 0.0, 1.0, factor, alpha, intensity, gamma)
     } else if((wavelength >= 440) && (wavelength<490)){
         calculateColor(wavelength,0.0, (wavelength - 440) / (490 - 440.0), 1.0, factor, alpha, intensity)
     }else if((wavelength >= 490) && (wavelength<510)){
@@ -136,8 +162,15 @@ fun waveToRGB(wavelength: Int, alpha: Int, intensity: Int): Wave{
     } else calculateColor(wavelength,0.0, 0.0, 0.0, factor, alpha, intensity)
 }
 
-fun calculateColor(wavelength: Int, red: Double, green: Double, blue: Double, factor: Double, alpha: Int, intensity: Int): Wave {
-    val gamma = 0.80
+fun calculateColor(
+    wavelength: Int,
+    red: Double,
+    green: Double,
+    blue: Double,
+    factor: Double,
+    alpha: Int,
+    intensity: Int,
+    gamma: Double): Wave {
 
     val rgbAlpha: Long = (16777216 * alpha).toLong()
     val rgbR = if (red != 0.0) (intensity * (red * factor).pow(gamma)).roundToInt() * 65536 else 0
@@ -147,6 +180,133 @@ fun calculateColor(wavelength: Int, red: Double, green: Double, blue: Double, fa
     return Wave(wavelength, rgbR.toDouble(), rgbG.toDouble(), rgbB.toDouble(), rgbAlpha + rgbR + rgbG + rgbB)
 }
 
+const val LEN_MIN = 380
+const val LEN_MAX = 780
+const val LEN_STEP = 5
+
+val X = arrayListOf(
+    0.000160, 0.000662, 0.002362, 0.007242, 0.019110, 0.043400, 0.084736, 0.140638, 0.204492, 0.264737,
+    0.314679, 0.357719, 0.383734, 0.386726, 0.370702, 0.342957, 0.302273, 0.254085, 0.195618, 0.132349,
+    0.080507, 0.041072, 0.016172, 0.005132, 0.003816, 0.015444, 0.037465, 0.071358, 0.117749, 0.172953,
+    0.236491, 0.304213, 0.376772, 0.451584, 0.529826, 0.616053, 0.705224, 0.793832, 0.878655, 0.951162,
+    1.014160, 1.074300, 1.118520, 1.134300, 1.123990, 1.089100, 1.030480, 0.950740, 0.856297, 0.754930,
+    0.647467, 0.535110, 0.431567, 0.343690, 0.268329, 0.204300, 0.152568, 0.112210, 0.081261, 0.057930,
+    0.040851, 0.028623, 0.019941, 0.013842, 0.009577, 0.006605, 0.004553, 0.003145, 0.002175, 0.001506,
+    0.001045, 0.000727, 0.000508, 0.000356, 0.000251, 0.000178, 0.000126, 0.000090, 0.000065, 0.000046,
+    0.000033
+)
+val Y = arrayListOf(
+    0.000017, 0.000072, 0.000253, 0.000769, 0.002004, 0.004509, 0.008756, 0.014456, 0.021391, 0.029497,
+    0.038676, 0.049602, 0.062077, 0.074704, 0.089456, 0.106256, 0.128201, 0.152761, 0.185190, 0.219940,
+    0.253589, 0.297665, 0.339133, 0.395379, 0.460777, 0.531360, 0.606741, 0.685660, 0.761757, 0.823330,
+    0.875211, 0.923810, 0.961988, 0.982200, 0.991761, 0.999110, 0.997340, 0.982380, 0.955552, 0.915175,
+    0.868934, 0.825623, 0.777405, 0.720353, 0.658341, 0.593878, 0.527963, 0.461834, 0.398057, 0.339554,
+    0.283493, 0.228254, 0.179828, 0.140211, 0.107633, 0.081187, 0.060281, 0.044096, 0.031800, 0.022602,
+    0.015905, 0.011130, 0.007749, 0.005375, 0.003718, 0.002565, 0.001768, 0.001222, 0.000846, 0.000586,
+    0.000407, 0.000284, 0.000199, 0.000140, 0.000098, 0.000070, 0.000050, 0.000036, 0.000025, 0.000018,
+    0.000013
+)
+val Z = arrayListOf(
+    0.000705, 0.002928, 0.010482, 0.032344, 0.086011, 0.197120, 0.389366, 0.656760, 0.972542, 1.282500,
+    1.553480, 1.798500, 1.967280, 2.027300, 1.994800, 1.900700, 1.745370, 1.554900, 1.317560, 1.030200,
+    0.772125, 0.570060, 0.415254, 0.302356, 0.218502, 0.159249, 0.112044, 0.082248, 0.060709, 0.043050,
+    0.030451, 0.020584, 0.013676, 0.007918, 0.003988, 0.001091, 0.000000, 0.000000, 0.000000, 0.000000,
+    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+    0.000000
+)
+val MATRIX_SRGB_D65 = arrayListOf<Double>(
+    3.2404542, -1.5371385, -0.4985314,
+    -0.9692660, 1.8760108, 0.0415560,
+    0.0556434, -0.2040259, 1.0572252
+)
+fun waveToRGB1(wavelength: Int): Wave {
+
+    var index = ((wavelength - LEN_MIN) / LEN_STEP)
+    if (index >= 79) {
+        index = 79
+    }
+    val offset = wavelength - LEN_STEP * index
+
+    val waveObj = Wave(
+        wave = wavelength,
+        X = interpolate(X, index, offset),
+        Y = interpolate(Y, index, offset),
+        Z = interpolate(Z, index, offset),
+        color = 0L,
+        alpha = 255,
+        intensity = 255
+    )
+
+    val r = MATRIX_SRGB_D65[0] * waveObj.X + MATRIX_SRGB_D65[1] * waveObj.Y + MATRIX_SRGB_D65[2] * waveObj.Z
+    val g = MATRIX_SRGB_D65[3] * waveObj.X + MATRIX_SRGB_D65[4] * waveObj.Y + MATRIX_SRGB_D65[5] * waveObj.Z
+    val b = MATRIX_SRGB_D65[6] * waveObj.X + MATRIX_SRGB_D65[7] * waveObj.Y + MATRIX_SRGB_D65[8] * waveObj.Z
+
+    val rgbAlpha: Long = (16777216 * 255).toLong()
+    val rgbR = gammaCorrect_sRGB(r) * 255 * 65536
+    val rgbG = gammaCorrect_sRGB(g) * 255 * 256
+    val rgbB = gammaCorrect_sRGB(b) * 255
+    waveObj.color = rgbAlpha + rgbR + rgbG + rgbB
+    return waveObj
+}
+
+fun interpolate(values: List<Double>, index: Int, offset: Int): Double{
+    return if (offset > 0) {
+        values[index] + offset * ((values[1 + index] - values[index])/(index * LEN_STEP + LEN_STEP - index * LEN_STEP))
+    } else values[index]
+}
+
+fun gammaCorrect_sRGB(c:Double): Int {
+    val cc = if( c <= 0.0031308 ) 12.92 * c else 1.055 * c.pow(1/2.4) - 0.055
+    return if(cc < 0) 0 else if(cc > 1) 1 else cc.toInt()
+}
+
+//##################################################################################################################
+
+fun waveToRGB2(wavelength: Int): Wave{
+    val waveObj = cie1931WavelengthToXYZFit(wavelength);
+    val rgb = srgbXYZ2RGB(waveObj);
+
+    waveObj.color = 0xFF000000 or
+            ((rgb[0] * 0xFF).toInt() and 0xFF).shl(16).toLong() or
+            ((rgb[1] * 0xFF).toInt() and 0xFF).shl(8).toLong() or
+            (((rgb[2] * 0xFF).toInt() and 0xFF).toLong())
+    return waveObj;
+}
+fun srgbXYZ2RGB(xyz: Wave): List<Double> {
+
+    val rl =  3.2406255 * xyz.X + -1.537208  * xyz.Y + -0.4986286 * xyz.Z
+    val gl = -0.9689307 * xyz.X +  1.8757561 * xyz.Y +  0.0415175 * xyz.Z
+    val bl =  0.0557101 * xyz.X + -0.2040211 * xyz.Y +  1.0569959 * xyz.Z
+
+    return listOf(
+        srgbXYZ2RGBPostprocess(rl),
+        srgbXYZ2RGBPostprocess(gl),
+        srgbXYZ2RGBPostprocess(bl)
+    )
+}
+fun srgbXYZ2RGBPostprocess(c: Double): Double {
+    val cc = if (c > 1) 1.0 else if (c < 0) 0.0 else c
+    return if(cc <= 0.0031308) cc * 12.92 else 1.055 * cc.pow(1/2.4) - 0.055
+}
+fun cie1931WavelengthToXYZFit(wave:Int): Wave {
+
+    var t1 = (wave - 442.0) * (if (wave < 442.0) 0.0624 else 0.0374)
+    var t2 = (wave - 599.8) * (if (wave < 599.8) 0.0264 else 0.0323)
+    val t3 = (wave - 501.1) * (if (wave < 501.1) 0.0490 else 0.0382)
+    val x = 0.362 * exp(-0.5 * t1 * t1)+ 1.056 * exp(-0.5 * t2 * t2)- 0.065 * exp(-0.5 * t3 * t3)
+
+    t1 = (wave - 568.8) * (if (wave < 568.8) 0.0213 else 0.0247)
+    t2 = (wave - 530.9) * (if (wave < 530.9) 0.0613 else 0.0322)
+    val y = 0.821 * exp(-0.5 * t1 * t1) + 0.286 * exp(-0.5 * t2 * t2)
+
+    t1 = (wave - 437.0) * (if (wave < 437.0) 0.0845 else 0.0278)
+    t2 = (wave - 459.0) * (if(wave < 459.0) 0.0385 else 0.0725)
+    val z = 1.217 * exp(-0.5 * t1 * t1) + 0.681 * exp(-0.5 * t2 * t2)
+    return Wave(wave = wave, X = x, Y = y, Z = z, color = 0, alpha = 255, intensity = 255)
+}
 /*
 @Composable fun ColorPicker1(){
 
@@ -738,4 +898,454 @@ object ColorList {
         Wave (wave = 830, X = 0.000001553140, Y = 0.000000629700, Z = 0.000000000000),
     )
 }
-*/
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+General idea:
+Use CEI color matching functions to convert wavelength to XYZ color.
+Convert XYZ to RGB
+Clip components to [0..1] and multiply by 255 to fit in the unsigned byte range.
+Steps 1 and 2 may vary.
+
+There are several color matching functions, available as tables or as analytic approximations
+(suggested by @Tarc and @Haochen Xie). Tables are best if you need a smooth preсise result.
+
+There is no single RGB color space. Multiple transformation matrices and different kinds
+of gamma correction may be used.
+
+Below is the C# code I came up with recently. It uses linear interpolation over the "CIE 1964
+standard observer" table and sRGB matrix + gamma correction.
+
+static class RgbCalculator {
+
+    const int
+         LEN_MIN = 380,
+         LEN_MAX = 780,
+         LEN_STEP = 5;
+
+    static readonly double[]
+        X = {
+                0.000160, 0.000662, 0.002362, 0.007242, 0.019110, 0.043400, 0.084736, 0.140638, 0.204492, 0.264737,
+                0.314679, 0.357719, 0.383734, 0.386726, 0.370702, 0.342957, 0.302273, 0.254085, 0.195618, 0.132349,
+                0.080507, 0.041072, 0.016172, 0.005132, 0.003816, 0.015444, 0.037465, 0.071358, 0.117749, 0.172953,
+                0.236491, 0.304213, 0.376772, 0.451584, 0.529826, 0.616053, 0.705224, 0.793832, 0.878655, 0.951162,
+                1.014160, 1.074300, 1.118520, 1.134300, 1.123990, 1.089100, 1.030480, 0.950740, 0.856297, 0.754930,
+                0.647467, 0.535110, 0.431567, 0.343690, 0.268329, 0.204300, 0.152568, 0.112210, 0.081261, 0.057930,
+                0.040851, 0.028623, 0.019941, 0.013842, 0.009577, 0.006605, 0.004553, 0.003145, 0.002175, 0.001506,
+                0.001045, 0.000727, 0.000508, 0.000356, 0.000251, 0.000178, 0.000126, 0.000090, 0.000065, 0.000046,
+                0.000033
+            },
+
+        Y = {
+                0.000017, 0.000072, 0.000253, 0.000769, 0.002004, 0.004509, 0.008756, 0.014456, 0.021391, 0.029497,
+                0.038676, 0.049602, 0.062077, 0.074704, 0.089456, 0.106256, 0.128201, 0.152761, 0.185190, 0.219940,
+                0.253589, 0.297665, 0.339133, 0.395379, 0.460777, 0.531360, 0.606741, 0.685660, 0.761757, 0.823330,
+                0.875211, 0.923810, 0.961988, 0.982200, 0.991761, 0.999110, 0.997340, 0.982380, 0.955552, 0.915175,
+                0.868934, 0.825623, 0.777405, 0.720353, 0.658341, 0.593878, 0.527963, 0.461834, 0.398057, 0.339554,
+                0.283493, 0.228254, 0.179828, 0.140211, 0.107633, 0.081187, 0.060281, 0.044096, 0.031800, 0.022602,
+                0.015905, 0.011130, 0.007749, 0.005375, 0.003718, 0.002565, 0.001768, 0.001222, 0.000846, 0.000586,
+                0.000407, 0.000284, 0.000199, 0.000140, 0.000098, 0.000070, 0.000050, 0.000036, 0.000025, 0.000018,
+                0.000013
+            },
+
+        Z = {
+                0.000705, 0.002928, 0.010482, 0.032344, 0.086011, 0.197120, 0.389366, 0.656760, 0.972542, 1.282500,
+                1.553480, 1.798500, 1.967280, 2.027300, 1.994800, 1.900700, 1.745370, 1.554900, 1.317560, 1.030200,
+                0.772125, 0.570060, 0.415254, 0.302356, 0.218502, 0.159249, 0.112044, 0.082248, 0.060709, 0.043050,
+                0.030451, 0.020584, 0.013676, 0.007918, 0.003988, 0.001091, 0.000000, 0.000000, 0.000000, 0.000000,
+                0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+                0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+                0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+                0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+                0.000000
+            };
+
+    static readonly double[]
+        MATRIX_SRGB_D65 = {
+             3.2404542, -1.5371385, -0.4985314,
+            -0.9692660,  1.8760108,  0.0415560,
+             0.0556434, -0.2040259,  1.0572252
+        };
+
+    public static byte[] Calc(double len) {
+        if(len < LEN_MIN || len > LEN_MAX)
+            return new byte[3];
+
+        len -= LEN_MIN;
+        var index = (int)Math.Floor(len / LEN_STEP);
+        var offset = len - LEN_STEP * index;
+
+        var x = Interpolate(X, index, offset);
+        var y = Interpolate(Y, index, offset);
+        var z = Interpolate(Z, index, offset);
+
+        var m = MATRIX_SRGB_D65;
+
+        var r = m[0] * x + m[1] * y + m[2] * z;
+        var g = m[3] * x + m[4] * y + m[5] * z;
+        var b = m[6] * x + m[7] * y + m[8] * z;
+
+        r = Clip(GammaCorrect_sRGB(r));
+        g = Clip(GammaCorrect_sRGB(g));
+        b = Clip(GammaCorrect_sRGB(b));
+
+        return new[] {
+            (byte)(255 * r),
+            (byte)(255 * g),
+            (byte)(255 * b)
+        };
+    }
+
+    static double Interpolate(double[] values, int index, double offset) {
+        if(offset == 0)
+            return values[index];
+
+        var x0 = index * LEN_STEP;
+        var x1 = x0 + LEN_STEP;
+        var y0 = values[index];
+        var y1 = values[1 + index];
+
+        return y0 + offset * (y1 - y0) / (x1 - x0);
+    }
+
+    static double GammaCorrect_sRGB(double c) {
+        if(c <= 0.0031308)
+            return 12.92 * c;
+
+        var a = 0.055;
+        return (1 + a) * Math.Pow(c, 1 / 2.4) - a;
+    }
+
+    static double Clip(double c) {
+        if(c < 0)
+            return 0;
+        if(c > 1)
+            return 1;
+        return c;
+    }
+}
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+/**
+ * Convert a wavelength in the visible light spectrum to a RGB color value that is suitable to be displayed on a
+ * monitor
+ *
+ * @param wavelength wavelength in nm
+ * @return RGB color encoded in int. each color is represented with 8 bits and has a layout of
+ * 00000000RRRRRRRRGGGGGGGGBBBBBBBB where MSB is at the leftmost
+ */
+public static int wavelengthToRGB(double wavelength){
+    double[] xyz = cie1931WavelengthToXYZFit(wavelength);
+    double[] rgb = srgbXYZ2RGB(xyz);
+
+    int c = 0;
+    c |= (((int) (rgb[0] * 0xFF)) & 0xFF) << 16;
+    c |= (((int) (rgb[1] * 0xFF)) & 0xFF) << 8;
+    c |= (((int) (rgb[2] * 0xFF)) & 0xFF) << 0;
+
+    return c;
+}
+
+/**
+ * Convert XYZ to RGB in the sRGB color space
+ * <p>
+ * The conversion matrix and color component transfer function is taken from http://www.color.org/srgb.pdf, which
+ * follows the International Electrotechnical Commission standard IEC 61966-2-1 "Multimedia systems and equipment -
+ * Colour measurement and management - Part 2-1: Colour management - Default RGB colour space - sRGB"
+ *
+ * @param xyz XYZ values in a double array in the order of X, Y, Z. each value in the range of [0.0, 1.0]
+ * @return RGB values in a double array, in the order of R, G, B. each value in the range of [0.0, 1.0]
+ */
+public static double[] srgbXYZ2RGB(double[] xyz) {
+    double x = xyz[0];
+    double y = xyz[1];
+    double z = xyz[2];
+
+    double rl =  3.2406255 * x + -1.537208  * y + -0.4986286 * z;
+    double gl = -0.9689307 * x +  1.8757561 * y +  0.0415175 * z;
+    double bl =  0.0557101 * x + -0.2040211 * y +  1.0569959 * z;
+
+    return new double[] {
+            srgbXYZ2RGBPostprocess(rl),
+            srgbXYZ2RGBPostprocess(gl),
+            srgbXYZ2RGBPostprocess(bl)
+    };
+}
+
+/**
+ * helper function for {@link #srgbXYZ2RGB(double[])}
+ */
+private static double srgbXYZ2RGBPostprocess(double c) {
+    // clip if c is out of range
+    c = c > 1 ? 1 : (c < 0 ? 0 : c);
+
+    // apply the color component transfer function
+    c = c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1. / 2.4) - 0.055;
+
+    return c;
+}
+
+/**
+ * A multi-lobe, piecewise Gaussian fit of CIE 1931 XYZ Color Matching Functions by Wyman el al. from Nvidia. The
+ * code here is adopted from the Listing 1 of the paper authored by Wyman et al.
+ * <p>
+ * Reference: Chris Wyman, Peter-Pike Sloan, and Peter Shirley, Simple Analytic Approximations to the CIE XYZ Color
+ * Matching Functions, Journal of Computer Graphics Techniques (JCGT), vol. 2, no. 2, 1-11, 2013.
+ *
+ * @param wavelength wavelength in nm
+ * @return XYZ in a double array in the order of X, Y, Z. each value in the range of [0.0, 1.0]
+ */
+public static double[] cie1931WavelengthToXYZFit(double wavelength) {
+    double wave = wavelength;
+
+    double x;
+    {
+        double t1 = (wave - 442.0) * ((wave < 442.0) ? 0.0624 : 0.0374);
+        double t2 = (wave - 599.8) * ((wave < 599.8) ? 0.0264 : 0.0323);
+        double t3 = (wave - 501.1) * ((wave < 501.1) ? 0.0490 : 0.0382);
+
+        x =   0.362 * Math.exp(-0.5 * t1 * t1)
+            + 1.056 * Math.exp(-0.5 * t2 * t2)
+            - 0.065 * Math.exp(-0.5 * t3 * t3);
+    }
+
+    double y;
+    {
+        double t1 = (wave - 568.8) * ((wave < 568.8) ? 0.0213 : 0.0247);
+        double t2 = (wave - 530.9) * ((wave < 530.9) ? 0.0613 : 0.0322);
+
+        y =   0.821 * Math.exp(-0.5 * t1 * t1)
+            + 0.286 * Math.exp(-0.5 * t2 * t2);
+    }
+
+    double z;
+    {
+        double t1 = (wave - 437.0) * ((wave < 437.0) ? 0.0845 : 0.0278);
+        double t2 = (wave - 459.0) * ((wave < 459.0) ? 0.0385 : 0.0725);
+
+        z =   1.217 * Math.exp(-0.5 * t1 * t1)
+            + 0.681 * Math.exp(-0.5 * t2 * t2);
+    }
+
+    return new double[] { x, y, z };
+}
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+This is bit cleaned up and tested C++11 version of @haochen-xie. I also added a function that
+converts value 0 to 1 to a wavelength in visible spectrum that is usable with this method.
+You can just put below in one header file and use it without any dependencies.
+This version will be maintained here.
+#ifndef common_utils_OnlineStats_hpp
+#define common_utils_OnlineStats_hpp
+
+namespace common_utils {
+
+class ColorUtils {
+public:
+
+    static void valToRGB(double val0To1, unsigned char& r, unsigned char& g, unsigned char& b)
+    {
+        //actual visible spectrum is 375 to 725 but outside of 400-700 things become too dark
+        wavelengthToRGB(val0To1 * (700 - 400) + 400, r, g, b);
+    }
+
+    /**
+    * Convert a wavelength in the visible light spectrum to a RGB color value that is suitable to be displayed on a
+    * monitor
+    *
+    * @param wavelength wavelength in nm
+    * @return RGB color encoded in int. each color is represented with 8 bits and has a layout of
+    * 00000000RRRRRRRRGGGGGGGGBBBBBBBB where MSB is at the leftmost
+    */
+    static void wavelengthToRGB(double wavelength, unsigned char& r, unsigned char& g, unsigned char& b) {
+        double x, y, z;
+        cie1931WavelengthToXYZFit(wavelength, x, y, z);
+        double dr, dg, db;
+        srgbXYZ2RGB(x, y, z, dr, dg, db);
+
+        r = static_cast<unsigned char>(static_cast<int>(dr * 0xFF) & 0xFF);
+        g = static_cast<unsigned char>(static_cast<int>(dg * 0xFF) & 0xFF);
+        b = static_cast<unsigned char>(static_cast<int>(db * 0xFF) & 0xFF);
+    }
+
+    /**
+    * Convert XYZ to RGB in the sRGB color space
+    * <p>
+    * The conversion matrix and color component transfer function is taken from http://www.color.org/srgb.pdf, which
+    * follows the International Electrotechnical Commission standard IEC 61966-2-1 "Multimedia systems and equipment -
+    * Colour measurement and management - Part 2-1: Colour management - Default RGB colour space - sRGB"
+    *
+    * @param xyz XYZ values in a double array in the order of X, Y, Z. each value in the range of [0.0, 1.0]
+    * @return RGB values in a double array, in the order of R, G, B. each value in the range of [0.0, 1.0]
+    */
+    static void srgbXYZ2RGB(double x, double y, double z, double& r, double& g, double& b) {
+        double rl = 3.2406255 * x + -1.537208  * y + -0.4986286 * z;
+        double gl = -0.9689307 * x + 1.8757561 * y + 0.0415175 * z;
+        double bl = 0.0557101 * x + -0.2040211 * y + 1.0569959 * z;
+
+        r = srgbXYZ2RGBPostprocess(rl);
+        g = srgbXYZ2RGBPostprocess(gl);
+        b = srgbXYZ2RGBPostprocess(bl);
+    }
+
+    /**
+    * helper function for {@link #srgbXYZ2RGB(double[])}
+    */
+    static double srgbXYZ2RGBPostprocess(double c) {
+        // clip if c is out of range
+        c = c > 1 ? 1 : (c < 0 ? 0 : c);
+
+        // apply the color component transfer function
+        c = c <= 0.0031308 ? c * 12.92 : 1.055 * std::pow(c, 1. / 2.4) - 0.055;
+
+        return c;
+    }
+
+    /**
+    * A multi-lobe, piecewise Gaussian fit of CIE 1931 XYZ Color Matching Functions by Wyman el al. from Nvidia. The
+    * code here is adopted from the Listing 1 of the paper authored by Wyman et al.
+    * <p>
+    * Reference: Chris Wyman, Peter-Pike Sloan, and Peter Shirley, Simple Analytic Approximations to the CIE XYZ Color
+    * Matching Functions, Journal of Computer Graphics Techniques (JCGT), vol. 2, no. 2, 1-11, 2013.
+    *
+    * @param wavelength wavelength in nm
+    * @return XYZ in a double array in the order of X, Y, Z. each value in the range of [0.0, 1.0]
+    */
+    static void cie1931WavelengthToXYZFit(double wavelength, double& x, double& y, double& z) {
+        double wave = wavelength;
+
+        {
+            double t1 = (wave - 442.0) * ((wave < 442.0) ? 0.0624 : 0.0374);
+            double t2 = (wave - 599.8) * ((wave < 599.8) ? 0.0264 : 0.0323);
+            double t3 = (wave - 501.1) * ((wave < 501.1) ? 0.0490 : 0.0382);
+
+            x = 0.362 * std::exp(-0.5 * t1 * t1)
+                + 1.056 * std::exp(-0.5 * t2 * t2)
+                - 0.065 * std::exp(-0.5 * t3 * t3);
+        }
+
+        {
+            double t1 = (wave - 568.8) * ((wave < 568.8) ? 0.0213 : 0.0247);
+            double t2 = (wave - 530.9) * ((wave < 530.9) ? 0.0613 : 0.0322);
+
+            y = 0.821 * std::exp(-0.5 * t1 * t1)
+                + 0.286 * std::exp(-0.5 * t2 * t2);
+        }
+
+        {
+            double t1 = (wave - 437.0) * ((wave < 437.0) ? 0.0845 : 0.0278);
+            double t2 = (wave - 459.0) * ((wave < 459.0) ? 0.0385 : 0.0725);
+
+            z = 1.217 * std::exp(-0.5 * t1 * t1)
+                + 0.681 * std::exp(-0.5 * t2 * t2);
+        }
+    }
+
+};
+
+} //namespace
+
+#endif
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+This is implemented as part of bitmap_image single file header-only library by Aeash Partow:
+inline rgb_t convert_wave_length_nm_to_rgb(const double wave_length_nm)
+{
+   // Credits: Dan Bruton http://www.physics.sfasu.edu/astro/color.html
+   double red   = 0.0;
+   double green = 0.0;
+   double blue  = 0.0;
+
+   if ((380.0 <= wave_length_nm) && (wave_length_nm <= 439.0))
+   {
+      red   = -(wave_length_nm - 440.0) / (440.0 - 380.0);
+      green = 0.0;
+      blue  = 1.0;
+   }
+   else if ((440.0 <= wave_length_nm) && (wave_length_nm <= 489.0))
+   {
+      red   = 0.0;
+      green = (wave_length_nm - 440.0) / (490.0 - 440.0);
+      blue  = 1.0;
+   }
+   else if ((490.0 <= wave_length_nm) && (wave_length_nm <= 509.0))
+   {
+      red   = 0.0;
+      green = 1.0;
+      blue  = -(wave_length_nm - 510.0) / (510.0 - 490.0);
+   }
+   else if ((510.0 <= wave_length_nm) && (wave_length_nm <= 579.0))
+   {
+      red   = (wave_length_nm - 510.0) / (580.0 - 510.0);
+      green = 1.0;
+      blue  = 0.0;
+   }
+   else if ((580.0 <= wave_length_nm) && (wave_length_nm <= 644.0))
+   {
+      red   = 1.0;
+      green = -(wave_length_nm - 645.0) / (645.0 - 580.0);
+      blue  = 0.0;
+   }
+   else if ((645.0 <= wave_length_nm) && (wave_length_nm <= 780.0))
+   {
+      red   = 1.0;
+      green = 0.0;
+      blue  = 0.0;
+   }
+
+   double factor = 0.0;
+
+   if ((380.0 <= wave_length_nm) && (wave_length_nm <= 419.0))
+      factor = 0.3 + 0.7 * (wave_length_nm - 380.0) / (420.0 - 380.0);
+   else if ((420.0 <= wave_length_nm) && (wave_length_nm <= 700.0))
+      factor = 1.0;
+   else if ((701.0 <= wave_length_nm) && (wave_length_nm <= 780.0))
+      factor = 0.3 + 0.7 * (780.0 - wave_length_nm) / (780.0 - 700.0);
+   else
+      factor = 0.0;
+
+   rgb_t result;
+
+   const double gamma         =   0.8;
+   const double intensity_max = 255.0;
+
+   #define round(d) std::floor(d + 0.5)
+
+   result.red   = static_cast<unsigned char>((red   == 0.0) ? red   : round(intensity_max * std::pow(red   * factor, gamma)));
+   result.green = static_cast<unsigned char>((green == 0.0) ? green : round(intensity_max * std::pow(green * factor, gamma)));
+   result.blue  = static_cast<unsigned char>((blue  == 0.0) ? blue  : round(intensity_max * std::pow(blue  * factor, gamma)));
+
+   #undef round
+
+   return result;
+}
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Project the wavelength's CIExy towards the D65 white onto the sRGB gamut
+#!/usr/bin/ghci
+ångstrømsfromTHz terahertz = 2997924.58 / terahertz
+tristimulusXYZfromÅngstrøms å=map(sum.map(stimulus))[
+ [[1056,5998,379,310],[362,4420,160,267],[-65,5011,204,262]],
+ [[821,5688,469,405],[286,5309,163,311]],
+ [[1217,4370,118,360],[681,4590,260,138]]]
+ where stimulus[ω,μ,ς,σ]=ω/1000*exp(-((å-μ)/if å<μ then ς else σ)^2/2)
+
+standardRGBfromTristimulusXYZ xyz=
+ map(gamma.sum.zipWith(*)(gamutConfine xyz))[
+ [3.2406,-1.5372,-0.4986],[-0.9689,1.8758,0.0415],[0.0557,-0.2040,1.057]]
+gamma u=if u<=0.0031308 then 12.92*u else (u**(5/12)*211-11)/200
+[red,green,blue,black]=
+ [[0.64,0.33],[0.3,0.6],[0.15,0.06],[0.3127,0.3290,0]]
+ciexyYfromXYZ xyz=if xyz!!1==0 then black else map(/sum xyz)xyz
+cieXYZfromxyY[x,y,l]=if y==0 then black else[x*l/y,l,(1-x-y)*l/y]
+gamutConfine xyz=last$xyz:[cieXYZfromxyY[x0+t*(x1-x0),y0+t*(y1-y0),xyz!!1]|
+ x0:y0:_<-[black],x1:y1:_<-[ciexyYfromXYZ xyz],i<-[0..2],
+ [x2,y2]:[x3,y3]:_<-[drop i[red,green,blue,red]],
+ det<-[(x0-x1)*(y2-y3)-(y0-y1)*(x2-x3)],
+ t <-[((x0-x2)*(y2-y3)-(y0-y2)*(x2-x3))/det|det/=0],0<=t,t<=1]
+
+sRGBfromÅ=standardRGBfromTristimulusXYZ.tristimulusXYZfromÅngstrøms
+x s rgb=concat["\ESC[48;2;",
+               intercalate";"$map(show.(17*).round.(15*).max 0.min 1)rgb,
+               "m",s,"\ESC[49m"]
+spectrum=concatMap(x" ".sRGBfromÅ)$takeWhile(<7000)$iterate(+60)4000
+main=putStrLn spectrum
+ */
