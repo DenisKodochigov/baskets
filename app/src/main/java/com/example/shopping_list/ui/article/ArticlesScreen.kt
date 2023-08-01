@@ -1,6 +1,9 @@
 package com.example.shopping_list.ui.article
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,15 +13,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.rememberDismissState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
@@ -36,32 +41,32 @@ import com.example.shopping_list.ui.components.dialog.EditArticleDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import com.example.shopping_list.ui.theme.BackgroundElementList
 import com.example.shopping_list.ui.theme.SectionColor
+import com.example.shopping_list.utils.DismissBackground
 import com.example.shopping_list.utils.log
+import com.example.shopping_list.utils.selectSectionWithArticle
+import com.example.shopping_list.utils.selectUnitWithArticle
 
 const val showLog = false
 @Composable
-fun ArticlesScreen( bottomSheetContent: MutableState<@Composable (() -> Unit)?>) {
+fun ArticlesScreen( showBottomSheet: MutableState<Boolean>) {
     val viewModel: ArticleViewModel = hiltViewModel()
     viewModel.getStateArticle()
 
-    ArticleScreenInitDate(
-        viewModel = viewModel,
-        bottomSheetContent = bottomSheetContent
-    )
+    ArticleScreenInitDate(viewModel = viewModel, showBottomSheet = showBottomSheet)
 }
 
 @Composable
 fun ArticleScreenInitDate(
     viewModel: ArticleViewModel,
-    bottomSheetContent: MutableState<@Composable (() -> Unit)?>
+    showBottomSheet: MutableState<Boolean>,
 ) {
     log( showLog,"ArticleScreenInitDate")
     val uiState by viewModel.articleScreenState.collectAsState()
-    bottomSheetContent.value = {
-        LayoutAddEditArticle(uiState = uiState,
-            onAddArticle = { article -> viewModel.addArticle(article, uiState.sorting) })
-    }
-
+    if (showBottomSheet.value)
+        LayoutAddEditArticle(
+            uiState = uiState,
+            onAddArticle = { article -> viewModel.addArticle(article, uiState.sorting) },
+            onDismiss = { showBottomSheet.value = false})
     LayoutArticleScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         uiState = viewModel.articleScreenState.collectAsState().value,
@@ -118,7 +123,10 @@ fun LayoutArticleScreen(
 
     Box( Modifier.fillMaxSize() ) {
         Column(modifier.fillMaxHeight()) {
-            Column( Modifier.fillMaxHeight().weight(1f)) {
+            Column(
+                Modifier
+                    .fillMaxHeight()
+                    .weight(1f)) {
                 LazyColumnArticle(
                     uiState = uiState,
                     changeArticle = changeArticle,
@@ -131,7 +139,9 @@ fun LayoutArticleScreen(
         startScreen = showFABs(
             startScreen = startScreen,
             isSelected =  uiState.article.flatten().find { it.isSelected } != null,
-            modifier = Modifier.height(200.dp).align(alignment = Alignment.BottomCenter),
+            modifier = Modifier
+                .height(200.dp)
+                .align(alignment = Alignment.BottomCenter),
             doDeleted = { deleteSelected.value = true },
             doChangeSection = { changeSectionSelected.value = true },
             doUnSelected = { unSelected.value = true }
@@ -168,14 +178,17 @@ fun LazyColumnArticle(
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.clip(RoundedCornerShape(8.dp)).padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
         item {
             HeaderImScreen(text = stringResource(R.string.product), R.drawable.fon5_1) }
         items( items = uiState.article )
         { item ->
-            Column( modifier = Modifier.clip(RoundedCornerShape(8.dp))
-                .background( if (item[0].section.colorSection > 0) Color( item[0].section.colorSection) else SectionColor)
+            Column( modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(if (item[0].section.colorSection > 0) Color(item[0].section.colorSection) else SectionColor)
                 .animateItemPlacement()) {//SectionColor
                 HeaderSection(
                     text = if ( uiState.sorting == SortingBy.BY_SECTION) item[0].section.nameSection
@@ -191,7 +204,7 @@ fun LazyColumnArticle(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LayoutColumArticles(
     modifier: Modifier,
@@ -201,6 +214,9 @@ fun LayoutColumArticles(
     doDelete: (List<Article>) -> Unit
 ) {
     log( showLog,"LayoutColumArticles")
+
+    val show = remember { mutableStateOf(true) }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
@@ -208,43 +224,25 @@ fun LayoutColumArticles(
         for (article in articles){
             key(article.idArticle){
                 val dismissState = rememberDismissState(
-                    confirmStateChange = {
+                    confirmValueChange = {
                         if (it == DismissValue.DismissedToStart) {
+                            show.value = false
                             article.isSelected = true
                             doDelete(mutableListOf(article))
                         } else if (it == DismissValue.DismissedToEnd) {
                             editArticle( article )
                         }
                         false
-                    })
-                SwipeToDismiss(state = dismissState,
-                    modifier = modifier.padding(vertical = 1.dp),
-                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                    dismissThresholds = { direction ->
-                        FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.4f else 0.4f)
-                    },
-                    background = {
-                        val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
-                        val alignment = when (direction) {
-                            DismissDirection.StartToEnd -> Alignment.CenterStart
-                            DismissDirection.EndToStart -> Alignment.CenterEnd
-                        }
-                        val icon = when (direction) {
-                            DismissDirection.StartToEnd -> Icons.Default.Edit
-                            DismissDirection.EndToStart -> Icons.Default.Delete
-                        }
-                        val colorIcon = when (direction) {
-                            DismissDirection.StartToEnd -> Color.Green
-                            DismissDirection.EndToStart -> Color.Red
-                        }
-                        Box( Modifier.fillMaxSize().padding(horizontal = 12.dp),
-                            contentAlignment = alignment) {
-                            if (dismissState.progress.fraction != 1.0f)
-                                Icon(icon, null, tint = colorIcon)
-                        }
                     }
-                ){
-                    ElementColum(modifier, article, doSelected )
+                )
+                AnimatedVisibility( visible = show.value, exit = fadeOut(spring())) {
+                    SwipeToDismiss(
+                        state = dismissState,
+                        modifier = modifier.padding(vertical = 1.dp),
+                        directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+                        background = { DismissBackground(dismissState) },
+                        dismissContent = { ElementColum(modifier, article, doSelected ) }
+                    )
                 }
             }
         }
@@ -263,14 +261,17 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
                 .background(BackgroundElementList)
                 .clickable { doSelected(item.idArticle) }
         ) {
-            Spacer( modifier = modifier.width(8.dp)
-                    .height(32.dp)
-                    .background(if (item.isSelected) Color.Red else Color.LightGray)
-                    .align(Alignment.CenterVertically)
+            Spacer( modifier = modifier
+                .width(8.dp)
+                .height(32.dp)
+                .background(if (item.isSelected) Color.Red else Color.LightGray)
+                .align(Alignment.CenterVertically)
             )
             MyTextH2(
                 text = item.nameArticle,
-                modifier = modifier.weight(1f).padding(
+                modifier = modifier
+                    .weight(1f)
+                    .padding(
                         start = dimensionResource(R.dimen.lazy_padding_hor),
                         top = dimensionResource(R.dimen.lazy_padding_ver),
                         bottom = dimensionResource(R.dimen.lazy_padding_ver)
@@ -279,19 +280,21 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
             Spacer(modifier = modifier.width(4.dp))
             MyTextH2(
                 text = item.unitApp.nameUnit,
-                modifier = modifier.width(40.dp)
+                modifier = modifier
+                    .width(40.dp)
                     .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
             )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LayoutAddEditArticle(
-    uiState: ArticleScreenState,
-    onAddArticle: (Article) -> Unit
-) {
+    uiState: ArticleScreenState, onAddArticle: (Article) -> Unit, onDismiss:() -> Unit )
+{
     log( showLog,"BottomSheetContentArticle")
+    val sheetState = rememberModalBottomSheetState()
     val nameSection = stringResource(R.string.name_section)
     val stuff = stringResource(R.string.unit_st)
     val screenHeight = LocalConfiguration.current.screenHeightDp
@@ -299,85 +302,88 @@ fun LayoutAddEditArticle(
     val enterArticle = remember { mutableStateOf(Pair<Long, String>(0, "")) }
     val enterSection = remember { mutableStateOf(Pair<Long, String>(1, nameSection)) }
     val enterUnit = remember { mutableStateOf(Pair<Long, String>(1, stuff)) }
-    val focusRequesterSheet = remember { FocusRequester() }
     val listArticle = uiState.article.flatten()
 
-    if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
-        val id: Long = uiState.unitApp.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
-        enterUnit.value = Pair(id, enterUnit.value.second)
-    }
-    if (enterSection.value.first == 0L && enterSection.value.second != "") {
-        val id: Long = uiState.sections.find { it.nameSection == enterSection.value.second }?.idSection ?: 0L
-        enterSection.value = Pair(id, enterSection.value.second)
-    }
-    if (enterArticle.value.first == 0L && enterArticle.value.second != "") {
-        val id: Long =
-            listArticle.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L
-        enterArticle.value = Pair(id, enterArticle.value.second)
-    }
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 12.dp)
-            .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.85).dp)
-    ) {
-        HeaderScreen( text = stringResource(R.string.add_product),
-            Modifier.focusRequester(focusRequesterSheet) )
+    ModalBottomSheet( onDismissRequest = onDismiss, sheetState = sheetState ) {
+        if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
+            val id: Long =
+                uiState.unitApp.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
+            enterUnit.value = Pair(id, enterUnit.value.second)
+        }
+        if (enterSection.value.first == 0L && enterSection.value.second != "") {
+            val id: Long =
+                uiState.sections.find { it.nameSection == enterSection.value.second }?.idSection ?: 0L
+            enterSection.value = Pair(id, enterSection.value.second)
+        }
+        if (enterArticle.value.first == 0L && enterArticle.value.second != "") {
+            val id: Long =
+                listArticle.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L
+            enterArticle.value = Pair(id, enterArticle.value.second)
+        }
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 12.dp)
+                .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.85).dp)
+        ) {
+            HeaderScreen(text = stringResource(R.string.add_product))
 //        Spacer(Modifier.height(24.dp))
-        MyExposedDropdownMenuBox(
-            /** Select article*/
-            listItems = listArticle.map { Pair(it.idArticle, it.nameArticle) },
-            label = stringResource(R.string.select_product),
-            modifier = Modifier.fillMaxWidth(),
-            enterValue = enterArticle,
-            filtering = true
-        )
-        if (enterArticle.value.first > 0) {
-            enterSection.value = selectSectionWithArticle(enterArticle.value.first, listArticle)
-            enterUnit.value = selectUnitWithArticle(enterArticle.value.first, listArticle)
-            enterValue.value = "1"
-        }
-        Spacer(Modifier.height(12.dp))
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
             MyExposedDropdownMenuBox(
-                /** Select section*/
-                listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) },
-                label = stringResource(R.string.section),
-                modifier = Modifier.weight(1f),
-                enterValue = enterSection,
-                filtering = false
+                /** Select article*/
+                listItems = listArticle.map { Pair(it.idArticle, it.nameArticle) },
+                label = stringResource(R.string.select_product),
+                modifier = Modifier.fillMaxWidth(),
+                enterValue = enterArticle,
+                filtering = true
             )
-            Spacer(Modifier.width(4.dp))
-            MyExposedDropdownMenuBox(
-                /** Select unit*/
-                listItems = uiState.unitApp.map { Pair(it.idUnit, it.nameUnit) },
-                label = stringResource(R.string.units),
-                modifier = Modifier.width(120.dp),
-                enterValue = enterUnit,
-                filtering = false
-            )
-        }
-        Spacer(Modifier.height(36.dp))
-
-        val article = ArticleDB(
-            idArticle = enterArticle.value.first,
-            nameArticle = enterArticle.value.second,
-            section = SectionDB(
-                idSection = enterSection.value.first,
-                nameSection = enterSection.value.second),
-            unitApp = UnitDB(enterUnit.value.first, enterUnit.value.second),
-            isSelected = false,
-            position = 0
-        )
-
-        TextButtonOK(
-            enabled = enterArticle.value.second != "",
-            onConfirm = {
-                onAddArticle(article)
-                enterArticle.value = Pair(0, "")
+            if (enterArticle.value.first > 0) {
+                enterSection.value = selectSectionWithArticle(enterArticle.value.first, listArticle)
+                enterUnit.value = selectUnitWithArticle(enterArticle.value.first, listArticle)
+                enterValue.value = "1"
             }
-        )
-        Spacer(Modifier.height(72.dp))
+            Spacer(Modifier.height(12.dp))
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+                MyExposedDropdownMenuBox(
+                    /** Select section*/
+                    listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) },
+                    label = stringResource(R.string.section),
+                    modifier = Modifier.weight(1f),
+                    enterValue = enterSection,
+                    filtering = false
+                )
+                Spacer(Modifier.width(4.dp))
+                MyExposedDropdownMenuBox(
+                    /** Select unit*/
+                    listItems = uiState.unitApp.map { Pair(it.idUnit, it.nameUnit) },
+                    label = stringResource(R.string.units),
+                    modifier = Modifier.width(120.dp),
+                    enterValue = enterUnit,
+                    filtering = false
+                )
+            }
+            Spacer(Modifier.height(36.dp))
+
+            val article = ArticleDB(
+                idArticle = enterArticle.value.first,
+                nameArticle = enterArticle.value.second,
+                section = SectionDB(
+                    idSection = enterSection.value.first,
+                    nameSection = enterSection.value.second
+                ),
+                unitApp = UnitDB(enterUnit.value.first, enterUnit.value.second),
+                isSelected = false,
+                position = 0
+            )
+
+            TextButtonOK(
+                enabled = enterArticle.value.second != "",
+                onConfirm = {
+                    onAddArticle(article)
+                    enterArticle.value = Pair(0, "")
+                }
+            )
+            Spacer(Modifier.height(72.dp))
+        }
     }
 }
 

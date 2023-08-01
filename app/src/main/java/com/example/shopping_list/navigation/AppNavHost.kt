@@ -16,6 +16,7 @@ import com.example.shopping_list.ui.article.ArticlesScreen
 import com.example.shopping_list.ui.baskets.BasketsScreen
 import com.example.shopping_list.ui.products.ProductsScreen
 import com.example.shopping_list.ui.settings.SettingsScreen
+import com.example.shopping_list.utils.log
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 
@@ -24,21 +25,19 @@ import com.google.accompanist.navigation.animation.composable
 fun AppAnimatedNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    bottomSheetContent: MutableState <@Composable (() -> Unit)?>,
-    bottomSheetHide: () -> Unit
+    showBottomSheet: MutableState<Boolean>
 ){
 
     AnimatedNavHost(
         navController = navController, startDestination = Baskets.route, modifier = modifier ) {
-
+        log(true, "AnimatedNavHost.showBottomSheet.value = ${showBottomSheet.value}")
         composable(route = Baskets.route,
             enterTransition = {
                 targetState.destination.route?.let { enterTransition(Baskets.route, it) } },
             exitTransition = {
                 targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }) {
             BasketsScreen(
-                bottomSheetContent = bottomSheetContent,
-                bottomSheetHide = bottomSheetHide,
+                showBottomSheet = showBottomSheet,
                 onClickBasket = { navController.navigateToProducts(it) },
             )
         }
@@ -52,7 +51,7 @@ fun AppAnimatedNavHost(
         { navBackStackEntry ->
             val basketId = navBackStackEntry.arguments?.getLong(ProductsBasket.basketIdArg)
             if (basketId != null) {
-                ProductsScreen(basketId = basketId, bottomSheetContent = bottomSheetContent)
+                ProductsScreen(basketId = basketId, showBottomSheet = showBottomSheet,)
             }
         }
         composable(
@@ -62,7 +61,7 @@ fun AppAnimatedNavHost(
             exitTransition = {
                 targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
         ) {
-            ArticlesScreen(bottomSheetContent = bottomSheetContent)
+            ArticlesScreen( showBottomSheet = showBottomSheet )
         }
         composable(
             route = Setting.route,

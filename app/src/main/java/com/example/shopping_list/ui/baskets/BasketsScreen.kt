@@ -2,8 +2,10 @@ package com.example.shopping_list.ui.baskets
 
 import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
-import android.os.Looper
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +20,17 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDismissState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -38,45 +51,41 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.Basket
+import com.example.shopping_list.entity.TypeText
 import com.example.shopping_list.ui.components.HeaderImScreen
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.TextButtonOK
 import com.example.shopping_list.ui.components.dialog.EditBasketName
 import com.example.shopping_list.ui.theme.TextDate
+import com.example.shopping_list.ui.theme.styleApp
+import com.example.shopping_list.utils.DismissBackground
+import com.example.shopping_list.utils.log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun BasketsScreen(
-    onClickBasket: (Long) -> Unit,
-    bottomSheetHide: () -> Unit,
-    bottomSheetContent: MutableState <@Composable (() -> Unit)?>) {
+fun BasketsScreen( onClickBasket: (Long) -> Unit, showBottomSheet: MutableState<Boolean> ) {
 
     val viewModel: BasketViewModel = hiltViewModel()
     viewModel.getListBasket()
 
     BasketScreenCreateView(
-        onClickBasket = onClickBasket,
-        viewModel = viewModel,
-        bottomSheetHide = bottomSheetHide,
-        bottomSheetContent = bottomSheetContent
-    )
+        onClickBasket = onClickBasket, viewModel = viewModel, showBottomSheet = showBottomSheet,)
 }
 
 @Composable
 fun BasketScreenCreateView(
     onClickBasket: (Long) -> Unit,
     viewModel: BasketViewModel,
-    bottomSheetHide: () -> Unit,
-    bottomSheetContent: MutableState <@Composable (() -> Unit)?>
+    showBottomSheet: MutableState<Boolean>,
 ){
     val uiState by viewModel.basketScreenState.collectAsState()
-    bottomSheetContent.value = {
-        BottomSheetContentBasket(
-            onAddClick = {viewModel.addBasket(it)}, bottomSheetHide = bottomSheetHide) }
 
+    if (showBottomSheet.value)
+        BottomSheetBasket(
+            onAddClick = {viewModel.addBasket(it)}, onDismiss = {showBottomSheet.value = false})
     LayoutBasketsScreen(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         onClickBasket = onClickBasket,
@@ -110,7 +119,7 @@ fun LayoutBasketsScreen(
     }
  }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun LazyColumnBasket(
@@ -124,6 +133,7 @@ fun LazyColumnBasket(
     val showDialog = remember {mutableStateOf(false)}
     val coroutineScope = rememberCoroutineScope()
     val editBasket: MutableState<Basket?> = remember {  mutableStateOf(null) }
+    val show = remember { mutableStateOf(true) }
 
     if (editBasket.value != null && showDialog.value){
         EditBasketName(
@@ -151,31 +161,36 @@ fun LazyColumnBasket(
         items(items = basketList, key = { it.idBasket })
         { item->
             val dismissState = rememberDismissState(
-                confirmStateChange = {
+                confirmValueChange = {
                     if ( it == DismissValue.DismissedToStart) {
-                        android.os.Handler(Looper.getMainLooper()).postDelayed({
-                            deleteBasket(item.idBasket) }, 1000)
+                        show.value = false
+                        deleteBasket(item.idBasket)
                     } else if (it == DismissValue.DismissedToEnd) {
-                        android.os.Handler(Looper.getMainLooper()).postDelayed({
-                            editBasket.value = item
-                            showDialog.value = true }, 1000)
-                    }
-                    true
+                        editBasket.value = item
+                        showDialog.value = true }
+                        true
                 }
             )
             if (dismissState.isDismissed(DismissDirection.EndToStart) ||
                 dismissState.isDismissed(DismissDirection.StartToEnd)) {
                 LaunchedEffect(Unit) { delay(300); dismissState.reset() }
             }
+            AnimatedVisibility( visible = show.value, exit = fadeOut(spring())) {
+                SwipeToDismiss(
+                    state = dismissState,
+                    modifier = Modifier
+                        .padding(vertical = 1.dp)
+                        .animateItemPlacement(),
+                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+                    background = { DismissBackground(dismissState) },
+                    dismissContent = { ElementColumBasket( item, onClickBasket ) }
+                )
+            }
             SwipeToDismiss(state = dismissState,
                 modifier = Modifier
                     .padding(vertical = 1.dp)
                     .animateItemPlacement(),
                 directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                dismissThresholds = { direction ->
-                    FractionalThreshold(if (direction == DismissDirection.StartToEnd ||
-                        direction == DismissDirection.EndToStart) 0.4f else 0.7f)
-                },
                 background = {
                     val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
                     val alignment = when (direction) {
@@ -197,95 +212,99 @@ fun LazyColumnBasket(
                     }
                 },
                 dismissContent = {
-                    val modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                    Row(
-                        modifier = Modifier
-                            .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
-                            .fillMaxWidth()
-                            .background(Color.White)
-                            .clickable { onClickBasket(item.idBasket) })
-                    {
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = modifier
-                                .padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))){
-                            Text(
-                                text =  SimpleDateFormat("dd-MM", Locale.getDefault()).format(item.dateB),
-                                style = MaterialTheme.typography.h4,
-                                color = TextDate,
-                            )
-                            Text(
-                                text = SimpleDateFormat("yyyy", Locale.getDefault()).format(item.dateB),
-                                style = MaterialTheme.typography.h4,
-                                color = TextDate,
-                            )
-                        }
-                        Text(
-                            text = item.nameBasket,
-                            style = MaterialTheme.typography.h1,
-                            modifier = modifier.weight(1f)
-                        )
-                        Text(
-                            text = item.quantity.toString(),
-                            style = MaterialTheme.typography.h1,
-                            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))
-                        )
-                    }
+
                 }
             )
         }
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@Composable fun ElementColumBasket(basket: Basket,onClickBasket: (Long) -> Unit){
+    val modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+    Row(modifier = Modifier
+            .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
+            .fillMaxWidth()
+            .background(Color.White)
+            .clickable { onClickBasket(basket.idBasket) })
+    {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))){
+            Text(
+                text =  SimpleDateFormat("dd-MM", Locale.getDefault()).format(basket.dateB),
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
+                color = TextDate,
+            )
+            Text(
+                text = SimpleDateFormat("yyyy", Locale.getDefault()).format(basket.dateB),
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
+                color = TextDate,
+            )
+        }
+        Text(
+            text = basket.nameBasket,
+            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
+            modifier = modifier.weight(1f)
+        )
+        Text(
+            text = basket.quantity.toString(),
+            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
+            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))
+        )
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheetContentBasket( onAddClick: (String) -> Unit, bottomSheetHide: () -> Unit) {
+fun BottomSheetBasket(onAddClick: (String) -> Unit, onDismiss:() -> Unit) {
 
     var nameNewBasket by remember { mutableStateOf(
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date().time)) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    val focusRequesterSheet = remember { FocusRequester() }
 
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .heightIn((screenHeight * 0.35).dp, (screenHeight * 0.75).dp)
-            .padding(24.dp, 24.dp, 24.dp, 32.dp)
-    ) {
-        Spacer(Modifier.height(1.dp))
-        HeaderScreen(
-            text = stringResource(R.string.add_basket),
-            Modifier.focusRequester(focusRequesterSheet)
-        )
-        OutlinedTextField(
-            value = nameNewBasket,
-            singleLine = true,
-            textStyle = MaterialTheme.typography.h1,
-            label = { Text(text = stringResource(R.string.new_name_basket)) },
-            onValueChange = { nameNewBasket = it },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
+    val sheetState = rememberModalBottomSheetState()
+    ModalBottomSheet( onDismissRequest = onDismiss, sheetState = sheetState ) {
+        // Sheet content
+
+        log(true, "BottomSheetContentBasket.showBottomSheet.value = ")
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .heightIn((screenHeight * 0.35).dp, (screenHeight * 0.75).dp)
+                .padding(24.dp, 24.dp, 24.dp, 32.dp)
+        ) {
+            Spacer(Modifier.height(1.dp))
+            HeaderScreen( text = stringResource(R.string.add_basket))
+            OutlinedTextField(
+                value = nameNewBasket,
+                singleLine = true,
+                textStyle = styleApp(nameStyle = TypeText.NAME_SECTION),
+                label = { Text(text = stringResource(R.string.new_name_basket)) },
+                onValueChange = { nameNewBasket = it },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        onAddClick(nameNewBasket)
+                        keyboardController?.hide()
+                        nameNewBasket = ""
+                        localFocusManager.clearFocus()
+                        onDismiss()
+                    }
+                ),
+            )
+            Spacer(Modifier.height(36.dp))
+            TextButtonOK(
+                enabled = nameNewBasket != "",
+                onConfirm = {
                     onAddClick(nameNewBasket)
-                    keyboardController?.hide()
-                    nameNewBasket = ""
-                    localFocusManager.clearFocus()
-                    bottomSheetHide()
-                }
-            ),
-        )
-        Spacer(Modifier.height(36.dp))
-        TextButtonOK(
-            enabled = nameNewBasket != "",
-            onConfirm = {
-                onAddClick(nameNewBasket)
-                bottomSheetHide()
-            })
-        Spacer(Modifier.height(36.dp))
+                    onDismiss()
+                })
+            Spacer(Modifier.height(36.dp))
+        }
     }
 }
 
@@ -293,7 +312,7 @@ fun BottomSheetContentBasket( onAddClick: (String) -> Unit, bottomSheetHide: () 
 @Preview(showBackground = true)
 @Composable
 fun BottomSheetContentBasketPreview(){
-    BottomSheetContentBasket ({},{})
+    BottomSheetBasket ({},{})
 }
 @Preview(showBackground = true)
 @Composable

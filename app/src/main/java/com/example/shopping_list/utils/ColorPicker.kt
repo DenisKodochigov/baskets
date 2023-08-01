@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Slider
-import androidx.compose.material.SliderDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.shopping_list.entity.TypeText
 import com.example.shopping_list.entity.Wave
+import com.example.shopping_list.ui.theme.styleApp
 import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -60,7 +62,7 @@ import kotlin.math.roundToInt
             .height(50.dp)
             .background(brush = Brush.horizontalGradient(colors = spectrum)))
         Box() {
-            Text(text = "Цвет", style = MaterialTheme.typography.h4)
+            Text(text = "Цвет", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
             Slider(
                 value = colorPosition,
                 valueRange = 0f..listColor.size.toFloat()-1,
@@ -77,7 +79,7 @@ import kotlin.math.roundToInt
                 ))
         }
         Box() {
-            Text(text = "Интенсивность", style = MaterialTheme.typography.h4)
+            Text(text = "Интенсивность", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
             Slider(
                 value = intensityPosition,
                 valueRange = 0f..255f,
@@ -93,7 +95,7 @@ import kotlin.math.roundToInt
                 ))
         }
         Box() {
-            Text(text = "Прозрачность", style = MaterialTheme.typography.h4)
+            Text(text = "Прозрачность", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
             Slider(
                 value = alfaPosition,
                 valueRange = 0f..255f,
@@ -115,12 +117,12 @@ import kotlin.math.roundToInt
 
 fun createListSpectrumRGB(): List<Wave>{
     val listColor = mutableListOf<Wave>()
-    val listColor1 = mutableListOf<Wave>()
-    val listColor2 = mutableListOf<Wave>()
+//    val listColor1 = mutableListOf<Wave>()
+//    val listColor2 = mutableListOf<Wave>()
     for (wave in LEN_MIN..LEN_MAX step LEN_STEP) {
         listColor.add(waveToRGB(wave, 255, 255))
-        listColor1.add(waveToRGB1(wave))
-        listColor2.add(waveToRGB2(wave))
+//        listColor1.add(waveToRGB1(wave))
+//        listColor2.add(waveToRGB2(wave))
     }
     return listColor
 }
@@ -141,7 +143,6 @@ fun createListSpectrumRGB2(): List<Wave>{
 fun waveToRGB(wavelength: Int, alpha: Int, intensity: Int): Wave{
     val gamma = 0.08
 
-
     val factor = if((wavelength >= 380) && (wavelength<420)) 0.3 + 0.7*(wavelength - 380) / (420 - 380)
         else if((wavelength >= 420) && (wavelength<701)) 1.0
         else if((wavelength >= 701) && (wavelength<781)) 0.3 + 0.7*(780 - wavelength) / (780 - 700)
@@ -150,16 +151,16 @@ fun waveToRGB(wavelength: Int, alpha: Int, intensity: Int): Wave{
     return if((wavelength >= 380) && (wavelength<440)){
         calculateColor(wavelength,-(wavelength - 440) / (440 - 380.0), 0.0, 1.0, factor, alpha, intensity, gamma)
     } else if((wavelength >= 440) && (wavelength<490)){
-        calculateColor(wavelength,0.0, (wavelength - 440) / (490 - 440.0), 1.0, factor, alpha, intensity)
+        calculateColor(wavelength,0.0, (wavelength - 440) / (490 - 440.0), 1.0, factor, alpha, intensity, gamma)
     }else if((wavelength >= 490) && (wavelength<510)){
-        calculateColor(wavelength,0.0, 1.0, (-(wavelength - 510) / (510 - 490.0)), factor, alpha, intensity)
+        calculateColor(wavelength,0.0, 1.0, (-(wavelength - 510) / (510 - 490.0)), factor, alpha, intensity, gamma)
     }else if((wavelength >= 510) && (wavelength<580)){
-        calculateColor(wavelength,(wavelength - 510) / (580 - 510.0), 1.0, 0.0, factor, alpha, intensity)
+        calculateColor(wavelength,(wavelength - 510) / (580 - 510.0), 1.0, 0.0, factor, alpha, intensity, gamma)
     }else if((wavelength >= 580) && (wavelength<645)){
-        calculateColor(wavelength,1.0, (-(wavelength - 645) / (645 - 580.0)), 0.0, factor, alpha, intensity)
+        calculateColor(wavelength,1.0, (-(wavelength - 645) / (645 - 580.0)), 0.0, factor, alpha, intensity, gamma)
     }else if((wavelength >= 645) && (wavelength<781)){
-        calculateColor(wavelength,1.0, 0.0, 0.0, factor, alpha, intensity)
-    } else calculateColor(wavelength,0.0, 0.0, 0.0, factor, alpha, intensity)
+        calculateColor(wavelength,1.0, 0.0, 0.0, factor, alpha, intensity, gamma)
+    } else calculateColor(wavelength,0.0, 0.0, 0.0, factor, alpha, intensity, gamma)
 }
 
 fun calculateColor(

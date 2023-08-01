@@ -1,28 +1,34 @@
 package com.example.shopping_list.ui.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.RemoveDone
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalDensity
@@ -34,22 +40,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
-import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.SortingBy
+import com.example.shopping_list.entity.TypeText
 import com.example.shopping_list.ui.theme.ButtonColorsMy
 import com.example.shopping_list.ui.theme.ScaffoldColor
 import com.example.shopping_list.ui.theme.SwitcherButtonColor
-import kotlin.math.roundToInt
+import com.example.shopping_list.ui.theme.styleApp
 
 @Composable
-fun HeaderScreen(text: String, modifier: Modifier) {
-    val typography = MaterialTheme.typography
+fun HeaderScreen(text: String) {
     Spacer(modifier = Modifier.height(24.dp))
-    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        Text(text, style = typography.h1)
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Text(text, style = styleApp(nameStyle = TypeText.NAME_SCREEN))
     }
 }
 
@@ -66,25 +70,21 @@ fun HeaderImScreen(text: String, idImage:Int ) {
             .fillMaxWidth()
             .background(ScaffoldColor)
             .padding(horizontal = 12.dp, vertical = 4.dp)) {
-            Text( text = text, style = MaterialTheme.typography.h1,
+            Text( text = text, style = styleApp(nameStyle = TypeText.NAME_SCREEN),
                 modifier = Modifier.align(alignment = Alignment.BottomCenter) )
         }
     }
 }
 @Composable
 fun HeaderSection(text: String, modifier: Modifier) {
-    val typography = MaterialTheme.typography
     Spacer(modifier = Modifier.height(12.dp))
-    Row(
-        modifier
-            .fillMaxWidth()
-            .padding(start = 12.dp), horizontalArrangement = Arrangement.Start) {
-        Text(text, style = typography.h2)
+    Row( modifier.fillMaxWidth().padding(start = 12.dp), horizontalArrangement = Arrangement.Start) {
+        Text(text, style = styleApp(nameStyle = TypeText.NAME_SECTION))
     }
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyExposedDropdownMenuBox(
     listItems: List<Pair<Long, String>>,
@@ -100,7 +100,9 @@ fun MyExposedDropdownMenuBox(
     val localFocusManager = LocalFocusManager.current
     var expandedLocal by remember { mutableStateOf(false) }
     var enteredText by remember { mutableStateOf("") }
+
     enteredText = if (enterValue != null && !focusItem) enterValue.value.second else ""
+
     ExposedDropdownMenuBox(
         expanded = expandedLocal && enabled,
         modifier = modifier,
@@ -108,20 +110,22 @@ fun MyExposedDropdownMenuBox(
     ) {
         OutlinedTextField(
             modifier = Modifier
+                .menuAnchor()
                 .fillMaxWidth(1f)
                 .onFocusChanged { focusItem = it.isFocused },
             value = enteredText,
             singleLine = true,
             enabled = enabled,
             readOnly = readOnly,
-            textStyle = MaterialTheme.typography.h1,
+            textStyle = styleApp(nameStyle = TypeText.EDIT_TEXT),
             onValueChange = {
                 enteredText = it
                 focusItem = false
                 enterValue!!.value = Pair(0, it)
                 expandedLocal = true
             },
-            label = { if (label != null) Text(text = label, style = MaterialTheme.typography.h3) },
+            label = { if (label != null)
+                Text(text = label, style = styleApp(nameStyle = TypeText.EDIT_TEXT_TITLE)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedLocal) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
@@ -146,11 +150,10 @@ fun MyExposedDropdownMenuBox(
                             enteredText = item.second
                             expandedLocal = false
                             enterValue!!.value = item
-                            localFocusManager.clearFocus()
-                        }
-                    ) {
-                        Text(text = item.second, style = MaterialTheme.typography.h1)
-                    }
+                            localFocusManager.clearFocus() },
+                        text = {
+                            Text(text = item.second, style = styleApp(nameStyle = TypeText.EDIT_TEXT))}
+                    ) 
                 }
             }
         } else expandedLocal = false
@@ -161,7 +164,7 @@ fun MyExposedDropdownMenuBox(
 fun MyTextH1(text: String, modifier: Modifier, textAlign: TextAlign) {
     Text(
         text = text,
-        style = MaterialTheme.typography.h1,
+        style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = modifier,
@@ -173,22 +176,10 @@ fun MyTextH1(text: String, modifier: Modifier, textAlign: TextAlign) {
 fun MyTextH2(text: String, modifier: Modifier) {
     Text(
         text = text,
-        style = MaterialTheme.typography.h2,
+        style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SETTING),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = modifier
-    )
-}
-
-@Composable
-fun MyTextH1End(text: String, modifier: Modifier) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.h1,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = modifier,
-        textAlign = TextAlign.End
     )
 }
 
@@ -199,10 +190,7 @@ fun TextButtonOK(onConfirm: () -> Unit, enabled: Boolean = true) {
         modifier = Modifier.fillMaxWidth()
     ) {
         TextButton(onClick = onConfirm, enabled = enabled) {
-            MyTextH2(
-                stringResource(R.string.ok),
-                Modifier
-            )
+            MyTextH2( stringResource(R.string.ok), Modifier)
         }
     }
 }
@@ -223,7 +211,7 @@ fun MyOutlinedTextFieldWithoutIcon(
         modifier = modifier,
         value = enterText,
         singleLine = true,
-        textStyle = MaterialTheme.typography.h1,
+        textStyle = styleApp(nameStyle = TypeText.EDIT_TEXT),
         onValueChange = {
             enterText = it
             enterValue.value = it
@@ -262,7 +250,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(
         modifier = modifier.onFocusChanged { focusItem = it.isFocused },
         value = enterText,
         singleLine = true,
-        textStyle = MaterialTheme.typography.h1,
+        textStyle = styleApp(nameStyle = TypeText.EDIT_TEXT),
         onValueChange = {
             focusItem = false
             enterText = it
@@ -293,18 +281,6 @@ fun MyOutlinedTextFieldWithoutIconClearing(
 }
 
 
-@Composable fun selectSectionWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
-    val article = listArticle.find { it.idArticle == id }
-    return if (article != null) {
-        Pair(article.section.idSection, article.section.nameSection)
-    } else Pair(0L, "")
-}
-
-@Composable fun selectUnitWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
-    val article = listArticle.find { it.idArticle == id }
-    return if (article != null) Pair(article.unitApp.idUnit, article.unitApp.nameUnit)
-    else Pair(0L, "")
-}
 
 @Composable fun showFABs(startScreen: Boolean, isSelected: Boolean, modifier: Modifier, doDeleted: ()->Unit,
              doChangeSection: ()->Unit, doUnSelected:()->Unit):Boolean {
@@ -331,30 +307,30 @@ fun MyOutlinedTextFieldWithoutIconClearing(
 }
 
 @SuppressLint("UnrememberedMutableState")
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
     val width = 350.dp
     val frameSize = 140.dp
     val cornerDp = 4.dp
 
-    val swipeableState = rememberSwipeableState(0)
+//    val swipeableState = rememberSwipeableState(0)
     var stateSortingBy by remember { mutableStateOf(SortingBy.BY_NAME) }
     val sizePx = with(LocalDensity.current) { (width - frameSize).toPx() }
     val anchors = mapOf(0f to 0, sizePx to 1) // Maps anchor points (in px) to states
 
     Box(modifier = Modifier.fillMaxWidth()) {
+
         Box(
             modifier = Modifier
                 .align(alignment = Alignment.Center)
                 .width(width)
                 .background(color = SwitcherButtonColor, shape = RoundedCornerShape(cornerDp))
-                .swipeable(
-                    state = swipeableState,
-                    anchors = anchors,
-                    thresholds = { _, _ -> FractionalThreshold(0.3f) },
-                    orientation = Orientation.Horizontal
-                )
+//                .swipeable(
+//                    state = swipeableState,
+//                    anchors = anchors,
+//                    thresholds = { _, _ -> FractionalThreshold(0.3f) },
+//                    orientation = Orientation.Horizontal
+//                )
         ) {
             TextForSwitchingButton( stringResource(id = R.string.by_name), frameSize,
                 Modifier.align(alignment = Alignment.CenterStart))
@@ -362,7 +338,7 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
                 Modifier.align(alignment = Alignment.CenterEnd))
             Box(
                 Modifier
-                    .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
+//                    .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
                     .width(frameSize)
                     .padding(4.dp)
                     .clip(shape = RoundedCornerShape(cornerDp))
@@ -375,22 +351,22 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
         }
     }
 
-    if (swipeableState.targetValue == 1 && swipeableState.currentValue ==1 &&
-        stateSortingBy == SortingBy.BY_NAME) {
-        doChangeSorting(SortingBy.BY_SECTION)
-        stateSortingBy = SortingBy.BY_SECTION
-    }
-    else if (swipeableState.targetValue == 0 && swipeableState.currentValue == 0 &&
-        stateSortingBy == SortingBy.BY_SECTION){
-        doChangeSorting(SortingBy.BY_NAME)
-        stateSortingBy = SortingBy.BY_NAME
-    }
+//    if (swipeableState.targetValue == 1 && swipeableState.currentValue ==1 &&
+//        stateSortingBy == SortingBy.BY_NAME) {
+//        doChangeSorting(SortingBy.BY_SECTION)
+//        stateSortingBy = SortingBy.BY_SECTION
+//    }
+//    else if (swipeableState.targetValue == 0 && swipeableState.currentValue == 0 &&
+//        stateSortingBy == SortingBy.BY_SECTION){
+//        doChangeSorting(SortingBy.BY_NAME)
+//        stateSortingBy = SortingBy.BY_NAME
+//    }
 }
 
 @Composable
 fun TextForSwitchingButton(text: String, frameSize: Dp, modifier: Modifier){
     Box(modifier = modifier.width(frameSize)){
-        Text( text = text, style = MaterialTheme.typography.h3,
+        Text( text = text, style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
             modifier = Modifier
                 .padding(horizontal = 4.dp, vertical = 4.dp)
                 .align(alignment = Alignment.Center)

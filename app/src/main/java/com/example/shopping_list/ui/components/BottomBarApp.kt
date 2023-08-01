@@ -16,10 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomAppBar
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -38,6 +38,10 @@ import com.example.shopping_list.R
 import com.example.shopping_list.navigation.ScreenDestination
 import com.example.shopping_list.navigation.appTabRowScreens
 import com.example.shopping_list.ui.theme.BackgroundBottomBar
+import com.example.shopping_list.ui.theme.TabFadeInAnimationDelay
+import com.example.shopping_list.ui.theme.TabFadeInAnimationDuration
+import com.example.shopping_list.ui.theme.TabFadeOutAnimationDuration
+import com.example.shopping_list.ui.theme.TabHeight
 
 
 @Composable
@@ -45,8 +49,8 @@ fun BottomBarApp(currentScreen: ScreenDestination,
                  onTabSelection:(ScreenDestination) -> Unit
 ) {
     BottomAppBar(
-        backgroundColor = BackgroundBottomBar,
-        elevation = 6.dp,
+        containerColor = BackgroundBottomBar,
+        tonalElevation = 6.dp,
         modifier = Modifier.height(TabHeight).clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
     ){
         BottomTabRow(
@@ -84,7 +88,9 @@ private fun BottomTab(
     onSelected: () -> Unit,
     selected: Boolean) {
 
-    val color = MaterialTheme.colors.onSurface
+    val iconSize = 50.dp
+    val colorSelectIcon = MaterialTheme.colorScheme.onSurface
+    val colorUnSelectIcon = MaterialTheme.colorScheme.tertiary
     val durationMillis = if (selected) TabFadeInAnimationDuration else TabFadeOutAnimationDuration
     val animSpec = remember {
         tween<Color>(durationMillis = durationMillis,
@@ -92,22 +98,20 @@ private fun BottomTab(
         )
     }
     val tabTintColor by animateColorAsState(
-        targetValue = if (selected) color else color.copy(alpha = InactiveTabOpacity),
+        targetValue = if (selected) colorSelectIcon else colorUnSelectIcon,
         animationSpec = animSpec )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding( start = 14.dp, end = 14.dp)
-            .width(35.dp)
+            .padding( start = 12.dp, end = 12.dp)
+            .width(45.dp)
             .animateContentSize()
             .selectable(
                 selected = selected,
                 onClick = onSelected,
                 role = Role.Tab,
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = false, radius = Dp.Unspecified, color = Color.Unspecified
-                )
+                indication = rememberRipple( bounded = false, radius = 0.dp, color = Color.Unspecified)
             )
             .clearAndSetSemantics { contentDescription = text }
 
@@ -116,13 +120,7 @@ private fun BottomTab(
             imageVector = icon,
             contentDescription = text,
             tint = tabTintColor,
-            modifier = Modifier.size(IconSize))
+            modifier = Modifier.size(iconSize))
     }
 }
 
-private val TabHeight = 70.dp
-private val IconSize = 50.dp
-private const val InactiveTabOpacity = 0.50f
-private const val TabFadeInAnimationDuration = 150
-private const val TabFadeInAnimationDelay = 100
-private const val TabFadeOutAnimationDuration = 100

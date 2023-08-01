@@ -1,6 +1,21 @@
 package com.example.shopping_list.utils
 
 import android.util.Log
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.example.shopping_list.entity.Article
 import com.example.shopping_list.entity.Product
 import com.example.shopping_list.entity.SortingBy
@@ -53,4 +68,44 @@ fun createDoubleLisArticle(articles: List<Article>, sortingBy: SortingBy): List<
 
 fun log(showLog: Boolean, text: String){
     if (showLog)Log.d("KDS", text)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DismissBackground(dismissState: DismissState) {
+
+    val direction = dismissState.dismissDirection ?: return@DismissBackground
+    val alignment = when (direction) {
+        DismissDirection.StartToEnd -> Alignment.CenterStart
+        DismissDirection.EndToStart -> Alignment.CenterEnd
+    }
+    val icon = when (direction) {
+        DismissDirection.StartToEnd -> Icons.Default.Edit
+        DismissDirection.EndToStart -> Icons.Default.Delete
+    }
+    val colorIcon = when (direction) {
+        DismissDirection.StartToEnd -> Color.Green
+        DismissDirection.EndToStart -> Color.Red
+    }
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 12.dp), contentAlignment = alignment) {
+//        if (dismissState.progress.fraction != 1.0f)
+        Icon(icon, null, tint = colorIcon)
+    }
+}
+
+
+@Composable fun selectSectionWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
+    val article = listArticle.find { it.idArticle == id }
+    return if (article != null) {
+        Pair(article.section.idSection, article.section.nameSection)
+    } else Pair(0L, "")
+}
+
+@Composable fun selectUnitWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
+    val article = listArticle.find { it.idArticle == id }
+    return if (article != null) Pair(article.unitApp.idUnit, article.unitApp.nameUnit)
+    else Pair(0L, "")
 }

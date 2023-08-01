@@ -1,5 +1,6 @@
 package com.example.shopping_list.ui.settings
 
+//import com.example.shopping_list.ui.components.MyTextH1
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,18 +29,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ChangeCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,17 +55,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.shopping_list.App
 import com.example.shopping_list.R
 import com.example.shopping_list.data.room.tables.SectionDB
 import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.Section
+import com.example.shopping_list.entity.TypeText
 import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.ButtonCircle
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.HeaderSection
-import com.example.shopping_list.ui.components.MyTextH1
 import com.example.shopping_list.ui.components.dialog.AddChangeSectionDialog
 import com.example.shopping_list.ui.components.dialog.EditUnitDialog
+import com.example.shopping_list.ui.theme.styleApp
 
 @Composable fun SettingsScreen() {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -89,10 +96,18 @@ import com.example.shopping_list.ui.components.dialog.EditUnitDialog
     doChangeSection: (Section) -> Unit,
     doDeleteSelected: (List<Section>) -> Unit,
 ){
-    Column {
-        HeaderScreen(text = stringResource(R.string.settings_page), modifier)
+    Column (
+        Modifier.verticalScroll(
+            state = rememberScrollState(),
+            enabled = true,
+            flingBehavior = null,
+            reverseScrolling = false)
+        ){
+        HeaderScreen(text = stringResource(R.string.settings_page))
         AddEditUnits(modifier, uiState, doChangeUnit, doDeleteUnits)
         AddEditSection(modifier, uiState, doChangeSection, doDeleteSelected)
+        ChangeStyle()
+        FontStyleView()
     }
 }
 
@@ -139,7 +154,7 @@ fun LazyColumnSection(
                 editItem.value = null },)
     }
 
-    Column( Modifier.verticalScroll(rememberScrollState())) {
+    Column() {
         LazyColumn(
             state = rememberLazyListState(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -149,28 +164,34 @@ fun LazyColumnSection(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                    .clip(shape = RoundedCornerShape(6.dp))
-                    .fillMaxWidth()
-                    .background(color = Color.White)
-                    .clickable {doSelected(item.idSection) }
+                        .clip(shape = RoundedCornerShape(6.dp))
+                        .fillMaxWidth()
+                        .background(color = Color.White)
+                        .clickable { doSelected(item.idSection) }
                 ) {
                     Spacer( modifier = Modifier
                         .background(if (item.isSelected) Color.Red else Color.LightGray)
                         .width(8.dp)
-                        .height(32.dp))
+                        .heightIn(min = 8.dp,max = 32.dp).fillMaxHeight()
+                    )
                     Text(
                         text = item.nameSection,
-                        style = MaterialTheme.typography.h1,
+                        style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),//   .h1,
                         textAlign = TextAlign.Start,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
-                            .fillMaxWidth().weight(1F)
-                            .padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor2),
-                                vertical = dimensionResource(R.dimen.lazy_padding_ver2))
+                            .fillMaxWidth()
+                            .weight(1F)
+                            .padding(
+                                horizontal = dimensionResource(R.dimen.lazy_padding_hor2),
+                                vertical = dimensionResource(R.dimen.lazy_padding_ver2)
+                            )
                     )
                     Spacer(modifier = Modifier.width(12.dp))
-                    Spacer(modifier = Modifier.size(size = 35.dp).clip(shape = CircleShape)
+                    Spacer(modifier = Modifier
+                        .size(size = 35.dp)
+                        .clip(shape = CircleShape)
                         .background(color = Color(item.colorSection)))
                     Spacer(modifier = Modifier.width(12.dp))
                 }
@@ -202,7 +223,10 @@ fun LazyColumnSection(
         itemList.find { it.idUnit == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
         isSelectedId.value = 0
     }
-    Box(Modifier.fillMaxWidth().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column {
             HeaderSection(text = stringResource(R.string.edit_unit_list), modifier)
             LazyColumnUnits(
@@ -235,7 +259,7 @@ fun LazyColumnUnits(
             }
         )
     }
-//Modifier.verticalScroll(rememberScrollState())
+
     Column {
         LazyVerticalGrid(
             state = rememberLazyGridState(),
@@ -247,7 +271,8 @@ fun LazyColumnUnits(
         ) {
             items(uiState.unitApp) { item ->
                 Box {
-                    Row(modifier = Modifier
+                    Row(verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
                         .clip(shape = RoundedCornerShape(6.dp))
                         .fillMaxWidth()
                         .background(Color.White)
@@ -256,15 +281,15 @@ fun LazyColumnUnits(
                         Spacer( modifier = Modifier
                             .background(if (item.isSelected) Color.Red else Color.LightGray)
                             .width(8.dp)
-                            .height(32.dp)
+                            .heightIn(min = 8.dp,max = 32.dp).fillMaxHeight()
                             .align(Alignment.CenterVertically))
-                        MyTextH1(
+                        Text(
                             text = item.nameUnit,
+                            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.fillMaxWidth().weight(1f),
                             textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .padding(bottom = dimensionResource(R.dimen.lazy_padding_ver1))
                         )
                     }
                 }
@@ -283,6 +308,44 @@ fun LazyColumnUnits(
         }
     }
 }
+
+@Composable fun ChangeStyle(){
+    val sliderPosition by remember{mutableStateOf(App.scale.toFloat())}
+    HeaderSection(text = "Размер шрифта", Modifier)
+    Slider(
+        value = sliderPosition,
+        valueRange = 0f..2f,
+        steps = 1,
+        enabled = true,
+        onValueChange = { App.scale = it.toInt() },
+        colors = SliderDefaults.colors(
+            thumbColor = Color(0xFF575757),
+            activeTrackColor = Color(0xFFA2A2A2),
+            inactiveTrackColor = Color(0xFFA2A2A2),
+            inactiveTickColor = Color(0xFFA2A2A2),
+            activeTickColor = Color(0xFF575757)
+        )
+    )
+
+}
+@Composable fun FontStyleView(){
+    Text(text = "displayLarge", style = MaterialTheme.typography.displayLarge)
+    Text(text = "displayMedium", style = MaterialTheme.typography.displayMedium)
+    Text(text = "displaySmall", style = MaterialTheme.typography.displaySmall)
+    Text(text = "headlineLarge", style = MaterialTheme.typography.headlineLarge)
+    Text(text = "headlineMedium", style = MaterialTheme.typography.headlineMedium)
+    Text(text = "headlineSmall", style = MaterialTheme.typography.headlineSmall)
+    Text(text = "titleLarge", style = MaterialTheme.typography.titleLarge)
+    Text(text = "titleMedium", style = MaterialTheme.typography.titleMedium)
+    Text(text = "titleSmall", style = MaterialTheme.typography.titleSmall)
+    Text(text = "bodyLarge", style = MaterialTheme.typography.bodyLarge)
+    Text(text = "bodyMedium", style = MaterialTheme.typography.bodyMedium)
+    Text(text = "bodySmall", style = MaterialTheme.typography.bodySmall)
+    Text(text = "labelLarge", style = MaterialTheme.typography.labelLarge)
+    Text(text = "labelMedium", style = MaterialTheme.typography.labelMedium)
+    Text(text = "labelSmall", style = MaterialTheme.typography.labelSmall)
+}
+
 @Composable
 @Preview
 fun LazyColumnUnitsPreview(){
