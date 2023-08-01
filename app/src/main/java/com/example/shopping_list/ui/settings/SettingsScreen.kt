@@ -310,14 +310,15 @@ fun LazyColumnUnits(
 }
 
 @Composable fun ChangeStyle(){
-    val sliderPosition by remember{mutableStateOf(App.scale.toFloat())}
+    var sliderPosition by remember{mutableStateOf(App.scale.toFloat())}
     HeaderSection(text = "Размер шрифта", Modifier)
     Slider(
         value = sliderPosition,
         valueRange = 0f..2f,
         steps = 1,
         enabled = true,
-        onValueChange = { App.scale = it.toInt() },
+        onValueChange = {sliderPosition = it},
+        onValueChangeFinished = { App.scale = sliderPosition.toInt() },
         colors = SliderDefaults.colors(
             thumbColor = Color(0xFF575757),
             activeTrackColor = Color(0xFFA2A2A2),
