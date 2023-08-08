@@ -1,9 +1,15 @@
 package com.example.shopping_list.ui.components
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.Transition
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +27,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
@@ -31,23 +40,27 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import com.example.shopping_list.R
 import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.entity.TypeText
+import com.example.shopping_list.ui.theme.Accent
 import com.example.shopping_list.ui.theme.ButtonColorsMy
 import com.example.shopping_list.ui.theme.ScaffoldColor
-import com.example.shopping_list.ui.theme.SwitcherButtonColor
+import com.example.shopping_list.ui.theme.Strokes
+import com.example.shopping_list.ui.theme.TitleOnDarkBackground
 import com.example.shopping_list.ui.theme.styleApp
+import com.example.shopping_list.utils.log
 
 @Composable
 fun HeaderScreen(text: String) {
@@ -78,7 +91,10 @@ fun HeaderImScreen(text: String, idImage:Int ) {
 @Composable
 fun HeaderSection(text: String, modifier: Modifier) {
     Spacer(modifier = Modifier.height(12.dp))
-    Row( modifier.fillMaxWidth().padding(start = 12.dp), horizontalArrangement = Arrangement.Start) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp), horizontalArrangement = Arrangement.Start) {
         Text(text, style = styleApp(nameStyle = TypeText.NAME_SECTION))
     }
 }
@@ -309,58 +325,58 @@ fun MyOutlinedTextFieldWithoutIconClearing(
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
-    val width = 350.dp
-    val frameSize = 140.dp
+
     val cornerDp = 4.dp
 
-//    val swipeableState = rememberSwipeableState(0)
-    var stateSortingBy by remember { mutableStateOf(SortingBy.BY_NAME) }
-    val sizePx = with(LocalDensity.current) { (width - frameSize).toPx() }
-    val anchors = mapOf(0f to 0, sizePx to 1) // Maps anchor points (in px) to states
+    var sortingPosition by remember { mutableStateOf(true) }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-
-        Box(
-            modifier = Modifier
-                .align(alignment = Alignment.Center)
-                .width(width)
-                .background(color = SwitcherButtonColor, shape = RoundedCornerShape(cornerDp))
-//                .swipeable(
-//                    state = swipeableState,
-//                    anchors = anchors,
-//                    thresholds = { _, _ -> FractionalThreshold(0.3f) },
-//                    orientation = Orientation.Horizontal
-//                )
-        ) {
-            TextForSwitchingButton( stringResource(id = R.string.by_name), frameSize,
-                Modifier.align(alignment = Alignment.CenterStart))
-            TextForSwitchingButton( stringResource(id = R.string.by_section), frameSize,
-                Modifier.align(alignment = Alignment.CenterEnd))
-            Box(
-                Modifier
-//                    .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
-                    .width(frameSize)
-                    .padding(4.dp)
-                    .clip(shape = RoundedCornerShape(cornerDp))
-                    .border(width = 1.dp, color = Color.DarkGray)
-                    .background(Color.Transparent, RoundedCornerShape(cornerDp))
-            ) {
-                TextForSwitchingButton(" ", frameSize, Modifier)
-
+    Row( verticalAlignment = Alignment.CenterVertically,  horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .padding(horizontal = 12.dp)
+            .fillMaxWidth()
+            .background(color = Color.Transparent, shape = RoundedCornerShape(cornerDp))
+            .clickable{
+                if (sortingPosition) doChangeSorting(SortingBy.BY_SECTION) else doChangeSorting(SortingBy.BY_NAME)
+                sortingPosition = !sortingPosition
             }
-        }
+    ) {
+        Text(text = stringResource(id = R.string.by_name),
+            fontWeight  = if (sortingPosition) FontWeight.Bold else FontWeight.Normal,
+            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
+        Spacer(modifier = Modifier.width(24.dp))
+        Text(text = stringResource(id = R.string.by_section),
+            fontWeight  = if (!sortingPosition) FontWeight.Bold else FontWeight.Normal,
+            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
     }
 
-//    if (swipeableState.targetValue == 1 && swipeableState.currentValue ==1 &&
-//        stateSortingBy == SortingBy.BY_NAME) {
-//        doChangeSorting(SortingBy.BY_SECTION)
-//        stateSortingBy = SortingBy.BY_SECTION
+//    Row( verticalAlignment = Alignment.CenterVertically,
+//        modifier = Modifier.padding(horizontal = 12.dp)
+//            .fillMaxWidth()
+//            .background(color = Color.Transparent, shape = RoundedCornerShape(cornerDp))
+//    ) {
+//        Text(text = stringResource(id = R.string.by_name),
+//            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
+//        Slider(
+//            modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+//            value = sortingPosition,
+//            valueRange = 0f..0.5f,
+//            steps = 1,
+//            onValueChange = { sortingPosition = it },
+//            onValueChangeFinished = {
+//                if (sortingPosition == 1f) doChangeSorting (SortingBy.BY_NAME)
+//                else doChangeSorting (SortingBy.BY_SECTION)
+//            },
+//            colors = SliderDefaults.colors(
+//                thumbColor = Color(0xFF575757),
+//                activeTrackColor = Color(0xFFA2A2A2),
+//                inactiveTrackColor = Color(0xFFA2A2A2),
+//                inactiveTickColor = Color(0xFFA2A2A2),
+//                activeTickColor = Color(0xFF575757)
+//            ))
+//        Text(text = stringResource(id = R.string.by_section),
+//            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
 //    }
-//    else if (swipeableState.targetValue == 0 && swipeableState.currentValue == 0 &&
-//        stateSortingBy == SortingBy.BY_SECTION){
-//        doChangeSorting(SortingBy.BY_NAME)
-//        stateSortingBy = SortingBy.BY_NAME
-//    }
+
 }
 
 @Composable
@@ -375,10 +391,6 @@ fun TextForSwitchingButton(text: String, frameSize: Dp, modifier: Modifier){
 }
 
 @Composable fun CircleMy(color: Color){
-//    Canvas(modifier = Modifier) {
-//        translate(left = -40f, top = 40f) {
-//            drawCircle(color, radius = 20.dp.toPx()) }}
-//    Image(painter = ColorPainter(color), contentDescription = "", modifier = Modifier.background(color= color, shape = CircleShape).size(30.dp))
     Box(
         modifier = Modifier
             .size(size = 40.dp)

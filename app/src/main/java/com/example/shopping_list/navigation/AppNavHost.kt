@@ -30,7 +30,6 @@ fun AppAnimatedNavHost(
 
     AnimatedNavHost(
         navController = navController, startDestination = Baskets.route, modifier = modifier ) {
-        log(true, "AnimatedNavHost.showBottomSheet.value = ${showBottomSheet.value}")
         composable(route = Baskets.route,
             enterTransition = {
                 targetState.destination.route?.let { enterTransition(Baskets.route, it) } },

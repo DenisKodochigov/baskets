@@ -1,5 +1,7 @@
 package com.example.shopping_list.ui.components.dialog
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,11 +22,11 @@ import com.example.shopping_list.data.room.tables.SectionDB
 import com.example.shopping_list.entity.Section
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.shopping_list.ui.components.MyTextH1
-import com.example.shopping_list.ui.components.MyTextH2
 import com.example.shopping_list.ui.components.TextButtonOK
 import com.example.shopping_list.utils.colorPicker
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun AddChangeSectionDialog(
     section: Section,
@@ -42,6 +44,7 @@ fun AddChangeSectionDialog(
         text = { LayoutAddEditUnit(itemLocal) },
     )
 }
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable fun LayoutAddEditUnit(section: MutableState<Section>) {
 
     val colorInt = remember{ mutableStateOf(0L) }

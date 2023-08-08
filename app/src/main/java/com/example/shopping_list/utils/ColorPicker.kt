@@ -1,16 +1,22 @@
 package com.example.shopping_list.utils
 
+import android.annotation.SuppressLint
+import android.graphics.RuntimeShader
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -20,17 +26,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.Color.Companion.Yellow
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.entity.TypeText
 import com.example.shopping_list.entity.Wave
 import com.example.shopping_list.ui.theme.styleApp
+import org.intellij.lang.annotations.Language
 import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable fun colorPicker(): Long {
     val listColor: List<Wave> = createListSpectrumRGB()
     val spectrum: List<Color> = listColor.map { Color(it.color) }
@@ -39,11 +53,13 @@ import kotlin.math.roundToInt
     var colorPosition by remember{mutableStateOf(0f)}
     var alfaPosition by remember{mutableStateOf(255f)}
     var intensityPosition by remember{mutableStateOf(255f)}
-    var colorSelected by remember { mutableStateOf(0L)}
+    var colorSelected by remember { mutableStateOf(waveToRGB(listColor[0].wave, 255, 255).color)}
 
     Text(text = "")
     Column( modifier = Modifier.fillMaxWidth()) {
+        ShaderBrushExample(Color(waveToRGB(listColor[colorIndex].wave,255,255).color))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+
             Box( modifier = Modifier
                 .background(color = Color(listColor[colorIndex].color))
                 .width(50.dp)
@@ -57,13 +73,14 @@ import kotlin.math.roundToInt
                 .padding(horizontal = 32.dp))
         }
         Spacer(modifier = Modifier.height(12.dp))
-        Box( modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .background(brush = Brush.horizontalGradient(colors = spectrum)))
-        Box() {
+        Box {
             Text(text = "Цвет", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
+            Box( modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 18.dp)
+                .fillMaxWidth()
+                .height(20.dp)
+                .background(brush = Brush.horizontalGradient(colors = spectrum)))
             Slider(
+                modifier = Modifier.padding(top = 4.dp),
                 value = colorPosition,
                 valueRange = 0f..listColor.size.toFloat()-1,
                 steps = listColor.size,
@@ -71,14 +88,17 @@ import kotlin.math.roundToInt
                     colorPosition = it
                     colorIndex = it.roundToInt() },
                 colors = SliderDefaults.colors(
-                    thumbColor = Color(0xFF575757),
+                    thumbColor = Color(0xFFA2A2A2),
                     activeTrackColor = Color(0xFFA2A2A2),
                     inactiveTrackColor = Color(0xFFA2A2A2),
                     inactiveTickColor = Color(0xFFA2A2A2),
-                    activeTickColor = Color(0xFF575757)
+                    activeTickColor = Color(0xFFA2A2A2)
                 ))
         }
-        Box() {
+
+
+
+        Box{
             Text(text = "Интенсивность", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
             Slider(
                 value = intensityPosition,
@@ -94,7 +114,7 @@ import kotlin.math.roundToInt
                     activeTickColor = Color(0xFF575757)
                 ))
         }
-        Box() {
+        Box {
             Text(text = "Прозрачность", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
             Slider(
                 value = alfaPosition,
@@ -113,79 +133,185 @@ import kotlin.math.roundToInt
     }
     return colorSelected
 }
-
+const val LEN_MIN = 380
+const val LEN_MAX = 780
+const val LEN_STEP = 2
 
 fun createListSpectrumRGB(): List<Wave>{
     val listColor = mutableListOf<Wave>()
-//    val listColor1 = mutableListOf<Wave>()
-//    val listColor2 = mutableListOf<Wave>()
     for (wave in LEN_MIN..LEN_MAX step LEN_STEP) {
         listColor.add(waveToRGB(wave, 255, 255))
-//        listColor1.add(waveToRGB1(wave))
-//        listColor2.add(waveToRGB2(wave))
     }
     return listColor
 }
-fun createListSpectrumRGB1(): List<Wave>{
-    val listColor = mutableListOf<Wave>()
-    for (wave in LEN_MIN..LEN_MAX step LEN_STEP) {
-        listColor.add(waveToRGB1(wave))
-    }
-    return listColor
-}
-fun createListSpectrumRGB2(): List<Wave>{
-    val listColor = mutableListOf<Wave>()
-    for (wave in LEN_MIN..LEN_MAX step LEN_STEP) {
-        listColor.add(waveToRGB2(wave))
-    }
-    return listColor
-}
-fun waveToRGB(wavelength: Int, alpha: Int, intensity: Int): Wave{
-    val gamma = 0.08
 
-    val factor = if((wavelength >= 380) && (wavelength<420)) 0.3 + 0.7*(wavelength - 380) / (420 - 380)
-        else if((wavelength >= 420) && (wavelength<701)) 1.0
-        else if((wavelength >= 701) && (wavelength<781)) 0.3 + 0.7*(780 - wavelength) / (780 - 700)
+fun waveToRGB(length: Int, alpha: Int, intensity: Int): Wave{
+
+    val gamma = 0.9
+
+    val factor = if((length >= 380) && (length<420)) 0.3 + 0.7*(length - 380) / (420 - 380)
+        else if((length >= 420) && (length<701)) 1.0
+        else if((length >= 701) && (length<781)) 0.3 + 0.7*(780 - length) / (780 - 700)
         else 0.0
 
-    return if((wavelength >= 380) && (wavelength<440)){
-        calculateColor(wavelength,-(wavelength - 440) / (440 - 380.0), 0.0, 1.0, factor, alpha, intensity, gamma)
-    } else if((wavelength >= 440) && (wavelength<490)){
-        calculateColor(wavelength,0.0, (wavelength - 440) / (490 - 440.0), 1.0, factor, alpha, intensity, gamma)
-    }else if((wavelength >= 490) && (wavelength<510)){
-        calculateColor(wavelength,0.0, 1.0, (-(wavelength - 510) / (510 - 490.0)), factor, alpha, intensity, gamma)
-    }else if((wavelength >= 510) && (wavelength<580)){
-        calculateColor(wavelength,(wavelength - 510) / (580 - 510.0), 1.0, 0.0, factor, alpha, intensity, gamma)
-    }else if((wavelength >= 580) && (wavelength<645)){
-        calculateColor(wavelength,1.0, (-(wavelength - 645) / (645 - 580.0)), 0.0, factor, alpha, intensity, gamma)
-    }else if((wavelength >= 645) && (wavelength<781)){
-        calculateColor(wavelength,1.0, 0.0, 0.0, factor, alpha, intensity, gamma)
-    } else calculateColor(wavelength,0.0, 0.0, 0.0, factor, alpha, intensity, gamma)
+    val waveObj = Wave(
+        wave = length,
+        factor = factor,
+        alpha = alpha,
+        intensity = intensity,
+        gamma = gamma)
+    if((length >= 380) && (length<440))
+        with(waveObj) {
+            X = -(length - 440) / (440 - 380.0)
+            Y = 0.0
+            Z = 1.0
+            R = if (X != 0.0) (intensity * (X * factor).pow(gamma)).roundToInt() * 65536 else 0
+            G = 0
+            B = (intensity * (waveObj.Z * factor).pow(gamma)).roundToInt()
+            color = 16777216L * alpha + R + B
+        }
+    else if((length >= 440) && (length<490))
+        with(waveObj) {
+            X = 0.0
+            Y = (length - 440) / (490 - 440.0)
+            Z = 1.0
+            R = 0
+            G = if (Y != 0.0) (intensity * (Y * factor).pow(gamma)).roundToInt() * 256 else 0
+            B = (intensity * (Z * factor).pow(gamma)).roundToInt()
+            color = 16777216L * alpha + R + G + B
+        }
+    else if((length >= 490) && (length<510))
+        with(waveObj) {
+            X = 0.0
+            Y = 1.0
+            Z = (-(length - 510) / (510 - 490.0))
+            R = 0
+            G = (intensity * (Y * factor).pow(gamma)).roundToInt() * 256
+            B = if (Z != 0.0) (intensity * (Z * factor).pow(gamma)).roundToInt() else 0
+            color = 16777216L * alpha + R + G + B
+        }
+    else if((length >= 510) && (length<580))
+        with(waveObj) {
+            X = (length - 510) / (580 - 510.0)
+            Y = 1.0
+            Z = 0.0
+            R = if (X != 0.0) (intensity * (X * factor).pow(gamma)).roundToInt() * 65536 else 0
+            G = (intensity * (Y * factor).pow(gamma)).roundToInt() * 256
+            B = 0
+            color = 16777216L * alpha + R + G
+        }
+    else if((length >= 580) && (length<645))
+        with(waveObj) {
+            X = 1.0
+            Y = -(length - 645) / (645 - 580.0)
+            Z = 0.0
+            R = (intensity * (X * factor).pow(gamma)).roundToInt() * 65536
+            G = if (Y != 0.0) (intensity * (Y * factor).pow(gamma)).roundToInt() * 256 else 0
+            B = 0
+            color = 16777216L * alpha + R + G
+        }
+    else if((length >= 645) && (length<781))
+        with(waveObj) {
+            X = 1.0
+            Y = 0.0
+            Z = 0.0
+            R = (intensity * (X * factor).pow(gamma)).roundToInt() * 65536
+            G = 0
+            B = 0
+            color = 16777216L * alpha + R
+        }
+    else with(waveObj) {
+            X = 0.0
+            Y = 0.0
+            Z = 0.0
+            R = 0
+            G = 0
+            B = 0
+            color = 16777216L * alpha
+        }
+    return waveObj
 }
 
-fun calculateColor(
-    wavelength: Int,
-    red: Double,
-    green: Double,
-    blue: Double,
-    factor: Double,
-    alpha: Int,
-    intensity: Int,
-    gamma: Double): Wave {
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
+fun ShaderBrushExample(color: Color) {
+    @Language("AGSL")
+    val CUSTOM_SHADER = """
+    uniform float2 resolution;
+    layout(color) uniform half4 color;
 
-    val rgbAlpha: Long = (16777216 * alpha).toLong()
-    val rgbR = if (red != 0.0) (intensity * (red * factor).pow(gamma)).roundToInt() * 65536 else 0
-    val rgbG = if (green != 0.0) (intensity * (green * factor).pow(gamma)).roundToInt() * 256 else 0
-    val rgbB = if (blue != 0.0) (intensity * (blue * factor).pow(gamma)).roundToInt() else 0
+    half4 main(in vec2 fragCoord) {
+        vec2 xy = fragCoord/resolution.xy;
+        vec3 cl = vec3(color.r, color.g, color.b);   
+        cl = cl + (1.0 - cl) * (1.0-xy.x);
+        cl = cl - cl * xy.y;
+        return vec4(cl,1.0);
+    }
+    """.trimIndent()
 
-    return Wave(wavelength, rgbR.toDouble(), rgbG.toDouble(), rgbB.toDouble(), rgbAlpha + rgbR + rgbG + rgbB)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .drawWithCache {
+                val shader = RuntimeShader(CUSTOM_SHADER)
+                val shaderBrush = ShaderBrush(shader)
+                shader.setFloatUniform("resolution", size.width, size.height)
+                shader.setColorUniform("color", android.graphics.Color.valueOf(color.red, color.green,color.blue, color.alpha))
+                onDrawBehind { drawRect(shaderBrush) }
+            }
+    )
+}
+/*
+
+#ifdef GL_ES
+precision highp float;
+#endif
+
+uniform float time;
+uniform vec2 mouse;
+uniform vec2 resolution;
+uniform sampler2D backbuffer;
+
+void main( void ) {
+	vec2 position = ( gl_FragCoord.xy / resolution.xy );
+	vec2 pixel = 1./resolution;
+	vec4 me = texture2D(backbuffer, position);
+
+	vec2 rnd = vec2(mod(fract(sin(dot(position + time * 0.001, vec2(14.9898,78.233))) * 43758.5453), 1.0),
+	                mod(fract(sin(dot(position + time * 0.001, vec2(24.9898,44.233))) * 27458.5453), 1.0));
+	vec2 nudge = vec2(12.0 + 10.0 * cos(time * 0.03775),
+	                  12.0 + 10.0 * cos(time * 0.02246));
+	vec2 rate = -0.005 + 0.02 * (0.5 + 0.5 * cos(nudge * (position.yx - 0.5) + 0.5 + time * vec2(0.137, 0.262)));
+
+	float mradius = 0.007;//0.07 * (-0.03 + length(zoomcenter - mouse));
+	if (length(position-mouse) < mradius) {
+		me.r = 0.5+0.5*sin(time * 1.234542);
+		me.g = 0.5+0.5*sin(3.0 + time * 1.64242);
+		me.b = 0.5+0.5*sin(4.0 + time * 1.444242);
+	} else {
+		rate *= 6.0 * abs(vec2(0.5, 0.5) - mouse);
+		rate += 0.5 * rate.yx;
+		vec2 mult = 1.0 - rate;
+		vec2 jitter = vec2(1.1 / resolution.x,
+		                   1.1 / resolution.y);
+		vec2 offset = (rate * mouse) - (jitter * 0.5);
+		vec4 source = texture2D(backbuffer, position * mult + offset + jitter * rnd);
+
+		me = me * 0.05 + source * 0.95;
+	}
+	gl_FragColor = me;
 }
 
-const val LEN_MIN = 380
-const val LEN_MAX = 780
-const val LEN_STEP = 5
+ */
 
-val X = arrayListOf(
+
+
+
+
+//##################################################################################################################
+
+val Xl = arrayListOf(
     0.000160, 0.000662, 0.002362, 0.007242, 0.019110, 0.043400, 0.084736, 0.140638, 0.204492, 0.264737,
     0.314679, 0.357719, 0.383734, 0.386726, 0.370702, 0.342957, 0.302273, 0.254085, 0.195618, 0.132349,
     0.080507, 0.041072, 0.016172, 0.005132, 0.003816, 0.015444, 0.037465, 0.071358, 0.117749, 0.172953,
@@ -196,7 +322,7 @@ val X = arrayListOf(
     0.001045, 0.000727, 0.000508, 0.000356, 0.000251, 0.000178, 0.000126, 0.000090, 0.000065, 0.000046,
     0.000033
 )
-val Y = arrayListOf(
+val Yl = arrayListOf(
     0.000017, 0.000072, 0.000253, 0.000769, 0.002004, 0.004509, 0.008756, 0.014456, 0.021391, 0.029497,
     0.038676, 0.049602, 0.062077, 0.074704, 0.089456, 0.106256, 0.128201, 0.152761, 0.185190, 0.219940,
     0.253589, 0.297665, 0.339133, 0.395379, 0.460777, 0.531360, 0.606741, 0.685660, 0.761757, 0.823330,
@@ -207,7 +333,7 @@ val Y = arrayListOf(
     0.000407, 0.000284, 0.000199, 0.000140, 0.000098, 0.000070, 0.000050, 0.000036, 0.000025, 0.000018,
     0.000013
 )
-val Z = arrayListOf(
+val Zl = arrayListOf(
     0.000705, 0.002928, 0.010482, 0.032344, 0.086011, 0.197120, 0.389366, 0.656760, 0.972542, 1.282500,
     1.553480, 1.798500, 1.967280, 2.027300, 1.994800, 1.900700, 1.745370, 1.554900, 1.317560, 1.030200,
     0.772125, 0.570060, 0.415254, 0.302356, 0.218502, 0.159249, 0.112044, 0.082248, 0.060709, 0.043050,
@@ -218,39 +344,37 @@ val Z = arrayListOf(
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
     0.000000
 )
-val MATRIX_SRGB_D65 = arrayListOf<Double>(
+val SRGB_D65 = arrayListOf(
     3.2404542, -1.5371385, -0.4985314,
     -0.9692660, 1.8760108, 0.0415560,
     0.0556434, -0.2040259, 1.0572252
 )
-fun waveToRGB1(wavelength: Int): Wave {
+
+fun createListSpectrumRGB1(): List<Wave>{
+    val listColor = mutableListOf<Wave>()
+    for (wave in LEN_MIN..LEN_MAX step LEN_STEP) {
+        listColor.add(waveToRGB1(wave))
+    }
+    return listColor
+}
+
+fun waveToRGB1(wavelength: Int, alpha: Int = 255, intensity: Int = 255): Wave {
 
     var index = ((wavelength - LEN_MIN) / LEN_STEP)
-    if (index >= 79) {
-        index = 79
-    }
+    if (index >= 79) { index = 79 }
     val offset = wavelength - LEN_STEP * index
+    val wave = Wave(wave = wavelength, alpha = 255, intensity = 255)
 
-    val waveObj = Wave(
-        wave = wavelength,
-        X = interpolate(X, index, offset),
-        Y = interpolate(Y, index, offset),
-        Z = interpolate(Z, index, offset),
-        color = 0L,
-        alpha = 255,
-        intensity = 255
-    )
-
-    val r = MATRIX_SRGB_D65[0] * waveObj.X + MATRIX_SRGB_D65[1] * waveObj.Y + MATRIX_SRGB_D65[2] * waveObj.Z
-    val g = MATRIX_SRGB_D65[3] * waveObj.X + MATRIX_SRGB_D65[4] * waveObj.Y + MATRIX_SRGB_D65[5] * waveObj.Z
-    val b = MATRIX_SRGB_D65[6] * waveObj.X + MATRIX_SRGB_D65[7] * waveObj.Y + MATRIX_SRGB_D65[8] * waveObj.Z
-
-    val rgbAlpha: Long = (16777216 * 255).toLong()
-    val rgbR = gammaCorrect_sRGB(r) * 255 * 65536
-    val rgbG = gammaCorrect_sRGB(g) * 255 * 256
-    val rgbB = gammaCorrect_sRGB(b) * 255
-    waveObj.color = rgbAlpha + rgbR + rgbG + rgbB
-    return waveObj
+    with(wave){
+        X = interpolate(Xl, index, offset)
+        Y = interpolate(Yl, index, offset)
+        Z = interpolate(Zl, index, offset)
+        R = (correctSRGB(SRGB_D65[0] * X + SRGB_D65[1] * Y + SRGB_D65[2] * Z) * intensity * 65536).roundToInt()
+        G = (correctSRGB(SRGB_D65[3] * X + SRGB_D65[4] * Y + SRGB_D65[5] * Z) * intensity * 256).roundToInt()
+        B = (correctSRGB(SRGB_D65[6] * X + SRGB_D65[7] * Y + SRGB_D65[8] * Z) * intensity).roundToInt()
+        color = (16777216 * alpha).toLong() + R + G + B
+    }
+    return wave
 }
 
 fun interpolate(values: List<Double>, index: Int, offset: Int): Double{
@@ -259,55 +383,45 @@ fun interpolate(values: List<Double>, index: Int, offset: Int): Double{
     } else values[index]
 }
 
-fun gammaCorrect_sRGB(c:Double): Int {
-    val cc = if( c <= 0.0031308 ) 12.92 * c else 1.055 * c.pow(1/2.4) - 0.055
-    return if(cc < 0) 0 else if(cc > 1) 1 else cc.toInt()
+fun correctSRGB(c: Double): Double {
+    return if (c < 0.0) 0.0
+            else if (c > 1.0) 1.0
+            else if (c <= 0.0031308) 12.92 * c
+            else 1.055 * c.pow(1 / 2.4) - 0.055
+//    return if (c.absoluteValue <= 0.0031308) 12.92 * c else 1.055 * c.pow(1 / 2.4) - 0.055
 }
 
 //##################################################################################################################
+fun createListSpectrumRGB2(): List<Wave>{
+    val listColor = mutableListOf<Wave>()
+    for (wave in LEN_MIN..LEN_MAX step LEN_STEP) {
+        listColor.add(waveToRGB2(wave))
+    }
+    return listColor
+}
+@SuppressLint("SuspiciousIndentation")
+fun waveToRGB2(length: Int, alfaPosition: Int = 255, intensityPosition: Int = 255): Wave{
+    
+    val waveObj = Wave(wave = length, alpha = 255, intensity = 255)
 
-fun waveToRGB2(wavelength: Int): Wave{
-    val waveObj = cie1931WavelengthToXYZFit(wavelength);
-    val rgb = srgbXYZ2RGB(waveObj);
-
-    waveObj.color = 0xFF000000 or
-            ((rgb[0] * 0xFF).toInt() and 0xFF).shl(16).toLong() or
-            ((rgb[1] * 0xFF).toInt() and 0xFF).shl(8).toLong() or
-            (((rgb[2] * 0xFF).toInt() and 0xFF).toLong())
+    with(waveObj){
+        X = 0.362 * exp(-0.5 * ((length - 442.0) * (if (length < 442.0) 0.0624 else 0.0374)).pow(2))
+           + 1.056 * exp(-0.5 * ((length - 599.8) * (if (length < 599.8) 0.0264 else 0.0323)).pow(2))
+           - 0.065 * exp(-0.5 * ((length - 501.1) * (if (length < 501.1) 0.0490 else 0.0382)).pow(2))
+        Y = 0.821 * exp(-0.5 * ((length - 568.8) * (if (length < 568.8) 0.0213 else 0.0247)).pow(2))
+           + 0.286 * exp(-0.5 * ((length - 530.9) * (if (length < 530.9) 0.0613 else 0.0322)).pow(2))
+        Z = 1.217 * exp(-0.5 * ((length - 437.0) * (if (length < 437.0) 0.0845 else 0.0278)).pow(2))
+            + 0.681 * exp(-0.5 * ( (length - 459.0) * (if(length < 459.0) 0.0385 else 0.0725)).pow(2))
+        R = (correctSRGB(SRGB_D65[0] * X + SRGB_D65[1] * Y + SRGB_D65[2] * Z) * 255 * 65536).roundToInt()
+        G = (correctSRGB(SRGB_D65[3] * X + SRGB_D65[4] * Y + SRGB_D65[5] * Z) * 255 * 256).roundToInt()
+        B = (correctSRGB(SRGB_D65[6] * X + SRGB_D65[7] * Y + SRGB_D65[8] * Z) * 255).roundToInt()
+        color = (16777216 * alpha).toLong() + R + G + B
+    }
+    
     return waveObj;
 }
-fun srgbXYZ2RGB(xyz: Wave): List<Double> {
 
-    val rl =  3.2406255 * xyz.X + -1.537208  * xyz.Y + -0.4986286 * xyz.Z
-    val gl = -0.9689307 * xyz.X +  1.8757561 * xyz.Y +  0.0415175 * xyz.Z
-    val bl =  0.0557101 * xyz.X + -0.2040211 * xyz.Y +  1.0569959 * xyz.Z
 
-    return listOf(
-        srgbXYZ2RGBPostprocess(rl),
-        srgbXYZ2RGBPostprocess(gl),
-        srgbXYZ2RGBPostprocess(bl)
-    )
-}
-fun srgbXYZ2RGBPostprocess(c: Double): Double {
-    val cc = if (c > 1) 1.0 else if (c < 0) 0.0 else c
-    return if(cc <= 0.0031308) cc * 12.92 else 1.055 * cc.pow(1/2.4) - 0.055
-}
-fun cie1931WavelengthToXYZFit(wave:Int): Wave {
-
-    var t1 = (wave - 442.0) * (if (wave < 442.0) 0.0624 else 0.0374)
-    var t2 = (wave - 599.8) * (if (wave < 599.8) 0.0264 else 0.0323)
-    val t3 = (wave - 501.1) * (if (wave < 501.1) 0.0490 else 0.0382)
-    val x = 0.362 * exp(-0.5 * t1 * t1)+ 1.056 * exp(-0.5 * t2 * t2)- 0.065 * exp(-0.5 * t3 * t3)
-
-    t1 = (wave - 568.8) * (if (wave < 568.8) 0.0213 else 0.0247)
-    t2 = (wave - 530.9) * (if (wave < 530.9) 0.0613 else 0.0322)
-    val y = 0.821 * exp(-0.5 * t1 * t1) + 0.286 * exp(-0.5 * t2 * t2)
-
-    t1 = (wave - 437.0) * (if (wave < 437.0) 0.0845 else 0.0278)
-    t2 = (wave - 459.0) * (if(wave < 459.0) 0.0385 else 0.0725)
-    val z = 1.217 * exp(-0.5 * t1 * t1) + 0.681 * exp(-0.5 * t2 * t2)
-    return Wave(wave = wave, X = x, Y = y, Z = z, color = 0, alpha = 255, intensity = 255)
-}
 /*
 @Composable fun ColorPicker1(){
 
@@ -626,278 +740,6 @@ nm	X	Y	Z
  */
 
 /*
-object ColorList {
-    val list: List<Wave> = listOf(
-        Wave (wave = 380, X = 0.1741, Y = 0.0050, Z = 0.8209),
-        Wave (wave = 385, X = 0.1740, Y = 0.0050, Z = 0.8210),
-        Wave (wave = 390, X = 0.1738, Y = 0.0049, Z = 0.8213),
-        Wave (wave = 395, X = 0.1736, Y = 0.0049, Z = 0.8215),
-        Wave (wave = 400, X = 0.1733, Y = 0.0048, Z = 0.8219),
-        Wave (wave = 405, X = 0.1730, Y = 0.0048, Z = 0.8222),
-        Wave (wave = 410, X = 0.1726, Y = 0.0048, Z = 0.8226),
-        Wave (wave = 415, X = 0.1721, Y = 0.0048, Z = 0.8231),
-        Wave (wave = 420, X = 0.1714, Y = 0.0051, Z = 0.8235),
-        Wave (wave = 425, X = 0.1703, Y = 0.0058, Z = 0.8239),
-        Wave (wave = 430, X = 0.1689, Y = 0.0069, Z = 0.8242),
-        Wave (wave = 435, X = 0.1669, Y = 0.0086, Z = 0.8245),
-        Wave (wave = 440, X = 0.1644, Y = 0.0109, Z = 0.8247),
-        Wave (wave = 445, X = 0.1611, Y = 0.0138, Z = 0.8251),
-        Wave (wave = 450, X = 0.1566, Y = 0.0177, Z = 0.8257),
-        Wave (wave = 455, X = 0.1510, Y = 0.0227, Z = 0.8263),
-        Wave (wave = 460, X = 0.1440, Y = 0.0297, Z = 0.8263),
-        Wave (wave = 465, X = 0.1355, Y = 0.0399, Z = 0.8246),
-        Wave (wave = 470, X = 0.1241, Y = 0.0578, Z = 0.8181),
-        Wave (wave = 475, X = 0.1096, Y = 0.0868, Z = 0.8036),
-        Wave (wave = 480, X = 0.0913, Y = 0.1327, Z = 0.7760),
-        Wave (wave = 485, X = 0.0687, Y = 0.2007, Z = 0.7306),
-        Wave (wave = 490, X = 0.0454, Y = 0.2950, Z = 0.6596),
-        Wave (wave = 495, X = 0.0235, Y = 0.4127, Z = 0.5638),
-        Wave (wave = 500, X = 0.0082, Y = 0.5384, Z = 0.4534),
-        Wave (wave = 505, X = 0.0039, Y = 0.6548, Z = 0.3413),
-        Wave (wave = 510, X = 0.0139, Y = 0.7502, Z = 0.2359),
-        Wave (wave = 515, X = 0.0389, Y = 0.8120, Z = 0.1491),
-        Wave (wave = 520, X = 0.0743, Y = 0.8338, Z = 0.0919),
-        Wave (wave = 525, X = 0.1142, Y = 0.8262, Z = 0.0596),
-        Wave (wave = 530, X = 0.1547, Y = 0.8059, Z = 0.0394),
-        Wave (wave = 535, X = 0.1929, Y = 0.7816, Z = 0.0255),
-        Wave (wave = 540, X = 0.2296, Y = 0.7543, Z = 0.0161),
-        Wave (wave = 545, X = 0.2658, Y = 0.7243, Z = 0.0099),
-        Wave (wave = 550, X = 0.3016, Y = 0.6923, Z = 0.0061),
-        Wave (wave = 555, X = 0.3373, Y = 0.6589, Z = 0.0038),
-        Wave (wave = 560, X = 0.3731, Y = 0.6245, Z = 0.0024),
-        Wave (wave = 565, X = 0.4087, Y = 0.5896, Z = 0.0017),
-        Wave (wave = 570, X = 0.4441, Y = 0.5547, Z = 0.0012),
-        Wave (wave = 575, X = 0.4788, Y = 0.5202, Z = 0.0010),
-        Wave (wave = 580, X = 0.5125, Y = 0.4866, Z = 0.0009),
-        Wave (wave = 585, X = 0.5448, Y = 0.4544, Z = 0.0008),
-        Wave (wave = 590, X = 0.5752, Y = 0.4242, Z = 0.0006),
-        Wave (wave = 595, X = 0.6029, Y = 0.3965, Z = 0.0006),
-        Wave (wave = 600, X = 0.6270, Y = 0.3725, Z = 0.0005),
-        Wave (wave = 605, X = 0.6482, Y = 0.3514, Z = 0.0004),
-        Wave (wave = 610, X = 0.6658, Y = 0.3340, Z = 0.0002),
-        Wave (wave = 615, X = 0.6801, Y = 0.3197, Z = 0.0002),
-        Wave (wave = 620, X = 0.6915, Y = 0.3083, Z = 0.0002),
-        Wave (wave = 625, X = 0.7006, Y = 0.2993, Z = 0.0001),
-        Wave (wave = 630, X = 0.7079, Y = 0.2920, Z = 0.0001),
-        Wave (wave = 635, X = 0.7140, Y = 0.2859, Z = 0.0001),
-        Wave (wave = 640, X = 0.7190, Y = 0.2809, Z = 0.0001),
-        Wave (wave = 645, X = 0.7230, Y = 0.2770, Z = 0.0000),
-        Wave (wave = 650, X = 0.7260, Y = 0.2740, Z = 0.0000),
-        Wave (wave = 655, X = 0.7283, Y = 0.2717, Z = 0.0000),
-        Wave (wave = 660, X = 0.7300, Y = 0.2700, Z = 0.0000),
-        Wave (wave = 665, X = 0.7311, Y = 0.2689, Z = 0.0000),
-        Wave (wave = 670, X = 0.7320, Y = 0.2680, Z = 0.0000),
-        Wave (wave = 675, X = 0.7327, Y = 0.2673, Z = 0.0000),
-        Wave (wave = 680, X = 0.7334, Y = 0.2666, Z = 0.0000),
-        Wave (wave = 685, X = 0.7340, Y = 0.2660, Z = 0.0000),
-        Wave (wave = 690, X = 0.7344, Y = 0.2656, Z = 0.0000),
-        Wave (wave = 695, X = 0.7346, Y = 0.2654, Z = 0.0000),
-        Wave (wave = 700, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 705, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 710, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 715, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 720, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 725, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 730, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 735, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 740, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 745, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 750, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 755, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 760, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 765, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 770, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 775, X = 0.7347, Y = 0.2653, Z = 0.0000),
-        Wave (wave = 780, X = 0.7347, Y = 0.2653, Z = 0.0000),
-    )
-    val list1: List<Wave> = listOf(
-        Wave (wave = 390, X = 0.003769647, Y = 0.0004146161, Z = 0.0184726),
-        Wave (wave = 395, X = 0.009382967, Y = 0.001059646, Z = 0.04609784),
-        Wave (wave = 400, X = 0.02214302, Y = 0.002452194, Z = 0.109609),
-        Wave (wave = 405, X = 0.04742986, Y = 0.004971717, Z = 0.2369246),
-        Wave (wave = 410, X = 0.08953803, Y = 0.00907986, Z = 0.4508369),
-        Wave (wave = 415, X = 0.1446214, Y = 0.01429377, Z = 0.7378822),
-        Wave (wave = 420, X = 0.2035729, Y = 0.02027369, Z = 1.051821),
-        Wave (wave = 425, X = 0.2488523, Y = 0.02612106, Z = 1.305008),
-        Wave (wave = 430, X = 0.2918246, Y = 0.03319038, Z = 1.552826),
-        Wave (wave = 435, X = 0.3227087, Y = 0.0415794, Z = 1.74828),
-        Wave (wave = 440, X = 0.3482554, Y = 0.05033657, Z = 1.917479),
-        Wave (wave = 445, X = 0.3418483, Y = 0.05743393, Z = 1.918437),
-        Wave (wave = 450, X = 0.3224637, Y = 0.06472352, Z = 1.848545),
-        Wave (wave = 455, X = 0.2826646, Y = 0.07238339, Z = 1.664439),
-        Wave (wave = 460, X = 0.2485254, Y = 0.08514816, Z = 1.522157),
-        Wave (wave = 465, X = 0.2219781, Y = 0.1060145, Z = 1.42844),
-        Wave (wave = 470, X = 0.1806905, Y = 0.1298957, Z = 1.25061),
-        Wave (wave = 475, X = 0.129192, Y = 0.1535066, Z = 0.9991789),
-        Wave (wave = 480, X = 0.08182895, Y = 0.1788048, Z = 0.7552379),
-        Wave (wave = 485, X = 0.04600865, Y = 0.2064828, Z = 0.5617313),
-        Wave (wave = 490, X = 0.02083981, Y = 0.237916, Z = 0.4099313),
-        Wave (wave = 495, X = 0.007097731, Y = 0.285068, Z = 0.3105939),
-        Wave (wave = 500, X = 0.002461588, Y = 0.3483536, Z = 0.2376753),
-        Wave (wave = 505, X = 0.003649178, Y = 0.4277595, Z = 0.1720018),
-        Wave (wave = 510, X = 0.01556989, Y = 0.5204972, Z = 0.1176796),
-        Wave (wave = 515, X = 0.04315171, Y = 0.6206256, Z = 0.08283548),
-        Wave (wave = 520, X = 0.07962917, Y = 0.718089, Z = 0.05650407),
-        Wave (wave = 525, X = 0.1268468, Y = 0.7946448, Z = 0.03751912),
-        Wave (wave = 530, X = 0.1818026, Y = 0.8575799, Z = 0.02438164),
-        Wave (wave = 535, X = 0.2405015, Y = 0.9071347, Z = 0.01566174),
-        Wave (wave = 540, X = 0.3098117, Y = 0.9544675, Z = 0.00984647),
-        Wave (wave = 545, X = 0.3804244, Y = 0.9814106, Z = 0.006131421),
-        Wave (wave = 550, X = 0.4494206, Y = 0.9890228, Z = 0.003790291),
-        Wave (wave = 555, X = 0.5280233, Y = 0.9994608, Z = 0.002327186),
-        Wave (wave = 560, X = 0.6133784, Y = 0.9967737, Z = 0.001432128),
-        Wave (wave = 565, X = 0.7016774, Y = 0.9902549, Z = 0.0008822531),
-        Wave (wave = 570, X = 0.796775, Y = 0.9732611, Z = 0.0005452416),
-        Wave (wave = 575, X = 0.8853376, Y = 0.9424569, Z = 0.0003386739),
-        Wave (wave = 580, X = 0.9638388, Y = 0.8963613, Z = 0.0002117772),
-        Wave (wave = 585, X = 1.051011, Y = 0.8587203, Z = 0.0001335031),
-        Wave (wave = 590, X = 1.109767, Y = 0.8115868, Z = 0.00008494468),
-        Wave (wave = 595, X = 1.14362, Y = 0.7544785, Z = 0.00005460706),
-        Wave (wave = 600, X = 1.151033, Y = 0.6918553, Z = 0.00003549661),
-        Wave (wave = 605, X = 1.134757, Y = 0.6270066, Z = 0.00002334738),
-        Wave (wave = 610, X = 1.083928, Y = 0.5583746, Z = 0.00001554631),
-        Wave (wave = 615, X = 1.007344, Y = 0.489595, Z = 0.00001048387),
-        Wave (wave = 620, X = 0.9142877, Y = 0.4229897, Z = 0.00),
-        Wave (wave = 625, X = 0.8135565, Y = 0.3609245, Z = 0.00),
-        Wave (wave = 630, X = 0.6924717, Y = 0.2980865, Z = 0.00),
-        Wave (wave = 635, X = 0.575541, Y = 0.2416902, Z = 0.00),
-        Wave (wave = 640, X = 0.4731224, Y = 0.1943124, Z = 0.00),
-        Wave (wave = 645, X = 0.3844986, Y = 0.1547397, Z = 0.00),
-        Wave (wave = 650, X = 0.2997374, Y = 0.119312, Z = 0.00),
-        Wave (wave = 655, X = 0.2277792, Y = 0.08979594, Z = 0.00),
-        Wave (wave = 660, X = 0.1707914, Y = 0.06671045, Z = 0.00),
-        Wave (wave = 665, X = 0.1263808, Y = 0.04899699, Z = 0.00),
-        Wave (wave = 670, X = 0.09224597, Y = 0.03559982, Z = 0.00),
-        Wave (wave = 675, X = 0.0663996, Y = 0.02554223, Z = 0.00),
-        Wave (wave = 680, X = 0.04710606, Y = 0.01807939, Z = 0.00),
-        Wave (wave = 685, X = 0.03292138, Y = 0.01261573, Z = 0.00),
-        Wave (wave = 690, X = 0.02262306, Y = 0.008661284, Z = 0.00),
-        Wave (wave = 695, X = 0.01575417, Y = 0.006027677, Z = 0.00),
-        Wave (wave = 700, X = 0.01096778, Y = 0.004195941, Z = 0.00),
-        Wave (wave = 705, X = 0.00760875, Y = 0.002910864, Z = 0.00),
-        Wave (wave = 710, X = 0.005214608, Y = 0.001995557, Z = 0.00),
-        Wave (wave = 715, X = 0.003569452, Y = 0.001367022, Z = 0.00),
-        Wave (wave = 720, X = 0.002464821, Y = 0.0009447269, Z = 0.00),
-        Wave (wave = 725, X = 0.001703876, Y = 0.000653705, Z = 0.00),
-        Wave (wave = 730, X = 0.001186238, Y = 0.000455597, Z = 0.00),
-        Wave (wave = 735, X = 0.0008269535, Y = 0.0003179738, Z = 0.00),
-        Wave (wave = 740, X = 0.0005758303, Y = 0.0002217445, Z = 0.00),
-        Wave (wave = 745, X = 0.0004058303, Y = 0.0001565566, Z = 0.00),
-        Wave (wave = 750, X = 0.0002856577, Y = 0.0001103928, Z = 0.00),
-        Wave (wave = 755, X = 0.0002021853, Y = 0.00007827442, Z = 0.00),
-        Wave (wave = 760, X = 0.000143827, Y = 0.00005578862, Z = 0.00),
-        Wave (wave = 765, X = 0.0001024685, Y = 0.00003981884, Z = 0.00),
-        Wave (wave = 770, X = 0.00007347551, Y = 0.00002860175, Z = 0.00),
-        Wave (wave = 775, X = 0.0000525987, Y = 0.00002051259, Z = 0.00),
-        Wave (wave = 780, X = 0.00003806114, Y = 0.00001487243, Z = 0.00),
-        Wave (wave = 785, X = 0.00002758222, Y = 0.00001080001, Z = 0.00),
-        Wave (wave = 790, X = 0.00002004122, Y = 0.00000786392, Z = 0.00),
-        Wave (wave = 795, X = 0.00001458792, Y = 0.000005736935, Z = 0.00),
-        Wave (wave = 800, X = 0.00001068141, Y = 0.000004211597, Z = 0.00),
-        Wave (wave = 805, X = 0.000007857521, Y = 0.000003106561, Z = 0.00),
-        Wave (wave = 810, X = 0.000005768284, Y = 0.000002286786, Z = 0.00),
-        Wave (wave = 815, X = 0.000004259166, Y = 0.000001693147, Z = 0.00),
-        Wave (wave = 820, X = 0.000003167765, Y = 0.000001262556, Z = 0.00),
-        Wave (wave = 825, X = 0.000002358723, Y = 0.0000009422514, Z = 0.00),
-        Wave (wave = 830, X = 0.000001762465, Y = 0.000000705386, Z = 0.00),
-    )
-    val list2: List<Wave> = listOf(
-        Wave (wave = 360, X = 0.000000122200, Y = 0.000000013398, Z = 0.000000535027),
-        Wave (wave = 365, X = 0.000000919270, Y = 0.000000100650, Z = 0.000004028300),
-        Wave (wave = 370, X = 0.000005958600, Y = 0.000000651100, Z = 0.000026143700),
-        Wave (wave = 375, X = 0.000033266000, Y = 0.000003625000, Z = 0.000146220000),
-        Wave (wave = 380, X = 0.000159952000, Y = 0.000017364000, Z = 0.000704776000),
-        Wave (wave = 385, X = 0.000662440000, Y = 0.000071560000, Z = 0.002927800000),
-        Wave (wave = 390, X = 0.002361600000, Y = 0.000253400000, Z = 0.010482200000),
-        Wave (wave = 395, X = 0.007242300000, Y = 0.000768500000, Z = 0.032344000000),
-        Wave (wave = 400, X = 0.019109700000, Y = 0.002004400000, Z = 0.086010900000),
-        Wave (wave = 405, X = 0.043400000000, Y = 0.004509000000, Z = 0.197120000000),
-        Wave (wave = 410, X = 0.084736000000, Y = 0.008756000000, Z = 0.389366000000),
-        Wave (wave = 415, X = 0.140638000000, Y = 0.014456000000, Z = 0.656760000000),
-        Wave (wave = 420, X = 0.204492000000, Y = 0.021391000000, Z = 0.972542000000),
-        Wave (wave = 425, X = 0.264737000000, Y = 0.029497000000, Z = 1.282500000000),
-        Wave (wave = 430, X = 0.314679000000, Y = 0.038676000000, Z = 1.553480000000),
-        Wave (wave = 435, X = 0.357719000000, Y = 0.049602000000, Z = 1.798500000000),
-        Wave (wave = 440, X = 0.383734000000, Y = 0.062077000000, Z = 1.967280000000),
-        Wave (wave = 445, X = 0.386726000000, Y = 0.074704000000, Z = 2.027300000000),
-        Wave (wave = 450, X = 0.370702000000, Y = 0.089456000000, Z = 1.994800000000),
-        Wave (wave = 455, X = 0.342957000000, Y = 0.106256000000, Z = 1.900700000000),
-        Wave (wave = 460, X = 0.302273000000, Y = 0.128201000000, Z = 1.745370000000),
-        Wave (wave = 465, X = 0.254085000000, Y = 0.152761000000, Z = 1.554900000000),
-        Wave (wave = 470, X = 0.195618000000, Y = 0.185190000000, Z = 1.317560000000),
-        Wave (wave = 475, X = 0.132349000000, Y = 0.219940000000, Z = 1.030200000000),
-        Wave (wave = 480, X = 0.080507000000, Y = 0.253589000000, Z = 0.772125000000),
-        Wave (wave = 485, X = 0.041072000000, Y = 0.297665000000, Z = 0.570060000000),
-        Wave (wave = 490, X = 0.016172000000, Y = 0.339133000000, Z = 0.415254000000),
-        Wave (wave = 495, X = 0.005132000000, Y = 0.395379000000, Z = 0.302356000000),
-        Wave (wave = 500, X = 0.003816000000, Y = 0.460777000000, Z = 0.218502000000),
-        Wave (wave = 505, X = 0.015444000000, Y = 0.531360000000, Z = 0.159249000000),
-        Wave (wave = 510, X = 0.037465000000, Y = 0.606741000000, Z = 0.112044000000),
-        Wave (wave = 515, X = 0.071358000000, Y = 0.685660000000, Z = 0.082248000000),
-        Wave (wave = 520, X = 0.117749000000, Y = 0.761757000000, Z = 0.060709000000),
-        Wave (wave = 525, X = 0.172953000000, Y = 0.823330000000, Z = 0.043050000000),
-        Wave (wave = 530, X = 0.236491000000, Y = 0.875211000000, Z = 0.030451000000),
-        Wave (wave = 535, X = 0.304213000000, Y = 0.923810000000, Z = 0.020584000000),
-        Wave (wave = 540, X = 0.376772000000, Y = 0.961988000000, Z = 0.013676000000),
-        Wave (wave = 545, X = 0.451584000000, Y = 0.982200000000, Z = 0.007918000000),
-        Wave (wave = 550, X = 0.529826000000, Y = 0.991761000000, Z = 0.003988000000),
-        Wave (wave = 555, X = 0.616053000000, Y = 0.999110000000, Z = 0.001091000000),
-        Wave (wave = 560, X = 0.705224000000, Y = 0.997340000000, Z = 0.000000000000),
-        Wave (wave = 565, X = 0.793832000000, Y = 0.982380000000, Z = 0.000000000000),
-        Wave (wave = 570, X = 0.878655000000, Y = 0.955552000000, Z = 0.000000000000),
-        Wave (wave = 575, X = 0.951162000000, Y = 0.915175000000, Z = 0.000000000000),
-        Wave (wave = 580, X = 1.014160000000, Y = 0.868934000000, Z = 0.000000000000),
-        Wave (wave = 585, X = 1.074300000000, Y = 0.825623000000, Z = 0.000000000000),
-        Wave (wave = 590, X = 1.118520000000, Y = 0.777405000000, Z = 0.000000000000),
-        Wave (wave = 595, X = 1.134300000000, Y = 0.720353000000, Z = 0.000000000000),
-        Wave (wave = 600, X = 1.123990000000, Y = 0.658341000000, Z = 0.000000000000),
-        Wave (wave = 605, X = 1.089100000000, Y = 0.593878000000, Z = 0.000000000000),
-        Wave (wave = 610, X = 1.030480000000, Y = 0.527963000000, Z = 0.000000000000),
-        Wave (wave = 615, X = 0.950740000000, Y = 0.461834000000, Z = 0.000000000000),
-        Wave (wave = 620, X = 0.856297000000, Y = 0.398057000000, Z = 0.000000000000),
-        Wave (wave = 625, X = 0.754930000000, Y = 0.339554000000, Z = 0.000000000000),
-        Wave (wave = 630, X = 0.647467000000, Y = 0.283493000000, Z = 0.000000000000),
-        Wave (wave = 635, X = 0.535110000000, Y = 0.228254000000, Z = 0.000000000000),
-        Wave (wave = 640, X = 0.431567000000, Y = 0.179828000000, Z = 0.000000000000),
-        Wave (wave = 645, X = 0.343690000000, Y = 0.140211000000, Z = 0.000000000000),
-        Wave (wave = 650, X = 0.268329000000, Y = 0.107633000000, Z = 0.000000000000),
-        Wave (wave = 655, X = 0.204300000000, Y = 0.081187000000, Z = 0.000000000000),
-        Wave (wave = 660, X = 0.152568000000, Y = 0.060281000000, Z = 0.000000000000),
-        Wave (wave = 665, X = 0.112210000000, Y = 0.044096000000, Z = 0.000000000000),
-        Wave (wave = 670, X = 0.081260600000, Y = 0.031800400000, Z = 0.000000000000),
-        Wave (wave = 675, X = 0.057930000000, Y = 0.022601700000, Z = 0.000000000000),
-        Wave (wave = 680, X = 0.040850800000, Y = 0.015905100000, Z = 0.000000000000),
-        Wave (wave = 685, X = 0.028623000000, Y = 0.011130300000, Z = 0.000000000000),
-        Wave (wave = 690, X = 0.019941300000, Y = 0.007748800000, Z = 0.000000000000),
-        Wave (wave = 695, X = 0.013842000000, Y = 0.005375100000, Z = 0.000000000000),
-        Wave (wave = 700, X = 0.009576880000, Y = 0.003717740000, Z = 0.000000000000),
-        Wave (wave = 705, X = 0.006605200000, Y = 0.002564560000, Z = 0.000000000000),
-        Wave (wave = 710, X = 0.004552630000, Y = 0.001768470000, Z = 0.000000000000),
-        Wave (wave = 715, X = 0.003144700000, Y = 0.001222390000, Z = 0.000000000000),
-        Wave (wave = 720, X = 0.002174960000, Y = 0.000846190000, Z = 0.000000000000),
-        Wave (wave = 725, X = 0.001505700000, Y = 0.000586440000, Z = 0.000000000000),
-        Wave (wave = 730, X = 0.001044760000, Y = 0.000407410000, Z = 0.000000000000),
-        Wave (wave = 735, X = 0.000727450000, Y = 0.000284041000, Z = 0.000000000000),
-        Wave (wave = 740, X = 0.000508258000, Y = 0.000198730000, Z = 0.000000000000),
-        Wave (wave = 745, X = 0.000356380000, Y = 0.000139550000, Z = 0.000000000000),
-        Wave (wave = 750, X = 0.000250969000, Y = 0.000098428000, Z = 0.000000000000),
-        Wave (wave = 755, X = 0.000177730000, Y = 0.000069819000, Z = 0.000000000000),
-        Wave (wave = 760, X = 0.000126390000, Y = 0.000049737000, Z = 0.000000000000),
-        Wave (wave = 765, X = 0.000090151000, Y = 0.000035540500, Z = 0.000000000000),
-        Wave (wave = 770, X = 0.000064525800, Y = 0.000025486000, Z = 0.000000000000),
-        Wave (wave = 775, X = 0.000046339000, Y = 0.000018338400, Z = 0.000000000000),
-        Wave (wave = 780, X = 0.000033411700, Y = 0.000013249000, Z = 0.000000000000),
-        Wave (wave = 785, X = 0.000024209000, Y = 0.000009619600, Z = 0.000000000000),
-        Wave (wave = 790, X = 0.000017611500, Y = 0.000007012800, Z = 0.000000000000),
-        Wave (wave = 795, X = 0.000012855000, Y = 0.000005129800, Z = 0.000000000000),
-        Wave (wave = 800, X = 0.000009413630, Y = 0.000003764730, Z = 0.000000000000),
-        Wave (wave = 805, X = 0.000006913000, Y = 0.000002770810, Z = 0.000000000000),
-        Wave (wave = 810, X = 0.000005093470, Y = 0.000002046130, Z = 0.000000000000),
-        Wave (wave = 815, X = 0.000003767100, Y = 0.000001516770, Z = 0.000000000000),
-        Wave (wave = 820, X = 0.000002795310, Y = 0.000001128090, Z = 0.000000000000),
-        Wave (wave = 825, X = 0.000002082000, Y = 0.000000842160, Z = 0.000000000000),
-        Wave (wave = 830, X = 0.000001553140, Y = 0.000000629700, Z = 0.000000000000),
-    )
 }
 
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -1350,3 +1192,937 @@ x s rgb=concat["\ESC[48;2;",
 spectrum=concatMap(x" ".sRGBfromÅ)$takeWhile(<7000)$iterate(+60)4000
 main=putStrLn spectrum
  */
+
+
+/*
+
+    CC0 1.0
+
+	@vrtree
+	who@tree.is
+	http://tree.is
+
+
+	I dont know if this is going to work, or be interesting,
+	or even understandable, But hey! Why not try!
+
+	To start, get inspired by some MAGICAL creations made by raytracing:
+
+	Volcanic by IQ
+	https://www.shadertoy.com/view/XsX3RB
+
+	Remnant X by Dave_Hoskins ( Audio Autoplay warnings )
+	https://www.shadertoy.com/view/4sjSW1
+
+	Cloud Ten by Nimitz
+	https://www.shadertoy.com/view/XtS3DD
+
+	Spectacles by MEEEEEE
+    https://www.shadertoy.com/view/4lBXWt
+
+	[2TC 15] Mystery Mountains by Dave_Hoskins
+	https://www.shadertoy.com/view/llsGW7
+
+	Raytracing graphics is kinda like baking cakes.
+
+	I want yall to first see how magical
+	the cake can be before trying to learn how to make it, because the thing we
+	make at first isn't going to be one of those crazy 10 story wedding cakes. its just
+	going to be some burnt sugar bread.
+
+	Making art using code can be so fufilling, and so infinite, but to get there you
+	need to learn some techniques that might not seem that inspiring. To bake a cake,
+	you first need to turn on an oven, and need to know what an oven even is. In this
+	tutorial we are going to be learning how to make the oven, how to turn it on,
+	and how to mix ingredients. as you can see on our left, our cake isn't very pretty
+	but it is a cake. and thats pretty crazy for just one tutorial!
+
+	Once you have gone through this tutorial, you can see a 'minimized' version
+	here: https://www.shadertoy.com/view/Xt2XDt
+
+	where I've rewritten it using the varibles and functions that
+	are used alot throughout shadertoy. The inspiration examples above
+	probably seem completely insane, because of all the single letter variable
+	names, but keep in mind, that they all start with most of the same ingredients
+	and overn that we will learn about right now!
+
+
+	I've tried to break up the code into 'sections'
+	which have the 'SECTION 'BLAH'' label above them. Not sure
+	if thats gonna help or not, but please leave comments
+	if you think something works or doesn't work, slash you
+	have any questions!!!
+
+	or contact me at @vrtree || @cabbibo
+
+
+	Cheat sheet for vectors:
+
+    x = left / right
+	y = up / down
+	z = forwards / backwards
+
+	also, for vectors labeled 'color'
+
+	x = red
+	y = green
+	z = blue
+
+
+
+	//---------------------------------------------------
+    // SECTION 'A' : ONE PROGRAM FOR EVERY PIXEL!
+    //---------------------------------------------------
+
+	The best metaphor that I can think of for raytracing is
+	that the rectangle to our left is actually just a small window
+	into a fantastic world. We need to describe that world,
+	so that we can see it. BUT HOW ?!?!?!
+
+	What we are doing below is describing what color each pixel
+	of the window is, however because of the way that shader
+	programs work, we need to give the same instruction to every
+	single PIXEL ( or in shadertoy terms, FRAGMENT )
+	in the window. This is where the term SIMD comes
+	from : Same Instruction Multiple Data
+
+	In this case, the same instruction is the program below,
+	and the multiple data is the marvelous little piece of magic
+	called 'fragCoord' which is just the position of the pixel in
+	window. lets rename some things to look prettier.
+
+
+	//---------------------------------------------------
+    // SECTION 'B' : BUILDING THE WINDOW
+    //---------------------------------------------------
+
+	If you think about what happens with an actual window, you
+	can begin to get an idea of how the magic of raytracing works
+	basically a bunch of rays come from the sun ( and or other
+	light sources ) , bounce around a bunch ( or a little ), and
+	eventually make it through the window, and into our eyes.
+
+	Now the number of rays are masssiveeee that come from the sun
+	and alot of them that are bouncing around, will end up going
+	directions that aren't even close to the window, or maybe
+	will hit the wall instead of the window.
+
+	We only care about the rays that go through the window
+	and make it to our eyeballs!
+
+	This means that we can be a bit intelligent. Instead of
+	figuring out the rays that come from the sun and bounce around
+	lets start with out eyes, and work backwards!!!!
+
+
+	//---------------------------------------------------
+    // SECTION 'C' : NAVIGATING THE WORLD
+    //---------------------------------------------------
+
+	After setting up all the neccesary ray information,
+	we FINALLY get to start building the scene. Up to this point,
+	we've only built up the window, and the rays that go from our
+	eyes through the window, but now we need to describe to the rays
+    if they hit anything and what they hit!
+
+
+	Now this part has some pretty scary code in it ( whenever I look
+	at it at least, my eyes glaze over ), so feel free to skip over
+	the checkRayHit function. I tried to explain it as best as I could
+	down below, and you might want to come back to it after going
+	throught the rest of the tutorial, but the important thing to
+	remember is the following:
+
+
+	These 'rays' that we've been talking about will move through the
+	scene along their direction. They do this iteratively, and at each
+	step will basically ask the question :
+
+	'HOW CLOSE AM I TO THINGS IN THE WORLD???'
+
+	because well, rays are lonely, and want to be closer to things in
+	the world. We provide them an answer to that question using our
+	description of the world, and they use this information to tell
+	them how much further along their path they should move. If the
+	answer to the question is:
+
+	'Lovely little ray, you are actually touching a thing in the world!'
+
+	We know what that the ray hit something, and can begin with our next
+	step!
+
+	The tricky part about this is that we have to as accuratly as
+	possible provide them an answer to their question 'how close??!!'
+
+
+
+	//--------------------------------------------------------------
+    // SECTION 'D' : MAPPING THE WORLD , AKA 'SDFS ARE AWESOME!!!!'
+    //--------------------------------------------------------------
+
+	To answer the above concept, we are going to use this magical
+	concept called:
+
+	'Signed Distance Fields'
+	-----------------------
+
+	These things are the best, and very basically can be describe as
+	a function that takes in a position, and feeds back a value of
+	how close you are to a thing. If the value of this distance is negative
+	you are inside the thing, if it is positive, you are outside the thing
+	and if its 0 you are at the surface of the thing! This positive or negative
+	gives us the 'Signed' in 'Signed Distance Field'
+
+	For a super intensive description of many of the SDFs out there
+	check out Inigo Quilez's site:
+
+	https://iquilezles.org/articles/distfunctions
+
+	Also, if you want a deep dive into why these functions are the
+	ultimate magic, check out this crazy paper by the geniouses
+	over at Media Molecule about their new game: 'DREAMS'
+
+    http://media.lolrus.mediamolecule.com/AlexEvans_SIGGRAPH-2015.pdf
+
+	Needless to say, these lil puppies are super amazing, and are
+	here to free us from the tyranny of polygons.
+
+
+	---------
+
+	We are going to put all of our SDFs into a single function called
+
+	'mapTheWorld'
+
+	which will take in a position, and feed back two values.
+	The first value is the Distance of Signed Distance Field, and the
+	second value will tell us what we are closest too, so that if
+	we actually hit something, we can tell what it is. We will denote this
+	by an 'ID' value.
+
+	The hardest part for me to wrap my head around for this was the fact that
+	these fields do not just describe where the surface of an object is,
+	they actually describe how far you are from the object from ANYWHERE
+	in the world.
+
+	For example, if I was hitting a round ballon ( AKA a sphere :) )
+	I wouldn't just know if I was on the surface of the ballon, I would have
+	to know how close I was to the balloon from anywhere in space.
+
+	Check out the 'TAG : BALLOON' in the mapTheWorld function for more detail :)
+
+	I've also made a function for a box, that is slightly more complex, and to be
+	honest, I don't exactly understand the math of it, but the beauty of programming
+	is that someone else ( AKA Inigo ) does, and I can steal his knowledge, just by
+	looking at the functions from his website!
+
+	---------
+
+	One of the magical properties of SDFs is how easily they can be combined
+	contorted, and manipulated. They are just these lil functions that take
+	in a position and give back a distance value, so we can do things like play with the
+	input position, play with the output distance value, or just about anything
+	else.
+
+	We'll start by combining two SDFs by asking the simple question
+
+	'Which thing am I closer to?'
+
+	which is as simple as a '>' because we already know exactly how close we are
+	to each thing!
+
+	check out 'TAG : WHICH AM I CLOSER TO?'  for more enough
+
+	We use these function to create a map of the world for the rays to navigate,
+	and than pass that map to the checkRayHit, which propates the rays throughout
+	the world and tells us what they hit.
+
+	Once they know that, we can FINALLY do our last step:
+
+
+	//--------------------------------------------------------------
+    // SECTION 'E' : COLORING THE WORLD!
+    //--------------------------------------------------------------
+
+	At the end of our checkRayHit function we return a vec2 with two values:
+	.x is the distance that our ray traveled before hitting
+	.y is the ID of the thing that we hit.
+
+	if .y is less that 0.0 that means that our ray went as far as we allowed it
+	to go without hitting anything. thats one lonely ray :(
+
+	however, that doesn't mean that the ray didn't hit anything. It just meant
+	that it is part of the background.
+
+	Thanks little ray!
+	You told us important information about our scene,
+	and your hard work is helping to create the world!
+
+	We can get reallly crazy with how we color the background of the scene,
+	but for this tutorial lets just keep it black, because who doesn't love
+	the void.
+
+	we will use the function 'doBackgroundColor' to accomplish this task!
+
+	That tells us about the background, but what if .y is greater than 0.0?
+	then we get to make some stuff in the scene!
+
+	if the ID is equal to balloon id, then we 'doBalloonColor'
+	and if the ID is equal to the box , then we 'doBoxColor'
+
+	This is all that we need if we want to color simple solid objects,
+	but what if we want to add some shading, by doing what we originally
+	talked about, that is, following the ray to the sun?
+
+	For this first tutorial, we will keep it to a very naive approach,
+	but once you get the basics of sections A - D, we can get SUPER crazy
+	with this 'color' the world section.
+
+	For example, we could reflect the
+	ray off the surface, and than repeat the checkRayHit with this new information
+	continuing to follow this ray through more and more of the world. we could
+	repeat this process again and again, and even though our gpu would hate us
+	we could continue bouncing around until we got to a light source!
+
+	In a later tutorial we will do exactly this, but for now,
+	we are going to do 1 simple task:
+
+
+	See how much the surface that we hit, faces the sun.
+
+
+	to do that we need to do 2 things.
+
+	First, determine which way the surface faces
+	Second, determine which way rays go from the surface to get to the sun
+
+	1) To determine the way that the surface faces, we will use a function called
+	'getNormalOfSurface' This function will either make 100% sense, or 0% sense
+	depending on how often you have played with fields, but it made 0% sense to me
+	for many years, so don't worry if you don't get it! Whats important is that
+	it gives us the direction that the surface faces, which we call its 'Normal'
+	You can think of it as a vector that is perpendicular to the surface at a specific point
+
+	So that it is easier to understand what this value is, we are actually going to color our
+	box based on this value. We will map the X value of the normal to red, the Y value of the
+	normal to green and the Z value of the normal to blue. You can see this more in the
+	'doBoxColor' function
+
+
+	2) To get the direction the rays go to get to the sun, we just need to subtract the sun
+	position from the position of where we hit. This will provide us a direction from the sun
+	to the position. Look inside the doBalloonColor to see this calculation happen.
+	this will give us the direction of the rays from the sun to the surface!
+
+
+	Now that we have these 2 pieces of information, the last thing we need to do is see
+	how much the two vectors ( the normal and the light direction ) 'Face' each other.
+
+	that word 'Face', might not make much sense in this context, but think about it this way.
+
+	If you have a table, and a light above the table, the top of the table will 'Face',
+	the light, and the bottom of the table will 'Face' away from the light. The surface
+	that 'Faces' the light will get hit by the rays from the light, while the surface
+	that 'Faces' away from the light will be totally dark!
+
+	so how do we get this 'Face' value ( pun intended :p ) ?
+
+	There is a magical function called a 'dot product' which does exactly this. you
+	can read more here:
+
+	https://en.wikipedia.org/wiki/Dot_product
+
+	basically this function takes in 2 vectors, and feeds back a value from -1 -> 1.
+
+	if the value is -1 , the two vectors face in exact opposite directions, and if
+	the value is 1 , the two vectors face in exactly the same direction. if the value is
+	0, than they are perpendicular!
+
+	By using the dot product, we take get the ballon's 'Face' value and color it depending
+	on this value!
+
+	check out the doBallonColor to see all this craziness in action
+
+
+	//--------------------------------------------------------------
+    // SECTION 'F' : Wrapping up
+    //--------------------------------------------------------------
+
+	What a journey it has been. Remember back when we were talking about
+	sending rays through the window? Remember them moving all through the
+	world trying to be closer to things?
+
+	So much has happened, and at the end of that journey, we got a color for each ray!
+
+	now all we need to do is output that color onto the screen , which is a single call,
+	and we've made our world.
+
+
+	I know this stuff might seem too dry or too complex at times, too confusing,
+	too frustrating, but I promise, if you stick with it, you'll soon be making some of the
+	other magical structures you see throughout the rest of this site.
+
+	I'll be trying to do some more of these tutorials, and you'll see that VERY
+	quickly, you get from this hideous monstrosity to our left, to marvelous worlds
+	filled with lights, colors, and love.
+
+	Thanks for staying around, and please contact me:
+
+	@vrtree , @cabbibo with questions, concerns , and improvments. Or just comment!
+
+
+
+*/
+
+
+
+//---------------------------------------------------
+// SECTION 'B' : BUILDING THE WINDOW
+//---------------------------------------------------
+
+// Most of this is taken from many of the shaders
+// that @iq have worked on. Make sure to check out
+// more of his magic!!!
+
+
+// This calculation basically gets a way for us to
+// transform the rays coming out of our eyes and going through the window.
+// If it doesn't make sense, thats ok. It doesn't make sense to me either :)
+// Whats important to remember is that this basically gives us a way to position
+// our window. We could you it to make the window look north, south, east, west, up, down
+// or ANYWHERE in between!
+//mat3 calculateEyeRayTransformationMatrix( in vec3 ro, in vec3 ta, in float roll )
+//{
+//    vec3 ww = normalize( ta - ro );
+//    vec3 uu = normalize( cross(ww,vec3(sin(roll),cos(roll),0.0) ) );
+//    vec3 vv = normalize( cross(uu,ww));
+//    return mat3( uu, vv, ww );
+//}
+
+
+
+
+
+
+
+//--------------------------------------------------------------
+// SECTION 'D' : MAPPING THE WORLD , AKA 'SDFS ARE AWESOME!!!!'
+//--------------------------------------------------------------
+
+
+//'TAG: BALLOON'
+//vec2 sdfBalloon( vec3 currentRayPosition ){
+//
+//    // First we define our balloon position
+//    vec3 balloonPosition = vec3( 0. , 0. , -.4);
+//
+//    // than we define our balloon radius
+//    float balloonRadius = .9;
+//
+//    // Here we get the distance to the center of the balloon
+//    float distanceToBalloon = length( currentRayPosition - balloonPosition );
+//
+//    // finally we get the distance to the balloon surface
+//    // by substacting the balloon radius. This means that if
+//    // the distance to the balloon is less than the balloon radius
+//    // the value we get will be negative! giving us the 'Signed' in
+//    // Signed Distance Field!
+//    float distanceToBalloonSurface = distanceToBalloon - balloonRadius;
+//
+//
+//    // Finally we build the full balloon information, by giving it an ID
+//    float balloonID = 1.;
+//
+//    // And there we have it! A fully described balloon!
+//    vec2 balloon = vec2( distanceToBalloonSurface,  balloonID );
+//
+//    return balloon;
+//
+//}
+
+
+//vec2 sdfBox( vec3 currentRayPosition ){
+//
+//    // First we define our box position
+//    vec3 boxPosition = vec3( -.8 , -.4 , 0.2 );
+//
+//    // than we define our box dimensions using x , y and z
+//    vec3 boxSize = vec3( .4 , .3 , .2 );
+//
+//    // Here we get the 'adjusted ray position' which is just
+//    // writing the point of the ray as if the origin of the
+//    // space was where the box was positioned, instead of
+//    // at 0,0,0 . AKA the difference between the vectors in
+//    // vector format.
+//    vec3 adjustedRayPosition = currentRayPosition - boxPosition;
+//
+//    // finally we get the distance to the box surface.
+//    // I don't get this part very much, but I bet Inigo does!
+//    // Thanks for making code for us IQ !
+//    vec3 distanceVec = abs( adjustedRayPosition ) - boxSize;
+//    float maxDistance = max( distanceVec.x , max( distanceVec.y , distanceVec.z ) );
+//    float distanceToBoxSurface = min( maxDistance , 0.0 ) + length( max( distanceVec , 0.0 ) );
+//
+//    // Finally we build the full box information, by giving it an ID
+//    float boxID = 2.;
+//
+//    // And there we have it! A fully described box!
+//    vec2 box = vec2( distanceToBoxSurface,  boxID );
+//
+//    return box;
+//
+//}
+
+
+// 'TAG : WHICH AM I CLOSER TO?'
+// This function takes in two things
+// and says which is closer by using the
+// distance to each thing, comparing them
+// and returning the one that is closer!
+//vec2 whichThingAmICloserTo( vec2 thing1 , vec2 thing2 ){
+//
+//    vec2 closestThing;
+//
+//    // Check out the balloon function
+//    // and remember how the x of the returned
+//    // information is the distance, and the y
+//    // is the id of the thing!
+//    if( thing1.x <= thing2.x ){
+//
+//        closestThing = thing1;
+//
+//    }else if( thing2.x < thing1.x ){
+//
+//        closestThing = thing2;
+//
+//    }
+//
+//    return closestThing;
+//
+//}
+
+
+
+// Takes in the position of the ray, and feeds back
+// 2 values of how close it is to things in the world
+// what thing it is closest two in the world.
+//vec2 mapTheWorld( vec3 currentRayPosition ){
+//
+//
+//    vec2 result;
+//
+//    // extra credit: uncomment to repeat
+//    // currentRayPosition.x = mod(currentRayPosition.x , 4.) - 2.;
+//    // currentRayPosition.y = mod(currentRayPosition.y , 4.) - 2.;
+//    //currentRayPosition.z = mod(currentRayPosition.z , 4.) - 2.;
+//
+//
+//    vec2 balloon = sdfBalloon( currentRayPosition );
+//    vec2 box     = sdfBox( currentRayPosition );
+//
+//    result = whichThingAmICloserTo( balloon , box );
+//
+//    return result;
+//
+//
+//}
+
+
+
+//---------------------------------------------------
+// SECTION 'C' : NAVIGATING THE WORLD
+//---------------------------------------------------
+
+// We want to know when the closeness to things in the world is
+// 0.0 , but if we wanted to get exactly to 0 it would take us
+// alot of time to be that precise. Here we define the laziness
+// our navigation function. try chaning the value to see what it does!
+// if you are getting too low of framerates, this value will help alot,
+// but can also make your scene look very different
+// from how it should
+//const float HOW_CLOSE_IS_CLOSE_ENOUGH = 0.001;
+
+// This is basically how big our scene is. each ray will be shot forward
+// until it reaches this distance. the smaller it is, the quicker the
+// ray will reach the edge, which should help speed up this function
+//const float FURTHEST_OUR_RAY_CAN_REACH = 10.;
+
+// This is how may steps our ray can take. Hopefully for this
+// simple of a world, it will very quickly get to the 'close enough' value
+// and stop the iteration, but for more complex scenes, this value
+// will dramatically change not only how good the scene looks
+// but how fast teh scene can render.
+
+// remember that for each pixel we are displaying, the 'mapTheWorld' function
+// could be called this many times! Thats ALOT of calculations!!!
+//const int HOW_MANY_STEPS_CAN_OUR_RAY_TAKE = 100;
+
+
+//vec2 checkRayHit( in vec3 eyePosition , in vec3 rayDirection ){
+
+    //First we set some default values
+
+
+    // our distance to surface will get overwritten every step,
+    // so all that is important is that it is greater than our
+    // 'how close is close enough' value
+//    float distanceToSurface 			= HOW_CLOSE_IS_CLOSE_ENOUGH * 2.;
+
+//     The total distance traveled by the ray obviously should start at 0
+//    float totalDistanceTraveledByRay 	= 0.;
+
+    // if we hit something, this value will be overwritten by the
+    // totalDistance traveled, and if we don't hit something it will
+    // be overwritten by the furthest our ray can reach,
+    // so it can be whatever!
+//    float finalDistanceTraveledByRay 	= -1.;
+
+    // if our id is less that 0. , it means we haven't hit anything
+    // so lets start by saying we haven't hit anything!
+//    float finalID = -1.;
+
+
+
+    //here is the loop where the magic happens
+//    for( int i = 0; i < HOW_MANY_STEPS_CAN_OUR_RAY_TAKE; i++ ){
+
+        // First off, stop the iteration, if we are close enough to the surface!
+//        if( distanceToSurface < HOW_CLOSE_IS_CLOSE_ENOUGH ) break;
+
+        // Second off, stop the iteration, if we have reached the end of our scene!
+//        if( totalDistanceTraveledByRay > FURTHEST_OUR_RAY_CAN_REACH ) break;
+
+        // To check how close we are to things in the world,
+        // we need to get a position in the scene. to do this,
+        // we start at the rays origin, AKA the eye
+        // and move along the ray direction, the amount we have already traveled.
+//        vec3 currentPositionOfRay = eyePosition + rayDirection * totalDistanceTraveledByRay;
+
+        // Distance to and ID of things in the world
+        //--------------------------------------------------------------
+        // SECTION 'D' : MAPPING THE WORLD , AKA 'SDFS ARE AWESOME!!!!'
+        //--------------------------------------------------------------
+//        vec2 distanceAndIDOfThingsInTheWorld = mapTheWorld( currentPositionOfRay );
+
+
+        // we get out the results from our mapping of the world
+        // I am reassigning them for clarity
+//        float distanceToThingsInTheWorld = distanceAndIDOfThingsInTheWorld.x;
+//        float idOfClosestThingInTheWorld = distanceAndIDOfThingsInTheWorld.y;
+
+        // We save out the distance to the surface, so that
+        // next iteration we can check to see if we are close enough
+        // to stop all this silly iteration
+//        distanceToSurface           = distanceToThingsInTheWorld;
+
+        // We are also finalID to the current closest id,
+        // because if we hit something, we will have the proper
+        // id, and we can skip reassigning it later!
+//        finalID = idOfClosestThingInTheWorld;
+
+        // ATTENTION: THIS THING IS AWESOME!
+        // This last little calculation is probably the coolest hack
+        // of this entire tutorial. If we wanted too, we could basically
+        // step through the field at a constant amount, and at every step
+        // say 'am i there yet', than move forward a little bit, and
+        // say 'am i there yet', than move forward a little bit, and
+        // say 'am i there yet', than move forward a little bit, and
+        // say 'am i there yet', than move forward a little bit, and
+        // say 'am i there yet', than move forward a little bit, and
+        // that would take FOREVER, and get really annoying.
+
+        // Instead what we say is 'How far until we are there?'
+        // and move forward by that amount. This means that if
+        // we are really far away from everything, we can make large
+        // movements towards the surface, and if we are closer
+        // we can make more precise movements. making our marching functino
+        // faster, and ideally more precise!!
+
+        // WOW!
+
+//        totalDistanceTraveledByRay += distanceToThingsInTheWorld;
+
+
+//    }
+
+    // if we hit something set the finalDirastnce traveled by
+    // ray to that distance!
+//    if( totalDistanceTraveledByRay < FURTHEST_OUR_RAY_CAN_REACH ){
+//        finalDistanceTraveledByRay = totalDistanceTraveledByRay;
+//    }
+
+
+    // If the total distance traveled by the ray is further than
+    // the ray can reach, that means that we've hit the edge of the scene
+    // Set the final distance to be the edge of the scene
+    // and the id to -1 to make sure we know we haven't hit anything
+//    if( totalDistanceTraveledByRay > FURTHEST_OUR_RAY_CAN_REACH ){
+//        finalDistanceTraveledByRay = FURTHEST_OUR_RAY_CAN_REACH;
+//        finalID = -1.;
+//    }
+//
+//    return vec2( finalDistanceTraveledByRay , finalID );
+//
+//}
+
+
+
+
+
+
+
+//--------------------------------------------------------------
+// SECTION 'E' : COLORING THE WORLD
+//--------------------------------------------------------------
+
+
+
+// Here we are calcuting the normal of the surface
+// Although it looks like alot of code, it actually
+// is just trying to do something very simple, which
+// is to figure out in what direction the SDF is increasing.
+// What is amazing, is that this value is the same thing
+// as telling you what direction the surface faces, AKA the
+// normal of the surface.
+//vec3 getNormalOfSurface( in vec3 positionOfHit ){
+//
+//    vec3 tinyChangeX = vec3( 0.001, 0.0, 0.0 );
+//    vec3 tinyChangeY = vec3( 0.0 , 0.001 , 0.0 );
+//    vec3 tinyChangeZ = vec3( 0.0 , 0.0 , 0.001 );
+//
+//    float upTinyChangeInX   = mapTheWorld( positionOfHit + tinyChangeX ).x;
+//    float downTinyChangeInX = mapTheWorld( positionOfHit - tinyChangeX ).x;
+//
+//    float tinyChangeInX = upTinyChangeInX - downTinyChangeInX;
+//
+//
+//    float upTinyChangeInY   = mapTheWorld( positionOfHit + tinyChangeY ).x;
+//    float downTinyChangeInY = mapTheWorld( positionOfHit - tinyChangeY ).x;
+//
+//    float tinyChangeInY = upTinyChangeInY - downTinyChangeInY;
+//
+//
+//    float upTinyChangeInZ   = mapTheWorld( positionOfHit + tinyChangeZ ).x;
+//    float downTinyChangeInZ = mapTheWorld( positionOfHit - tinyChangeZ ).x;
+//
+//    float tinyChangeInZ = upTinyChangeInZ - downTinyChangeInZ;
+//
+//
+//    vec3 normal = vec3(
+//            tinyChangeInX,
+//    tinyChangeInY,
+//    tinyChangeInZ
+//    );
+//
+//    return normalize(normal);
+//}
+
+
+
+
+
+// doing our background color is easy enough,
+// just make it pure black. like my soul.
+//vec3 doBackgroundColor(){
+//    return vec3( 0. );
+//}
+
+
+
+
+//vec3 doBalloonColor(vec3 positionOfHit , vec3 normalOfSurface ){
+//
+//    vec3 sunPosition = vec3( 1. , 4. , 3. );
+//
+//    // the direction of the light goes from the sun
+//    // to the position of the hit
+//    vec3 lightDirection = sunPosition - positionOfHit;
+//
+//
+//    // Here we are 'normalizing' the light direction
+//    // because we don't care how long it is, we
+//    // only care what direction it is!
+//    lightDirection = normalize( lightDirection );
+//
+//
+//    // getting the value of how much the surface
+//    // faces the light direction
+//    float faceValue = dot( lightDirection , normalOfSurface );
+//
+//    // if the face value is negative, just make it 0.
+//    // so it doesn't give back negative light values
+//    // cuz that doesn't really make sense...
+//    faceValue = max( 0. , faceValue );
+//
+//    vec3 balloonColor = vec3( 1. , 0. , 0. );
+//
+//    // our final color is the balloon color multiplied
+//    // by how much the surface faces the light
+//    vec3 color = balloonColor * faceValue;
+//
+//    // add in a bit of ambient color
+//    // just so we don't get any pure black
+//    color += vec3( .3 , .1, .2 );
+//
+//
+//    return color;
+//}
+
+
+
+// Here we are using the normal of the surface,
+// and mapping it to color, to show you just how cool
+// normals can be!
+//vec3 doBoxColor(vec3 positionOfHit , vec3 normalOfSurface ){
+//
+//    vec3 color = vec3( normalOfSurface.x , normalOfSurface.y , normalOfSurface.z );
+//
+//    //could also just write color = normalOfSurce
+//    //but trying to be explicit.
+//
+//    return color;
+//}
+
+
+
+
+// This is where we decide
+// what color the world will be!
+// and what marvelous colors it will be!
+//vec3 colorTheWorld( vec2 rayHitInfo , vec3 eyePosition , vec3 rayDirection ){
+//
+//    // remember for color
+//    // x = red , y = green , z = blue
+//    vec3 color;
+//
+//    // THE LIL RAY WENT ALL THE WAY
+//    // TO THE EDGE OF THE WORLD,
+//    // AND DIDN'T HIT ANYTHING
+//    if( rayHitInfo.y < 0.0 ){
+//
+//        color = doBackgroundColor();
+//
+//
+//        // THE LIL RAY HIT SOMETHING!!!!
+//    }else{
+
+        // If we hit something,
+        // we also know how far the ray has to travel to hit it
+        // and because we know the direction of the ray, we can
+        // get the exact position of where we hit the surface
+        // by following the ray from the eye, along its direction
+        // for the however far it had to travel to hit something
+//        vec3 positionOfHit = eyePosition + rayHitInfo.x * rayDirection;
+
+        // We can then use this information to tell what direction
+        // the surface faces in
+//        vec3 normalOfSurface = getNormalOfSurface( positionOfHit );
+
+
+        // 1.0 is the Balloon ID
+//        if( rayHitInfo.y == 1.0 ){
+
+//            color = doBalloonColor( positionOfHit , normalOfSurface );
+
+
+            // 2.0 is the Box ID
+//        }else if( rayHitInfo.y == 2.0 ){
+
+//            color = doBoxColor( positionOfHit , normalOfSurface );
+
+//        }
+
+
+//    }
+
+
+//    return color;
+
+
+//}
+
+
+
+//void mainImage( out vec4 fragColor, in vec2 fragCoord )
+//{
+
+    //---------------------------------------------------
+    // SECTION 'A' : ONE PROGRAM FOR EVERY PIXEL!
+    //---------------------------------------------------
+
+    // Here we are getting our 'Position' of each pixel
+    // This section is important, because if we didn't
+    // divied by the resolution, our values would be masssive
+    // as fragCoord returns the value of how many pixels over we
+    // are. which is alot :)
+//    vec2 p = ( -iResolution.xy + 2.0 * fragCoord.xy ) / iResolution.y;
+
+    // thats a super long name, so maybe we will
+    // keep on using uv, but im explicitly defining it
+    // so you can see exactly what those two letters mean
+//    vec2 xyPositionOfPixelInWindow = p;
+
+
+
+    //---------------------------------------------------
+    // SECTION 'B' : BUILDING THE WINDOW
+    //---------------------------------------------------
+
+    // We use the eye position to tell use where the viewer is
+//    vec3 eyePosition = vec3( 0., 0., 2.);
+
+    //extra credit: move camera
+    //vec3 eyePosition = vec3( sin(iTime), 0., 2.);
+
+
+    // This is the point the view is looking at.
+    // The window will be placed between the eye, and the
+    // position the eye is looking at!
+//    vec3 pointWeAreLookingAt = vec3( 0. , 0. , 0. );
+
+    // This is where the magic of actual mathematics
+    // gives a way to actually place the window.
+    // the 0. at the end there gives the 'roll' of the transformation
+    // AKA we would be standing so up is up, but up could be changing
+    // like if we were one of those creepy dolls whos rotate their head
+    // all the way around along the z axis
+//    mat3 eyeTransformationMatrix = calculateEyeRayTransformationMatrix( eyePosition , pointWeAreLookingAt , 0. );
+
+
+    // Here we get the actual ray that goes out of the eye
+    // and through the individual pixel! This basically the only thing
+    // that is different between the pixels, but is also the bread and butter
+    // of ray tracing. It should be since it has the word 'ray' in its variable name...
+    // the 2. at the end is the 'lens length' . I don't know how to best
+    // describe this, but once the full scene is built, tryin playing with it
+    // to understand inherently how it works
+//    vec3 rayComingOutOfEyeDirection = normalize( eyeTransformationMatrix * vec3( p.xy , 2. ) );
+
+
+
+    //---------------------------------------------------
+    // SECTION 'C' : NAVIGATING THE WORLD
+    //---------------------------------------------------
+//    vec2 rayHitInfo = checkRayHit( eyePosition , rayComingOutOfEyeDirection );
+
+
+    //--------------------------------------------------------------
+    // SECTION 'E' : COLORING THE WORLD
+    //--------------------------------------------------------------
+//    vec3 color = colorTheWorld( rayHitInfo , eyePosition , rayComingOutOfEyeDirection );
+
+
+    //--------------------------------------------------------------
+    // SECTION 'F' : Wrapping up
+    //--------------------------------------------------------------
+//    fragColor = vec4(color,1.0);
+
+
+    // WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW!
+    // WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW!
+    // WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW!
+    // WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW!
+    // WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW! WOW!
+
+
+//}
