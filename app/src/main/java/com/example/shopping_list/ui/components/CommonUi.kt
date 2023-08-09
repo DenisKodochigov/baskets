@@ -399,3 +399,25 @@ fun TextForSwitchingButton(text: String, frameSize: Dp, modifier: Modifier){
     ) {
     }
 }
+
+@Composable fun SliderApp(
+    modifier: Modifier = Modifier,
+    position: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    step: Int,
+    onSelected: (Float)->Unit )
+{
+    Slider(
+        modifier = modifier,
+        value = position,
+        valueRange = valueRange,
+        steps = step,
+        onValueChange = { onSelected(it)},
+        colors = SliderDefaults.colors(
+            thumbColor = Color(0xFF575757),
+            activeTrackColor = Color(0xFFA2A2A2),
+            inactiveTrackColor = Color(0xFFA2A2A2),
+            inactiveTickColor = Color(0xFFA2A2A2),
+            activeTickColor = Color(0xFF575757)
+        ))
+}

@@ -109,3 +109,4 @@ fun DismissBackground(dismissState: DismissState) {
     return if (article != null) Pair(article.unitApp.idUnit, article.unitApp.nameUnit)
     else Pair(0L, "")
 }
+fun Int.hexToString() = String.format("#%06X", 0xFFFFFF and this)

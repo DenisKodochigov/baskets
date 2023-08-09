@@ -23,7 +23,7 @@ import com.example.shopping_list.entity.Section
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.shopping_list.ui.components.MyTextH1
 import com.example.shopping_list.ui.components.TextButtonOK
-import com.example.shopping_list.utils.colorPicker
+import com.example.shopping_list.utils.ColorPicker
 
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -53,7 +53,7 @@ fun AddChangeSectionDialog(
     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
         Text(text = "")
         MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = itemName, "text")
-        colorInt.value = colorPicker()
+        colorInt.value = ColorPicker()
         section.value = SectionDB(
             idSection = section.value.idSection,
             nameSection = itemName.value,

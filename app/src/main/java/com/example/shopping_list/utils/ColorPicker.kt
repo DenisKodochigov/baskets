@@ -4,39 +4,39 @@ import android.annotation.SuppressLint
 import android.graphics.RuntimeShader
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.colorspace.ColorSpaces
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
+import com.example.shopping_list.R
 import com.example.shopping_list.entity.TypeText
 import com.example.shopping_list.entity.Wave
+import com.example.shopping_list.ui.components.SliderApp
 import com.example.shopping_list.ui.theme.styleApp
 import org.intellij.lang.annotations.Language
 import kotlin.math.exp
@@ -45,94 +45,179 @@ import kotlin.math.roundToInt
 
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@Composable fun colorPicker(): Long {
+@Composable fun ColorPicker(): Long {
     val listColor: List<Wave> = createListSpectrumRGB()
     val spectrum: List<Color> = listColor.map { Color(it.color) }
 
     var colorIndex by remember { mutableStateOf(0)}
     var colorPosition by remember{mutableStateOf(0f)}
     var alfaPosition by remember{mutableStateOf(255f)}
-    var intensityPosition by remember{mutableStateOf(255f)}
+    var horPosition by remember{mutableStateOf(255f)}
+    var verPosition by remember{mutableStateOf(0f)}
     var colorSelected by remember { mutableStateOf(waveToRGB(listColor[0].wave, 255, 255).color)}
+    val sizeShader = 280.dp
+    val sizeSlider = sizeShader + 14.dp
+    val heightSliderHor = 20.dp
 
+//    colorSelected = waveToRGB(listColor[colorIndex].wave, alfaPosition.roundToInt(), 255).color
+    colorSelected = calculateColor(
+        Color(
+            waveToRGB(listColor[colorIndex].wave, alfaPosition.roundToInt(), 255).color)
+        , horPosition, verPosition
+    ).toArgb().toLong()
     Text(text = "")
-    Column( modifier = Modifier.fillMaxWidth()) {
-        ShaderBrushExample(Color(waveToRGB(listColor[colorIndex].wave,255,255).color))
+    Column(  horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth())
+    {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-
             Box( modifier = Modifier
                 .background(color = Color(listColor[colorIndex].color))
                 .width(50.dp)
                 .height(50.dp)
                 .padding(horizontal = 32.dp))
-            colorSelected = waveToRGB(listColor[colorIndex].wave, alfaPosition.roundToInt(), intensityPosition.roundToInt()).color
+//            colorSelected = waveToRGB(listColor[colorIndex].wave, alfaPosition.roundToInt(), 255).color
+            Spacer(Modifier.width(1.dp))
             Box( modifier = Modifier
                 .background(color = Color(colorSelected))
                 .width(50.dp)
                 .height(50.dp)
                 .padding(horizontal = 32.dp))
         }
-        Spacer(modifier = Modifier.height(12.dp))
-        Box {
-            Text(text = "Цвет", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
-            Box( modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 18.dp)
+        Box{
+            Box( modifier = Modifier
+                .padding(start = 8.dp, end = 8.dp, top = 18.dp)
                 .fillMaxWidth()
                 .height(20.dp)
-                .background(brush = Brush.horizontalGradient(colors = spectrum)))
-            Slider(
+                .background(
+                    brush = Brush.horizontalGradient(colors = spectrum),
+                    shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default))
+                ))
+            SliderApp(
                 modifier = Modifier.padding(top = 4.dp),
-                value = colorPosition,
-                valueRange = 0f..listColor.size.toFloat()-1,
-                steps = listColor.size,
-                onValueChange = {
-                    colorPosition = it
-                    colorIndex = it.roundToInt() },
-                colors = SliderDefaults.colors(
-                    thumbColor = Color(0xFFA2A2A2),
-                    activeTrackColor = Color(0xFFA2A2A2),
-                    inactiveTrackColor = Color(0xFFA2A2A2),
-                    inactiveTickColor = Color(0xFFA2A2A2),
-                    activeTickColor = Color(0xFFA2A2A2)
-                ))
-        }
-
-
-
-        Box{
-            Text(text = "Интенсивность", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
-            Slider(
-                value = intensityPosition,
-                valueRange = 0f..255f,
-                steps = listColor.size,
-                onValueChange = {
-                    intensityPosition = it },
-                colors = SliderDefaults.colors(
-                    thumbColor = Color(0xFF575757),
-                    activeTrackColor = Color(0xFFA2A2A2),
-                    inactiveTrackColor = Color(0xFFFFFFFF),
-                    inactiveTickColor = Color(0xFFA2A2A2),
-                    activeTickColor = Color(0xFF575757)
-                ))
+                position = colorPosition,
+                step = listColor.size,
+                onSelected = { colorPosition = it },
+                valueRange = 0f..listColor.size.toFloat()-1)
+            colorIndex = colorPosition.roundToInt()
         }
         Box {
             Text(text = "Прозрачность", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
-            Slider(
-                value = alfaPosition,
-                valueRange = 0f..255f,
-                steps = listColor.size,
-                onValueChange = {
-                    alfaPosition = it },
-                colors = SliderDefaults.colors(
-                    thumbColor = Color(0xFF575757),
-                    activeTrackColor = Color(0xFFA2A2A2),
-                    inactiveTrackColor = Color(0xFFA2A2A2),
-                    inactiveTickColor = Color(0xFFA2A2A2),
-                    activeTickColor = Color(0xFF575757)
-                ))
+            SliderApp(
+                modifier = Modifier.padding(top = 4.dp),
+                position = alfaPosition,
+                step = listColor.size,
+                onSelected = { alfaPosition = it },
+                valueRange = 0f..255f)
+        }
+        Spacer(Modifier.height(12.dp))
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.align(alignment = Alignment.BottomCenter)
+            ) {
+                IntensityGradient(
+                    color = Color(waveToRGB(listColor[colorIndex].wave, 255, 255).color),
+                    ring_x = horPosition / 255,
+                    ring_y = verPosition / 255,
+                    modifier = Modifier.size(sizeShader)
+                )
+                Spacer(Modifier.height(5.dp))
+                SliderApp(
+                    modifier = Modifier.width(sizeSlider).height(heightSliderHor),
+                    position = horPosition,
+                    step = 254,
+                    onSelected = { horPosition = it },
+                    valueRange = 0f..255f
+                )
+            }
+            SliderApp(
+                modifier = Modifier.width(sizeSlider)
+                    .graphicsLayer {
+                        rotationZ = 90f
+                        this.translationX = 195.dp.toPx()
+                        this.translationY = 114.dp.toPx()
+                    },
+                position = verPosition,
+                step = 254,
+                onSelected = { verPosition = it },
+                valueRange = 0f..255f
+            )
         }
     }
     return colorSelected
 }
+@Composable fun calculateColor(baseColor: Color, xx: Float, yy: Float): Color{
+
+    val x = xx/255
+    val y = yy/255
+    var rv = baseColor.red
+    var gv = baseColor.green
+    var bv = baseColor.blue
+
+    rv += (1f - rv) * (1f - x)
+    gv += (1f - gv) * (1f - x)
+    bv += (1f - bv) * (1f - x)
+
+    rv *= (1f - y)
+    gv *= (1f - y)
+    bv *= (1f - y)
+    val colOut = Color(red = rv ,green = gv, blue = bv, alpha = 1f)
+    return colOut
+ }
+
+/*
+        bgrd = bgrd + (1.0 - bgrd) * (1.0-frag_related.x);
+        bgrd = bgrd - bgrd * frag_related.y;
+ */
+
+
+/*
+CustomSlider(
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 20.dp),
+    value = sliderValue,
+    onValueChange = {
+        sliderValue = it
+    },
+    valueRange = 0f..50f,
+    gap = 10,
+    showIndicator = true,
+    thumb = { thumbValue ->
+        CustomSliderDefaults.Thumb(
+            thumbValue = "$thumbValue%",
+            color = Color.Transparent,
+            size = 40.dp,
+            modifier = Modifier.background(
+                brush = Brush.linearGradient(listOf(Color.Cyan, Color.Blue)),
+                shape = CircleShape
+            )
+        )
+    },
+    track = { sliderPositions ->
+        Box(
+            modifier = Modifier
+                .track()
+                .border(
+                    width = 1.dp,
+                    color = Color.LightGray.copy(alpha = 0.4f),
+                    shape = CircleShape
+                )
+                .background(Color.White)
+                .padding(3.5.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Box(
+                modifier = Modifier
+                    .progress(sliderPositions = sliderPositions)
+                    .background(
+                        brush = Brush.linearGradient(listOf(Color.Red, Color.Magenta))
+                    )
+            )
+        }
+    }
+)
+
+ */
 const val LEN_MIN = 380
 const val LEN_MAX = 780
 const val LEN_STEP = 2
@@ -234,29 +319,38 @@ fun waveToRGB(length: Int, alpha: Int, intensity: Int): Wave{
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ShaderBrushExample(color: Color) {
+fun IntensityGradient(color: Color, ring_x: Float, ring_y: Float, modifier: Modifier) {
     @Language("AGSL")
     val CUSTOM_SHADER = """
     uniform float2 resolution;
-    layout(color) uniform half4 color;
+    uniform float2 ring_xy;
 
+    layout(color) uniform half4 color;
+    float ring ( vec2 frag_xy, vec2 center, float radius){
+        return 1. - smoothstep(radius - 0.005, radius + 0.005, length (frag_xy - center));
+    }
     half4 main(in vec2 fragCoord) {
-        vec2 xy = fragCoord/resolution.xy;
-        vec3 cl = vec3(color.r, color.g, color.b);   
-        cl = cl + (1.0 - cl) * (1.0-xy.x);
-        cl = cl - cl * xy.y;
-        return vec4(cl,1.0);
+        vec2 frag_related = fragCoord/resolution.xy;
+        vec3 bgrd = vec3(color.r, color.g, color.b);   
+        bgrd = bgrd + (1.0 - bgrd) * (1.0-frag_related.x);
+        bgrd = bgrd - bgrd * frag_related.y;
+        vec3 grey = vec3(0.3);
+        vec3 white = vec3(1.);
+        float radius = 0.02;
+        vec2 center_uv = vec2(ring_xy.xy);
+        vec3 res1 = mix(bgrd , white, ring(frag_related, center_uv, radius));
+        vec3 res2 = mix(res1 , grey, ring(frag_related, center_uv, radius - 0.004));
+        return vec4(res2,1.0);
     }
     """.trimIndent()
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
+        modifier = modifier
             .drawWithCache {
                 val shader = RuntimeShader(CUSTOM_SHADER)
                 val shaderBrush = ShaderBrush(shader)
                 shader.setFloatUniform("resolution", size.width, size.height)
+                shader.setFloatUniform("ring_xy", ring_x, ring_y)
                 shader.setColorUniform("color", android.graphics.Color.valueOf(color.red, color.green,color.blue, color.alpha))
                 onDrawBehind { drawRect(shaderBrush) }
             }

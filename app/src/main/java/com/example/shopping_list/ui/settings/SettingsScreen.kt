@@ -2,6 +2,8 @@ package com.example.shopping_list.ui.settings
 
 //import com.example.shopping_list.ui.components.MyTextH1
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,13 +70,13 @@ import com.example.shopping_list.ui.components.HeaderSection
 import com.example.shopping_list.ui.components.dialog.AddChangeSectionDialog
 import com.example.shopping_list.ui.components.dialog.EditUnitDialog
 import com.example.shopping_list.ui.theme.styleApp
-
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable fun SettingsScreen() {
     val viewModel: SettingsViewModel = hiltViewModel()
     SettingsScreenInit(viewModel)
 }
 
-
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable fun SettingsScreenInit(viewModel: SettingsViewModel){
     val uiState by viewModel.settingScreenState.collectAsState()
 
@@ -87,6 +89,7 @@ import com.example.shopping_list.ui.theme.styleApp
         doDeleteSelected = { sections -> viewModel.doDeleteSections(sections) },
     )
 }
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("UnrememberedMutableState")
 @Composable fun LayoutSettingsScreen(
     modifier: Modifier = Modifier,
@@ -112,6 +115,7 @@ import com.example.shopping_list.ui.theme.styleApp
 }
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable fun AddEditSection(
     modifier: Modifier = Modifier,
     uiState: SettingsScreenState,
@@ -136,6 +140,7 @@ import com.example.shopping_list.ui.theme.styleApp
         }
     }
 }
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun LazyColumnSection(
     uiState: SettingsScreenState,
