@@ -1,17 +1,18 @@
 package com.example.shopping_list.ui.components
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,16 +29,28 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalFocusManager
@@ -49,18 +62,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.lerp
 import com.example.shopping_list.R
+import com.example.shopping_list.entity.CustomTriangleShape
+import com.example.shopping_list.entity.Direcions
 import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.entity.TypeText
-import com.example.shopping_list.ui.theme.Accent
 import com.example.shopping_list.ui.theme.ButtonColorsMy
 import com.example.shopping_list.ui.theme.ScaffoldColor
-import com.example.shopping_list.ui.theme.Strokes
-import com.example.shopping_list.ui.theme.TitleOnDarkBackground
 import com.example.shopping_list.ui.theme.styleApp
-import com.example.shopping_list.utils.log
 
 @Composable
 fun HeaderScreen(text: String) {
@@ -340,43 +351,18 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
                 sortingPosition = !sortingPosition
             }
     ) {
-        Text(text = stringResource(id = R.string.by_name),
-            fontWeight  = if (sortingPosition) FontWeight.Bold else FontWeight.Normal,
-            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
+        Text(
+            text = stringResource(id = R.string.by_name),
+            fontWeight = if (sortingPosition) FontWeight.Bold else FontWeight.Normal,
+            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL)
+        )
         Spacer(modifier = Modifier.width(24.dp))
-        Text(text = stringResource(id = R.string.by_section),
-            fontWeight  = if (!sortingPosition) FontWeight.Bold else FontWeight.Normal,
-            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
+        Text(
+            text = stringResource(id = R.string.by_section),
+            fontWeight = if (!sortingPosition) FontWeight.Bold else FontWeight.Normal,
+            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL)
+        )
     }
-
-//    Row( verticalAlignment = Alignment.CenterVertically,
-//        modifier = Modifier.padding(horizontal = 12.dp)
-//            .fillMaxWidth()
-//            .background(color = Color.Transparent, shape = RoundedCornerShape(cornerDp))
-//    ) {
-//        Text(text = stringResource(id = R.string.by_name),
-//            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
-//        Slider(
-//            modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
-//            value = sortingPosition,
-//            valueRange = 0f..0.5f,
-//            steps = 1,
-//            onValueChange = { sortingPosition = it },
-//            onValueChangeFinished = {
-//                if (sortingPosition == 1f) doChangeSorting (SortingBy.BY_NAME)
-//                else doChangeSorting (SortingBy.BY_SECTION)
-//            },
-//            colors = SliderDefaults.colors(
-//                thumbColor = Color(0xFF575757),
-//                activeTrackColor = Color(0xFFA2A2A2),
-//                inactiveTrackColor = Color(0xFFA2A2A2),
-//                inactiveTickColor = Color(0xFFA2A2A2),
-//                activeTickColor = Color(0xFF575757)
-//            ))
-//        Text(text = stringResource(id = R.string.by_section),
-//            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
-//    }
-
 }
 
 @Composable
@@ -400,24 +386,92 @@ fun TextForSwitchingButton(text: String, frameSize: Dp, modifier: Modifier){
     }
 }
 
+
 @Composable fun SliderApp(
     modifier: Modifier = Modifier,
     position: Float,
     valueRange: ClosedFloatingPointRange<Float>,
     step: Int,
+    direction: Direcions,
     onSelected: (Float)->Unit )
 {
+//    Slider(
+//        modifier = modifier,
+//        value = position,
+//        valueRange = valueRange,
+//        steps = step,
+//        onValueChange = { onSelected(it)},
+//        colors = SliderDefaults.colors(
+//            thumbColor = Color(0xFF575757),
+//            activeTrackColor = Color(0xFFA2A2A2),
+//            inactiveTrackColor = Color(0xFFA2A2A2),
+//            inactiveTickColor = Color(0xFFA2A2A2),
+//            activeTickColor = Color(0xFFA2A2A2)
+//        ))
+    SliderApp1(
+        modifier = modifier,
+        position = position,
+        valueRange = valueRange,
+        step = step,
+        direction = direction,
+        onSelected = onSelected)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable fun SliderApp1(
+    modifier: Modifier = Modifier,
+    position: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    step: Int,
+    direction: Direcions,
+    onSelected: (Float)->Unit )
+{
+    val interactionSource = remember { MutableInteractionSource() }
+    val colors =  SliderDefaults.colors(
+                    thumbColor = Color(0xFF575757),
+                    activeTrackColor = Color(0xFFA2A2A2),
+                    activeTickColor = Color(0xFFA2A2A2),
+                    inactiveTrackColor = Color(0xFFA2A2A2),
+                    inactiveTickColor = Color(0xFFA2A2A2),
+                    disabledThumbColor = Color.Transparent,
+                    disabledActiveTrackColor = Color.Transparent,
+                    disabledActiveTickColor = Color.Transparent,
+                    disabledInactiveTrackColor = Color.Transparent,
+                    disabledInactiveTickColor = Color.Transparent,
+                )
     Slider(
         modifier = modifier,
         value = position,
         valueRange = valueRange,
         steps = step,
-        onValueChange = { onSelected(it)},
-        colors = SliderDefaults.colors(
-            thumbColor = Color(0xFF575757),
-            activeTrackColor = Color(0xFFA2A2A2),
-            inactiveTrackColor = Color(0xFFA2A2A2),
-            inactiveTickColor = Color(0xFFA2A2A2),
-            activeTickColor = Color(0xFF575757)
-        ))
+        onValueChange = { onSelected(it) },
+        thumb = { thumbValue ->
+            SliderDefaults.Thumb(
+                modifier = Modifier.background(
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        shape = CustomTriangleShape(direction))
+                    .drawWithContent {  },
+                interactionSource = interactionSource,
+                thumbSize = DpSize(34.dp,34.dp),
+                colors = colors
+            )
+        },
+//        track = { position ->
+//            Box(
+//                modifier = Modifier
+////                    .border(
+////                        width = 1.dp,
+////                        color = Color.LightGray.copy(alpha = 0.4f),
+////                        shape = RectangleShape
+////                    )
+//                    .background(Color.LightGray)
+//                    .padding(3.5.dp),
+//                contentAlignment = Alignment.CenterStart
+//            ) {
+//                Box( modifier = Modifier
+//                        .background( brush = Brush.linearGradient(listOf(Color.LightGray, Color.Gray)))
+//                )
+//            }
+//        }
+    )
 }
