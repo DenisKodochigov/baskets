@@ -125,6 +125,7 @@ val LightSeaGreen = Color(0xFF20B2AA)
 val DarkCyan = Color(0xFF008B8B)
 val Teal1 = Color(0xFF008080)
 // Синие тона:
+
 val Aqua1 = Color(0xFF00FFFF)
 val Cyan = Color(0xFF00FFFF)
 val LightCyan = Color(0xFFE0FFFF)
