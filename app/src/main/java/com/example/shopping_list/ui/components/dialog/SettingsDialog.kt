@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
 import com.example.shopping_list.data.room.tables.SectionDB
@@ -20,8 +21,10 @@ import com.example.shopping_list.data.room.tables.UnitDB
 import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
+import com.example.shopping_list.ui.components.MyTextH1
 import com.example.shopping_list.ui.components.MyTextH2
 import com.example.shopping_list.ui.components.TextButtonOK
+import com.example.shopping_list.utils.SelectColor
 
 @Composable
 fun EditUnitDialog(
@@ -89,16 +92,48 @@ fun EditNameSectionLayout(section: MutableState<Section>){
     Column {
         Text(text = "")
         Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
-            com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon(
-                modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
+            MyOutlinedTextFieldWithoutIcon(
+                modifier = Modifier.fillMaxWidth(),
                 enterValue = enterNameSection,
                 "text"
             )
-            section.value = com.example.shopping_list.data.room.tables.SectionDB(
+            section.value = SectionDB(
                 idSection = section.value.idSection,
                 nameSection = enterNameSection.value
             )
-            androidx.compose.foundation.layout.Spacer(androidx.compose.ui.Modifier.height(12.dp))
+            Spacer(Modifier.height(12.dp))
         }
+    }
+}
+
+@Composable
+fun ChangeColorSectionDialog(
+    section: Section,
+    onConfirm: (Section) -> Unit,
+    onDismiss: () -> Unit,
+) {
+
+    val itemLocal = remember { mutableStateOf(section) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = { TextButtonOK( onConfirm = { onConfirm(itemLocal.value) } ) },
+        title = {
+            if (section.idSection > 0) MyTextH1(stringResource(R.string.add_change_section), Modifier, TextAlign.Center)
+            else MyTextH1(stringResource(R.string.add_unit), Modifier, TextAlign.Center) },
+        text = { ChangeColorSectionLayout(itemLocal) },
+    )
+}
+
+@Composable fun ChangeColorSectionLayout(section: MutableState<Section>) {
+
+    Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+        Text(text = section.value.nameSection)
+        SelectColor(
+            doSelectedColor = { selectColor ->
+                section.value = SectionDB(
+                    idSection = section.value.idSection,
+                    nameSection = section.value.nameSection,
+                    colorSection = selectColor.toLong())})
+        Spacer(Modifier.height(12.dp))
     }
 }

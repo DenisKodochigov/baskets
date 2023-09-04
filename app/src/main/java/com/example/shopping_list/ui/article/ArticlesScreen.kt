@@ -187,7 +187,13 @@ fun LazyColumnArticle(
         { item ->
             Column( modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(if (item[0].section.colorSection > 0) Color(item[0].section.colorSection) else SectionColor)
+                .background(
+                    if (uiState.article.size == 1 ) SectionColor
+                    else {
+                        if (item[0].section.colorSection != 0L) Color(item[0].section.colorSection)
+                        else SectionColor
+                    }
+                )
                 .animateItemPlacement()) {//SectionColor
                 HeaderSection(
                     text = if ( uiState.sorting == SortingBy.BY_SECTION) item[0].section.nameSection

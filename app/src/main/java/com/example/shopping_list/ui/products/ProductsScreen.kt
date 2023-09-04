@@ -203,8 +203,12 @@ fun LazyColumnProduct(
         items(items = uiState.products) { item ->
             Column(modifier = Modifier.clip(RoundedCornerShape(8.dp))
                 .background(
-                    if (item[0].article.section.colorSection > 0) Color( item[0].article.section.colorSection)
-                    else SectionColor)) {
+                    if (uiState.products.size == 1 ) SectionColor
+                    else {
+                        if (item[0].article.section.colorSection != 0L) Color(item[0].article.section.colorSection)
+                        else SectionColor
+                    }
+                )) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
                 LayoutColumProducts(
                     products = item,
@@ -265,7 +269,7 @@ fun SectionProduct(
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(6.dp))
                 .fillMaxWidth()
-                .background(Color.White)
+//                .background(Color.White)
         ) {
 //            log( showLog,"product:${item.article.nameArticle}, selected = ${item.isSelected}")
             Spacer(

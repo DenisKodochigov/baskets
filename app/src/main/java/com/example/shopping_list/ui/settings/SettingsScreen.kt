@@ -1,9 +1,6 @@
 package com.example.shopping_list.ui.settings
 
-//import com.example.shopping_list.ui.components.MyTextH1
 import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -69,18 +66,17 @@ import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.ButtonCircle
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.HeaderSection
-import com.example.shopping_list.ui.components.dialog.AddChangeSectionDialog
+import com.example.shopping_list.ui.components.dialog.ChangeColorSectionDialog
 import com.example.shopping_list.ui.components.dialog.ChangeNameSectionDialog
 import com.example.shopping_list.ui.components.dialog.EditUnitDialog
 import com.example.shopping_list.ui.theme.ButtonColorsMy
 import com.example.shopping_list.ui.theme.styleApp
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+
 @Composable fun SettingsScreen() {
     val viewModel: SettingsViewModel = hiltViewModel()
     SettingsScreenInit(viewModel)
 }
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable fun SettingsScreenInit(viewModel: SettingsViewModel){
     val uiState by viewModel.settingScreenState.collectAsState()
 
@@ -93,7 +89,6 @@ import com.example.shopping_list.ui.theme.styleApp
         doDeleteSelected = { sections -> viewModel.doDeleteSections(sections) },
     )
 }
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("UnrememberedMutableState")
 @Composable fun LayoutSettingsScreen(
     modifier: Modifier = Modifier,
@@ -118,8 +113,6 @@ import com.example.shopping_list.ui.theme.styleApp
     }
 }
 
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable fun AddEditSection(
     modifier: Modifier = Modifier,
     uiState: SettingsScreenState,
@@ -144,7 +137,6 @@ import com.example.shopping_list.ui.theme.styleApp
         }
     }
 }
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun LazyColumnSection(
     uiState: SettingsScreenState,
@@ -156,7 +148,7 @@ fun LazyColumnSection(
     val changeColorSection: MutableState<Section?> = remember { mutableStateOf(null) }
 
     if (editNameSection.value != null) {
-        AddChangeSectionDialog(
+        ChangeNameSectionDialog(
             section = editNameSection.value!!,
             onDismiss = { editNameSection.value = null},
             onConfirm = {
@@ -164,7 +156,7 @@ fun LazyColumnSection(
                 editNameSection.value = null },)
     }
     if (changeColorSection.value != null) {
-        ChangeNameSectionDialog(
+        ChangeColorSectionDialog(
             section = changeColorSection.value!!,
             onDismiss = { changeColorSection.value = null},
             onConfirm = {
@@ -200,17 +192,18 @@ fun LazyColumnSection(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1F)
+                            .clickable { editNameSection.value = item }
                             .padding(
                                 horizontal = dimensionResource(R.dimen.lazy_padding_hor2),
                                 vertical = dimensionResource(R.dimen.lazy_padding_ver2)
                             )
-                            .clickable { editNameSection.value = item }
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Spacer(modifier = Modifier
                         .size(size = 35.dp)
                         .clip(shape = CircleShape)
                         .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = CircleShape)
+                        .clickable { changeColorSection.value = item }
                         .background(color = Color(item.colorSection), shape = CircleShape))
                     Spacer(modifier = Modifier.width(24.dp))
                     Icon( imageVector = Icons.Filled.Delete, null, tint = ButtonColorsMy )
