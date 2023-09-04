@@ -39,7 +39,7 @@ fun MainApp() {
         val animCurrentScreen = appTabRowScreens.find { it.route == animCurrentDestination?.route } ?: Baskets
 
         Scaffold(
-            modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(14.dp),
+            modifier = Modifier.padding(14.dp),
             bottomBar = {
                 BottomBarApp(
                     currentScreen = animCurrentScreen, //currentScreen,

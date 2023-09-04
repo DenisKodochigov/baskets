@@ -1,18 +1,12 @@
 package com.example.shopping_list.ui.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,28 +23,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.drawOutline
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalFocusManager
@@ -70,7 +52,6 @@ import com.example.shopping_list.entity.Direcions
 import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.entity.TypeText
 import com.example.shopping_list.ui.theme.ButtonColorsMy
-import com.example.shopping_list.ui.theme.ScaffoldColor
 import com.example.shopping_list.ui.theme.styleApp
 
 @Composable
@@ -92,7 +73,7 @@ fun HeaderImScreen(text: String, idImage:Int ) {
         )
         Box(modifier = Modifier
             .fillMaxWidth()
-            .background(ScaffoldColor)
+//            .background(ScaffoldColor)
             .padding(horizontal = 12.dp, vertical = 4.dp)) {
             Text( text = text, style = styleApp(nameStyle = TypeText.NAME_SCREEN),
                 modifier = Modifier.align(alignment = Alignment.BottomCenter) )

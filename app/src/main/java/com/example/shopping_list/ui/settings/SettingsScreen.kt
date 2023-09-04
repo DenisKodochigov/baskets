@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ChangeCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -68,7 +70,9 @@ import com.example.shopping_list.ui.components.ButtonCircle
 import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.HeaderSection
 import com.example.shopping_list.ui.components.dialog.AddChangeSectionDialog
+import com.example.shopping_list.ui.components.dialog.ChangeNameSectionDialog
 import com.example.shopping_list.ui.components.dialog.EditUnitDialog
+import com.example.shopping_list.ui.theme.ButtonColorsMy
 import com.example.shopping_list.ui.theme.styleApp
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable fun SettingsScreen() {
@@ -148,17 +152,25 @@ fun LazyColumnSection(
     doDeleteSelected: (List<Section>) -> Unit,
     doSelected: (Long) -> Unit
 ) {
-    val editItem: MutableState<Section?> = remember { mutableStateOf(null) }
+    val editNameSection: MutableState<Section?> = remember { mutableStateOf(null) }
+    val changeColorSection: MutableState<Section?> = remember { mutableStateOf(null) }
 
-    if (editItem.value != null) {
+    if (editNameSection.value != null) {
         AddChangeSectionDialog(
-            section = editItem.value!!,
-            onDismiss = { editItem.value = null},
+            section = editNameSection.value!!,
+            onDismiss = { editNameSection.value = null},
             onConfirm = {
                 doChangeSection(it)
-                editItem.value = null },)
+                editNameSection.value = null },)
     }
-
+    if (changeColorSection.value != null) {
+        ChangeNameSectionDialog(
+            section = changeColorSection.value!!,
+            onDismiss = { changeColorSection.value = null},
+            onConfirm = {
+                doChangeSection(it)
+                changeColorSection.value = null },)
+    }
     Column() {
         LazyColumn(
             state = rememberLazyListState(),
@@ -174,11 +186,11 @@ fun LazyColumnSection(
                         .background(color = Color.White)
                         .clickable { doSelected(item.idSection) }
                 ) {
-                    Spacer( modifier = Modifier
-                        .background(if (item.isSelected) Color.Red else Color.LightGray)
-                        .width(8.dp)
-                        .heightIn(min = 8.dp,max = 32.dp).fillMaxHeight()
-                    )
+//                    Spacer( modifier = Modifier
+//                        .background(if (item.isSelected) Color.Red else Color.LightGray)
+//                        .width(8.dp)
+//                        .heightIn(min = 8.dp,max = 32.dp).fillMaxHeight()
+//                    )
                     Text(
                         text = item.nameSection,
                         style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),//   .h1,
@@ -192,26 +204,31 @@ fun LazyColumnSection(
                                 horizontal = dimensionResource(R.dimen.lazy_padding_hor2),
                                 vertical = dimensionResource(R.dimen.lazy_padding_ver2)
                             )
+                            .clickable { editNameSection.value = item }
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Spacer(modifier = Modifier
                         .size(size = 35.dp)
                         .clip(shape = CircleShape)
-                        .background(color = Color(item.colorSection)))
+                        .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = CircleShape)
+                        .background(color = Color(item.colorSection), shape = CircleShape))
+                    Spacer(modifier = Modifier.width(24.dp))
+                    Icon( imageVector = Icons.Filled.Delete, null, tint = ButtonColorsMy )
                     Spacer(modifier = Modifier.width(12.dp))
+
                 }
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            ButtonCircle(Modifier, Icons.Filled.AddCircle) { editItem.value = SectionDB() }
+            ButtonCircle(Modifier, Icons.Filled.AddCircle) { editNameSection.value = SectionDB() }
             Spacer(modifier = Modifier.width(12.dp))
-            ButtonCircle(Modifier, Icons.Filled.ChangeCircle) {
-                uiState.section.find { it.isSelected }?.let { editItem.value = it } }
-            Spacer(modifier = Modifier.width(12.dp))
-            ButtonCircle(Modifier, Icons.Filled.Delete) {
-                uiState.section.find { it.isSelected }?.let { doDeleteSelected(uiState.section) }
-            }
+//            ButtonCircle(Modifier, Icons.Filled.ChangeCircle) {
+//                uiState.section.find { it.isSelected }?.let { editItem.value = it } }
+//            Spacer(modifier = Modifier.width(12.dp))
+//            ButtonCircle(Modifier, Icons.Filled.Delete) {
+//                uiState.section.find { it.isSelected }?.let { doDeleteSelected(uiState.section) }
+//            }
             Spacer(modifier = Modifier.height(20.dp))
         }
     }

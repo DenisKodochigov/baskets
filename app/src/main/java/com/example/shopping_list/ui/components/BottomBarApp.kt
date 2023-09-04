@@ -32,12 +32,10 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
 import com.example.shopping_list.navigation.ScreenDestination
 import com.example.shopping_list.navigation.appTabRowScreens
-import com.example.shopping_list.ui.theme.BackgroundBottomBar
 import com.example.shopping_list.ui.theme.TabFadeInAnimationDelay
 import com.example.shopping_list.ui.theme.TabFadeInAnimationDuration
 import com.example.shopping_list.ui.theme.TabFadeOutAnimationDuration
@@ -45,11 +43,8 @@ import com.example.shopping_list.ui.theme.TabHeight
 
 
 @Composable
-fun BottomBarApp(currentScreen: ScreenDestination,
-                 onTabSelection:(ScreenDestination) -> Unit
-) {
+fun BottomBarApp(currentScreen: ScreenDestination, onTabSelection:(ScreenDestination) -> Unit) {
     BottomAppBar(
-        containerColor = BackgroundBottomBar,
         tonalElevation = 6.dp,
         modifier = Modifier.height(TabHeight).clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
     ){
@@ -66,17 +61,14 @@ fun BottomTabRow(
     onTabSelected: (ScreenDestination) -> Unit,
     currentScreen: ScreenDestination
 ) {
-    Row(
-        modifier = Modifier
-            .selectableGroup()
-            .fillMaxWidth()) {
+    Row( modifier = Modifier.selectableGroup().fillMaxWidth()) {
         allScreens.forEachIndexed { index, screen ->
             if (index == allScreens.size - 1) Spacer(modifier = Modifier.weight(1f))
             BottomTab(
                 text = screen.route,
                 icon = screen.icon,
                 onSelected = { onTabSelected(screen) },
-                selected = currentScreen == screen)
+                selected = currentScreen == screen )
         }
     }
 }
@@ -89,8 +81,8 @@ private fun BottomTab(
     selected: Boolean) {
 
     val iconSize = 50.dp
-    val colorSelectIcon = MaterialTheme.colorScheme.onSurface
-    val colorUnSelectIcon = MaterialTheme.colorScheme.tertiary
+    val colorSelectIcon = MaterialTheme.colorScheme.onPrimaryContainer
+    val colorUnSelectIcon = MaterialTheme.colorScheme.primary
     val durationMillis = if (selected) TabFadeInAnimationDuration else TabFadeOutAnimationDuration
     val animSpec = remember {
         tween<Color>(durationMillis = durationMillis,
@@ -114,7 +106,6 @@ private fun BottomTab(
                 indication = rememberRipple( bounded = false, radius = 0.dp, color = Color.Unspecified)
             )
             .clearAndSetSemantics { contentDescription = text }
-
     ) {
         Icon(
             imageVector = icon,

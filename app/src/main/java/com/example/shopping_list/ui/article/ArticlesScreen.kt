@@ -39,7 +39,6 @@ import com.example.shopping_list.entity.SortingBy
 import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.components.dialog.EditArticleDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
-import com.example.shopping_list.ui.theme.BackgroundElementList
 import com.example.shopping_list.ui.theme.SectionColor
 import com.example.shopping_list.utils.DismissBackground
 import com.example.shopping_list.utils.log
@@ -258,7 +257,7 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
             modifier = modifier
                 .clip(shape = RoundedCornerShape(6.dp))
                 .fillMaxWidth()
-                .background(BackgroundElementList)
+//                .background(BackgroundElementList)
                 .clickable { doSelected(item.idArticle) }
         ) {
             Spacer( modifier = modifier

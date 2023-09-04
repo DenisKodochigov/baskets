@@ -5,26 +5,11 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-val ScaffoldColor = Color(0xFFECECEC)
-val SelectedColor = Color(0xFF595F7E)
-val Secondary = Color(0xFF03A9F4)
-val PrimaryVariant = Color(0xBCEE1616)
-val OnPrimaryOnSecondaryOnError = Color(0xFF009688)
-val BackgroundBottomSheet = Color(0xFFF0F0F0)
-val TextIcon = Color(0xFF464646)
 val TextDate = Color(0xFF9C9C9C)
-val BackgroundBottomBar = Color(0xFFCECECE)
-val BorderBottomBar = Color(0xFF464646)
-val BackgroundFab = BackgroundBottomBar
-val ContentFab = BorderBottomBar
 val ButtonColorsMy = Color.LightGray
-val SwitcherButtonColor = Color(0xFFDFDFDF)
-val BackgroundElementList = Color(0x9FFFFFFF)
 val SectionColor = Color(0x22909EE7)
-val SectionColor1 = Color(0xFFFFA200)
-val Accent = Color(0xFFDFDFDF)
-val Strokes = Color(0x22909EE7)
-val TitleOnDarkBackground = Color(0x9FFFFFFF)
+
+
 
 //Красные тона
 val IndianRed = Color(0xFFCD5C5C)
@@ -203,6 +188,29 @@ val DarkSlateGrey = Color(0xFF2F4F4F)
 val Black1 = Color(0xFF000000)
 
 
+val massColor = listOf(
+        // Розовые тона
+        listOf(IndianRed, LightCoral, Salmon, DarkSalmon, LightSalmon1, Crimson, Red1, FireBrick, DarkRed),
+        // Оранжевые тона
+        listOf(LightSalmon, Coral, Tomato, OrangeRed, DarkOrange, Orange),
+        // Жёлтые тона
+        listOf(Gold, Yellow1, LightYellow, LemonChiffon, LightGoldenrodYellow, PapayaWhip, Moccasin, PeachPuff, PaleGoldenrod, Khaki, DarkKhaki),
+        // Фиолетовые тона
+        listOf(Lavender, Thistle, Plum, Violet, Orchid, Fuchsia1, Magenta, MediumOrchid, MediumPurple, BlueViolet, DarkViolet, DarkOrchid, DarkMagenta, Purple1, Indigo, SlateBlue, DarkSlateBlue),
+        // Коричневые тона
+        listOf(Cornsilk, BlanchedAlmond, Bisque, NavajoWhite, Wheat, BurlyWood, Tan, RosyBrown, SandyBrown, Goldenrod, DarkGoldenRod, Peru, Chocolate, SaddleBrown, Sienna, Brown, Maroon1),
+        // Основные цвета
+        listOf(Black, Gray, Silver, White, Fuchsia, Purple, Red, Maroon, Yellow, Olive, Lime, Green, Aqua, Teal, Blue, Navy),
+        // Зелёные тона
+        listOf(GreenYellow, Chartreuse, LawnGreen, Lime1, LimeGreen, PaleGreen, LightGreen, MediumSpringGreen, SpringGreen, MediumSeaGreen, SeaGreen, ForestGreen, Green1, DarkGreen, YellowGreen, OliveDrab, Olive1, DarkOliveGreen, MediumAquamarine, DarkSeaGreen, LightSeaGreen, DarkCyan, Teal1),
+        // Синие тона
+        listOf(Aqua1, Cyan, LightCyan, PaleTurquoise, Aquamarine, Turquoise, MediumTurquoise, DarkTurquoise, CadetBlue, SteelBlue, LightSteelBlue, PowderBlue, LightBlue, SkyBlue, LightSkyBlue, DeepSkyBlue, DodgerBlue, CornflowerBlue, MediumSlateBlue, RoyalBlue, Blue1, MediumBlue, DarkBlue, Navy1, MidnightBlue),
+        // Белые тона
+        listOf(White1, Snow, Honeydew, MintCream, Azure, AliceBlue, GhostWhite, WhiteSmoke, Seashell, Beige, OldLace, FloralWhite, Ivory, AntiqueWhite, Linen, LavenderBlush, MistyRose),
+        // Серые тона
+        listOf(Gainsboro, LightGrey, LightGray, Silver1, DarkGray, DarkGrey, Gray1, Grey, DimGray, DimGrey, LightSlateGray, LightSlateGrey, SlateGray, SlateGrey, DarkSlateGray, DarkSlateGrey, Black1),
+)
+
 val red200 = Color(0XFFEF9A9A)
 val red500 = Color(0XFFF44336)
 val red700 = Color(0XFFD32F2F)
@@ -303,8 +311,8 @@ val md_theme_dark_shadow = Color(0xFF000000)
 val md_theme_dark_surfaceTint = Color(0xFFD0BCFF)
 val md_theme_dark_outlineVariant = Color(0xFF49454F)
 val md_theme_dark_scrim = Color(0xFF000000)
-
 val seed = Color(0xFF6750A4)
+
 //val md_theme_light_primary = Color(0xFF476810)
 //val md_theme_light_onPrimary = Color(0xBCEE1616)
 //val md_theme_light_primaryContainer = Color(0xFFC7F089)
@@ -434,46 +442,6 @@ val DarkColorScheme = darkColorScheme(
         scrim = md_theme_dark_scrim,
 )
 
-//val LightColorPalette = lightColors(
-//    primary = SelectedColor, // Цвет кнопки и элементов управления
-//    primaryVariant = PrimaryVariant,
-//    secondary = Secondary,
-//    secondaryVariant = SelectedColor,
-//    background = ScaffoldColor,
-//    surface = ScaffoldColor,
-//    error = SelectedColor,
-//    onPrimary = SelectedColor,
-//    onSecondary = SelectedColor,
-//    onBackground = TextIcon, //Цвет текста и иконок в bottom bar
-//    onSurface = TextIcon, //Цвет текста и иконок в bottom bar
-//    onError = SelectedColor,
-//)
-val DarkColorScheme1 = darkColorScheme(
-        primary = md_theme_dark_primary,
-        onPrimary = md_theme_dark_onPrimary,
-        primaryContainer = md_theme_dark_primaryContainer,
-        onPrimaryContainer = md_theme_dark_onPrimaryContainer,
-        tertiary = md_theme_light_tertiary,
-        onTertiary = md_theme_light_onTertiary,
-// ..
-)
-
-
-//val DarkColorPalette = darkColors(
-//    primary = SelectedColor, // Цвет кнопки и элементов управления
-//    primaryVariant = PrimaryVariant, // Не нашел вариантов использования.
-//    secondary = SelectedColor,
-//    secondaryVariant = SelectedColor,
-//    background = ScaffoldColor,
-//    surface = ScaffoldColor,
-//    error = SelectedColor,
-//    onPrimary = OnPrimaryOnSecondaryOnError,
-//    onSecondary = OnPrimaryOnSecondaryOnError,
-//    onBackground = TextIcon,
-//    onSurface = TextIcon,
-//    onError = OnPrimaryOnSecondaryOnError,
-//)
-
 /**
  *
 primary - Основной цвет - это цвет, который чаще всего отображается на экранах и компонентах вашего приложения.
@@ -495,4 +463,70 @@ onError - цвет, используемый для текста и значко
 isLight - считается ли этот цвет "светлым" или "темным" набором цветов. Это влияет на поведение
 некоторых компонентов по умолчанию: например, в светлой теме TopAppBar по умолчанию будет
 использовать основной цвет фона, в то время как в темной теме он будет использовать surface.
+ */
+
+
+/*
+val md_theme_light_primary = Color(0xFF6A43C9)
+val md_theme_light_onPrimary = Color(0xFFFFFFFF)
+val md_theme_light_primaryContainer = Color(0xFFE9DDFF)
+val md_theme_light_onPrimaryContainer = Color(0xFF22005D)
+val md_theme_light_secondary = Color(0xFF625B71)
+val md_theme_light_onSecondary = Color(0xFFFFFFFF)
+val md_theme_light_secondaryContainer = Color(0xFFE8DEF8)
+val md_theme_light_onSecondaryContainer = Color(0xFF1E192B)
+val md_theme_light_tertiary = Color(0xFF4E57A9)
+val md_theme_light_onTertiary = Color(0xFFFFFFFF)
+val md_theme_light_tertiaryContainer = Color(0xFFE0E0FF)
+val md_theme_light_onTertiaryContainer = Color(0xFF010865)
+val md_theme_light_error = Color(0xFFBA1A1A)
+val md_theme_light_errorContainer = Color(0xFFFFDAD6)
+val md_theme_light_onError = Color(0xFFFFFFFF)
+val md_theme_light_onErrorContainer = Color(0xFF410002)
+val md_theme_light_background = Color(0xFFFFFBFF)
+val md_theme_light_onBackground = Color(0xFF1C1B1E)
+val md_theme_light_outline = Color(0xFF7A757F)
+val md_theme_light_inverseOnSurface = Color(0xFFF4EFF4)
+val md_theme_light_inverseSurface = Color(0xFF313033)
+val md_theme_light_inversePrimary = Color(0xFFCFBDFF)
+val md_theme_light_surfaceTint = Color(0xFF6A43C9)
+val md_theme_light_outlineVariant = Color(0xFFCAC4CF)
+val md_theme_light_scrim = Color(0xFF000000)
+val md_theme_light_surface = Color(0xFFFDF8FD)
+val md_theme_light_onSurface = Color(0xFF1C1B1E)
+val md_theme_light_surfaceVariant = Color(0xFFE7E0EB)
+val md_theme_light_onSurfaceVariant = Color(0xFF49454E)
+
+val md_theme_dark_primary = Color(0xFFCFBDFF)
+val md_theme_dark_onPrimary = Color(0xFF3A0093)
+val md_theme_dark_primaryContainer = Color(0xFF5225B0)
+val md_theme_dark_onPrimaryContainer = Color(0xFFE9DDFF)
+val md_theme_dark_secondary = Color(0xFFCBC2DC)
+val md_theme_dark_onSecondary = Color(0xFF332D41)
+val md_theme_dark_secondaryContainer = Color(0xFF4A4458)
+val md_theme_dark_onSecondaryContainer = Color(0xFFE8DEF8)
+val md_theme_dark_tertiary = Color(0xFFBDC2FF)
+val md_theme_dark_onTertiary = Color(0xFF1D2678)
+val md_theme_dark_tertiaryContainer = Color(0xFF363E90)
+val md_theme_dark_onTertiaryContainer = Color(0xFFE0E0FF)
+val md_theme_dark_error = Color(0xFFFFB4AB)
+val md_theme_dark_errorContainer = Color(0xFF93000A)
+val md_theme_dark_onError = Color(0xFF690005)
+val md_theme_dark_onErrorContainer = Color(0xFFFFDAD6)
+val md_theme_dark_background = Color(0xFF1C1B1E)
+val md_theme_dark_onBackground = Color(0xFFE6E1E6)
+val md_theme_dark_outline = Color(0xFF948F99)
+val md_theme_dark_inverseOnSurface = Color(0xFF1C1B1E)
+val md_theme_dark_inverseSurface = Color(0xFFE6E1E6)
+val md_theme_dark_inversePrimary = Color(0xFF6A43C9)
+val md_theme_dark_surfaceTint = Color(0xFFCFBDFF)
+val md_theme_dark_outlineVariant = Color(0xFF49454E)
+val md_theme_dark_scrim = Color(0xFF000000)
+val md_theme_dark_surface = Color(0xFF141316)
+val md_theme_dark_onSurface = Color(0xFFCAC5CA)
+val md_theme_dark_surfaceVariant = Color(0xFF49454E)
+val md_theme_dark_onSurfaceVariant = Color(0xFFCAC4CF)
+
+
+val seed = Color(0xFF3F009E)
  */

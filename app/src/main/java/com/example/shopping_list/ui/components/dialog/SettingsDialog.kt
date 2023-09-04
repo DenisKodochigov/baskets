@@ -15,7 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.R
+import com.example.shopping_list.data.room.tables.SectionDB
 import com.example.shopping_list.data.room.tables.UnitDB
+import com.example.shopping_list.entity.Section
 import com.example.shopping_list.entity.UnitApp
 import com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.shopping_list.ui.components.MyTextH2
@@ -58,5 +60,45 @@ fun LayoutAddEditUnit(unitApp: MutableState<UnitApp>)
         MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameUnit, "text")
         unitApp.value = UnitDB(idUnit = unitApp.value.idUnit, nameUnit = enterNameUnit.value)
         Spacer(Modifier.height(12.dp))
+    }
+}
+
+@Composable
+fun ChangeNameSectionDialog(
+    section: Section,
+    onConfirm: (Section) -> Unit,
+    onDismiss: () -> Unit,)
+{
+    val unitLocal = remember{ mutableStateOf(section) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = { TextButtonOK( onConfirm = {
+            onConfirm( unitLocal.value )
+        } ) },
+        text = { EditNameSectionLayout(unitLocal) },
+        title = {
+            if (section.idSection > 0) MyTextH2(stringResource(R.string.change_unit), Modifier)
+            else MyTextH2(stringResource(R.string.add_unit), Modifier)
+        },
+    )
+}
+
+@Composable
+fun EditNameSectionLayout(section: MutableState<Section>){
+    val enterNameSection = remember{ mutableStateOf( section.value.nameSection )}
+    Column {
+        Text(text = "")
+        Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+            com.example.shopping_list.ui.components.MyOutlinedTextFieldWithoutIcon(
+                modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
+                enterValue = enterNameSection,
+                "text"
+            )
+            section.value = com.example.shopping_list.data.room.tables.SectionDB(
+                idSection = section.value.idSection,
+                nameSection = enterNameSection.value
+            )
+            androidx.compose.foundation.layout.Spacer(androidx.compose.ui.Modifier.height(12.dp))
+        }
     }
 }

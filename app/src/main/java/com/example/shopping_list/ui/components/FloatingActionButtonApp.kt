@@ -2,14 +2,10 @@ package com.example.shopping_list.ui.components
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,10 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.shopping_list.ui.theme.BackgroundFab
-import com.example.shopping_list.ui.theme.BorderBottomBar
-import com.example.shopping_list.ui.theme.ContentFab
-import com.example.shopping_list.ui.theme.InactiveTabOpacity
 
 @Composable
 fun FloatingActionButtonApp(offset: Dp, top: Dp, icon: ImageVector, onClick:() -> Unit){
@@ -31,9 +23,6 @@ fun FloatingActionButtonApp(offset: Dp, top: Dp, icon: ImageVector, onClick:() -
         modifier = Modifier
             .padding(top = top)
             .offset( 0.dp, offset),
-//            .border(2.dp, color = BorderBottomBar, shape = RoundedCornerShape(10.dp)),
-        containerColor = MaterialTheme.colorScheme.tertiary,
-        contentColor = MaterialTheme.colorScheme.onTertiary
     )
     { Icon( icon, null) }
 }
