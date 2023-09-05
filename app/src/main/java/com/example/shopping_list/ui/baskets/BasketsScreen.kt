@@ -224,7 +224,7 @@ fun LazyColumnBasket(
     Row(modifier = Modifier
             .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
             .fillMaxWidth()
-            .background(Color.White)
+//            .background(Color.White)
             .clickable { onClickBasket(basket.idBasket) })
     {
         Column(

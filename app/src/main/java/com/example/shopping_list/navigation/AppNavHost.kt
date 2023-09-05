@@ -12,15 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.example.shopping_list.ui.article.ArticlesScreen
 import com.example.shopping_list.ui.baskets.BasketsScreen
 import com.example.shopping_list.ui.products.ProductsScreen
 import com.example.shopping_list.ui.settings.SettingsScreen
 import com.example.shopping_list.utils.log
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppAnimatedNavHost(
     navController: NavHostController,
@@ -28,7 +27,7 @@ fun AppAnimatedNavHost(
     showBottomSheet: MutableState<Boolean>
 ){
 
-    AnimatedNavHost(
+    NavHost(
         navController = navController, startDestination = Baskets.route, modifier = modifier ) {
         composable(route = Baskets.route,
             enterTransition = {
