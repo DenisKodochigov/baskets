@@ -1,6 +1,7 @@
 package com.example.shopping_list.utils
 
 import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,11 +10,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
+import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.shopping_list.entity.Article
@@ -95,7 +99,6 @@ fun DismissBackground(dismissState: DismissState) {
         Icon(icon, null, tint = colorIcon)
     }
 }
-
 
 @Composable fun selectSectionWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
     val article = listArticle.find { it.idArticle == id }

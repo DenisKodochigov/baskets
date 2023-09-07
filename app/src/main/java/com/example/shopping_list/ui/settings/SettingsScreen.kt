@@ -42,6 +42,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -80,7 +82,7 @@ import com.example.shopping_list.ui.theme.styleApp
 @Composable fun SettingsScreenInit(viewModel: SettingsViewModel){
     val uiState by viewModel.settingScreenState.collectAsState()
 
-    LayoutSettingsScreen(
+    SettingsScreenLayout(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         uiState = uiState,
         doChangeUnit = { unit -> viewModel.changeUnit(unit) },
@@ -90,7 +92,7 @@ import com.example.shopping_list.ui.theme.styleApp
     )
 }
 @SuppressLint("UnrememberedMutableState")
-@Composable fun LayoutSettingsScreen(
+@Composable fun SettingsScreenLayout(
     modifier: Modifier = Modifier,
     uiState: SettingsScreenState,
     doChangeUnit: (UnitApp) -> Unit,
@@ -129,7 +131,7 @@ import com.example.shopping_list.ui.theme.styleApp
     Box(modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column{
             HeaderSection(text = stringResource(R.string.edit_section_list), modifier)
-            LazyColumnSection( uiState = uiState,
+            SectionLazyColumn( uiState = uiState,
                 doChangeSection = doChangeSection,
                 doDeleteSelected = doDeleteSelected,
                 doSelected = { idItem -> isSelectedId.value = idItem })
@@ -138,7 +140,7 @@ import com.example.shopping_list.ui.theme.styleApp
     }
 }
 @Composable
-fun LazyColumnSection(
+fun SectionLazyColumn(
     uiState: SettingsScreenState,
     doChangeSection: (Section) -> Unit,
     doDeleteSelected: (List<Section>) -> Unit,
@@ -175,7 +177,7 @@ fun LazyColumnSection(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(6.dp))
                         .fillMaxWidth()
-                        .background(color = Color.White)
+                        .background(color = MaterialTheme.colorScheme.primaryContainer)
                         .clickable { doSelected(item.idSection) }
                 ) {
 //                    Spacer( modifier = Modifier
@@ -232,7 +234,7 @@ fun LazyColumnSection(
     doChangeUnit: (UnitApp) -> Unit,
     doDeleteUnits: (List<UnitApp>) -> Unit,)
 {
-    val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
+    val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val itemList = uiState.unitApp
     if (isSelectedId.value > 0L) {
         itemList.find { it.idUnit == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
@@ -290,7 +292,7 @@ fun LazyColumnUnits(
                         modifier = Modifier
                         .clip(shape = RoundedCornerShape(6.dp))
                         .fillMaxWidth()
-                        .background(Color.White)
+                        .background(color = MaterialTheme.colorScheme.primaryContainer)
                         .clickable { doSelected(item.idUnit) }
                     ) {
                         Spacer( modifier = Modifier
@@ -325,7 +327,7 @@ fun LazyColumnUnits(
 }
 
 @Composable fun ChangeStyle(){
-    var sliderPosition by remember{mutableStateOf(App.scale.toFloat())}
+    var sliderPosition by remember{ mutableFloatStateOf(App.scale.toFloat()) }
     HeaderSection(text = "Размер шрифта", Modifier)
     Slider(
         value = sliderPosition,

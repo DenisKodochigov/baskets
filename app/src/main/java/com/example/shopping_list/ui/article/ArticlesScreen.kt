@@ -16,6 +16,7 @@ import androidx.compose.material.*
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.rememberDismissState
@@ -25,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -62,11 +65,11 @@ fun ArticleScreenInitDate(
     log( showLog,"ArticleScreenInitDate")
     val uiState by viewModel.articleScreenState.collectAsState()
     if (showBottomSheet.value)
-        LayoutAddEditArticle(
+        AddEditArticleBottomSheet(
             uiState = uiState,
             onAddArticle = { article -> viewModel.addArticle(article, uiState.sorting) },
             onDismiss = { showBottomSheet.value = false})
-    LayoutArticleScreen(
+    ArticleScreenLayout(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         uiState = viewModel.articleScreenState.collectAsState().value,
         changeArticle = { article -> viewModel.changeArticle(article, uiState.sorting) },
@@ -80,7 +83,7 @@ fun ArticleScreenInitDate(
 
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Composable
-fun LayoutArticleScreen(
+fun ArticleScreenLayout(
     modifier: Modifier = Modifier,
     uiState: ArticleScreenState,
     changeArticle: (Article) -> Unit,
@@ -126,7 +129,7 @@ fun LayoutArticleScreen(
                 Modifier
                     .fillMaxHeight()
                     .weight(1f)) {
-                LazyColumnArticle(
+                ArticleLazyColumn(
                     uiState = uiState,
                     changeArticle = changeArticle,
                     doSelected = { idItem -> isSelectedId.value = idItem },
@@ -151,7 +154,7 @@ fun LayoutArticleScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun LazyColumnArticle(
+fun ArticleLazyColumn(
     uiState: ArticleScreenState,
     changeArticle: (Article) -> Unit,
     doSelected: (Long) -> Unit,
@@ -198,7 +201,7 @@ fun LazyColumnArticle(
                 HeaderSection(
                     text = if ( uiState.sorting == SortingBy.BY_SECTION) item[0].section.nameSection
                     else stringResource(id = R.string.all), modifier = Modifier)
-                LayoutColumArticles(
+                ArticleLayoutColum(
                     modifier = Modifier,
                     articles = item,
                     editArticle = { article -> editArticle.value = article },
@@ -211,7 +214,7 @@ fun LazyColumnArticle(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LayoutColumArticles(
+fun ArticleLayoutColum(
     modifier: Modifier,
     articles: List<Article>,
     editArticle: (Article) -> Unit,
@@ -257,18 +260,24 @@ fun LayoutColumArticles(
 @Composable
 fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
     log( showLog,"ElementColum Articles")
-    Box (modifier.padding(horizontal = 6.dp)){
+    val localDensity = LocalDensity.current
+    var heightIs by remember { mutableStateOf(0.dp) }
+    Box (modifier
+        .padding(horizontal = 6.dp)
+        .onGloballyPositioned { coordinates ->
+        heightIs = with(localDensity) { coordinates.size.height.toDp() } })
+    {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier
                 .clip(shape = RoundedCornerShape(6.dp))
                 .fillMaxWidth()
-//                .background(BackgroundElementList)
+                .background(color = MaterialTheme.colorScheme.primaryContainer)
                 .clickable { doSelected(item.idArticle) }
         ) {
             Spacer( modifier = modifier
                 .width(8.dp)
-                .height(32.dp)
+                .height(heightIs)
                 .background(if (item.isSelected) Color.Red else Color.LightGray)
                 .align(Alignment.CenterVertically)
             )
@@ -295,7 +304,7 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LayoutAddEditArticle(
+fun AddEditArticleBottomSheet(
     uiState: ArticleScreenState, onAddArticle: (Article) -> Unit, onDismiss:() -> Unit )
 {
     log( showLog,"BottomSheetContentArticle")

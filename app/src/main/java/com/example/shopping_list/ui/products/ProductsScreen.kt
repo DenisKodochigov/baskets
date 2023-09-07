@@ -32,6 +32,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,6 +40,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -62,7 +65,6 @@ import com.example.shopping_list.ui.components.TextButtonOK
 import com.example.shopping_list.ui.components.dialog.EditQuantityDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import com.example.shopping_list.ui.theme.SectionColor
-import com.example.shopping_list.utils.DismissBackground
 import com.example.shopping_list.utils.log
 import com.example.shopping_list.utils.selectSectionWithArticle
 import com.example.shopping_list.utils.selectUnitWithArticle
@@ -95,7 +97,7 @@ fun ProductScreenCreateView(
             onAddProduct = { product: Product -> viewModel.addProduct(product, basketId) },
             onDismiss = { showBottomSheet.value = false})
 
-    LayoutProductsScreen(
+    ProductsScreenLayout(
         uiState = uiState,
         putProductInBasket = { product -> viewModel.putProductInBasket(product, basketId) },
         changeProduct = { product -> viewModel.changeProduct(product, basketId) },
@@ -108,7 +110,7 @@ fun ProductScreenCreateView(
 
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Composable
-fun LayoutProductsScreen(
+fun ProductsScreenLayout(
     uiState: ProductsScreenState,
     putProductInBasket: (Product) -> Unit,
     changeProduct: (Product) -> Unit,
@@ -116,7 +118,7 @@ fun LayoutProductsScreen(
     doDeleteSelected: (List<Product>) -> Unit,
     doSelected: (Long) -> Unit
 ) {
-    val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
+    val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -149,7 +151,7 @@ fun LayoutProductsScreen(
 
     Box( Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxHeight() ) {
-            LazyColumnProduct(
+            ProductLazyColumn(
                 uiState = uiState,
                 putProductInBasket = putProductInBasket,
                 changeProduct = changeProduct,
@@ -167,14 +169,14 @@ fun LayoutProductsScreen(
 }
 
 @Composable
-fun LazyColumnProduct(
+fun ProductLazyColumn(
     uiState: ProductsScreenState,
     putProductInBasket: (Product) -> Unit,
     changeProduct: (Product) -> Unit,
     doSelected: (Long) -> Unit
 ) {
     log( showLog,"LazyColumnProduct. ${uiState.products.size}")
-    val listState = rememberLazyListState()
+//    val listState = rememberLazyListState()
     val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
 
     if (editProduct.value != null ) {
@@ -190,7 +192,7 @@ fun LazyColumnProduct(
     }
 
     LazyColumn(
-        state = listState,
+        state = rememberLazyListState(),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
@@ -210,7 +212,7 @@ fun LazyColumnProduct(
                     }
                 )) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
-                LayoutColumProducts(
+                ProductsLayoutColum(
                     products = item,
                     putProductInBasket = putProductInBasket,
                     editProduct = { product -> editProduct.value = product },
@@ -222,7 +224,7 @@ fun LazyColumnProduct(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LayoutColumProducts(
+fun ProductsLayoutColum(
     products: List<Product> ,
     putProductInBasket: (Product) -> Unit,
     editProduct: (Product) -> Unit,
@@ -247,7 +249,7 @@ fun LayoutColumProducts(
                     state = dismissState,
                     modifier = Modifier.padding(vertical = 1.dp),
                     directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                    background = { DismissBackground(dismissState) },
+                    background = {  },
                     dismissContent = { SectionProduct(product, doSelected, editProduct) },
                 )
             }
@@ -263,20 +265,25 @@ fun SectionProduct(
     editProduct: (Product) -> Unit,
 ){
 //    log( showLog,"ElementColum")
-
-    Box(Modifier.padding(horizontal = 6.dp)) {
+    val localDensity = LocalDensity.current
+    var heightIs by remember { mutableStateOf(0.dp) }
+    Box(Modifier
+        .padding(horizontal = 6.dp)
+        .onGloballyPositioned { coordinates ->
+            heightIs = with(localDensity) { coordinates.size.height.toDp() } })
+    {
         Row(
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(6.dp))
+                .background(color = MaterialTheme.colorScheme.primaryContainer)
                 .fillMaxWidth()
-//                .background(Color.White)
         ) {
 //            log( showLog,"product:${item.article.nameArticle}, selected = ${item.isSelected}")
             Spacer(
                 modifier = Modifier
                     .width(8.dp)
                     .background(if (sectionItems.isSelected) Color.Red else Color.LightGray)
-                    .height(32.dp)
+                    .height(heightIs)
                     .align(Alignment.CenterVertically)
                     .clickable { doSelected(sectionItems.idProduct) }
             )
@@ -315,7 +322,7 @@ fun SectionProduct(
             thickness = 1.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 36.dp, start = 8.dp, end = 8.dp)
+                .padding(top = heightIs / 2, start = 8.dp, end = 8.dp)
         )
     }
 }
