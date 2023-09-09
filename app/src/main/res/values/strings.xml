@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">shopping_list</string>
+    <string name="app_name">basket</string>
     <string name="title_settings">Settings</string>
     <string name="errorUser">Operation error.</string>
     <string name="change_quantity">Edit quantity</string>
