@@ -95,7 +95,9 @@ class ArticleViewModel @Inject constructor(
             kotlin.runCatching {
                 dataRepository.changeSectionSelectedArticle(articles, idSection, sortingBy) }.fold(
                 onSuccess = {
-                    _articleScreenState.update { currentState -> currentState.copy( article = it) }},
+//                    _articleScreenState.update { currentState -> currentState.copy( article = it) }
+                    _articleScreenState.value = _articleScreenState.value.copy(article = it)
+                            },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
             getSections()

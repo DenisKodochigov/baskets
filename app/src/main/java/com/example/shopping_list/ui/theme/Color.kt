@@ -1,5 +1,6 @@
 package com.example.shopping_list.ui.theme
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
@@ -9,8 +10,115 @@ val TextDate = Color(0xFF9C9C9C)
 val ButtonColorsMy = Color.LightGray
 val SectionColor = Color(0x22909EE7)
 
+val md_theme_light_primary = Color(0xFF2F5DA8)
+val md_theme_light_onPrimary = Color(0xFFFFFFFF)
+val md_theme_light_primaryContainer = Color(0xFFD7E2FF) //0xFFD7E2FF
+val md_theme_light_onPrimaryContainer = Color(0xFF001A40)
+val md_theme_light_secondary = Color(0xFF006688)
+val md_theme_light_onSecondary = Color(0xFFFFFFFF)
+val md_theme_light_secondaryContainer = Color(0xFFC2E8FF) //0xFFC2E8FF
+val md_theme_light_onSecondaryContainer = Color(0xFF001E2B)
+val md_theme_light_tertiary = Color(0xFF006497)
+val md_theme_light_onTertiary = Color(0xFFFFFFFF)
+val md_theme_light_tertiaryContainer = Color(0xFFE7EBFD) //0xFFCCE5FF
+val md_theme_light_onTertiaryContainer = Color(0xFF001E31)
+val md_theme_light_error = Color(0xFFBA1A1A)
+val md_theme_light_errorContainer = Color(0xFFFFDAD6)
+val md_theme_light_onError = Color(0xFFFFFFFF)
+val md_theme_light_onErrorContainer = Color(0xFF410002)
+val md_theme_light_background = Color(0xFFFEFBFF)
+val md_theme_light_onBackground = Color(0xFF1B1B1F)
+val md_theme_light_surface = Color(0xFFFEFBFF)
+val md_theme_light_onSurface = Color(0xFF1B1B1F)
+val md_theme_light_surfaceVariant = Color(0xFFE0E2EC)
+val md_theme_light_onSurfaceVariant = Color(0xFF44474E)
+val md_theme_light_outline = Color(0xFF74777F)
+val md_theme_light_inverseOnSurface = Color(0xFFF2F0F4)
+val md_theme_light_inverseSurface = Color(0xFF2F3033)
+val md_theme_light_inversePrimary = Color(0xFFACC7FF)
+val md_theme_light_surfaceTint = Color(0xFF2F5DA8)
+val md_theme_light_outlineVariant = Color(0xFFC4C6D0)
+val md_theme_light_scrim = Color(0xFF000000)
+val md_theme_light_surfaceContainer = Color(0xFF000000)
+
+val md_theme_dark_primary = Color(0xFFACC7FF)
+val md_theme_dark_onPrimary = Color(0xFF002F67)
+val md_theme_dark_primaryContainer = Color(0xFF0A458E)
+val md_theme_dark_onPrimaryContainer = Color(0xFFD7E2FF)
+val md_theme_dark_secondary = Color(0xFF76D1FF)
+val md_theme_dark_onSecondary = Color(0xFF003548)
+val md_theme_dark_secondaryContainer = Color(0xFF004D67)
+val md_theme_dark_onSecondaryContainer = Color(0xFFC2E8FF)
+val md_theme_dark_tertiary = Color(0xFF92CCFF)
+val md_theme_dark_onTertiary = Color(0xFF003351)
+val md_theme_dark_tertiaryContainer = Color(0xFF004B73)
+val md_theme_dark_onTertiaryContainer = Color(0xFFCCE5FF)
+val md_theme_dark_error = Color(0xFFFFB4AB)
+val md_theme_dark_errorContainer = Color(0xFF93000A)
+val md_theme_dark_onError = Color(0xFF690005)
+val md_theme_dark_onErrorContainer = Color(0xFFFFDAD6)
+val md_theme_dark_background = Color(0xFF1B1B1F)
+val md_theme_dark_onBackground = Color(0xFFE3E2E6)
+val md_theme_dark_surface = Color(0xFF1B1B1F)
+val md_theme_dark_onSurface = Color(0xFFE3E2E6)
+val md_theme_dark_surfaceVariant = Color(0xFF44474E)
+val md_theme_dark_onSurfaceVariant = Color(0xFFC4C6D0)
+val md_theme_dark_outline = Color(0xFF8E9099)
+val md_theme_dark_inverseOnSurface = Color(0xFF1B1B1F)
+val md_theme_dark_inverseSurface = Color(0xFFE3E2E6)
+val md_theme_dark_inversePrimary = Color(0xFF2F5DA8)
+val md_theme_dark_surfaceTint = Color(0xFFACC7FF)
+val md_theme_dark_outlineVariant = Color(0xFF44474E)
+val md_theme_dark_scrim = Color(0xFF000000)
+
+val seed = Color(0xFF004089)
+
+val TabHeight = 70.dp
+const val TabFadeInAnimationDuration = 150
+const val TabFadeInAnimationDelay = 100
+const val TabFadeOutAnimationDuration = 100
 
 
+/**
+ *
+primary - Основной цвет - это цвет, который чаще всего отображается на экранах и компонентах вашего приложения.
+primaryVariant - цвет основного варианта используется для различения двух элементов приложения,
+использующих основной цвет, таких как верхняя панель приложения и системная панель.
+secondary - Дополнительный цвет предоставляет больше возможностей подчеркнуть и отличить ваш продукт.
+Вторичные цвета лучше всего подходят для: Плавающие кнопки действий; Элементы управления
+выбором, такие как флажки и переключатели; Выделение выделенного текста; Ссылки и заголовки.
+secondaryVariant - цвет вторичного варианта используется для различения двух элементов приложения
+с помощью вторичного цвета.
+background - цвет фона отображается за прокручиваемым содержимым.
+surface - цвет поверхности используется на поверхностях компонентов, таких как карточки, листы и меню.
+error - цвет ошибки используется для обозначения ошибки в компонентах, таких как текстовые поля.
+onPrimary - цвет, используемый для текста и значков, отображаемых поверх основного цвета.
+onSecondary - цвет, используемый для текста и значков, отображаемых поверх дополнительного цвета.
+onBackground - цвет, используемый для текста и значков, отображаемых поверх цвета фона.
+onSurface - цвет, используемый для текста и значков, отображаемых поверх цвета поверхности.
+onError - цвет, используемый для текста и значков, отображаемых поверх цвета ошибки.
+isLight - считается ли этот цвет "светлым" или "темным" набором цветов. Это влияет на поведение
+некоторых компонентов по умолчанию: например, в светлой теме TopAppBar по умолчанию будет
+использовать основной цвет фона, в то время как в темной теме он будет использовать surface.
+ */
+
+// Основные цвета:
+val Black = Color(0xFF000000)
+val Gray = Color(0xFF808080)
+val Silver = Color(0xFFC0C0C0)
+val White = Color(0xFFFFFFFF)
+val Fuchsia = Color(0xFFFF00FF)
+val Purple = Color(0xFF800080)
+val Red = Color(0xFFFF0000)
+val Maroon = Color(0xFF800000)
+val Yellow = Color(0xFFFFFF00)
+val Olive = Color(0xFF808000)
+val Lime = Color(0xFF00FF00)
+val Green = Color(0xFF008000)
+val Aqua = Color(0xFF00FFFF)
+val Teal = Color(0xFF008080)
+val Blue = Color(0xFF0000FF)
+val Navy = Color(0xFF000080)
 //Красные тона
 val IndianRed = Color(0xFFCD5C5C)
 val LightCoral = Color(0xFFF08080)
@@ -83,23 +191,7 @@ val SaddleBrown = Color(0xFF8B4513)
 val Sienna = Color(0xFFA0522D)
 val Brown = Color(0xFFA52A2A)
 val Maroon1 = Color(0xFF800000)
-// Основные цвета:
-val Black = Color(0xFF000000)
-val Gray = Color(0xFF808080)
-val Silver = Color(0xFFC0C0C0)
-val White = Color(0xFFFFFFFF)
-val Fuchsia = Color(0xFFFF00FF)
-val Purple = Color(0xFF800080)
-val Red = Color(0xFFFF0000)
-val Maroon = Color(0xFF800000)
-val Yellow = Color(0xFFFFFF00)
-val Olive = Color(0xFF808000)
-val Lime = Color(0xFF00FF00)
-val Green = Color(0xFF008000)
-val Aqua = Color(0xFF00FFFF)
-val Teal = Color(0xFF008080)
-val Blue = Color(0xFF0000FF)
-val Navy = Color(0xFF000080)
+
 // Зелёные тона:
 val GreenYellow = Color(0xFFADFF2F)
 val Chartreuse = Color(0xFF7FFF00)
@@ -125,7 +217,6 @@ val LightSeaGreen = Color(0xFF20B2AA)
 val DarkCyan = Color(0xFF008B8B)
 val Teal1 = Color(0xFF008080)
 // Синие тона:
-
 val Aqua1 = Color(0xFF00FFFF)
 val Cyan = Color(0xFF00FFFF)
 val LightCyan = Color(0xFFE0FFFF)
@@ -187,9 +278,11 @@ val SlateGrey = Color(0xFF708090)
 val DarkSlateGray = Color(0xFF2F4F4F)
 val DarkSlateGrey = Color(0xFF2F4F4F)
 val Black1 = Color(0xFF000000)
-
+var backgroundLazy = Color(0xFFB4B4B4)
 
 val massColor = listOf(
+        // Основные цвета
+        listOf(Black, Gray, Silver, White, Fuchsia, Purple, Red, Maroon, Yellow, Olive, Lime, Green, Aqua, Teal, Blue, Navy),
         // Розовые тона
         listOf(IndianRed, LightCoral, Salmon, DarkSalmon, LightSalmon1, Crimson, Red1, FireBrick, DarkRed),
         // Оранжевые тона
@@ -200,8 +293,6 @@ val massColor = listOf(
         listOf(Lavender, Thistle, Plum, Violet, Orchid, Fuchsia1, Magenta, MediumOrchid, MediumPurple, BlueViolet, DarkViolet, DarkOrchid, DarkMagenta, Purple1, Indigo, SlateBlue, DarkSlateBlue),
         // Коричневые тона
         listOf(Cornsilk, BlanchedAlmond, Bisque, NavajoWhite, Wheat, BurlyWood, Tan, RosyBrown, SandyBrown, Goldenrod, DarkGoldenRod, Peru, Chocolate, SaddleBrown, Sienna, Brown, Maroon1),
-        // Основные цвета
-        listOf(Black, Gray, Silver, White, Fuchsia, Purple, Red, Maroon, Yellow, Olive, Lime, Green, Aqua, Teal, Blue, Navy),
         // Зелёные тона
         listOf(GreenYellow, Chartreuse, LawnGreen, Lime1, LimeGreen, PaleGreen, LightGreen, MediumSpringGreen, SpringGreen, MediumSeaGreen, SeaGreen, ForestGreen, Green1, DarkGreen, YellowGreen, OliveDrab, Olive1, DarkOliveGreen, MediumAquamarine, DarkSeaGreen, LightSeaGreen, DarkCyan, Teal1),
         // Синие тона
@@ -212,322 +303,3 @@ val massColor = listOf(
         listOf(Gainsboro, LightGrey, LightGray, Silver1, DarkGray, DarkGrey, Gray1, Grey, DimGray, DimGrey, LightSlateGray, LightSlateGrey, SlateGray, SlateGrey, DarkSlateGray, DarkSlateGrey, Black1),
 )
 
-val red200 = Color(0XFFEF9A9A)
-val red500 = Color(0XFFF44336)
-val red700 = Color(0XFFD32F2F)
-val pink200 = Color(0XFFF27584)
-val pink500 = Color(0XFFEF5366)
-
-val pink700 = Color(0XFFD74A5B)
-val purple200 = Color(0XFFCE93D8)
-val purple500 = Color(0XFF9C27B0)
-val purple700 = Color(0XFF7B1FA2)
-
-val indigo200 = Color(0XFF9FA8DA)
-val indigo500 = Color(0XFF3F51B5)
-val indigo700 = Color(0XFF303f9f)
-val blue200 = Color(0XFF90CAF9)
-val blue500 = Color(0xFF2195F2)
-val blue700 = Color(0xFF1976D2)
-
-val teal200 = Color(0XFF80DEEA)
-
-val green200 = Color(0XFFA5D6A7)
-val green500 = Color(0XFF4CAF50)
-val green700 = Color(0XFF388E3C)
-
-val yellow200 = Color(0XFFFFF59D)
-val yellow500 = Color(0XFFFFEB3B)
-val yellow700 = Color(0XFFFBC02D)
-
-val orange200 = Color(0XFFFFCC80)
-val orange500 = Color(0XFFFF9800)
-val orange700 = Color(0XFFF57C00)
-
-val brown200 = Color(0XFFBCAAA4)
-val brown500 = Color(0XFF795548)
-val brown700 = Color(0XFF5D4037)
-val grey200 = Color(0XFFEEEEEE)
-val grey500 = Color(0XFF9E9E9E)
-val grey700 = Color(0XFF616161)
-
-val md_theme_light_primary = Color(0xFF6750A4)
-val md_theme_light_onPrimary = Color(0xFFFFFFFF)
-val md_theme_light_primaryContainer = Color(0xFFEADDFF)
-val md_theme_light_onPrimaryContainer = Color(0xFF21005D)
-val md_theme_light_secondary = Color(0xFF625B71)
-val md_theme_light_onSecondary = Color(0xFFFFFFFF)
-val md_theme_light_secondaryContainer = Color(0xFFE8DEF8)
-val md_theme_light_onSecondaryContainer = Color(0xFF1D192B)
-val md_theme_light_tertiary = Color(0xFF7D5260)
-val md_theme_light_onTertiary = Color(0xFFFFFFFF)
-val md_theme_light_tertiaryContainer = Color(0xFFFFD8E4)
-val md_theme_light_onTertiaryContainer = Color(0xFF31111D)
-val md_theme_light_error = Color(0xFFB3261E)
-val md_theme_light_onError = Color(0xFFFFFFFF)
-val md_theme_light_errorContainer = Color(0xFFF9DEDC)
-val md_theme_light_onErrorContainer = Color(0xFF410E0B)
-val md_theme_light_outline = Color(0xFF79747E)
-val md_theme_light_background = Color(0xFFFFFBFE)
-val md_theme_light_onBackground = Color(0xFF1C1B1F)
-val md_theme_light_surface = Color(0xFFFFFBFE)
-val md_theme_light_onSurface = Color(0xFF1C1B1F)
-val md_theme_light_surfaceVariant = Color(0xFFE7E0EC)
-val md_theme_light_onSurfaceVariant = Color(0xFF49454F)
-val md_theme_light_inverseSurface = Color(0xFF313033)
-val md_theme_light_inverseOnSurface = Color(0xFFF4EFF4)
-val md_theme_light_inversePrimary = Color(0xFFD0BCFF)
-val md_theme_light_shadow = Color(0xFF000000)
-val md_theme_light_surfaceTint = Color(0xFF6750A4)
-val md_theme_light_outlineVariant = Color(0xFFCAC4D0)
-val md_theme_light_scrim = Color(0xFF000000)
-
-val md_theme_dark_primary = Color(0xFFD0BCFF)
-val md_theme_dark_onPrimary = Color(0xFF381E72)
-val md_theme_dark_primaryContainer = Color(0xFF4F378B)
-val md_theme_dark_onPrimaryContainer = Color(0xFFEADDFF)
-val md_theme_dark_secondary = Color(0xFFCCC2DC)
-val md_theme_dark_onSecondary = Color(0xFF332D41)
-val md_theme_dark_secondaryContainer = Color(0xFF4A4458)
-val md_theme_dark_onSecondaryContainer = Color(0xFFE8DEF8)
-val md_theme_dark_tertiary = Color(0xFFEFB8C8)
-val md_theme_dark_onTertiary = Color(0xFF492532)
-val md_theme_dark_tertiaryContainer = Color(0xFF633B48)
-val md_theme_dark_onTertiaryContainer = Color(0xFFFFD8E4)
-val md_theme_dark_error = Color(0xFFF2B8B5)
-val md_theme_dark_onError = Color(0xFF601410)
-val md_theme_dark_errorContainer = Color(0xFF8C1D18)
-val md_theme_dark_onErrorContainer = Color(0xFFF9DEDC)
-val md_theme_dark_outline = Color(0xFF938F99)
-val md_theme_dark_background = Color(0xFF1C1B1F)
-val md_theme_dark_onBackground = Color(0xFFE6E1E5)
-val md_theme_dark_surface = Color(0xFF1C1B1F)
-val md_theme_dark_onSurface = Color(0xFFE6E1E5)
-val md_theme_dark_surfaceVariant = Color(0xFF49454F)
-val md_theme_dark_onSurfaceVariant = Color(0xFFCAC4D0)
-val md_theme_dark_inverseSurface = Color(0xFFE6E1E5)
-val md_theme_dark_inverseOnSurface = Color(0xFF313033)
-val md_theme_dark_inversePrimary = Color(0xFF6750A4)
-val md_theme_dark_shadow = Color(0xFF000000)
-val md_theme_dark_surfaceTint = Color(0xFFD0BCFF)
-val md_theme_dark_outlineVariant = Color(0xFF49454F)
-val md_theme_dark_scrim = Color(0xFF000000)
-val seed = Color(0xFF6750A4)
-
-//val md_theme_light_primary = Color(0xFF476810)
-//val md_theme_light_onPrimary = Color(0xBCEE1616)
-//val md_theme_light_primaryContainer = Color(0xFFC7F089)
-//val md_theme_light_onPrimaryContainer = Color(0xffff0000)
-//val md_theme_light_inversePrimary = Color(0xffff0000)
-//val md_theme_light_secondary = Color(0xffff0000)
-//val md_theme_light_onSecondary = Color(0xFF009688)
-//val md_theme_light_secondaryContainer = Color(0xffff0000)
-//val md_theme_light_onSecondaryContainer = Color(0xffff0000)
-//val md_theme_light_tertiary = Color(0xFF757577)
-//val md_theme_light_onTertiary = Color(0xFFFDFCFC)
-//val md_theme_light_tertiaryContainer = Color(0xffff0000)
-//val md_theme_light_onTertiaryContainer = Color(0xffff0000)
-//val md_theme_light_background = Color(0xffff0000)
-//val md_theme_light_onBackground = Color(0xffff0000)
-//val md_theme_light_surface = Color(0xffff0000)
-//val md_theme_light_onSurface = Color(0xffff0000)
-//val md_theme_light_surfaceVariant = Color(0xffff0000)
-//val md_theme_light_onSurfaceVariant = Color(0xffff0000)
-//val md_theme_light_surfaceTint = Color(0xffff0000)
-//val md_theme_light_inverseSurface = Color(0xffff0000)
-//val md_theme_light_inverseOnSurface = Color(0xffff0000)
-//val md_theme_light_error = Color(0xffff0000)
-//val md_theme_light_onError = Color(0xFF009688)
-//val md_theme_light_errorContainer = Color(0xffff0000)
-//val md_theme_light_onErrorContainer = Color(0xffff0000)
-//val md_theme_light_outline = Color(0xffff0000)
-//val md_theme_light_outlineVariant = Color(0xffff0000)
-//val md_theme_light_scrim = Color(0xffff0000)
-
-//val md_theme_dark_primary = Color(0xFFACD370)
-//val md_theme_dark_onPrimary = Color(0xFF213600)
-//val md_theme_dark_primaryContainer = Color(0xFF324F00)
-//val md_theme_dark_onPrimaryContainer = Color(0xffff0000)
-//val md_theme_dark_inversePrimary = Color(0xffff0000)
-//val md_theme_dark_secondary = Color(0xffff0000)
-//val md_theme_dark_onSecondary = Color(0xffff0000)
-//val md_theme_dark_secondaryContainer = Color(0xffff0000)
-//val md_theme_dark_onSecondaryContainer = Color(0xffff0000)
-//val md_theme_dark_tertiary = Color(0xFF757577)
-//val md_theme_dark_onTertiary = Color(0xFFFDFCFC)
-//val md_theme_dark_tertiaryContainer = Color(0xffff0000)
-//val md_theme_dark_onTertiaryContainer = Color(0xffff0000)
-//val md_theme_dark_background = Color(0xffff0000)
-//val md_theme_dark_onBackground = Color(0xffff0000)
-//val md_theme_dark_surface = Color(0xffff0000)
-//val md_theme_dark_onSurface = Color(0xffff0000)
-//val md_theme_dark_surfaceVariant = Color(0xffff0000)
-//val md_theme_dark_onSurfaceVariant = Color(0xffff0000)
-//val md_theme_dark_surfaceTint = Color(0xffff0000)
-//val md_theme_dark_inverseSurface = Color(0xffff0000)
-//val md_theme_dark_inverseOnSurface = Color(0xffff0000)
-//val md_theme_dark_error = Color(0xffff0000)
-//val md_theme_dark_onError = Color(0xffff0000)
-//val md_theme_dark_errorContainer = Color(0xffff0000)
-//val md_theme_dark_onErrorContainer = Color(0xffff0000)
-//val md_theme_dark_outline = Color(0xffff0000)
-//val md_theme_dark_outlineVariant = Color(0xffff0000)
-//val md_theme_dark_scrim = Color(0xffff0000)
-
-val TabHeight = 70.dp
-const val InactiveTabOpacity = 0.50f
-const val TabFadeInAnimationDuration = 150
-const val TabFadeInAnimationDelay = 100
-const val TabFadeOutAnimationDuration = 100
-
-val LightColorScheme = lightColorScheme(
-        primary = md_theme_light_primary,
-        onPrimary = md_theme_light_onPrimary,
-        primaryContainer = md_theme_light_primaryContainer,
-        onPrimaryContainer = md_theme_light_onPrimaryContainer,
-        secondary = md_theme_light_secondary,
-        onSecondary = md_theme_light_onSecondary,
-        secondaryContainer = md_theme_light_secondaryContainer,
-        onSecondaryContainer = md_theme_light_onSecondaryContainer,
-        tertiary = md_theme_light_tertiary,
-        onTertiary = md_theme_light_onTertiary,
-        tertiaryContainer = md_theme_light_tertiaryContainer,
-        onTertiaryContainer = md_theme_light_onTertiaryContainer,
-        error = md_theme_light_error,
-        onError = md_theme_light_onError,
-        errorContainer = md_theme_light_errorContainer,
-        onErrorContainer = md_theme_light_onErrorContainer,
-        outline = md_theme_light_outline,
-        background = md_theme_light_background,
-        onBackground = md_theme_light_onBackground,
-        surface = md_theme_light_surface,
-        onSurface = md_theme_light_onSurface,
-        surfaceVariant = md_theme_light_surfaceVariant,
-        onSurfaceVariant = md_theme_light_onSurfaceVariant,
-        inverseSurface = md_theme_light_inverseSurface,
-        inverseOnSurface = md_theme_light_inverseOnSurface,
-        inversePrimary = md_theme_light_inversePrimary,
-        surfaceTint = md_theme_light_surfaceTint,
-        outlineVariant = md_theme_light_outlineVariant,
-        scrim = md_theme_light_scrim,
-)
-val DarkColorScheme = darkColorScheme(
-        primary = md_theme_dark_primary,
-        onPrimary = md_theme_dark_onPrimary,
-        primaryContainer = md_theme_dark_primaryContainer,
-        onPrimaryContainer = md_theme_dark_onPrimaryContainer,
-        secondary = md_theme_dark_secondary,
-        onSecondary = md_theme_dark_onSecondary,
-        secondaryContainer = md_theme_dark_secondaryContainer,
-        onSecondaryContainer = md_theme_dark_onSecondaryContainer,
-        tertiary = md_theme_dark_tertiary,
-        onTertiary = md_theme_dark_onTertiary,
-        tertiaryContainer = md_theme_dark_tertiaryContainer,
-        onTertiaryContainer = md_theme_dark_onTertiaryContainer,
-        error = md_theme_dark_error,
-        onError = md_theme_dark_onError,
-        errorContainer = md_theme_dark_errorContainer,
-        onErrorContainer = md_theme_dark_onErrorContainer,
-        outline = md_theme_dark_outline,
-        background = md_theme_dark_background,
-        onBackground = md_theme_dark_onBackground,
-        surface = md_theme_dark_surface,
-        onSurface = md_theme_dark_onSurface,
-        surfaceVariant = md_theme_dark_surfaceVariant,
-        onSurfaceVariant = md_theme_dark_onSurfaceVariant,
-        inverseSurface = md_theme_dark_inverseSurface,
-        inverseOnSurface = md_theme_dark_inverseOnSurface,
-        inversePrimary = md_theme_dark_inversePrimary,
-        surfaceTint = md_theme_dark_surfaceTint,
-        outlineVariant = md_theme_dark_outlineVariant,
-        scrim = md_theme_dark_scrim,
-)
-
-/**
- *
-primary - Основной цвет - это цвет, который чаще всего отображается на экранах и компонентах вашего приложения.
-primaryVariant - цвет основного варианта используется для различения двух элементов приложения,
-использующих основной цвет, таких как верхняя панель приложения и системная панель.
-secondary - Дополнительный цвет предоставляет больше возможностей подчеркнуть и отличить ваш продукт.
-Вторичные цвета лучше всего подходят для: Плавающие кнопки действий; Элементы управления
-выбором, такие как флажки и переключатели; Выделение выделенного текста; Ссылки и заголовки.
-secondaryVariant - цвет вторичного варианта используется для различения двух элементов приложения
-с помощью вторичного цвета.
-background - цвет фона отображается за прокручиваемым содержимым.
-surface - цвет поверхности используется на поверхностях компонентов, таких как карточки, листы и меню.
-error - цвет ошибки используется для обозначения ошибки в компонентах, таких как текстовые поля.
-onPrimary - цвет, используемый для текста и значков, отображаемых поверх основного цвета.
-onSecondary - цвет, используемый для текста и значков, отображаемых поверх основного цвета.
-onBackground - цвет, используемый для текста и значков, отображаемых поверх цвета фона.
-onSurface - цвет, используемый для текста и значков, отображаемых поверх цвета поверхности.
-onError - цвет, используемый для текста и значков, отображаемых поверх цвета ошибки.
-isLight - считается ли этот цвет "светлым" или "темным" набором цветов. Это влияет на поведение
-некоторых компонентов по умолчанию: например, в светлой теме TopAppBar по умолчанию будет
-использовать основной цвет фона, в то время как в темной теме он будет использовать surface.
- */
-
-
-/*
-val md_theme_light_primary = Color(0xFF6A43C9)
-val md_theme_light_onPrimary = Color(0xFFFFFFFF)
-val md_theme_light_primaryContainer = Color(0xFFE9DDFF)
-val md_theme_light_onPrimaryContainer = Color(0xFF22005D)
-val md_theme_light_secondary = Color(0xFF625B71)
-val md_theme_light_onSecondary = Color(0xFFFFFFFF)
-val md_theme_light_secondaryContainer = Color(0xFFE8DEF8)
-val md_theme_light_onSecondaryContainer = Color(0xFF1E192B)
-val md_theme_light_tertiary = Color(0xFF4E57A9)
-val md_theme_light_onTertiary = Color(0xFFFFFFFF)
-val md_theme_light_tertiaryContainer = Color(0xFFE0E0FF)
-val md_theme_light_onTertiaryContainer = Color(0xFF010865)
-val md_theme_light_error = Color(0xFFBA1A1A)
-val md_theme_light_errorContainer = Color(0xFFFFDAD6)
-val md_theme_light_onError = Color(0xFFFFFFFF)
-val md_theme_light_onErrorContainer = Color(0xFF410002)
-val md_theme_light_background = Color(0xFFFFFBFF)
-val md_theme_light_onBackground = Color(0xFF1C1B1E)
-val md_theme_light_outline = Color(0xFF7A757F)
-val md_theme_light_inverseOnSurface = Color(0xFFF4EFF4)
-val md_theme_light_inverseSurface = Color(0xFF313033)
-val md_theme_light_inversePrimary = Color(0xFFCFBDFF)
-val md_theme_light_surfaceTint = Color(0xFF6A43C9)
-val md_theme_light_outlineVariant = Color(0xFFCAC4CF)
-val md_theme_light_scrim = Color(0xFF000000)
-val md_theme_light_surface = Color(0xFFFDF8FD)
-val md_theme_light_onSurface = Color(0xFF1C1B1E)
-val md_theme_light_surfaceVariant = Color(0xFFE7E0EB)
-val md_theme_light_onSurfaceVariant = Color(0xFF49454E)
-
-val md_theme_dark_primary = Color(0xFFCFBDFF)
-val md_theme_dark_onPrimary = Color(0xFF3A0093)
-val md_theme_dark_primaryContainer = Color(0xFF5225B0)
-val md_theme_dark_onPrimaryContainer = Color(0xFFE9DDFF)
-val md_theme_dark_secondary = Color(0xFFCBC2DC)
-val md_theme_dark_onSecondary = Color(0xFF332D41)
-val md_theme_dark_secondaryContainer = Color(0xFF4A4458)
-val md_theme_dark_onSecondaryContainer = Color(0xFFE8DEF8)
-val md_theme_dark_tertiary = Color(0xFFBDC2FF)
-val md_theme_dark_onTertiary = Color(0xFF1D2678)
-val md_theme_dark_tertiaryContainer = Color(0xFF363E90)
-val md_theme_dark_onTertiaryContainer = Color(0xFFE0E0FF)
-val md_theme_dark_error = Color(0xFFFFB4AB)
-val md_theme_dark_errorContainer = Color(0xFF93000A)
-val md_theme_dark_onError = Color(0xFF690005)
-val md_theme_dark_onErrorContainer = Color(0xFFFFDAD6)
-val md_theme_dark_background = Color(0xFF1C1B1E)
-val md_theme_dark_onBackground = Color(0xFFE6E1E6)
-val md_theme_dark_outline = Color(0xFF948F99)
-val md_theme_dark_inverseOnSurface = Color(0xFF1C1B1E)
-val md_theme_dark_inverseSurface = Color(0xFFE6E1E6)
-val md_theme_dark_inversePrimary = Color(0xFF6A43C9)
-val md_theme_dark_surfaceTint = Color(0xFFCFBDFF)
-val md_theme_dark_outlineVariant = Color(0xFF49454E)
-val md_theme_dark_scrim = Color(0xFF000000)
-val md_theme_dark_surface = Color(0xFF141316)
-val md_theme_dark_onSurface = Color(0xFFCAC5CA)
-val md_theme_dark_surfaceVariant = Color(0xFF49454E)
-val md_theme_dark_onSurfaceVariant = Color(0xFFCAC4CF)
-
-
-val seed = Color(0xFF3F009E)
- */

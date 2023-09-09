@@ -43,6 +43,7 @@ import com.example.shopping_list.ui.components.*
 import com.example.shopping_list.ui.components.dialog.EditArticleDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import com.example.shopping_list.ui.theme.SectionColor
+import com.example.shopping_list.ui.theme.backgroundLazy
 import com.example.shopping_list.utils.DismissBackground
 import com.example.shopping_list.utils.log
 import com.example.shopping_list.utils.selectSectionWithArticle
@@ -272,7 +273,7 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
             modifier = modifier
                 .clip(shape = RoundedCornerShape(6.dp))
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.primaryContainer)
+                .background(color = backgroundLazy)
                 .clickable { doSelected(item.idArticle) }
         ) {
             Spacer( modifier = modifier

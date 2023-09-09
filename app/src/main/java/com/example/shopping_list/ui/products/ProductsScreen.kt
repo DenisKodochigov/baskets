@@ -65,11 +65,12 @@ import com.example.shopping_list.ui.components.TextButtonOK
 import com.example.shopping_list.ui.components.dialog.EditQuantityDialog
 import com.example.shopping_list.ui.components.dialog.SelectSectionDialog
 import com.example.shopping_list.ui.theme.SectionColor
+import com.example.shopping_list.ui.theme.backgroundLazy
 import com.example.shopping_list.utils.log
 import com.example.shopping_list.utils.selectSectionWithArticle
 import com.example.shopping_list.utils.selectUnitWithArticle
 
-const val showLog = true
+const val showLog = false
 @Composable
 fun ProductsScreen(basketId: Long, showBottomSheet: MutableState<Boolean>) {
 
@@ -275,7 +276,7 @@ fun SectionProduct(
         Row(
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(6.dp))
-                .background(color = MaterialTheme.colorScheme.primaryContainer)
+                .background(color = backgroundLazy)
                 .fillMaxWidth()
         ) {
 //            log( showLog,"product:${item.article.nameArticle}, selected = ${item.isSelected}")

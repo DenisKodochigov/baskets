@@ -72,6 +72,7 @@ import com.example.shopping_list.ui.components.dialog.ChangeColorSectionDialog
 import com.example.shopping_list.ui.components.dialog.ChangeNameSectionDialog
 import com.example.shopping_list.ui.components.dialog.EditUnitDialog
 import com.example.shopping_list.ui.theme.ButtonColorsMy
+import com.example.shopping_list.ui.theme.backgroundLazy
 import com.example.shopping_list.ui.theme.styleApp
 
 @Composable fun SettingsScreen() {
@@ -177,7 +178,7 @@ fun SectionLazyColumn(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(6.dp))
                         .fillMaxWidth()
-                        .background(color = MaterialTheme.colorScheme.primaryContainer)
+                        .background(color = backgroundLazy)
                         .clickable { doSelected(item.idSection) }
                 ) {
 //                    Spacer( modifier = Modifier
@@ -292,7 +293,7 @@ fun LazyColumnUnits(
                         modifier = Modifier
                         .clip(shape = RoundedCornerShape(6.dp))
                         .fillMaxWidth()
-                        .background(color = MaterialTheme.colorScheme.primaryContainer)
+                        .background(color = backgroundLazy)
                         .clickable { doSelected(item.idUnit) }
                     ) {
                         Spacer( modifier = Modifier

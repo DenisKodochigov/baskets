@@ -19,8 +19,39 @@ val RobotoCondensed = FontFamily(
     Font(R.font.economica, FontWeight.Normal),
     Font(R.font.economica, FontWeight.Bold)
 )
-
-val typography = Typography(
+val typographyApp = Typography(
+    headlineSmall = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.sp
+    ),
+    titleLarge = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.sp
+    ),
+    bodyLarge = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.15.sp
+    ),
+    bodyMedium = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp
+    ),
+    labelMedium = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    )
+)
+//val typography = Typography(
 
 //    h1 = TextStyle(
 //        fontFamily = ScanFontFamily,
@@ -77,4 +108,4 @@ val typography = Typography(
 //        fontWeight = FontWeight.W500,
 //        fontSize = 10.sp
 //    )
-)
+//)

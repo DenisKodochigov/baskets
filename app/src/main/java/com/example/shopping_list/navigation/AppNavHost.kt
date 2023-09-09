@@ -2,7 +2,6 @@ package com.example.shopping_list.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -18,10 +17,9 @@ import com.example.shopping_list.ui.article.ArticlesScreen
 import com.example.shopping_list.ui.baskets.BasketsScreen
 import com.example.shopping_list.ui.products.ProductsScreen
 import com.example.shopping_list.ui.settings.SettingsScreen
-import com.example.shopping_list.utils.log
 
 @Composable
-fun AppAnimatedNavHost(
+fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     showBottomSheet: MutableState<Boolean>

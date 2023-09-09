@@ -48,11 +48,13 @@ import com.example.shopping_list.ui.components.HeaderScreen
 import com.example.shopping_list.ui.components.TextButtonOK
 import com.example.shopping_list.ui.components.dialog.EditBasketName
 import com.example.shopping_list.ui.theme.TextDate
+import com.example.shopping_list.ui.theme.backgroundLazy
 import com.example.shopping_list.ui.theme.styleApp
 import com.example.shopping_list.utils.DismissBackground
 import com.example.shopping_list.utils.log
 import java.util.*
 
+const val showLog = true
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun BasketsScreen( onClickBasket: (Long) -> Unit, showBottomSheet: MutableState<Boolean> ) {
@@ -71,7 +73,7 @@ fun BasketScreenCreateView(
     showBottomSheet: MutableState<Boolean>,
 ){
     val uiState by viewModel.basketScreenState.collectAsState()
-
+    log(showLog,"BasketScreenCreateView ${uiState.baskets.size}")
     if (showBottomSheet.value)
         AddBasketBottomSheet(
             onAddClick = {viewModel.addBasket(it)}, onDismiss = {showBottomSheet.value = false})
@@ -90,6 +92,7 @@ fun BasketsScreenLayout(
     changeNameBasket: (Basket) -> Unit,
     deleteBasket: (Long) -> Unit,
 ){
+    log(showLog,"BasketsScreenLayout")
     Column(Modifier.fillMaxHeight()) {
         BasketLazyColumn(uiState, onClickBasket, deleteBasket, changeNameBasket)
     }
@@ -105,6 +108,7 @@ fun BasketLazyColumn(
     changeNameBasket: (Basket) -> Unit,
 ){
 
+    log(showLog,"BasketLazyColumn")
     val editBasket: MutableState<Basket?> = remember {  mutableStateOf(null) }
     val show = remember { mutableStateOf(true) }
 
@@ -149,11 +153,13 @@ fun BasketLazyColumn(
 }
 
 @Composable fun ElementColumBasket(basket: Basket,onClickBasket: (Long) -> Unit){
+
+    log(showLog,"ElementColumBasket ${basket.nameBasket}")
     val modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     Row(modifier = Modifier
             .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.corner_default)))
             .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.primaryContainer)
+//            .background(color = backgroundLazy)
             .clickable { onClickBasket(basket.idBasket) },
         verticalAlignment = Alignment.CenterVertically)
     {
@@ -189,6 +195,7 @@ fun BasketLazyColumn(
 @Composable
 fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss:() -> Unit) {
 
+    log(showLog,"AddBasketBottomSheet")
     var nameNewBasket by remember { mutableStateOf(
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date().time)) }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -197,9 +204,7 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss:() -> Unit) {
 
     val sheetState = rememberModalBottomSheetState()
     ModalBottomSheet( onDismissRequest = onDismiss, sheetState = sheetState ) {
-        // Sheet content
 
-        log(true, "BottomSheetContentBasket.showBottomSheet.value = ")
         Column(
             Modifier
                 .fillMaxWidth()
