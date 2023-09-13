@@ -40,8 +40,8 @@ fun EditUnitDialog(
         } ) },
         text = { EditUnitDialogLayout(unitLocal) },
         title = {
-            if (unitApp.idUnit > 0) MyTextH2(stringResource(R.string.change_unit), Modifier)
-            else MyTextH2(stringResource(R.string.add_unit), Modifier)
+            if (unitApp.idUnit > 0) MyTextH2(stringResource(R.string.change_unit))
+            else MyTextH2(stringResource(R.string.add_unit))
         },
     )
 }
@@ -80,8 +80,8 @@ fun ChangeNameSectionDialog(
         } ) },
         text = { EditNameSectionLayout(unitLocal) },
         title = {
-            if (section.idSection > 0) MyTextH2(stringResource(R.string.change_unit), Modifier)
-            else MyTextH2(stringResource(R.string.add_unit), Modifier)
+            if (section.idSection > 0) MyTextH2(stringResource(R.string.change_unit))
+            else MyTextH2(stringResource(R.string.add_unit))
         },
     )
 }

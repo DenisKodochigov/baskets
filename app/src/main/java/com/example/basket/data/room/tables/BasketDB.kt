@@ -13,8 +13,8 @@ data class BasketDB(
     override var nameBasket: String = "",
     override var fillBasket: Boolean = false,
     override var quantity: Int = 0,
-    override var position: Int = 0,
+//    override var position: Int = 0,
 ): Basket {
-    @Ignore override var isSelected: Boolean = false
+//    @Ignore override var isSelected: Boolean = false
 }
 

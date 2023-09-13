@@ -15,10 +15,11 @@ import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.basket.ui.components.MyTextH2
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.R
+import com.example.basket.data.room.tables.BasketDB
 
 @Composable
 fun EditBasketName(
-    basket: Basket,
+    basket: BasketDB,
     onConfirm: (Basket) -> Unit,
     onDismiss: () -> Unit,)
 {
@@ -26,7 +27,7 @@ fun EditBasketName(
 
     AlertDialog(
         onDismissRequest = onDismiss ,
-        title = { MyTextH2(stringResource(R.string.change_name_basket), Modifier) },
+        title = { MyTextH2(stringResource(R.string.change_name_basket)) },
         text = { EditBasketNameDialogLayout(nameBasket) },
         confirmButton = {
             TextButtonOK( onConfirm = {

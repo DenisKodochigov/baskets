@@ -41,7 +41,7 @@ fun EditArticleDialog(
         onDismissRequest = onDismiss,
         confirmButton = { TextButtonOK( onConfirm = { onConfirm( articleLocal.value) } ) },
         text = { EditArticleDialogLayout( articleLocal, listUnit, listSection ) },
-        title = {  MyTextH2(stringResource(R.string.change_article), Modifier) },
+        title = {  MyTextH2(stringResource(R.string.change_article)) },
     )
 }
 

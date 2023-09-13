@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 val TextDate = Color(0xFF9C9C9C)
-val ButtonColorsMy = Color.LightGray
 val SectionColor = Color(0x22909EE7)
 
 val md_theme_light_primary = Color(0xFF2F5DA8)
@@ -274,7 +273,6 @@ val SlateGrey = Color(0xFF708090)
 val DarkSlateGray = Color(0xFF2F4F4F)
 val DarkSlateGrey = Color(0xFF2F4F4F)
 val Black1 = Color(0xFF000000)
-var backgroundLazy = Color(0xFFB4B4B4)
 
 val massColor = listOf(
         // Основные цвета

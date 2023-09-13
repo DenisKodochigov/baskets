@@ -37,6 +37,7 @@ import com.example.basket.entity.Wave
 import com.example.basket.ui.components.SliderApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.R
+import com.example.basket.ui.components.TextApp
 import org.intellij.lang.annotations.Language
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -97,7 +98,7 @@ import kotlin.math.roundToInt
             colorIndex = colorPosition.roundToInt()
         }
         Box {
-            Text(text = "Прозрачность", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
+            TextApp(text = "Прозрачность", style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL))
             SliderApp(
                 modifier = Modifier.padding(top = 4.dp),
                 position = alfaPosition,

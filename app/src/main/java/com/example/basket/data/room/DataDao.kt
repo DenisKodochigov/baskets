@@ -20,14 +20,14 @@ interface DataDao {
     fun deleteByIdBasket(id: Long)
     @Query("DELETE FROM tb_product WHERE basketId = :id")
     fun deleteByIdBasketProduct(id: Long)
-    @Query("SELECT * FROM tb_basket ORDER BY position ASC")
+    @Query("SELECT * FROM tb_basket ")  //ORDER BY position ASC
     fun getListBasket(): List<BasketDB>
     @Query("UPDATE tb_basket SET nameBasket = :newName WHERE idBasket =:basketId")
     fun changeNameBasket(basketId: Long, newName: String)
     @Query("SELECT nameBasket FROM tb_basket WHERE idBasket = :basketId")
     fun getNameBasket(basketId: Long): String
-    @Query("UPDATE tb_basket SET position = :position WHERE idBasket=:basketId ")
-    fun setPositionBasket(basketId: Long, position: Int)
+//    @Query("UPDATE tb_basket SET position = :position WHERE idBasket=:basketId ")
+//    fun setPositionBasket(basketId: Long, position: Int)
 
     /** Product entity*/
     @Insert

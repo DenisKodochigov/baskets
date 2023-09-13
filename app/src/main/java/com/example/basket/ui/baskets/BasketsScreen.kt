@@ -2,9 +2,6 @@ package com.example.basket.ui.baskets
 
 import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,18 +9,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material3.BottomAppBarDefaults.containerColor
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
@@ -37,20 +37,22 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.basket.R
+import com.example.basket.data.room.tables.BasketDB
 import com.example.basket.entity.Basket
 import com.example.basket.entity.TypeText
 import com.example.basket.ui.components.HeaderImScreen
 import com.example.basket.ui.components.HeaderScreen
+import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.dialog.EditBasketName
-import com.example.basket.ui.theme.TextDate
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.DismissBackground
 import com.example.basket.utils.log
-import com.example.basket.R
 import java.util.*
 
 const val showLog = true
@@ -60,7 +62,7 @@ fun BasketsScreen( onClickBasket: (Long) -> Unit, showBottomSheet: MutableState<
 
     val viewModel: BasketViewModel = hiltViewModel()
     viewModel.getListBasket()
-
+    log(showLog,"BasketsScreen")
     BasketScreenCreateView(
         onClickBasket = onClickBasket, viewModel = viewModel, showBottomSheet = showBottomSheet,)
 }
@@ -106,14 +108,13 @@ fun BasketLazyColumn(
     deleteBasket: (Long) -> Unit,
     changeNameBasket: (Basket) -> Unit,
 ){
-
-    log(showLog,"BasketLazyColumn")
+    val listState = rememberLazyListState()
     val editBasket: MutableState<Basket?> = remember {  mutableStateOf(null) }
     val show = remember { mutableStateOf(true) }
 
     if (editBasket.value != null){
         EditBasketName(
-            basket = editBasket.value!!,
+            basket = editBasket.value!! as BasketDB,
             onDismiss = { editBasket.value = null },
             onConfirm = {
                 changeNameBasket(editBasket.value!!)
@@ -122,7 +123,7 @@ fun BasketLazyColumn(
         )
     }
     LazyColumn (
-        state = rememberLazyListState(),
+        state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver)))
     {
@@ -135,25 +136,22 @@ fun BasketLazyColumn(
                         show.value = false
                         deleteBasket(item.idBasket)
                     } else if (it == DismissValue.DismissedToEnd) { editBasket.value = item}
-                      true
+                    false
                 }
             )
-            AnimatedVisibility( visible = show.value, exit = fadeOut(spring())) {
-                SwipeToDismiss(
-                    state = dismissState,
-                    modifier = Modifier.padding(vertical = 1.dp).animateItemPlacement(),
-                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                    background = { DismissBackground(dismissState) },
-                    dismissContent = { ElementColumBasket( item, onClickBasket ) }
-                )
-            }
+            SwipeToDismiss(
+                state = dismissState,
+                modifier = Modifier.padding(vertical = 1.dp).animateItemPlacement(),
+                directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+                background = { DismissBackground(dismissState) },
+                dismissContent = { ElementColumBasket( item, onClickBasket ) }
+            )
         }
     }
 }
 
 @Composable fun ElementColumBasket(basket: Basket,onClickBasket: (Long) -> Unit){
 
-    log(showLog,"ElementColumBasket ${basket.nameBasket}")
     val modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     Row(modifier = Modifier
             .clip(shape = MaterialTheme.shapes.extraSmall)
@@ -165,31 +163,31 @@ fun BasketLazyColumn(
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))){
-            Text(
+            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))
+        ){
+            TextApp(
                 text =  SimpleDateFormat("dd-MM", Locale.getDefault()).format(basket.dateB),
                 style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Text(
+            TextApp(
                 text = SimpleDateFormat("yyyy", Locale.getDefault()).format(basket.dateB),
-                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL)
             )
         }
-        Text(
+        TextApp(
             text = basket.nameBasket,
+            textAlign = TextAlign.Left,
             style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
-            modifier = modifier.weight(1f),
-            color = MaterialTheme.colorScheme.onSurface
+            modifier = modifier.weight(1f)
         )
-        Text(
+        TextApp(
             text = basket.quantity.toString(),
+            textAlign = TextAlign.Left,
             style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
-            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor)),
-            color = MaterialTheme.colorScheme.onSurface
+            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))
         )
     }
+    log(showLog,"ElementColumBasket ${basket.nameBasket}")
 }
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
@@ -201,10 +199,25 @@ fun BasketLazyColumn(
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
     val screenHeight = LocalConfiguration.current.screenHeightDp
+    var edgeToEdgeEnabled by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { true },
+        )
 
-    val sheetState = rememberModalBottomSheetState()
-    ModalBottomSheet( onDismissRequest = onDismiss, sheetState = sheetState ) {
+    val windowInsets = if (edgeToEdgeEnabled) WindowInsets(0) else BottomSheetDefaults.windowInsets
 
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.padding(horizontal = 56.dp),
+        shape = MaterialTheme.shapes.small,
+        containerColor = BottomSheetDefaults.ContainerColor,
+        contentColor = contentColorFor(containerColor),
+        tonalElevation = BottomSheetDefaults.Elevation,
+        scrimColor = BottomSheetDefaults.ScrimColor,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        windowInsets = windowInsets,
+        sheetState = sheetState ) {
         Column(
             Modifier
                 .fillMaxWidth()
@@ -213,6 +226,7 @@ fun BasketLazyColumn(
         ) {
             Spacer(Modifier.height(1.dp))
             HeaderScreen( text = stringResource(R.string.add_basket))
+            Spacer(Modifier.height(12.dp))
             OutlinedTextField(
                 value = nameNewBasket,
                 singleLine = true,
@@ -247,7 +261,4 @@ fun BasketLazyColumn(
 @Preview(showBackground = true)
 @Composable fun BottomSheetContentBasketPreview(){
     AddBasketBottomSheet ({},{})
-}
-@Preview(showBackground = true)
-@Composable fun BasketsScreenLayoutPreview(){
 }

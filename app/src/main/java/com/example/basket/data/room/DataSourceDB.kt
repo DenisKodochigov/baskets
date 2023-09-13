@@ -35,7 +35,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         return dataDao.checkBasketFromName(basketName)
     }
 
-    fun addBasket(basket: Basket): List<Basket> {
+    fun addBasket(basket: BasketDB): List<Basket> {
         basket.nameBasket = (basket.nameBasket[0].uppercase()+basket.nameBasket.substring(1)).trim()
         val existBasket = getBasket(basket.nameBasket)
         if (existBasket == null ) {

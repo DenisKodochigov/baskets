@@ -13,11 +13,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
@@ -30,6 +34,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.basket.data.room.tables.ArticleDB
@@ -41,12 +47,13 @@ import com.example.basket.ui.components.*
 import com.example.basket.ui.components.dialog.EditArticleDialog
 import com.example.basket.ui.components.dialog.SelectSectionDialog
 import com.example.basket.ui.theme.SectionColor
-import com.example.basket.ui.theme.backgroundLazy
 import com.example.basket.utils.DismissBackground
 import com.example.basket.utils.log
 import com.example.basket.utils.selectSectionWithArticle
 import com.example.basket.utils.selectUnitWithArticle
 import com.example.basket.R
+import com.example.basket.entity.TypeText
+import com.example.basket.ui.theme.styleApp
 
 const val showLog = false
 @Composable
@@ -93,7 +100,7 @@ fun ArticleScreenLayout(
     doSelected: (Long) -> Unit
 ) {
     log( showLog,"LayoutArticleScreen")
-    val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
+    val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -141,9 +148,7 @@ fun ArticleScreenLayout(
         startScreen = showFABs(
             startScreen = startScreen,
             isSelected =  uiState.article.flatten().find { it.isSelected } != null,
-            modifier = Modifier
-                .height(200.dp)
-                .align(alignment = Alignment.BottomCenter),
+            modifier = Modifier.height(150.dp).align(alignment = Alignment.BottomCenter),
             doDeleted = { deleteSelected.value = true },
             doChangeSection = { changeSectionSelected.value = true },
             doUnSelected = { unSelected.value = true }
@@ -237,9 +242,7 @@ fun ArticleLayoutColum(
                             show.value = false
                             article.isSelected = true
                             doDelete(mutableListOf(article))
-                        } else if (it == DismissValue.DismissedToEnd) {
-                            editArticle( article )
-                        }
+                        } else if (it == DismissValue.DismissedToEnd) { editArticle( article ) }
                         false
                     }
                 )
@@ -262,17 +265,19 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
     log( showLog,"ElementColum Articles")
     val localDensity = LocalDensity.current
     var heightIs by remember { mutableStateOf(0.dp) }
+//    val modifier = modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+    
     Box (modifier
         .padding(horizontal = 6.dp)
         .onGloballyPositioned { coordinates ->
-        heightIs = with(localDensity) { coordinates.size.height.toDp() } })
+            heightIs = with(localDensity) { coordinates.size.height.toDp() } })
     {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier
                 .clip(shape = RoundedCornerShape(6.dp))
                 .fillMaxWidth()
-                .background(color = backgroundLazy)
+                .background(color = MaterialTheme.colorScheme.surface)
                 .clickable { doSelected(item.idArticle) }
         ) {
             Spacer( modifier = modifier
@@ -281,22 +286,16 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
                 .background(if (item.isSelected) Color.Red else Color.LightGray)
                 .align(Alignment.CenterVertically)
             )
-            MyTextH2(
-                text = item.nameArticle,
-                modifier = modifier
-                    .weight(1f)
-                    .padding(
-                        start = dimensionResource(R.dimen.lazy_padding_hor),
-                        top = dimensionResource(R.dimen.lazy_padding_ver),
-                        bottom = dimensionResource(R.dimen.lazy_padding_ver)
-                    )
+            TextApp (text = item.nameArticle,
+                textAlign = TextAlign.Left,
+                modifier = modifier.weight(1f).padding(start = 6.dp).padding(vertical = 6.dp),
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SETTING)
             )
             Spacer(modifier = modifier.width(4.dp))
-            MyTextH2(
-                text = item.unitApp.nameUnit,
-                modifier = modifier
-                    .width(40.dp)
-                    .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+            TextApp (text = item.unitApp.nameUnit,
+                textAlign = TextAlign.Left,
+                modifier = modifier.width(40.dp),
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SETTING)
             )
         }
     }
@@ -308,7 +307,9 @@ fun AddEditArticleBottomSheet(
     uiState: ArticleScreenState, onAddArticle: (Article) -> Unit, onDismiss:() -> Unit )
 {
     log( showLog,"BottomSheetContentArticle")
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { true },)
     val nameSection = stringResource(R.string.name_section)
     val stuff = stringResource(R.string.unit_st)
     val screenHeight = LocalConfiguration.current.screenHeightDp
@@ -318,7 +319,17 @@ fun AddEditArticleBottomSheet(
     val enterUnit = remember { mutableStateOf(Pair<Long, String>(1, stuff)) }
     val listArticle = uiState.article.flatten()
 
-    ModalBottomSheet( onDismissRequest = onDismiss, sheetState = sheetState ) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.padding(horizontal = 12.dp),
+        shape = MaterialTheme.shapes.small,
+        containerColor = BottomSheetDefaults.ContainerColor,
+        contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
+        tonalElevation = BottomSheetDefaults.Elevation,
+        scrimColor = BottomSheetDefaults.ScrimColor,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        windowInsets = BottomSheetDefaults.windowInsets,
+        sheetState = sheetState  ) {
         if (enterUnit.value.first == 0L && enterUnit.value.second != "") {
             val id: Long =
                 uiState.unitApp.find { it.nameUnit == enterUnit.value.second }?.idUnit ?: 0L
@@ -399,5 +410,11 @@ fun AddEditArticleBottomSheet(
             Spacer(Modifier.height(72.dp))
         }
     }
+}
+@Preview
+@Composable fun ElementColumPreview(){
+    ElementColum(modifier = Modifier,
+        item = ArticleDB(nameArticle = "Moloko", sectionId = 1L, unitId = 1L) as Article,
+        doSelected = {})
 }
 

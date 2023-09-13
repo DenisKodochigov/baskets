@@ -34,9 +34,11 @@ import androidx.core.graphics.alpha
 import com.example.basket.navigation.Baskets
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.navigation.appTabRowScreens
+import com.example.basket.ui.baskets.showLog
 import com.example.basket.ui.theme.TabFadeInAnimationDelay
 import com.example.basket.ui.theme.TabFadeInAnimationDuration
 import com.example.basket.ui.theme.TabFadeOutAnimationDuration
+import com.example.basket.utils.log
 
 
 @Composable
@@ -111,31 +113,6 @@ private fun BottomTab(
                 .clearAndSetSemantics { contentDescription = text }
         )
     }
-//    Icon(
-//        imageVector = icon,
-//        contentDescription = text,
-//        tint = tabTintColor,
-//        modifier = Modifier
-//                .size(iconSize)
-////                .padding(start = 12.dp, end = 12.dp)
-////                .width(45.dp)
-//            .padding(start = 2.dp, end = 2.dp, top = 2.dp, bottom = 2.dp)
-//            .animateContentSize()
-//            .clearAndSetSemantics { contentDescription = text }
-//            .background(color = Color.Green)
-////            .selectable(
-////                selected = selected,
-////                onClick = onSelected,
-////                role = Role.Tab,
-////                interactionSource = remember { MutableInteractionSource() },
-////                indication = rememberRipple(
-////                    bounded = false,
-////                    radius = 0.dp,
-////                    color = Color.Unspecified
-////                )
-////            )
-//
-//    )
 }
 
 @Preview

@@ -42,6 +42,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -68,10 +70,9 @@ import com.example.basket.ui.components.HeaderSection
 import com.example.basket.ui.components.dialog.ChangeColorSectionDialog
 import com.example.basket.ui.components.dialog.ChangeNameSectionDialog
 import com.example.basket.ui.components.dialog.EditUnitDialog
-import com.example.basket.ui.theme.ButtonColorsMy
-import com.example.basket.ui.theme.backgroundLazy
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.R
+import com.example.basket.ui.components.TextApp
 
 @Composable fun SettingsScreen() {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -120,7 +121,7 @@ import com.example.basket.R
     doChangeSection: (Section) -> Unit,
     doDeleteSelected: (List<Section>) -> Unit,){
 
-    val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
+    val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val itemList = uiState.section
     if (isSelectedId.value > 0L) {
         itemList.find { it.idSection == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
@@ -176,20 +177,13 @@ fun SectionLazyColumn(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(6.dp))
                         .fillMaxWidth()
-                        .background(color = backgroundLazy)
+                        .background(color = MaterialTheme.colorScheme.surface)
                         .clickable { doSelected(item.idSection) }
                 ) {
-//                    Spacer( modifier = Modifier
-//                        .background(if (item.isSelected) Color.Red else Color.LightGray)
-//                        .width(8.dp)
-//                        .heightIn(min = 8.dp,max = 32.dp).fillMaxHeight()
-//                    )
-                    Text(
+                    TextApp(
                         text = item.nameSection,
                         style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),//   .h1,
                         textAlign = TextAlign.Start,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1F)
@@ -201,13 +195,13 @@ fun SectionLazyColumn(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Spacer(modifier = Modifier
-                        .size(size = 35.dp)
+                        .size(size = 32.dp)
                         .clip(shape = CircleShape)
                         .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = CircleShape)
                         .clickable { changeColorSection.value = item }
                         .background(color = Color(item.colorSection), shape = CircleShape))
                     Spacer(modifier = Modifier.width(24.dp))
-                    Icon( imageVector = Icons.Filled.Delete, null, tint = ButtonColorsMy )
+                    Icon( imageVector = Icons.Filled.Delete, null, tint = MaterialTheme.colorScheme.primary )
                     Spacer(modifier = Modifier.width(12.dp))
 
                 }
@@ -233,7 +227,7 @@ fun SectionLazyColumn(
     doChangeUnit: (UnitApp) -> Unit,
     doDeleteUnits: (List<UnitApp>) -> Unit,)
 {
-    val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
+    val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val itemList = uiState.unitApp
     if (isSelectedId.value > 0L) {
         itemList.find { it.idUnit == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
@@ -291,7 +285,7 @@ fun LazyColumnUnits(
                         modifier = Modifier
                         .clip(shape = RoundedCornerShape(6.dp))
                         .fillMaxWidth()
-                        .background(color = backgroundLazy)
+                        .background(color = MaterialTheme.colorScheme.surface)
                         .clickable { doSelected(item.idUnit) }
                     ) {
                         Spacer( modifier = Modifier
@@ -299,13 +293,11 @@ fun LazyColumnUnits(
                             .width(8.dp)
                             .heightIn(min = 8.dp,max = 32.dp).fillMaxHeight()
                             .align(Alignment.CenterVertically))
-                        Text(
+                        TextApp(
                             text = item.nameUnit,
                             style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.fillMaxWidth().weight(1f),
-                            textAlign = TextAlign.Center,
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
@@ -326,7 +318,7 @@ fun LazyColumnUnits(
 }
 
 @Composable fun ChangeStyle(){
-    var sliderPosition by remember{ mutableStateOf(AppBase.scale.toFloat()) }
+    var sliderPosition by remember{ mutableFloatStateOf(AppBase.scale.toFloat()) }
     HeaderSection(text = "Размер шрифта", Modifier)
     Slider(
         value = sliderPosition,

@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.Divider
@@ -25,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -63,7 +66,6 @@ import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.dialog.EditQuantityDialog
 import com.example.basket.ui.components.dialog.SelectSectionDialog
 import com.example.basket.ui.theme.SectionColor
-import com.example.basket.ui.theme.backgroundLazy
 import com.example.basket.utils.log
 import com.example.basket.utils.selectSectionWithArticle
 import com.example.basket.utils.selectUnitWithArticle
@@ -92,7 +94,7 @@ fun ProductScreenCreateView(
     log( showLog,"ProductScreenCreateView. ${uiState.products.size}")
 
     if (showBottomSheet.value)
-        LayoutAddEditProduct(
+        AddEditProductBottomSheet(
             uiState = uiState,
             onAddProduct = { product: Product -> viewModel.addProduct(product, basketId) },
             onDismiss = { showBottomSheet.value = false})
@@ -160,7 +162,7 @@ fun ProductsScreenLayout(
         startScreen = showFABs(
             startScreen = startScreen,
             isSelected = uiState.products.flatten().find { it.isSelected } != null,
-            modifier = Modifier.height(200.dp).align(alignment = Alignment.BottomCenter),
+            modifier = Modifier.height(150.dp).align(alignment = Alignment.BottomCenter),
             doDeleted = { deleteSelected.value = true },
             doChangeSection = { changeSectionSelected.value = true },
             doUnSelected = { unSelected.value = true }
@@ -257,7 +259,6 @@ fun ProductsLayoutColum(
     }
 }
 
-
 @Composable
 fun SectionProduct(
     sectionItems: Product,
@@ -275,7 +276,7 @@ fun SectionProduct(
         Row(
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(6.dp))
-                .background(color = backgroundLazy)
+                .background(color = MaterialTheme.colorScheme.surface)
                 .fillMaxWidth()
         ) {
 //            log( showLog,"product:${item.article.nameArticle}, selected = ${item.isSelected}")
@@ -288,7 +289,7 @@ fun SectionProduct(
                     .clickable { doSelected(sectionItems.idProduct) }
             )
             MyTextH1(
-                sectionItems.article.nameArticle,
+                text = sectionItems.article.nameArticle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .weight(1f)
@@ -309,7 +310,7 @@ fun SectionProduct(
                     .clickable { editProduct(sectionItems) })
             Spacer(modifier = Modifier.width(4.dp))
             MyTextH1(
-                sectionItems.article.unitApp.nameUnit,
+                text = sectionItems.article.unitApp.nameUnit,
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .width(50.dp)
@@ -329,7 +330,7 @@ fun SectionProduct(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -> Unit, onDismiss:() -> Unit) {
+fun AddEditProductBottomSheet(uiState: ProductsScreenState, onAddProduct: (Product) -> Unit, onDismiss:() -> Unit) {
 
     log( showLog, "LayoutAddEditProduct")
     val nameSection = stringResource(R.string.name_section)
@@ -338,7 +339,9 @@ fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -
     val enterArticle = remember { mutableStateOf(Pair<Long, String>(0, "")) }
     val enterSection = remember { mutableStateOf(Pair<Long, String>(1, nameSection)) }
     val enterUnit = remember { mutableStateOf(Pair<Long, String>(1, unitStuff)) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { true },)
 
     enterArticle.value = Pair(
         uiState.articles.find { it.nameArticle == enterArticle.value.second }?.idArticle ?: 0L,
@@ -359,7 +362,17 @@ fun LayoutAddEditProduct(uiState: ProductsScreenState, onAddProduct: (Product) -
         )
     }
 
-    ModalBottomSheet( onDismissRequest = onDismiss, sheetState = sheetState ) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.padding(horizontal = 12.dp),
+        shape = MaterialTheme.shapes.small,
+        containerColor = BottomSheetDefaults.ContainerColor,
+        contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
+        tonalElevation = BottomSheetDefaults.Elevation,
+        scrimColor = BottomSheetDefaults.ScrimColor,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        windowInsets = BottomSheetDefaults.windowInsets,
+        sheetState = sheetState  ) {
 
         Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)) {
             HeaderScreen( text = stringResource(R.string.add_product))

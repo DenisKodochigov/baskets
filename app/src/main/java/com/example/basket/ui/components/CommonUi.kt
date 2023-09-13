@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,27 +37,26 @@ import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import com.example.basket.R
 import com.example.basket.entity.CustomTriangleShape
 import com.example.basket.entity.Direcions
 import com.example.basket.entity.SortingBy
 import com.example.basket.entity.TypeText
-import com.example.basket.ui.theme.ButtonColorsMy
 import com.example.basket.ui.theme.styleApp
-import com.example.basket.R
 
 @Composable
 fun HeaderScreen(text: String) {
     Spacer(modifier = Modifier.height(24.dp))
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        Text(text, style = styleApp(nameStyle = TypeText.NAME_SCREEN))
+        TextApp(text = text, style = styleApp(nameStyle = TypeText.NAME_SCREEN))
     }
 }
 
@@ -73,9 +71,10 @@ fun HeaderImScreen(text: String, idImage:Int ) {
         )
         Box(modifier = Modifier
             .fillMaxWidth()
-//            .background(ScaffoldColor)
             .padding(horizontal = 12.dp, vertical = 4.dp)) {
-            Text( text = text, style = styleApp(nameStyle = TypeText.NAME_SCREEN),
+            TextApp(
+                text = text,
+                style = styleApp(nameStyle = TypeText.NAME_SCREEN),
                 modifier = Modifier.align(alignment = Alignment.BottomCenter) )
         }
     }
@@ -87,7 +86,7 @@ fun HeaderSection(text: String, modifier: Modifier) {
         modifier
             .fillMaxWidth()
             .padding(start = 12.dp), horizontalArrangement = Arrangement.Start) {
-        Text(text, style = styleApp(nameStyle = TypeText.NAME_SECTION))
+        TextApp(text, style = styleApp(nameStyle = TypeText.NAME_SECTION))
     }
 }
 
@@ -120,6 +119,7 @@ fun MyExposedDropdownMenuBox(
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth(1f)
+                .background(color = MaterialTheme.colorScheme.surface)
                 .onFocusChanged { focusItem = it.isFocused },
             value = enteredText,
             singleLine = true,
@@ -133,7 +133,7 @@ fun MyExposedDropdownMenuBox(
                 expandedLocal = true
             },
             label = { if (label != null)
-                Text(text = label, style = styleApp(nameStyle = TypeText.EDIT_TEXT_TITLE)) },
+                TextApp(text = label, style = styleApp(nameStyle = TypeText.EDIT_TEXT_TITLE)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedLocal) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
@@ -160,34 +160,45 @@ fun MyExposedDropdownMenuBox(
                             enterValue!!.value = item
                             localFocusManager.clearFocus() },
                         text = {
-                            Text(text = item.second, style = styleApp(nameStyle = TypeText.EDIT_TEXT))}
+                            TextApp(text = item.second, style = styleApp(nameStyle = TypeText.EDIT_TEXT))}
                     ) 
                 }
             }
         } else expandedLocal = false
     }
 }
-
-@Composable
-fun MyTextH1(text: String, modifier: Modifier, textAlign: TextAlign) {
+@Composable fun TextApp(
+    text: String,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Center,
+    style: TextStyle,
+    fontWeight: FontWeight = FontWeight.Normal
+) {
     Text(
         text = text,
-        style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
+        style = style,
         maxLines = 1,
+        fontWeight = fontWeight,
         overflow = TextOverflow.Ellipsis,
+        textAlign = textAlign,
         modifier = modifier,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+}
+@Composable
+fun MyTextH1(text: String, modifier: Modifier, textAlign: TextAlign) {
+    TextApp (text = text,
+        modifier = modifier,
+        style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
         textAlign = textAlign
     )
 }
 
 @Composable
-fun MyTextH2(text: String, modifier: Modifier) {
-    Text(
-        text = text,
-        style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SETTING),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = modifier
+fun MyTextH2(text: String, modifier: Modifier = Modifier) {
+    TextApp (text = text,
+        modifier = modifier,
+        style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SETTING)
     )
 }
 
@@ -198,7 +209,7 @@ fun TextButtonOK(onConfirm: () -> Unit, enabled: Boolean = true) {
         modifier = Modifier.fillMaxWidth()
     ) {
         TextButton(onClick = onConfirm, enabled = enabled) {
-            MyTextH2( stringResource(R.string.ok), Modifier)
+            MyTextH2( stringResource(R.string.ok))
         }
     }
 }
@@ -216,7 +227,7 @@ fun MyOutlinedTextFieldWithoutIcon(
         KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
 
     OutlinedTextField(
-        modifier = modifier,
+        modifier = modifier.background(color = MaterialTheme.colorScheme.surface),
         value = enterText,
         singleLine = true,
         textStyle = styleApp(nameStyle = TypeText.EDIT_TEXT),
@@ -255,7 +266,9 @@ fun MyOutlinedTextFieldWithoutIconClearing(
         KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
 
     OutlinedTextField(
-        modifier = modifier.onFocusChanged { focusItem = it.isFocused },
+        modifier = modifier
+            .onFocusChanged { focusItem = it.isFocused }
+            .background(color = MaterialTheme.colorScheme.surface),
         value = enterText,
         singleLine = true,
         textStyle = styleApp(nameStyle = TypeText.EDIT_TEXT),
@@ -284,7 +297,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(
             .clip(RoundedCornerShape(radius, radius, radius, radius))
             .size(60.dp),
         onClick = { onClick() }) {
-        Icon( imageVector = iconButton, null, tint = ButtonColorsMy , modifier = Modifier.size(60.dp))
+        Icon( imageVector = iconButton, null, tint = MaterialTheme.colorScheme.primary , modifier = Modifier.size(60.dp))
     }
 }
 
@@ -307,10 +320,11 @@ fun MyOutlinedTextFieldWithoutIconClearing(
 }
 
 @Composable fun ShowFABs_(show: Boolean, modifier: Modifier, doDeleted: ()->Unit, doChangeSection: ()->Unit, doUnSelected:()->Unit){
+    val offset = 48.dp
     Box( modifier ) {
         FabAnimation(show = show, offset = 0.dp, icon = Icons.Filled.Delete, onClick = doDeleted)
-        FabAnimation(show = show, offset = 64.dp, icon = Icons.Filled.Dns, onClick = doChangeSection)
-        FabAnimation(show = show, offset = 128.dp, icon = Icons.Filled.RemoveDone, onClick = doUnSelected)
+        FabAnimation(show = show, offset = offset, icon = Icons.Filled.Dns, onClick = doChangeSection)
+        FabAnimation(show = show, offset = offset * 2, icon = Icons.Filled.RemoveDone, onClick = doUnSelected)
     }
 }
 
@@ -332,41 +346,19 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
                 sortingPosition = !sortingPosition
             }
     ) {
-        Text(
+        TextApp(
             text = stringResource(id = R.string.by_name),
             fontWeight = if (sortingPosition) FontWeight.Bold else FontWeight.Normal,
             style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL)
         )
         Spacer(modifier = Modifier.width(24.dp))
-        Text(
+        TextApp(
             text = stringResource(id = R.string.by_section),
             fontWeight = if (!sortingPosition) FontWeight.Bold else FontWeight.Normal,
             style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL)
         )
     }
 }
-
-@Composable
-fun TextForSwitchingButton(text: String, frameSize: Dp, modifier: Modifier){
-    Box(modifier = modifier.width(frameSize)){
-        Text( text = text, style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
-            modifier = Modifier
-                .padding(horizontal = 4.dp, vertical = 4.dp)
-                .align(alignment = Alignment.Center)
-        )
-    }
-}
-
-@Composable fun CircleMy(color: Color){
-    Box(
-        modifier = Modifier
-            .size(size = 40.dp)
-            .clip(shape = CircleShape)
-            .background(color = color)
-    ) {
-    }
-}
-
 
 @Composable fun SliderApp(
     modifier: Modifier = Modifier,
@@ -376,19 +368,6 @@ fun TextForSwitchingButton(text: String, frameSize: Dp, modifier: Modifier){
     direction: Direcions,
     onSelected: (Float)->Unit )
 {
-//    Slider(
-//        modifier = modifier,
-//        value = position,
-//        valueRange = valueRange,
-//        steps = step,
-//        onValueChange = { onSelected(it)},
-//        colors = SliderDefaults.colors(
-//            thumbColor = Color(0xFF575757),
-//            activeTrackColor = Color(0xFFA2A2A2),
-//            inactiveTrackColor = Color(0xFFA2A2A2),
-//            inactiveTickColor = Color(0xFFA2A2A2),
-//            activeTickColor = Color(0xFFA2A2A2)
-//        ))
     SliderApp1(
         modifier = modifier,
         position = position,
@@ -426,7 +405,7 @@ fun TextForSwitchingButton(text: String, frameSize: Dp, modifier: Modifier){
         valueRange = valueRange,
         steps = step,
         onValueChange = { onSelected(it) },
-        thumb = { thumbValue ->
+        thumb = {
             SliderDefaults.Thumb(
                 modifier = Modifier.background(
                         color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -437,22 +416,5 @@ fun TextForSwitchingButton(text: String, frameSize: Dp, modifier: Modifier){
                 colors = colors
             )
         },
-//        track = { position ->
-//            Box(
-//                modifier = Modifier
-////                    .border(
-////                        width = 1.dp,
-////                        color = Color.LightGray.copy(alpha = 0.4f),
-////                        shape = RectangleShape
-////                    )
-//                    .background(Color.LightGray)
-//                    .padding(3.5.dp),
-//                contentAlignment = Alignment.CenterStart
-//            ) {
-//                Box( modifier = Modifier
-//                        .background( brush = Brush.linearGradient(listOf(Color.LightGray, Color.Gray)))
-//                )
-//            }
-//        }
     )
 }

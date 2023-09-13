@@ -102,7 +102,6 @@ fun AppTheme(content: @Composable () -> Unit) {
         }
     }
     MaterialTheme(colorScheme = colorSchemeApp, content = content, shapes = shapes)
-    backgroundLazy = MaterialTheme.colorScheme.secondaryContainer
 }
 
 @Composable fun styleApp(nameStyle: TypeText): TextStyle{

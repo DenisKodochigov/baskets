@@ -41,7 +41,7 @@ fun EditQuantityDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { MyTextH2(stringResource(R.string.change_quantity), Modifier) },
+        title = { MyTextH2(stringResource(R.string.change_quantity)) },
         text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
         confirmButton = {
             TextButtonOK(
@@ -112,7 +112,7 @@ fun SelectSectionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { MyTextH2(stringResource(R.string.change_section), Modifier) },
+        title = { MyTextH2(stringResource(R.string.change_section)) },
         text = { SelectSectionDialogLayout(enterSection, listSection) },
         dismissButton = { },
         confirmButton = { TextButtonOK(onConfirm = { onConfirm(enterSection.value.first) }) }
