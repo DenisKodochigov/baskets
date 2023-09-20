@@ -59,8 +59,7 @@ import kotlin.math.roundToInt
     val heightSliderHor = 20.dp
 
     colorSelected = calculateColor(
-        Color(
-            waveToRGB(listColor[colorIndex].wave, alfaPosition.roundToInt(), 255).color)
+        Color(waveToRGB(listColor[colorIndex].wave, alfaPosition.roundToInt(), 255).color)
         , horPosition, verPosition
     ).toArgb().toLong()
     Text(text = "")

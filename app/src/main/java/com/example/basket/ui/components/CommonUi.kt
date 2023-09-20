@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -49,6 +50,7 @@ import com.example.basket.R
 import com.example.basket.entity.CustomTriangleShape
 import com.example.basket.entity.Direcions
 import com.example.basket.entity.SortingBy
+import com.example.basket.entity.TagsTesting.BUTTON_OK
 import com.example.basket.entity.TypeText
 import com.example.basket.ui.theme.styleApp
 
@@ -209,7 +211,11 @@ fun TextButtonOK(onConfirm: () -> Unit, enabled: Boolean = true) {
         modifier = Modifier.fillMaxWidth()
     ) {
         TextButton(onClick = onConfirm, enabled = enabled) {
-            MyTextH2( stringResource(R.string.ok))
+            TextApp(
+                text = stringResource(R.string.ok),
+                modifier = Modifier.testTag(BUTTON_OK),
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SETTING)
+            )
         }
     }
 }

@@ -162,7 +162,8 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
     }
 
     fun changeSection(section: Section): List<Section> {
-        dataDao.changeSection(section as SectionDB)
+        if (section.idSection == 0L) dataDao.addSection(section as SectionDB)
+        else dataDao.changeSection(section as SectionDB)
         return dataDao.getSections()
     }
 

@@ -87,7 +87,7 @@ import com.example.basket.ui.components.TextApp
         uiState = uiState,
         doChangeUnit = { unit -> viewModel.changeUnit(unit) },
         doDeleteUnits = { units -> viewModel.doDeleteUnits(units) },
-        doChangeSection = { section -> viewModel.changeSectionColor(section) },
+        doChangeSection = { section -> viewModel.doChangeSection(section) },
         doDeleteSelected = { sections -> viewModel.doDeleteSections(sections) },
     )
 }
@@ -111,7 +111,7 @@ import com.example.basket.ui.components.TextApp
         AddEditUnits(modifier, uiState, doChangeUnit, doDeleteUnits)
         AddEditSection(modifier, uiState, doChangeSection, doDeleteSelected)
         ChangeStyle()
-        FontStyleView()
+//        FontStyleView()
     }
 }
 
@@ -201,22 +201,20 @@ fun SectionLazyColumn(
                         .clickable { changeColorSection.value = item }
                         .background(color = Color(item.colorSection), shape = CircleShape))
                     Spacer(modifier = Modifier.width(24.dp))
-                    Icon( imageVector = Icons.Filled.Delete, null, tint = MaterialTheme.colorScheme.primary )
+                    Icon( imageVector = Icons.Filled.Delete, null,
+                        tint = MaterialTheme.colorScheme.primary ,
+                        modifier = Modifier.clickable { doDeleteSelected(listOf(
+                            SectionDB(nameSection = item.nameSection,
+                                idSection = item.idSection,
+                                colorSection = item.colorSection,
+                                isSelected = true))) })
                     Spacer(modifier = Modifier.width(12.dp))
-
                 }
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            ButtonCircle(Modifier, Icons.Filled.AddCircle) { editNameSection.value = SectionDB() }
-            Spacer(modifier = Modifier.width(12.dp))
-//            ButtonCircle(Modifier, Icons.Filled.ChangeCircle) {
-//                uiState.section.find { it.isSelected }?.let { editItem.value = it } }
-//            Spacer(modifier = Modifier.width(12.dp))
-//            ButtonCircle(Modifier, Icons.Filled.Delete) {
-//                uiState.section.find { it.isSelected }?.let { doDeleteSelected(uiState.section) }
-//            }
+            ButtonCircle(Modifier.size(40.dp), Icons.Filled.AddCircle) { editNameSection.value = SectionDB() }
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
@@ -305,12 +303,12 @@ fun LazyColumnUnits(
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            ButtonCircle(Modifier, Icons.Filled.AddCircle) { editUnit.value = UnitDB() }
+            ButtonCircle(Modifier.size(40.dp), Icons.Filled.AddCircle) { editUnit.value = UnitDB() }
             Spacer(modifier = Modifier.width(12.dp))
-            ButtonCircle(Modifier, Icons.Filled.ChangeCircle) {
+            ButtonCircle(Modifier.size(40.dp), Icons.Filled.ChangeCircle) {
                 uiState.unitApp.find { it.isSelected }?.let { editUnit.value = it } }
             Spacer(modifier = Modifier.width(12.dp))
-            ButtonCircle(Modifier, Icons.Filled.Delete) {
+            ButtonCircle(Modifier.size(40.dp), Icons.Filled.Delete) {
                 uiState.unitApp.find { it.isSelected }?.let { doDeleteSelected(uiState.unitApp) }
             }
         }
@@ -319,7 +317,7 @@ fun LazyColumnUnits(
 
 @Composable fun ChangeStyle(){
     var sliderPosition by remember{ mutableFloatStateOf(AppBase.scale.toFloat()) }
-    HeaderSection(text = "Размер шрифта", Modifier)
+    HeaderSection(text = stringResource(R.string.font_size), Modifier)
     Slider(
         value = sliderPosition,
         valueRange = 0f..2f,

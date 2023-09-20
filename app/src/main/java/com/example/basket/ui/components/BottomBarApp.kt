@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,36 +23,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.alpha
+import com.example.basket.entity.TagsTesting.BOTTOM_APP_BAR
 import com.example.basket.navigation.Baskets
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.navigation.appTabRowScreens
-import com.example.basket.ui.baskets.showLog
 import com.example.basket.ui.theme.TabFadeInAnimationDelay
 import com.example.basket.ui.theme.TabFadeInAnimationDuration
 import com.example.basket.ui.theme.TabFadeOutAnimationDuration
-import com.example.basket.utils.log
 
 
 @Composable
-fun BottomBarApp(currentScreen: ScreenDestination, onTabSelection:(ScreenDestination) -> Unit) {
+fun BottomBarApp(currentScreen: ScreenDestination, onTabSelection: (ScreenDestination) -> Unit) {
     BottomAppBar(
         tonalElevation = 1.dp,
         modifier = Modifier
             .background(color = Color.Transparent)  //MaterialTheme.colorScheme.surface)
             .height(48.dp)
+            .testTag(BOTTOM_APP_BAR)
             .clip(shape = MaterialTheme.shapes.small)
-    ){
+    ) {
         BottomTabRow(
             allScreens = appTabRowScreens,
             currentScreen = currentScreen,
-            onTabSelected = onTabSelection)
+            onTabSelected = onTabSelection
+        )
     }
 }
 
@@ -64,15 +64,21 @@ fun BottomTabRow(
     currentScreen: ScreenDestination
 ) {
 
-    Row(modifier = Modifier.fillMaxSize().selectableGroup().padding(bottom = 4.dp),
-        verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .selectableGroup()
+            .padding(bottom = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         allScreens.forEachIndexed { index, screen ->
             if (index == allScreens.size - 1) Spacer(modifier = Modifier.weight(1f))
             BottomTab(
                 text = screen.route,
                 icon = screen.icon,
                 onSelected = { onTabSelected(screen) },
-                selected = currentScreen == screen )
+                selected = currentScreen == screen
+            )
         }
     }
 }
@@ -82,26 +88,34 @@ private fun BottomTab(
     text: String,
     icon: ImageVector,
     onSelected: () -> Unit,
-    selected: Boolean)
-{
+    selected: Boolean
+) {
     val animationSpec = remember {
-        tween<Color>(easing = LinearEasing, delayMillis = TabFadeInAnimationDelay,
+        tween<Color>(
+            easing = LinearEasing, delayMillis = TabFadeInAnimationDelay,
             durationMillis = if (selected) TabFadeInAnimationDuration
-            else TabFadeOutAnimationDuration)
+            else TabFadeOutAnimationDuration
+        )
     }
 
     val colorUnselected = Color(
         MaterialTheme.colorScheme.primary.red,
         MaterialTheme.colorScheme.primary.green,
         MaterialTheme.colorScheme.primary.blue,
-        MaterialTheme.colorScheme.primary.alpha * 0.7f)
+        MaterialTheme.colorScheme.primary.alpha * 0.6f
+    )
 
     val iconColor by animateColorAsState(
         label = "", animationSpec = animationSpec,
         targetValue = if (selected) MaterialTheme.colorScheme.primary else colorUnselected,
     )
 
-    IconButton( onClick = onSelected, modifier = Modifier.size(46.dp)) {
+    IconButton(
+        onClick = onSelected,
+        modifier = Modifier
+            .size(46.dp)
+            .testTag(text)
+    ) {
         Icon(
             imageVector = icon,
             contentDescription = text,
@@ -117,6 +131,6 @@ private fun BottomTab(
 
 @Preview
 @Composable
-fun BottomBarAppPreview(){
+fun BottomBarAppPreview() {
     BottomBarApp(currentScreen = Baskets, {})
 }

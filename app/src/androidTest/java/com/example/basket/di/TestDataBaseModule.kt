@@ -4,10 +4,14 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.basket.R
 import com.example.basket.data.room.AppDatabase
 import com.example.basket.data.room.DataDao
-import com.example.basket.data.room.tables.*
-import com.example.basket.R
+import com.example.basket.data.room.tables.ArticleDB
+import com.example.basket.data.room.tables.BasketDB
+import com.example.basket.data.room.tables.ProductDB
+import com.example.basket.data.room.tables.SectionDB
+import com.example.basket.data.room.tables.UnitDB
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +21,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DatabaseModule {
+object TestDataBaseModule {
     lateinit var database: AppDatabase
     @Provides
     @Singleton
@@ -27,16 +31,16 @@ object DatabaseModule {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     ioThread {
-                        database.dataDao().newBasket(BasketDB(nameBasket = "0 basket", dateB = 100000000L))
-                        database.dataDao().newBasket(BasketDB(nameBasket = "1 basket", dateB = 200000000L))
-                        database.dataDao().newBasket(BasketDB(nameBasket = "2 basket", dateB = 300000000L))
-                        database.dataDao().newBasket(BasketDB(nameBasket = "3 basket", dateB = 400000000L))
-                        database.dataDao().newBasket(BasketDB(nameBasket = "4 basket", dateB = 500000000L))
-                        database.dataDao().newBasket(BasketDB(nameBasket = "5 basket", dateB = 600000000L))
-                        database.dataDao().newBasket(BasketDB(nameBasket = "6 basket", dateB = 700000000L))
-                        database.dataDao().newBasket(BasketDB(nameBasket = "7 basket", dateB = 800000000L))
-                        database.dataDao().newBasket(BasketDB(nameBasket = "8 basket", dateB = 900000000L))
-                        database.dataDao().newBasket(BasketDB(nameBasket = "9 basket", dateB = 1000000000L))
+                        database.dataDao().newBasket(BasketDB(nameBasket = "0 basket", dateB = 1L))
+                        database.dataDao().newBasket(BasketDB(nameBasket = "1 basket", dateB = 2L))
+                        database.dataDao().newBasket(BasketDB(nameBasket = "2 basket", dateB = 3L))
+                        database.dataDao().newBasket(BasketDB(nameBasket = "3 basket", dateB = 4L))
+                        database.dataDao().newBasket(BasketDB(nameBasket = "4 basket", dateB = 5L))
+                        database.dataDao().newBasket(BasketDB(nameBasket = "5 basket", dateB = 6L))
+                        database.dataDao().newBasket(BasketDB(nameBasket = "6 basket", dateB = 7L))
+                        database.dataDao().newBasket(BasketDB(nameBasket = "7 basket", dateB = 8L))
+                        database.dataDao().newBasket(BasketDB(nameBasket = "8 basket", dateB = 9L))
+                        database.dataDao().newBasket(BasketDB(nameBasket = "9 basket", dateB = 10L))
                         database.dataDao().addSection(SectionDB(nameSection = appContext.getString(R.string.name_section)))
                         database.dataDao().addSection(SectionDB(nameSection = "Продукты"))
                         database.dataDao().addSection(SectionDB(nameSection = "Молочные"))
@@ -74,22 +78,6 @@ object DatabaseModule {
                 }
             })
             .build()
-//        database = Room.databaseBuilder(appContext, AppDatabase::class.java, "data.db")
-//            .addCallback( object: RoomDatabase.Callback(){
-//                override fun onCreate(db: SupportSQLiteDatabase) {
-//                    super.onCreate(db)
-//                    ioThread {
-////                        database.dataDao().newBasket(BasketEntity(nameBasket = "Test"))
-//                        database.dataDao().addSection(SectionDB(nameSection = appContext.getString(R.string.name_section)))
-//                        database.dataDao().addUnit(UnitDB(nameUnit = appContext.getString(R.string.unit_st)))
-//                        database.dataDao().addUnit(UnitDB(nameUnit = appContext.getString(R.string.unit_kg)))
-//                        database.dataDao().addUnit(UnitDB(nameUnit = appContext.getString(R.string.unit_gr)))
-//                        database.dataDao().addUnit(UnitDB(nameUnit = appContext.getString(R.string.unit_l)))
-//                    }
-//                }
-//            })
-//            .build()
-//        database = Room.databaseBuilder( appContext, AppDatabase::class.java, "data.db").build()
         return database
     }
 
@@ -98,4 +86,3 @@ object DatabaseModule {
         return database.dataDao()
     }
 }
-

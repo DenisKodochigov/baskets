@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -39,6 +40,7 @@ fun EditArticleDialog(
     val articleLocal = remember{ mutableStateOf(article) }
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.small,
         confirmButton = { TextButtonOK( onConfirm = { onConfirm( articleLocal.value) } ) },
         text = { EditArticleDialogLayout( articleLocal, listUnit, listSection ) },
         title = {  MyTextH2(stringResource(R.string.change_article)) },

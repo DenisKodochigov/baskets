@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,7 @@ fun EditQuantityDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.small,
         title = { MyTextH2(stringResource(R.string.change_quantity)) },
         text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
         confirmButton = {
@@ -112,6 +114,7 @@ fun SelectSectionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.small,
         title = { MyTextH2(stringResource(R.string.change_section)) },
         text = { SelectSectionDialogLayout(enterSection, listSection) },
         dismissButton = { },

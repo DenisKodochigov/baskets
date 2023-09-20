@@ -70,6 +70,9 @@ import com.example.basket.utils.log
 import com.example.basket.utils.selectSectionWithArticle
 import com.example.basket.utils.selectUnitWithArticle
 import com.example.basket.R
+import com.example.basket.entity.TypeText
+import com.example.basket.ui.components.TextApp
+import com.example.basket.ui.theme.styleApp
 
 const val showLog = false
 @Composable
@@ -288,9 +291,7 @@ fun SectionProduct(
                     .align(Alignment.CenterVertically)
                     .clickable { doSelected(sectionItems.idProduct) }
             )
-            MyTextH1(
-                text = sectionItems.article.nameArticle,
-                textAlign = TextAlign.Start,
+            TextApp (text = sectionItems.article.nameArticle,
                 modifier = Modifier
                     .weight(1f)
                     .clickable { doSelected(sectionItems.idProduct) }
@@ -298,19 +299,25 @@ fun SectionProduct(
                         start = dimensionResource(R.dimen.lazy_padding_hor),
                         top = dimensionResource(R.dimen.lazy_padding_ver),
                         bottom = dimensionResource(R.dimen.lazy_padding_ver)
-                    )
+                    ),
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
+                textAlign = TextAlign.Start
             )
             Spacer(modifier = Modifier.width(4.dp))
             val num = if (sectionItems.value.rem(1).equals(0.0)) sectionItems.value.toInt()
             else sectionItems.value
-            MyTextH1(text = num.toString(), textAlign = TextAlign.End,
+
+            TextApp (text = num.toString(),
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
+                textAlign = TextAlign.End,
                 modifier = Modifier
                     .width(70.dp)
                     .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-                    .clickable { editProduct(sectionItems) })
+                    .clickable { editProduct(sectionItems) },
+            )
             Spacer(modifier = Modifier.width(4.dp))
-            MyTextH1(
-                text = sectionItems.article.unitApp.nameUnit,
+            TextApp (text = sectionItems.article.unitApp.nameUnit,
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .width(50.dp)

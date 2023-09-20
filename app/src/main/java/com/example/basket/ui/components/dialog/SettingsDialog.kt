@@ -1,20 +1,34 @@
 package com.example.basket.ui.components.dialog
 
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColor
 import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Section
@@ -35,6 +49,7 @@ fun EditUnitDialog(
     val unitLocal = remember{ mutableStateOf(unitApp) }
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.small,
         confirmButton = { TextButtonOK( onConfirm = {
             onConfirm( unitLocal.value )
         } ) },
@@ -59,7 +74,10 @@ fun LayoutAddEditUnit(unitApp: MutableState<UnitApp>)
 {
     val enterNameUnit = remember{ mutableStateOf( unitApp.value.nameUnit )}
 
-    Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)) {
         MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameUnit, "text")
         unitApp.value = UnitDB(idUnit = unitApp.value.idUnit, nameUnit = enterNameUnit.value)
         Spacer(Modifier.height(12.dp))
@@ -75,6 +93,7 @@ fun ChangeNameSectionDialog(
     val unitLocal = remember{ mutableStateOf(section) }
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.small,
         confirmButton = { TextButtonOK( onConfirm = {
             onConfirm( unitLocal.value )
         } ) },
@@ -91,7 +110,10 @@ fun EditNameSectionLayout(section: MutableState<Section>){
     val enterNameSection = remember{ mutableStateOf( section.value.nameSection )}
     Column {
         Text(text = "")
-        Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)) {
             MyOutlinedTextFieldWithoutIcon(
                 modifier = Modifier.fillMaxWidth(),
                 enterValue = enterNameSection,
@@ -116,6 +138,7 @@ fun ChangeColorSectionDialog(
     val itemLocal = remember { mutableStateOf(section) }
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.small,
         confirmButton = { TextButtonOK( onConfirm = { onConfirm(itemLocal.value) } ) },
         title = {
             if (section.idSection > 0) MyTextH1(stringResource(R.string.add_change_section), Modifier, TextAlign.Center)
@@ -125,15 +148,36 @@ fun ChangeColorSectionDialog(
 }
 
 @Composable fun ChangeColorSectionLayout(section: MutableState<Section>) {
+    val selectColor = remember{ mutableStateOf(Color.Transparent)}
 
-    Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
-        Text(text = section.value.nameSection)
-        SelectColor(
-            doSelectedColor = { selectColor ->
-                section.value = SectionDB(
-                    idSection = section.value.idSection,
-                    nameSection = section.value.nameSection,
-                    colorSection = selectColor.toLong())})
-        Spacer(Modifier.height(12.dp))
+    Column {
+        Row {
+            MyTextH2(text = section.value.nameSection)
+            Spacer(Modifier.width(12.dp))
+            Spacer(modifier = Modifier
+                .size(size = 35.dp)
+                .clip(shape = CircleShape)
+                .background(color = selectColor.value, shape = CircleShape)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = CircleShape
+                )
+            )
+        }
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+                .verticalScroll(ScrollState(0))) {
+            SelectColor(
+                doSelectedColor = { selectedColor ->
+                    selectColor.value = Color(selectedColor)
+                    section.value = SectionDB(
+                        idSection = section.value.idSection,
+                        nameSection = section.value.nameSection,
+                        colorSection = selectedColor.toLong())})
+            Spacer(Modifier.height(12.dp))
+        }
     }
 }

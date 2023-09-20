@@ -12,7 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -24,24 +27,31 @@ import com.example.basket.ui.components.BottomBarApp
 import com.example.basket.ui.components.FloatingActionButtonApp
 import com.example.basket.ui.theme.AppTheme
 
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("RememberReturnType", "UnrememberedMutableState", "SuspiciousIndentation")
 @Composable
 fun MainApp() {
     AppTheme {
-        val showBottomSheet = remember{ mutableStateOf(false)}
-        val animatedNavController  = rememberNavController()
+        val showBottomSheet = remember { mutableStateOf(false) }
+        val animatedNavController = rememberNavController()
         val animCurrentBackStack by animatedNavController.currentBackStackEntryAsState()
         val animCurrentDestination = animCurrentBackStack?.destination
         val animCurrentScreen = appTabRowScreens.find {
-            it.route == animCurrentDestination?.route } ?: Baskets
+            it.route == animCurrentDestination?.route
+        } ?: Baskets
 
         Scaffold(
-            modifier = Modifier.padding(14.dp).background(color = MaterialTheme.colorScheme.background),
+            modifier = Modifier
+                .padding(14.dp)
+                .semantics { testTagsAsResourceId = true }
+                .background(color = MaterialTheme.colorScheme.background),
             bottomBar = {
                 BottomBarApp(
                     currentScreen = animCurrentScreen, //currentScreen,
                     onTabSelection = { newScreen ->
-                        animatedNavController.navigateToScreen(newScreen.route) }) },
+                        animatedNavController.navigateToScreen(newScreen.route)
+                    })
+            },
             floatingActionButton = {
                 FloatingActionButtonApp(
                     offset = 60.dp, top = 0.dp, icon = Icons.Filled.Add,

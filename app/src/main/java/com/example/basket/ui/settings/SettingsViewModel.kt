@@ -64,7 +64,7 @@ class SettingsViewModel @Inject constructor(
             )
         }
     }
-    fun changeSectionColor(section: Section) {
+    fun doChangeSection(section: Section) {
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeSection(section) }.fold(
                 onSuccess = {
