@@ -1,0 +1,122 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'com.google.devtools.ksp'
+    id 'dagger.hilt.android.plugin'
+}
+
+android {
+    namespace 'com.example.basket'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.example.basket'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner 'com.example.basket.di.HiltTestRunner'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        viewBinding true
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerVersion kotlin_version}
+}
+//test { useJUnitPlatform()}
+
+dependencies {
+//    def composeBom = platform('androidx.compose:compose-bom:2023.03.00')
+//    implementation(composeBom)
+//    androidTestImplementation(composeBom)
+
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+//Jetpack  Compose
+    implementation 'androidx.compose.ui:ui:1.5.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01'
+    //Integration with observables
+    implementation 'androidx.compose.runtime:runtime:1.5.1'
+    implementation 'androidx.compose.runtime:runtime-rxjava2:1.5.1'
+    //Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
+    implementation 'androidx.compose.foundation:foundation:1.5.1'
+    implementation 'androidx.compose.foundation:foundation-layout:1.5.1'
+    // Material Design
+    implementation 'androidx.compose.material3:material3:1.1.1'
+    implementation 'androidx.compose.material:material-icons-core:1.5.1'
+    implementation 'androidx.compose.material:material-icons-extended:1.5.1'
+    //Activity
+    implementation 'androidx.activity:activity-compose:1.7.2'
+    //Navigation
+    implementation 'androidx.navigation:navigation-compose:2.7.2'
+    //Tooling support (Previews, etc.)
+    implementation 'androidx.compose.ui:ui-graphics:1.5.1'
+    implementation 'androidx.compose.ui:ui-tooling-preview:1.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
+    debugImplementation 'androidx.compose.ui:ui-tooling:1.5.1'
+    //Adaptive
+    implementation 'androidx.compose.material3:material3-window-size-class:1.1.1'
+    //Color Palette
+    implementation 'androidx.palette:palette-ktx:1.0.0'
+    //LifeCycle
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.fragment:fragment-ktx:1.6.1'
+    // Room
+    implementation 'androidx.room:room-runtime:2.5.2'
+    implementation 'androidx.room:room-ktx:2.5.2'
+    implementation 'androidx.room:room-rxjava2:2.5.2'
+    ksp 'androidx.room:room-compiler:2.5.2'
+    // Hilt dependencies
+    implementation 'com.google.dagger:hilt-android:2.46.1'
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+    kapt 'com.google.dagger:hilt-android-compiler:2.46.1'
+//    ksp 'com.google.dagger:hilt-android-compiler:2.46.1'
+    ksp 'androidx.hilt:hilt-compiler:1.0.0'
+//    //Moshi
+    implementation 'com.squareup.moshi:moshi:1.15.0'
+    implementation 'com.squareup.moshi:moshi-kotlin:1.15.0'
+    ksp 'com.squareup.moshi:moshi-kotlin-codegen:1.15.0'
+//Testing
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'org.mockito:mockito-core:4.0.0'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
+    testImplementation 'com.google.truth:truth:1.1.3'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.5.1'
+    androidTestImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'com.google.truth:truth:1.1.3'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest:1.5.1'
+    //Hilt
+    testImplementation 'com.google.dagger:hilt-android-testing:2.44'
+    kaptTest 'com.google.dagger:hilt-android-compiler:2.46.1'
+    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.44'
+    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.46.1'
+    // AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation("androidx.test:runner:1.5.2")
+//    androidTestImplementation("androidx.test:rules:1.5.2")
+}

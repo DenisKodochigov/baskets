@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="name_section">Все</string>
+    <string name="app_name">basket</string>
+    <string name="change_quantity">Изменить количество</string>
+    <string name="change_name_basket">Переименовать корзину</string>
+    <string name="change_article">Изменить продукт</string>
+    <string name="change_section">Новай отдел</string>
+    <string name="exit">ВЫХОД</string>
+    <string name="ok">ОК</string>
+    <string name="title_products">Продукты</string>
+    <string name="title_settings">Настройки</string>
+    <string name="errorUser">Ошибка операции</string>
+    <string name="sections">Отделы</string>
+    <string name="units">Ед.из.</string>
+    <string name="products_in_basket">Корзина: </string>
+    <string name="select_product">Выбирите продукт</string>
+    <string name="add_product">Добавить продукт</string>
+    <string name="section">Отдел</string>
+    <string name="product">Продукты</string>
+    <string name="new_name_basket">Имя корзины</string>
+    <string name="baskets">Корзины</string>
+    <string name="unit_st">шт</string>
+    <string name="unit_kg">кг</string>
+    <string name="unit_l">л</string>
+    <string name="unit_gr">гр</string>
+    <string name="add_basket">Новая корзина</string>
+    <string name="settings_page">Настройки</string>
+    <string name="change_unit">Изменить ед.изм.</string>
+    <string name="add_unit">Добавить ед.изм.</string>
+    <string name="error_addProduct">Такой товар в корзине уже есть.</string>
+    <string name="by_name">По названию</string>
+    <string name="by_section">По отделу</string>
+    <string name="all">Все</string>
+    <string name="sorting">сортировка</string>
+    <string name="choise_color">Выберите цвет</string>
+    <string name="edit_unit_list">Редактирование ед.измерений</string>
+    <string name="edit_section_list">Редактирование отделов</string>
+    <string name="add_change_section">Добавить, изменить отдел</string>
+    <string name="font_size">Размер шрифта</string>
+</resources>
