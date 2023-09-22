@@ -41,18 +41,27 @@ import com.example.basket.ui.theme.TabFadeOutAnimationDuration
 @Composable
 fun BottomBarApp(currentScreen: ScreenDestination, onTabSelection: (ScreenDestination) -> Unit) {
     BottomAppBar(
-        tonalElevation = 1.dp,
+        tonalElevation = 6.dp,
         modifier = Modifier
             .background(color = Color.Transparent)  //MaterialTheme.colorScheme.surface)
-            .height(48.dp)
+            .height(52.dp)
             .testTag(BOTTOM_APP_BAR)
             .clip(shape = MaterialTheme.shapes.small)
     ) {
-        BottomTabRow(
-            allScreens = appTabRowScreens,
-            currentScreen = currentScreen,
-            onTabSelected = onTabSelection
-        )
+//        BottomTabRow(
+//            allScreens = appTabRowScreens,
+//            currentScreen = currentScreen,
+//            onTabSelected = onTabSelection
+//        )
+        appTabRowScreens.forEachIndexed { index, screen ->
+            if (index == appTabRowScreens.size - 1) Spacer(modifier = Modifier.weight(1f))
+            BottomTab(
+                text = screen.route,
+                icon = screen.icon,
+                onSelected = { onTabSelection(screen) },
+                selected = currentScreen == screen
+            )
+        }
     }
 }
 
@@ -63,23 +72,24 @@ fun BottomTabRow(
     currentScreen: ScreenDestination
 ) {
 
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .selectableGroup()
-            .padding(bottom = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        allScreens.forEachIndexed { index, screen ->
-            if (index == allScreens.size - 1) Spacer(modifier = Modifier.weight(1f))
-            BottomTab(
-                text = screen.route,
-                icon = screen.icon,
-                onSelected = { onTabSelected(screen) },
-                selected = currentScreen == screen
-            )
-        }
-    }
+//    Row(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(color =Color.Gray)
+//            .selectableGroup()
+//            .padding(bottom = 0.dp),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        allScreens.forEachIndexed { index, screen ->
+//            if (index == allScreens.size - 1) Spacer(modifier = Modifier.weight(1f))
+//            BottomTab(
+//                text = screen.route,
+//                icon = screen.icon,
+//                onSelected = { onTabSelected(screen) },
+//                selected = currentScreen == screen
+//            )
+//        }
+//    }
 }
 
 @Composable
@@ -87,7 +97,7 @@ private fun BottomTab(
     text: String,
     icon: ImageVector,
     onSelected: () -> Unit,
-    selected: Boolean
+    selected: Boolean,
 ) {
     val animationSpec = remember {
         tween<Color>(
@@ -112,7 +122,7 @@ private fun BottomTab(
     IconButton(
         onClick = onSelected,
         modifier = Modifier
-            .size(46.dp)
+            .padding(top= 4.dp)
             .testTag(text)
     ) {
         Icon(
@@ -120,7 +130,6 @@ private fun BottomTab(
             contentDescription = text,
             tint = iconColor,
             modifier = Modifier
-                .size(28.dp)
                 .padding(start = 2.dp, end = 2.dp)
                 .animateContentSize()
                 .clearAndSetSemantics { contentDescription = text }
