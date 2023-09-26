@@ -9,5 +9,6 @@ data class ArticleScreenState(
     val article: List<List<Article>> = emptyList(),
     val sections: List<Section> = emptyList(),
     val unitApp: List<UnitApp> = emptyList(),
-    val sorting: SortingBy = SortingBy.BY_NAME
+    val sorting: SortingBy = SortingBy.BY_NAME,
+    var refresh: Boolean = true
 )

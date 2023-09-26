@@ -10,5 +10,6 @@ data class ProductsScreenState(
     val articles: List<Article> = emptyList(),
     val sections: List<Section> = emptyList(),
     val unitApp: List<UnitApp> = emptyList(),
-    val nameBasket: String = ""
+    val nameBasket: String = "",
+    var refresh: Boolean = true
 )

@@ -35,7 +35,7 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListProducts(basketId) }.fold(
                 onSuccess = { _productsScreenState.update { currentState ->
-                    currentState.copy( products = it ) } },
+                    currentState.copy( products = it, refresh = !currentState.refresh ) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -45,7 +45,7 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getListArticle() }.fold(
                 onSuccess = { _productsScreenState.update { currentState ->
-                    currentState.copy( articles = it) } },
+                    currentState.copy( articles = it, refresh = !currentState.refresh) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -55,7 +55,7 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getSections() }.fold(
                 onSuccess = { _productsScreenState.update { currentState ->
-                    currentState.copy( sections = it) } },
+                    currentState.copy( sections = it, refresh = !currentState.refresh) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -65,7 +65,8 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getUnits() }.fold(
                 onSuccess = {
-                    _productsScreenState.update { currentState -> currentState.copy( unitApp = it) } },
+                    _productsScreenState.update { currentState ->
+                        currentState.copy( unitApp = it, refresh = !currentState.refresh) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -75,7 +76,7 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getNameBasket(basketId) }.fold(
                 onSuccess = {_productsScreenState.update { currentState ->
-                    currentState.copy(nameBasket = it ) }},
+                    currentState.copy(nameBasket = it , refresh = !currentState.refresh) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -85,7 +86,7 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.addProduct(product, basketId) }.fold(
                 onSuccess = {_productsScreenState.update { currentState ->
-                    currentState.copy(products = it) } },
+                    currentState.copy(products = it, refresh = !currentState.refresh) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -98,7 +99,7 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.putProductInBasket(product, basketId) }.fold(
                 onSuccess = {_productsScreenState.update { currentState ->
-                    currentState.copy(products = it ) }},
+                    currentState.copy(products = it, refresh = !currentState.refresh ) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -108,7 +109,7 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeProductInBasket(product, basketId) }.fold(
                 onSuccess = {_productsScreenState.update { currentState ->
-                    currentState.copy(products = it) } },
+                    currentState.copy(products = it, refresh = !currentState.refresh) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -118,7 +119,8 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeSectionSelectedProduct(productList, idSection) }.fold(
                 onSuccess = {
-                    _productsScreenState.update{ currentState -> currentState.copy(products = it) }},
+                    _productsScreenState.update{ currentState ->
+                        currentState.copy(products = it, refresh = !currentState.refresh) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -129,7 +131,7 @@ class ProductViewModel  @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.deleteSelectedProduct(productList) }.fold(
                 onSuccess = {_productsScreenState.update { currentState ->
-                    currentState.copy(products = it) }},
+                    currentState.copy(products = it, refresh = !currentState.refresh) }},
                 onFailure = {
                     errorApp.errorApi(it.message!!)}
             )

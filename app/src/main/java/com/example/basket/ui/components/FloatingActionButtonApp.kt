@@ -3,6 +3,7 @@ package com.example.basket.ui.components
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,19 +20,26 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TagsTesting.FAB_PLUS
+import com.example.basket.ui.theme.sizeApp
 
 @Composable
 fun FloatingActionButtonApp(offset: Dp, top: Dp, icon: ImageVector, onClick: () -> Unit) {
     FloatingActionButton(
         onClick = onClick,
-        modifier = Modifier.padding(top = top).offset(0.dp, offset).size(40.dp).testTag(FAB_PLUS))
+        modifier = Modifier
+            .padding(top = top)
+            .offset(0.dp, offset)
+            .size(sizeApp(SizeElement.SIZE_ICON))
+            .testTag(FAB_PLUS))
     {
         Icon(
             icon, null,
             tint = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier
-                .size(28.dp)
+                .padding(sizeApp(SizeElement.PADDING_ICON))
+                .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.primaryContainer)
         )
     }
@@ -44,9 +52,9 @@ fun FabAnimation(show: Boolean, offset: Dp, icon: ImageVector, onClick: () -> Un
 
     val offsetFAB by animateDpAsState(
         targetValue = if (isAnimated) {
-            if (show) offset else 200.dp
+            if (show) offset else 220.dp
         } else {
-            if (show) 200.dp else offset
+            if (show) 220.dp else offset
         },
         animationSpec = tween(durationMillis = 600), label = ""
     )

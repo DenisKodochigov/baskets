@@ -30,4 +30,11 @@
     <dimen name="lazy_padding_hor2">16dp</dimen>
     <dimen name="screen_padding_hor1">12dp</dimen>
 
+    //Size icon
+    <dimen name="size_icon_small">24dp</dimen>
+    <dimen name="size_icon_medium">32dp</dimen>
+    <dimen name="size_icon_large">40dp</dimen>
+    <dimen name="padding_icon_small">2dp</dimen>
+    <dimen name="padding_icon_medium">4dp</dimen>
+    <dimen name="padding_icon_large">8dp</dimen>
 </resources>

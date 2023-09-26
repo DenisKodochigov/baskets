@@ -5,7 +5,7 @@ enum class SortingBy {
     BY_SECTION
 }
 
-enum class TypeText(){
+enum class TypeText {
     NAME_SCREEN,
     NAME_SECTION,
     TEXT_IN_LIST,
@@ -13,8 +13,13 @@ enum class TypeText(){
     EDIT_TEXT,
     EDIT_TEXT_TITLE,
     TEXT_IN_LIST_SETTING,
-    NAME_SLIDER
+    NAME_SLIDER,
 }
+enum class SizeElement {
+    SIZE_ICON,
+    PADDING_ICON
+}
+
 enum class Direcions{
     Top,
     Bottom,

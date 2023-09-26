@@ -6,6 +6,6 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class AppBase: Application()  {
     companion object App{
-        var scale: Int = 1
+        var scale: Int = 0
     }
 }

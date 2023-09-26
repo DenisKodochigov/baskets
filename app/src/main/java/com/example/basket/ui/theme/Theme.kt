@@ -14,9 +14,13 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.core.view.WindowCompat
 import com.example.basket.AppBase
+import com.example.basket.R
+import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TypeText
 
 val LightColorScheme = lightColorScheme(
@@ -114,8 +118,11 @@ fun AppTheme(content: @Composable () -> Unit) {
      val editTextLabel = listOf(typography.bodyMedium, typography.labelLarge, typography.labelMedium)
      val textInListSettings = listOf(typography.headlineSmall, typography.titleLarge, typography.titleSmall)
      val nameSlider = listOf(typography.bodyMedium, typography.labelLarge, typography.labelMedium)
+     val sizeIcon = listOf(dimensionResource(R.dimen.size_icon_large),
+         dimensionResource(R.dimen.size_icon_medium),
+         dimensionResource(R.dimen.size_icon_small))
 
-    return when(nameStyle){
+    return when( nameStyle ){
         TypeText.NAME_SCREEN -> nameScreen[AppBase.scale]
         TypeText.NAME_SECTION -> nameSection[AppBase.scale]
         TypeText.TEXT_IN_LIST -> textInList[AppBase.scale]
@@ -124,6 +131,21 @@ fun AppTheme(content: @Composable () -> Unit) {
         TypeText.EDIT_TEXT_TITLE -> editTextLabel[AppBase.scale]
         TypeText.TEXT_IN_LIST_SETTING -> textInListSettings[AppBase.scale]
         TypeText.NAME_SLIDER -> nameSlider[AppBase.scale]
+    }
+}
+
+@Composable fun sizeApp(sizeElement: SizeElement): Dp {
+
+    val sizeIcon = listOf(dimensionResource(R.dimen.size_icon_large),
+        dimensionResource(R.dimen.size_icon_medium),
+        dimensionResource(R.dimen.size_icon_small))
+    val paddingIcon = listOf(dimensionResource(R.dimen.padding_icon_large),
+        dimensionResource(R.dimen.padding_icon_medium),
+        dimensionResource(R.dimen.padding_icon_small))
+
+    return when( sizeElement ){
+        SizeElement.SIZE_ICON -> sizeIcon[AppBase.scale]
+        SizeElement.PADDING_ICON -> paddingIcon[AppBase.scale]
     }
 }
 

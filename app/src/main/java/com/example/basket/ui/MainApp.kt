@@ -16,6 +16,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -33,11 +34,11 @@ import com.example.basket.ui.theme.AppTheme
 fun MainApp() {
     AppTheme {
         val showBottomSheet = remember { mutableStateOf(false) }
-        val animatedNavController = rememberNavController()
-        val animCurrentBackStack by animatedNavController.currentBackStackEntryAsState()
-        val animCurrentDestination = animCurrentBackStack?.destination
+        val navController = rememberNavController()
+        val currentBackStack by navController.currentBackStackEntryAsState()
+        val currentDestination = currentBackStack?.destination
         val animCurrentScreen = appTabRowScreens.find {
-            it.route == animCurrentDestination?.route
+            it.route == currentDestination?.route
         } ?: Baskets
 
         Scaffold(
@@ -49,21 +50,24 @@ fun MainApp() {
                 BottomBarApp(
                     currentScreen = animCurrentScreen, //currentScreen,
                     onTabSelection = { newScreen ->
-                        animatedNavController.navigateToScreen(newScreen.route)
+                        navController.navigateToScreen(newScreen.route)
                     })
             },
             floatingActionButton = {
                 FloatingActionButtonApp(
-                    offset = 60.dp, top = 0.dp, icon = Icons.Filled.Add,
+                    offset = 68.dp, top = 0.dp, icon = Icons.Filled.Add,
                     onClick = { showBottomSheet.value = true } )
             },
             floatingActionButtonPosition = FabPosition.Center,
         ) { innerPadding ->
             AppNavHost(
-                navController = animatedNavController,
+                navController = navController,
                 modifier = Modifier.padding(innerPadding),
                 showBottomSheet = showBottomSheet)
         }
     }
 }
-
+@Preview
+@Composable fun MainAppPreview(){
+    MainApp()
+}
