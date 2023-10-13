@@ -17,7 +17,8 @@ enum class TypeText {
 }
 enum class SizeElement {
     SIZE_ICON,
-    PADDING_ICON
+    PADDING_ICON,
+    OFFSET_FAB
 }
 
 enum class Direcions{

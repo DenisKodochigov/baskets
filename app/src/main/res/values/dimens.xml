@@ -29,6 +29,7 @@
     <dimen name="lazy_padding_hor1">1dp</dimen>
     <dimen name="lazy_padding_hor2">16dp</dimen>
     <dimen name="screen_padding_hor1">12dp</dimen>
+    <dimen name="height_fab_icon">200dp</dimen>
 
     //Size icon
     <dimen name="size_icon_small">24dp</dimen>
@@ -37,4 +38,7 @@
     <dimen name="padding_icon_small">2dp</dimen>
     <dimen name="padding_icon_medium">4dp</dimen>
     <dimen name="padding_icon_large">8dp</dimen>
+    <dimen name="offset_fab_small">46dp</dimen>
+    <dimen name="offset_fab_medium">54dp</dimen>
+    <dimen name="offset_fab_large">62dp</dimen>
 </resources>

@@ -58,7 +58,7 @@ import com.example.basket.utils.DismissBackground
 import com.example.basket.utils.log
 import java.util.*
 
-const val showLog = true
+const val showLog = false
 
 @SuppressLint("UnrememberedMutableState")
 @Composable

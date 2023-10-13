@@ -148,7 +148,8 @@ fun ArticleScreenLayout(
         startScreen = showFABs(
             startScreen = startScreen,
             isSelected =  uiState.article.flatten().find { it.isSelected } != null,
-            modifier = Modifier.height(150.dp).align(alignment = Alignment.BottomCenter),
+            modifier = Modifier.height(dimensionResource(R.dimen.height_fab_icon))
+                .align(alignment = Alignment.BottomCenter),
             doDeleted = { deleteSelected.value = true },
             doChangeSection = { changeSectionSelected.value = true },
             doUnSelected = { unSelected.value = true }

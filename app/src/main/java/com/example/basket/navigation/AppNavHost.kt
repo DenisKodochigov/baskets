@@ -22,7 +22,8 @@ import com.example.basket.ui.settings.SettingsScreen
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    showBottomSheet: MutableState<Boolean>
+    showBottomSheet: MutableState<Boolean>,
+    refreshScreen: MutableState<Boolean>,
 ){
 
     NavHost(
@@ -66,7 +67,7 @@ fun AppNavHost(
             exitTransition = {
                 targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
         ) {
-            SettingsScreen()
+            SettingsScreen(refreshScreen = refreshScreen)
         }
     }
 }

@@ -72,18 +72,21 @@ import com.example.basket.ui.components.dialog.ChangeColorSectionDialog
 import com.example.basket.ui.components.dialog.ChangeNameSectionDialog
 import com.example.basket.ui.components.dialog.EditUnitDialog
 import com.example.basket.ui.theme.styleApp
+import com.example.basket.utils.log
 
-@Composable fun SettingsScreen() {
+@Composable fun SettingsScreen(refreshScreen: MutableState<Boolean>) {
     val viewModel: SettingsViewModel = hiltViewModel()
-    SettingsScreenInit(viewModel)
+    SettingsScreenInit(viewModel, refreshScreen = refreshScreen)
 }
 
-@Composable fun SettingsScreenInit(viewModel: SettingsViewModel){
+@Composable fun SettingsScreenInit(viewModel: SettingsViewModel,
+                                   refreshScreen: MutableState<Boolean>){
     val uiState by viewModel.settingScreenState.collectAsState()
 
     SettingsScreenLayout(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         uiState = uiState,
+        refreshScreen = refreshScreen,
         doChangeUnit = { unit -> viewModel.changeUnit(unit) },
         doDeleteUnits = { units -> viewModel.doDeleteUnits(units) },
         doChangeSection = { section -> viewModel.doChangeSection(section) },
@@ -94,6 +97,7 @@ import com.example.basket.ui.theme.styleApp
 @Composable fun SettingsScreenLayout(
     modifier: Modifier = Modifier,
     uiState: SettingsScreenState,
+    refreshScreen: MutableState<Boolean>,
     doChangeUnit: (UnitApp) -> Unit,
     doDeleteUnits: (List<UnitApp>) -> Unit,
     doChangeSection: (Section) -> Unit,
@@ -109,7 +113,7 @@ import com.example.basket.ui.theme.styleApp
         HeaderScreen(text = stringResource(R.string.settings_page))
         AddEditUnits(modifier, uiState, doChangeUnit, doDeleteUnits)
         AddEditSection(modifier, uiState, doChangeSection, doDeleteSelected)
-        ChangeStyle()
+        ChangeStyle(refreshScreen = refreshScreen)
 //        FontStyleView()
     }
 }
@@ -314,7 +318,7 @@ fun LazyColumnUnits(
     }
 }
 
-@Composable fun ChangeStyle(){
+@Composable fun ChangeStyle(refreshScreen: MutableState<Boolean>,){
     var sliderPosition by remember{ mutableFloatStateOf(AppBase.scale.toFloat()) }
     HeaderSection(text = stringResource(R.string.font_size), Modifier)
     Slider(
@@ -322,8 +326,12 @@ fun LazyColumnUnits(
         valueRange = 0f..2f,
         steps = 1,
         enabled = true,
-        onValueChange = {sliderPosition = it},
-        onValueChangeFinished = { AppBase.scale = sliderPosition.toInt() },
+        onValueChange = { sliderPosition = it },
+        onValueChangeFinished = {
+            AppBase.scale = sliderPosition.toInt()
+            refreshScreen.value = !refreshScreen.value
+            log(true,"ChangeStyle = ${refreshScreen.value}")
+        },
         colors = SliderDefaults.colors(
             thumbColor = Color(0xFF575757),
             activeTrackColor = Color(0xFFA2A2A2),

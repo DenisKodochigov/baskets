@@ -142,10 +142,14 @@ fun AppTheme(content: @Composable () -> Unit) {
     val paddingIcon = listOf(dimensionResource(R.dimen.padding_icon_large),
         dimensionResource(R.dimen.padding_icon_medium),
         dimensionResource(R.dimen.padding_icon_small))
+    val offsetFab = listOf(dimensionResource(R.dimen.offset_fab_large),
+        dimensionResource(R.dimen.offset_fab_medium),
+        dimensionResource(R.dimen.offset_fab_small))
 
     return when( sizeElement ){
         SizeElement.SIZE_ICON -> sizeIcon[AppBase.scale]
         SizeElement.PADDING_ICON -> paddingIcon[AppBase.scale]
+        SizeElement.OFFSET_FAB -> offsetFab[AppBase.scale]
     }
 }
 
