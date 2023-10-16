@@ -110,46 +110,78 @@ fun AppTheme(content: @Composable () -> Unit) {
 
 @Composable fun styleApp(nameStyle: TypeText): TextStyle{
 
-     val nameScreen = listOf(typography.headlineLarge, typography.headlineSmall, typography.titleMedium)
-     val nameSection = listOf(typography.headlineMedium, typography.titleLarge, typography.titleSmall)
-     val textInList = listOf(typography.headlineSmall, typography.titleLarge, typography.titleSmall)
-     val textInListSmall = listOf(typography.bodyMedium, typography.labelLarge, typography.labelMedium)
-     val editText = listOf(typography.headlineSmall, typography.titleLarge, typography.titleSmall)
-     val editTextLabel = listOf(typography.bodyMedium, typography.labelLarge, typography.labelMedium)
-     val textInListSettings = listOf(typography.headlineSmall, typography.titleLarge, typography.titleSmall)
-     val nameSlider = listOf(typography.bodyMedium, typography.labelLarge, typography.labelMedium)
-     val sizeIcon = listOf(dimensionResource(R.dimen.size_icon_large),
-         dimensionResource(R.dimen.size_icon_medium),
-         dimensionResource(R.dimen.size_icon_small))
-
     return when( nameStyle ){
-        TypeText.NAME_SCREEN -> nameScreen[AppBase.scale]
-        TypeText.NAME_SECTION -> nameSection[AppBase.scale]
-        TypeText.TEXT_IN_LIST -> textInList[AppBase.scale]
-        TypeText.TEXT_IN_LIST_SMALL -> textInListSmall[AppBase.scale]
-        TypeText.EDIT_TEXT -> editText[AppBase.scale]
-        TypeText.EDIT_TEXT_TITLE -> editTextLabel[AppBase.scale]
-        TypeText.TEXT_IN_LIST_SETTING -> textInListSettings[AppBase.scale]
-        TypeText.NAME_SLIDER -> nameSlider[AppBase.scale]
+        TypeText.NAME_SCREEN -> when (AppBase.scale){
+            1-> typography.headlineSmall
+            2 -> typography.titleMedium
+            else -> typography.headlineLarge //0
+        }
+        TypeText.NAME_SECTION -> when (AppBase.scale){
+            1-> typography.titleLarge
+            2 -> typography.titleSmall
+            else -> typography.headlineMedium //0
+        }
+        TypeText.TEXT_IN_LIST -> when (AppBase.scale){
+            1-> typography.titleLarge
+            2 -> typography.titleSmall
+            else -> typography.headlineSmall //0
+        }
+        TypeText.TEXT_IN_LIST_SMALL -> when (AppBase.scale){
+            1-> typography.labelLarge
+            2 -> typography.labelMedium
+            else -> typography.bodyMedium //0
+        }
+        TypeText.EDIT_TEXT -> when (AppBase.scale){
+            1-> typography.titleLarge
+            2 -> typography.titleSmall
+            else -> typography.headlineSmall //0
+        }
+        TypeText.EDIT_TEXT_TITLE -> when (AppBase.scale){
+            1-> typography.labelLarge
+            2 -> typography.labelMedium
+            else -> typography.bodyMedium //0
+        }
+        TypeText.TEXT_IN_LIST_SETTING -> when (AppBase.scale){
+            1-> typography.titleLarge
+            2 -> typography.titleSmall
+            else -> typography.headlineSmall //0
+        }
+        TypeText.NAME_SLIDER -> when (AppBase.scale){
+            1-> typography.labelLarge
+            2 -> typography.labelMedium
+            else -> typography.bodyMedium //0
+        }
     }
 }
 
 @Composable fun sizeApp(sizeElement: SizeElement): Dp {
 
-    val sizeIcon = listOf(dimensionResource(R.dimen.size_icon_large),
-        dimensionResource(R.dimen.size_icon_medium),
-        dimensionResource(R.dimen.size_icon_small))
-    val paddingIcon = listOf(dimensionResource(R.dimen.padding_icon_large),
-        dimensionResource(R.dimen.padding_icon_medium),
-        dimensionResource(R.dimen.padding_icon_small))
-    val offsetFab = listOf(dimensionResource(R.dimen.offset_fab_large),
-        dimensionResource(R.dimen.offset_fab_medium),
-        dimensionResource(R.dimen.offset_fab_small))
-
     return when( sizeElement ){
-        SizeElement.SIZE_ICON -> sizeIcon[AppBase.scale]
-        SizeElement.PADDING_ICON -> paddingIcon[AppBase.scale]
-        SizeElement.OFFSET_FAB -> offsetFab[AppBase.scale]
+        SizeElement.SIZE_FAB -> when (AppBase.scale){
+            1->dimensionResource(R.dimen.size_fab_medium)
+            2 ->dimensionResource(R.dimen.size_fab_small)
+            else -> dimensionResource(R.dimen.size_fab_large)
+        }
+        SizeElement.HEIGHT_BOTTOM_BAR -> when (AppBase.scale){
+            1->dimensionResource(R.dimen.height_bottom_bar_medium)
+            2 ->dimensionResource(R.dimen.height_bottom_bar_small)
+            else -> dimensionResource(R.dimen.height_bottom_bar_large)
+        }
+        SizeElement.PADDING_FAB -> when (AppBase.scale){
+            1->dimensionResource(R.dimen.padding_fab_medium)
+            2 ->dimensionResource(R.dimen.padding_fab_small)
+            else -> dimensionResource(R.dimen.padding_fab_large)
+        }
+        SizeElement.OFFSET_FAB -> when (AppBase.scale){
+            1->dimensionResource(R.dimen.offset_fab_medium)
+            2 ->dimensionResource(R.dimen.offset_fab_small)
+            else -> dimensionResource(R.dimen.offset_fab_large)
+        }
+        SizeElement.HEIGHT_FAB_BOX -> when (AppBase.scale){
+            1->dimensionResource(R.dimen.height_fab_box_medium)
+            2 ->dimensionResource(R.dimen.height_fab_box_small)
+            else -> dimensionResource(R.dimen.height_fab_box_large)
+        }
     }
 }
 

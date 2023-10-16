@@ -37,5 +37,8 @@
     <string name="edit_unit_list">Редактирование ед.измерений</string>
     <string name="edit_section_list">Редактирование отделов</string>
     <string name="add_change_section">Добавить, изменить отдел</string>
-    <string name="font_size">Размер шрифта</string>
+    <string name="font_size">Размер шрифта и элементов</string>
+    <string name="theme_0">Крупный</string>
+    <string name="theme_1">Средний</string>
+    <string name="theme_2">Мелкий</string>
 </resources>

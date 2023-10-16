@@ -4,11 +4,15 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Dns
@@ -34,8 +38,10 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -44,26 +50,32 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.basket.R
 import com.example.basket.entity.CustomTriangleShape
 import com.example.basket.entity.Direcions
+import com.example.basket.entity.SizeElement
 import com.example.basket.entity.SortingBy
 import com.example.basket.entity.TagsTesting.BUTTON_OK
 import com.example.basket.entity.TypeText
+import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
+import com.example.basket.utils.log
+import kotlin.math.roundToInt
 
 @Composable
-fun HeaderScreen(text: String) {
+fun HeaderScreen(text: String, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
     Spacer(modifier = Modifier.height(24.dp))
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        val plug = refreshScreen.value
         TextApp(text = text, style = styleApp(nameStyle = TypeText.NAME_SCREEN))
     }
 }
 
 @Composable
-fun HeaderImScreen(text: String, idImage:Int ) {
+fun HeaderImScreen(text: String, idImage:Int, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
     Column( Modifier.fillMaxWidth() ){
         Image(
             painter = painterResource(id = idImage),
@@ -74,6 +86,7 @@ fun HeaderImScreen(text: String, idImage:Int ) {
         Box(modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 4.dp)) {
+            val plug = refreshScreen.value
             TextApp(
                 text = text,
                 style = styleApp(nameStyle = TypeText.NAME_SCREEN),
@@ -82,12 +95,13 @@ fun HeaderImScreen(text: String, idImage:Int ) {
     }
 }
 @Composable
-fun HeaderSection(text: String, modifier: Modifier) {
+fun HeaderSection(text: String, modifier: Modifier, refreshScreen: MutableState<Boolean> = mutableStateOf(false)) {
     Spacer(modifier = Modifier.height(12.dp))
     Row(
         modifier
             .fillMaxWidth()
             .padding(start = 12.dp), horizontalArrangement = Arrangement.Start) {
+        val plug = refreshScreen.value
         TextApp(text, style = styleApp(nameStyle = TypeText.NAME_SECTION))
     }
 }
@@ -109,7 +123,9 @@ fun MyExposedDropdownMenuBox(
     val localFocusManager = LocalFocusManager.current
     var expandedLocal by remember { mutableStateOf(false) }
     var enteredText by remember { mutableStateOf("") }
-
+    val heightDropMenu: Dp = with(LocalDensity.current) {
+        (styleApp(nameStyle = TypeText.EDIT_TEXT).fontSize * 1.2).toDp()}
+    log(true, "heightDropMenu = $heightDropMenu   fontSize = ${styleApp(nameStyle = TypeText.EDIT_TEXT).fontSize.value}")
     enteredText = if (enterValue != null && !focusItem) enterValue.value.second else ""
 
     ExposedDropdownMenuBox(
@@ -152,19 +168,27 @@ fun MyExposedDropdownMenuBox(
             listItems.filter { it.second.contains(enteredText, ignoreCase = true) }
         if (filteringOptions.isNotEmpty()) {
             ExposedDropdownMenu(
+                modifier = Modifier
+                    .height(heightDropMenu * 8)
+                    .padding(8.dp)
+                    .verticalScroll(rememberScrollState()),
                 expanded = expandedLocal && enabled,
                 onDismissRequest = { expandedLocal = false }) {
-                filteringOptions.forEach { item ->
-                    DropdownMenuItem(
-                        onClick = {
-                            enteredText = item.second
-                            expandedLocal = false
-                            enterValue!!.value = item
-                            localFocusManager.clearFocus() },
-                        text = {
-                            TextApp(text = item.second, style = styleApp(nameStyle = TypeText.EDIT_TEXT))}
-                    ) 
-                }
+//                if (enteredText.isNotEmpty()) {
+                    filteringOptions.forEach { item ->
+                        DropdownMenuItem(
+                            onClick = {
+                                enteredText = item.second
+                                expandedLocal = false
+                                enterValue!!.value = item
+                                localFocusManager.clearFocus() },
+                            text = {
+                                TextApp(text = item.second,
+                                    style = styleApp(nameStyle = TypeText.EDIT_TEXT))}
+                        )
+                    }
+//                }
+
             }
         } else expandedLocal = false
     }
@@ -326,8 +350,8 @@ fun MyOutlinedTextFieldWithoutIconClearing(
 }
 
 @Composable fun ShowFABs_(show: Boolean, modifier: Modifier, doDeleted: ()->Unit, doChangeSection: ()->Unit, doUnSelected:()->Unit){
-    val offset = 48.dp
-    Box( modifier ) {
+    val offset = 8.dp + sizeApp(sizeElement = SizeElement.SIZE_FAB)
+    Box( modifier = modifier.height(sizeApp(SizeElement.HEIGHT_FAB_BOX))) {
         FabAnimation(show = show, offset = 0.dp, icon = Icons.Filled.Delete, onClick = doDeleted)
         FabAnimation(show = show, offset = offset, icon = Icons.Filled.Dns, onClick = doChangeSection)
         FabAnimation(show = show, offset = offset * 2, icon = Icons.Filled.RemoveDone, onClick = doUnSelected)
@@ -347,8 +371,10 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
             .padding(horizontal = 12.dp)
             .fillMaxWidth()
             .background(color = Color.Transparent, shape = RoundedCornerShape(cornerDp))
-            .clickable{
-                if (sortingPosition) doChangeSorting(SortingBy.BY_SECTION) else doChangeSorting(SortingBy.BY_NAME)
+            .clickable {
+                if (sortingPosition) doChangeSorting(SortingBy.BY_SECTION) else doChangeSorting(
+                    SortingBy.BY_NAME
+                )
                 sortingPosition = !sortingPosition
             }
     ) {
@@ -413,10 +439,12 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
         onValueChange = { onSelected(it) },
         thumb = {
             SliderDefaults.Thumb(
-                modifier = Modifier.background(
+                modifier = Modifier
+                    .background(
                         color = MaterialTheme.colorScheme.tertiaryContainer,
-                        shape = CustomTriangleShape(direction))
-                    .drawWithContent {  },
+                        shape = CustomTriangleShape(direction)
+                    )
+                    .drawWithContent { },
                 interactionSource = interactionSource,
                 thumbSize = DpSize(34.dp,34.dp),
                 colors = colors

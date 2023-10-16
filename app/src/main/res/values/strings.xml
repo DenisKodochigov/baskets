@@ -40,5 +40,8 @@
     <string name="edit_unit_list">Edit units list</string>
     <string name="edit_section_list">Edit sections list</string>
     <string name="add_change_section">Add, change section</string>
-    <string name="font_size">Font size</string>
+    <string name="font_size">Font size and element</string>
+    <string name="theme_0">Bigger</string>
+    <string name="theme_1">Medium</string>
+    <string name="theme_2">Small</string>
 </resources>

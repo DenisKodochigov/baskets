@@ -15,10 +15,12 @@ enum class TypeText {
     TEXT_IN_LIST_SETTING,
     NAME_SLIDER,
 }
-enum class SizeElement {
-    SIZE_ICON,
-    PADDING_ICON,
-    OFFSET_FAB
+enum class SizeElement{
+    HEIGHT_BOTTOM_BAR,
+    SIZE_FAB,
+    PADDING_FAB,
+    OFFSET_FAB,
+    HEIGHT_FAB_BOX
 }
 
 enum class Direcions{
@@ -26,4 +28,9 @@ enum class Direcions{
     Bottom,
     Left,
     Right
+}
+enum class LabelSliderBarSize{
+    Large,
+    Medium,
+    Small,
 }

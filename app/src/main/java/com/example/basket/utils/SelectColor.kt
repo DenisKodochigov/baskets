@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.basket.ui.theme.massColor
 
 @Composable fun SelectColor( doSelectedColor: (Int) -> Unit) {
-    val x = 50f
+
     massColor.forEach { list ->
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier.horizontalScroll(ScrollState(0))) {
@@ -36,17 +36,18 @@ import com.example.basket.ui.theme.massColor
                         color = MaterialTheme.colorScheme.outline,
                         shape = CircleShape
                     )
-                    .clickable {
-                        doSelectedColor(
-                            Color(red = (item.red + (1f - item.red) * (1f - x / 255)) ,
-                                green = (item.green+ (1f - item.green) * (1f - x / 255)) ,
-                                blue = (item.blue+ (1f - item.blue) * (1f - x / 255)),
-                                alpha = 1f,
-                                colorSpace = item.colorSpace).toArgb()
-                        )
-                    }
+                    .clickable { doSelectedColor( downIntensityColor(item)) }
                 )
             }
         }
     }
+}
+fun downIntensityColor(item: Color): Int{
+    val x = 50f
+//    return Color(red = (item.red + (1f - item.red) * (1f - x / 255)) ,
+//        green = (item.green+ (1f - item.green) * (1f - x / 255)) ,
+//        blue = (item.blue+ (1f - item.blue) * (1f - x / 255)),
+//        alpha = 1f,
+//        colorSpace = item.colorSpace).toArgb()
+    return item.toArgb()
 }

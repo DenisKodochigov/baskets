@@ -164,11 +164,10 @@ fun ProductsScreenLayout(
         startScreen = showFABs(
             startScreen = startScreen,
             isSelected = uiState.products.flatten().find { it.isSelected } != null,
-            modifier = Modifier.height(dimensionResource(R.dimen.height_fab_icon))
-                .align(alignment = Alignment.BottomCenter),
             doDeleted = { deleteSelected.value = true },
             doChangeSection = { changeSectionSelected.value = true },
-            doUnSelected = { unSelected.value = true }
+            doUnSelected = { unSelected.value = true },
+            modifier = Modifier.align(alignment = Alignment.BottomCenter),
         )
     }
 }
@@ -210,11 +209,11 @@ fun ProductLazyColumn(
         items(items = uiState.products) { item ->
             Column(modifier = Modifier.clip(RoundedCornerShape(8.dp))
                 .background(
-                    if (uiState.products.size == 1 ) SectionColor
-                    else {
+//                    if (uiState.products.size == 1 ) SectionColor
+//                    else {
                         if (item[0].article.section.colorSection != 0L) Color(item[0].article.section.colorSection)
                         else SectionColor
-                    }
+//                    }
                 )) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
                 ProductsLayoutColum(

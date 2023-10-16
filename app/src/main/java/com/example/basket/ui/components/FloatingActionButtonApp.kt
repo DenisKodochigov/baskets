@@ -22,32 +22,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.basket.AppBase
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TagsTesting.FAB_PLUS
 import com.example.basket.ui.theme.sizeApp
-import com.example.basket.utils.log
-//
-//@Composable
-//fun FloatingActionButtonApp(offset: Dp, top: Dp, icon: ImageVector, onClick: () -> Unit) {
-//    FloatingActionButton(
-//        onClick = onClick,
-//        modifier = Modifier
-//            .padding(top = top)
-//            .offset(0.dp, offset)
-//            .size(sizeApp(SizeElement.SIZE_ICON))
-//            .testTag(FAB_PLUS))
-//    {
-//        Icon(
-//            icon, null,
-//            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-//            modifier = Modifier
-//                .padding(sizeApp(SizeElement.PADDING_ICON))
-//                .fillMaxSize()
-//                .background(color = MaterialTheme.colorScheme.primaryContainer)
-//        )
-//    }
-//}
+
+
 @Composable
 fun FloatingActionButtonApp( offset: Dp,
                               refreshScreen: MutableState<Boolean>,
@@ -60,14 +39,14 @@ fun FloatingActionButtonApp( offset: Dp,
         onClick = onClick,
         modifier = modifier
             .offset(0.dp, offset)
-            .size(sizeApp(SizeElement.SIZE_ICON))
+            .size(sizeApp(SizeElement.SIZE_FAB))
             .testTag(FAB_PLUS))
     {
         Icon(
             icon, null,
             tint = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier
-                .padding(sizeApp(SizeElement.PADDING_ICON))
+                .padding(sizeApp(SizeElement.PADDING_FAB))
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.primaryContainer)
         )

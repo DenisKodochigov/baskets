@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -36,10 +37,11 @@ import com.example.basket.navigation.AppNavHost
 import com.example.basket.navigation.Baskets
 import com.example.basket.navigation.appTabRowScreens
 import com.example.basket.navigation.navigateToScreen
-import com.example.basket.ui.components.BottomBarApp
+import com.example.basket.ui.components.AppBottomBar
 import com.example.basket.ui.components.FloatingActionButtonApp
 import com.example.basket.ui.theme.AppTheme
 import com.example.basket.ui.theme.sizeApp
+import com.example.basket.utils.log
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -52,10 +54,8 @@ fun MainApp() {
         val currentBackStack by navController.currentBackStackEntryAsState()
         val currentDestination = currentBackStack?.destination
         val animCurrentScreen = appTabRowScreens.find {
-            it.route == currentDestination?.route
-        } ?: Baskets
-        val bottomBarHeight = sizeApp(SizeElement.SIZE_ICON) + 12.dp
-        val bottomBarOffsetHeightPx = remember { mutableStateOf(0f) }
+            it.route == currentDestination?.route } ?: Baskets
+        val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
         val refreshScreen = remember { mutableStateOf(true) }
 
         Scaffold(
@@ -64,25 +64,24 @@ fun MainApp() {
                 .semantics { testTagsAsResourceId = true }
                 .background(color = MaterialTheme.colorScheme.background)
                 .bottomBarAnimatedScroll(
-                     height = bottomBarHeight, offsetHeightPx = bottomBarOffsetHeightPx),
+                    height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
+                    offsetHeightPx = bottomBarOffsetHeightPx),
             bottomBar = {
-                BottomBarApp(
+                AppBottomBar(
                     currentScreen = animCurrentScreen, //currentScreen,
                     modifier = Modifier
-                        .height(bottomBarHeight)
-                        .offset {
-                            IntOffset(x = 0, y = -bottomBarOffsetHeightPx.value.roundToInt()) },
-                    onTabSelection = { newScreen ->
-                        navController.navigateToScreen(newScreen.route)
-                    })
+                        .height(sizeApp(SizeElement.HEIGHT_BOTTOM_BAR))
+                        .offset { IntOffset(x = 0, y = -bottomBarOffsetHeightPx.value.roundToInt()) },
+                    onTabSelection = { newScreen -> navController.navigateToScreen(newScreen.route) })
             },
             floatingActionButton = {
+                val plug = refreshScreen.value
                 FloatingActionButtonApp(
+                    icon = Icons.Filled.Add,
                     refreshScreen = refreshScreen,
+                    offset = sizeApp(SizeElement.OFFSET_FAB),
                     modifier = Modifier
-                        .offset {
-                            IntOffset(x = 0, y = -bottomBarOffsetHeightPx.value.roundToInt()) },
-                    offset = sizeApp(SizeElement.OFFSET_FAB), icon = Icons.Filled.Add,
+                        .offset { IntOffset(x = 0, y = -bottomBarOffsetHeightPx.value.roundToInt()) },
                     onClick = { showBottomSheet.value = true } )
             },
             floatingActionButtonPosition = FabPosition.Center,
@@ -98,7 +97,7 @@ fun MainApp() {
 }
 fun Modifier.bottomBarAnimatedScroll(height: Dp = 56.dp, offsetHeightPx: MutableState<Float>): Modifier =
     composed {
-        val bottomBarHeightPx = with(LocalDensity.current) { height.roundToPx().toFloat() }
+        val bottomBarHeightPx = with(LocalDensity.current) { (height + 30.dp).roundToPx().toFloat() }
         val connection = remember {
             object: NestedScrollConnection {
                 override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {

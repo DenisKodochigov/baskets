@@ -1,5 +1,6 @@
 package com.example.basket.ui.settings
 
+import CustomSlider
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,7 +34,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ChangeCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -53,9 +56,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.basket.AppBase
 import com.example.basket.R
@@ -73,6 +78,7 @@ import com.example.basket.ui.components.dialog.ChangeNameSectionDialog
 import com.example.basket.ui.components.dialog.EditUnitDialog
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.log
+import thumb
 
 @Composable fun SettingsScreen(refreshScreen: MutableState<Boolean>) {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -92,6 +98,7 @@ import com.example.basket.utils.log
         doChangeSection = { section -> viewModel.doChangeSection(section) },
         doDeleteSelected = { sections -> viewModel.doDeleteSections(sections) },
     )
+    val plug = refreshScreen.value
 }
 @SuppressLint("UnrememberedMutableState")
 @Composable fun SettingsScreenLayout(
@@ -110,9 +117,9 @@ import com.example.basket.utils.log
             flingBehavior = null,
             reverseScrolling = false)
         ){
-        HeaderScreen(text = stringResource(R.string.settings_page))
-        AddEditUnits(modifier, uiState, doChangeUnit, doDeleteUnits)
-        AddEditSection(modifier, uiState, doChangeSection, doDeleteSelected)
+        HeaderScreen(text = stringResource(R.string.settings_page), refreshScreen = refreshScreen)
+        AddEditUnits(modifier, uiState, refreshScreen, doChangeUnit, doDeleteUnits)
+        AddEditSection(modifier, uiState, refreshScreen, doChangeSection, doDeleteSelected)
         ChangeStyle(refreshScreen = refreshScreen)
 //        FontStyleView()
     }
@@ -121,6 +128,7 @@ import com.example.basket.utils.log
 @Composable fun AddEditSection(
     modifier: Modifier = Modifier,
     uiState: SettingsScreenState,
+    refreshScreen: MutableState<Boolean>,
     doChangeSection: (Section) -> Unit,
     doDeleteSelected: (List<Section>) -> Unit,){
 
@@ -130,10 +138,13 @@ import com.example.basket.utils.log
         itemList.find { it.idSection == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
         isSelectedId.value = 0
     }
-
-    Box(modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+    Box(
+        modifier
+            .fillMaxSize()
+            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column{
-            HeaderSection(text = stringResource(R.string.edit_section_list), modifier)
+//            val plug = refreshScreen
+            HeaderSection(text = stringResource(R.string.edit_section_list), modifier, refreshScreen)
             SectionLazyColumn( uiState = uiState,
                 doChangeSection = doChangeSection,
                 doDeleteSelected = doDeleteSelected,
@@ -200,7 +211,11 @@ fun SectionLazyColumn(
                     Spacer(modifier = Modifier
                         .size(size = 32.dp)
                         .clip(shape = CircleShape)
-                        .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = CircleShape)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outline,
+                            shape = CircleShape
+                        )
                         .clickable { changeColorSection.value = item }
                         .background(color = Color(item.colorSection), shape = CircleShape))
                     Spacer(modifier = Modifier.width(24.dp))
@@ -225,6 +240,7 @@ fun SectionLazyColumn(
 @Composable fun AddEditUnits(
     modifier: Modifier = Modifier,
     uiState: SettingsScreenState,
+    refreshScreen: MutableState<Boolean>,
     doChangeUnit: (UnitApp) -> Unit,
     doDeleteUnits: (List<UnitApp>) -> Unit,)
 {
@@ -239,7 +255,8 @@ fun SectionLazyColumn(
             .fillMaxWidth()
             .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column {
-            HeaderSection(text = stringResource(R.string.edit_unit_list), modifier)
+            HeaderSection(text = stringResource(R.string.edit_unit_list), modifier, refreshScreen)
+
             LazyColumnUnits(
                 uiState = uiState,
                 doDeleteSelected = doDeleteUnits,
@@ -284,20 +301,23 @@ fun LazyColumnUnits(
                 Box {
                     Row(verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                        .clip(shape = RoundedCornerShape(6.dp))
-                        .fillMaxWidth()
-                        .background(color = MaterialTheme.colorScheme.surface)
-                        .clickable { doSelected(item.idUnit) }
+                            .clip(shape = RoundedCornerShape(6.dp))
+                            .fillMaxWidth()
+                            .background(color = MaterialTheme.colorScheme.surface)
+                            .clickable { doSelected(item.idUnit) }
                     ) {
                         Spacer( modifier = Modifier
                             .background(if (item.isSelected) Color.Red else Color.LightGray)
                             .width(8.dp)
-                            .heightIn(min = 8.dp,max = 32.dp).fillMaxHeight()
+                            .heightIn(min = 8.dp, max = 32.dp)
+                            .fillMaxHeight()
                             .align(Alignment.CenterVertically))
                         TextApp(
                             text = item.nameUnit,
                             style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
-                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -318,30 +338,53 @@ fun LazyColumnUnits(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable fun ChangeStyle(refreshScreen: MutableState<Boolean>,){
     var sliderPosition by remember{ mutableFloatStateOf(AppBase.scale.toFloat()) }
-    HeaderSection(text = stringResource(R.string.font_size), Modifier)
+
+    HeaderSection(
+        text = stringResource(R.string.font_size),
+        modifier = Modifier,
+        refreshScreen = refreshScreen
+    )
     Slider(
         value = sliderPosition,
+        modifier = Modifier.padding(horizontal = 16.dp),
         valueRange = 0f..2f,
         steps = 1,
         enabled = true,
-        onValueChange = { sliderPosition = it },
-        onValueChangeFinished = {
+        onValueChange = {
+            sliderPosition = it
             AppBase.scale = sliderPosition.toInt()
             refreshScreen.value = !refreshScreen.value
-            log(true,"ChangeStyle = ${refreshScreen.value}")
         },
-        colors = SliderDefaults.colors(
-            thumbColor = Color(0xFF575757),
-            activeTrackColor = Color(0xFFA2A2A2),
-            inactiveTrackColor = Color(0xFFA2A2A2),
-            inactiveTickColor = Color(0xFFA2A2A2),
-            activeTickColor = Color(0xFF575757)
-        )
+        thumb = {
+            Box(
+                modifier = Modifier
+                    .thumb(size = 20.dp, shape = CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(8.dp),
+            ){
+                Text(text = "A",
+                    color = MaterialTheme.colorScheme.inversePrimary,
+                    style = TextStyle(fontSize = when (sliderPosition) {
+                        0f -> 24.sp
+                        1f -> 18.sp
+                        else -> 12.sp
+                    })
+                )
+            }
+        },
     )
-
 }
+
+@Composable fun textThumb(sliderPosition:Float) =
+    when (sliderPosition){
+        0f -> stringResource(id = R.string.theme_0)
+        1f -> stringResource(id = R.string.theme_1)
+        else -> stringResource(id = R.string.theme_2)
+    }
+
 @Composable fun FontStyleView(){
     Text(text = "displayLarge", style = MaterialTheme.typography.displayLarge)
     Text(text = "displayMedium", style = MaterialTheme.typography.displayMedium)
