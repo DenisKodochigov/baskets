@@ -35,6 +35,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,7 +57,10 @@ import com.example.basket.data.room.tables.ProductDB
 import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Product
+import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TypeText
+import com.example.basket.navigation.ScreenDestination
+import com.example.basket.ui.components.CollapsingToolbar
 import com.example.basket.ui.components.HeaderImScreen
 import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.HeaderSection
@@ -68,20 +72,27 @@ import com.example.basket.ui.components.dialog.EditQuantityDialog
 import com.example.basket.ui.components.dialog.SelectSectionDialog
 import com.example.basket.ui.components.showFABs
 import com.example.basket.ui.theme.SectionColor
+import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
+import com.example.basket.utils.bottomBarAnimatedScroll
 import com.example.basket.utils.log
 import com.example.basket.utils.selectSectionWithArticle
 import com.example.basket.utils.selectUnitWithArticle
+import kotlin.math.roundToInt
 
 const val showLog = false
 @Composable
-fun ProductsScreen(basketId: Long, showBottomSheet: MutableState<Boolean>) {
+fun ProductsScreen(
+    basketId: Long,
+    screen: ScreenDestination,
+    showBottomSheet: MutableState<Boolean>) {
 
     val viewModel: ProductViewModel = hiltViewModel()
     viewModel.getStateProducts(basketId)
 
     ProductScreenCreateView(
         basketId = basketId,
+        screen = screen,
         viewModel = viewModel,
         showBottomSheet = showBottomSheet,)
 }
@@ -89,6 +100,7 @@ fun ProductsScreen(basketId: Long, showBottomSheet: MutableState<Boolean>) {
 @Composable
 fun ProductScreenCreateView(
     basketId: Long,
+    screen: ScreenDestination,
     viewModel: ProductViewModel,
     showBottomSheet: MutableState<Boolean>,
 ){
@@ -103,6 +115,7 @@ fun ProductScreenCreateView(
 
     ProductsScreenLayout(
         uiState = uiState,
+        screen = screen,
         putProductInBasket = { product -> viewModel.putProductInBasket(product, basketId) },
         changeProduct = { product -> viewModel.changeProduct(product, basketId) },
         doChangeSectionSelected = { productList, idSection ->
@@ -116,6 +129,7 @@ fun ProductScreenCreateView(
 @Composable
 fun ProductsScreenLayout(
     uiState: ProductsScreenState,
+    screen: ScreenDestination,
     putProductInBasket: (Product) -> Unit,
     changeProduct: (Product) -> Unit,
     doChangeSectionSelected: (List<Product>, Long) -> Unit,
@@ -127,6 +141,7 @@ fun ProductsScreenLayout(
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
+    val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
 
     log( showLog,"LayoutProductsScreen. ${uiState.products.size}")
 
@@ -154,9 +169,15 @@ fun ProductsScreenLayout(
     }
 
     Box( Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxHeight() ) {
+        Column(Modifier
+            .fillMaxHeight()
+            .bottomBarAnimatedScroll(
+                height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
+                offsetHeightPx = bottomBarOffsetHeightPx), ) {
             ProductLazyColumn(
                 uiState = uiState,
+                screen = screen,
+                scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt(),
                 putProductInBasket = putProductInBasket,
                 changeProduct = changeProduct,
                 doSelected = { idItem -> isSelectedId.value = idItem } )
@@ -175,12 +196,14 @@ fun ProductsScreenLayout(
 @Composable
 fun ProductLazyColumn(
     uiState: ProductsScreenState,
+    screen: ScreenDestination,
+    scrollOffset:Int,
     putProductInBasket: (Product) -> Unit,
     changeProduct: (Product) -> Unit,
     doSelected: (Long) -> Unit
 ) {
     log( showLog,"LazyColumnProduct. ${uiState.products.size}")
-//    val listState = rememberLazyListState()
+    val listState = rememberLazyListState()
     val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
 
     if (editProduct.value != null ) {
@@ -194,18 +217,18 @@ fun ProductLazyColumn(
             }
         )
     }
-
+    CollapsingToolbar(
+        text = stringResource(screen.textHeader)+ " " + uiState.nameBasket ,
+        idImage = screen.picture,
+        scrollOffset = scrollOffset)
+    Spacer(modifier = Modifier.height(2.dp))
     LazyColumn(
-        state = rememberLazyListState(),
+        state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-        item {
-            HeaderImScreen(idImage = R.drawable.fon3,
-                text = stringResource(R.string.products_in_basket) + " " + uiState.nameBasket, )
-        }
         items(items = uiState.products) { item ->
             Column(modifier = Modifier.clip(RoundedCornerShape(8.dp))
                 .background(

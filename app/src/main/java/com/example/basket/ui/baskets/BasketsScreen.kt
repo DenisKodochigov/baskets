@@ -44,36 +44,48 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.basket.R
 import com.example.basket.data.room.tables.BasketDB
 import com.example.basket.entity.Basket
+import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TagsTesting.BASKETBOTTOMSHEET
 import com.example.basket.entity.TagsTesting.BASKET_BS_INPUT_NAME
 import com.example.basket.entity.TagsTesting.BASKET_LAZY
 import com.example.basket.entity.TypeText
-import com.example.basket.ui.components.HeaderImScreen
+import com.example.basket.navigation.ScreenDestination
+import com.example.basket.ui.components.CollapsingToolbar
 import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.dialog.EditBasketName
+import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.DismissBackground
+import com.example.basket.utils.bottomBarAnimatedScroll
 import com.example.basket.utils.log
 import java.util.*
+import kotlin.math.roundToInt
 
 const val showLog = false
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun BasketsScreen(onClickBasket: (Long) -> Unit, showBottomSheet: MutableState<Boolean>) {
+fun BasketsScreen(
+    onClickBasket: (Long) -> Unit,
+    screen: ScreenDestination,
+    showBottomSheet: MutableState<Boolean>) {
 
     val viewModel: BasketViewModel = hiltViewModel()
     viewModel.getListBasket()
     log(showLog, "BasketsScreen")
     BasketScreenCreateView(
-        onClickBasket = onClickBasket, viewModel = viewModel, showBottomSheet = showBottomSheet,
+        onClickBasket = onClickBasket,
+        screen = screen,
+        viewModel = viewModel,
+        showBottomSheet = showBottomSheet,
     )
 }
 
 @Composable
 fun BasketScreenCreateView(
+    screen: ScreenDestination,
     onClickBasket: (Long) -> Unit,
     viewModel: BasketViewModel,
     showBottomSheet: MutableState<Boolean>,
@@ -86,21 +98,35 @@ fun BasketScreenCreateView(
     BasketsScreenLayout(
         onClickBasket = onClickBasket,
         uiState = uiState,
+        screen = screen,
         changeNameBasket = { basket -> viewModel.changeNameBasket(basket) },
         deleteBasket = { basketId -> viewModel.deleteBasket(basketId) },
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BasketsScreenLayout(
     uiState: BasketScreenState,
+    screen: ScreenDestination,
     onClickBasket: (Long) -> Unit,
     changeNameBasket: (Basket) -> Unit,
     deleteBasket: (Long) -> Unit,
 ) {
+    val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
     log(showLog, "BasketsScreenLayout")
-    Column(Modifier.fillMaxHeight()) {
-        BasketLazyColumn(uiState, onClickBasket, deleteBasket, changeNameBasket)
+    Column(Modifier
+        .fillMaxHeight()
+        .bottomBarAnimatedScroll(
+            height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
+            offsetHeightPx = bottomBarOffsetHeightPx),) {
+        BasketLazyColumn(
+            uiState = uiState,
+            screen = screen,
+            onClickBasket = onClickBasket,
+            deleteBasket = deleteBasket,
+            changeNameBasket= changeNameBasket,
+            scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt())
     }
 }
 
@@ -109,6 +135,8 @@ fun BasketsScreenLayout(
 @Composable
 fun BasketLazyColumn(
     uiState: BasketScreenState,
+    screen: ScreenDestination,
+    scrollOffset:Int,
     onClickBasket: (Long) -> Unit,
     deleteBasket: (Long) -> Unit,
     changeNameBasket: (Basket) -> Unit,
@@ -128,13 +156,18 @@ fun BasketLazyColumn(
         )
     }
 
+    CollapsingToolbar(
+        text = stringResource(screen.textHeader),
+        idImage = screen.picture,
+        scrollOffset = scrollOffset)
+    Spacer(modifier = Modifier.height(2.dp))
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver)).testTag(BASKET_LAZY)
     )
     {
-        item { HeaderImScreen(text = stringResource(R.string.baskets), idImage = R.drawable.bas) }
+//        item { HeaderImScreen(text = stringResource(R.string.baskets), idImage = R.drawable.bas) }
         items(items = uiState.baskets, key = { it.idBasket })
         { item ->
             val dismissState = rememberDismissState(
@@ -217,7 +250,7 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    var edgeToEdgeEnabled by remember { mutableStateOf(false) }
+    val edgeToEdgeEnabled by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { true },

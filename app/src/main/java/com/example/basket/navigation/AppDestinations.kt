@@ -7,17 +7,22 @@ import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.basket.R
 
 /*** Contract for information needed on every App navigation destination*/
 interface ScreenDestination {
     val icon: ImageVector
     val route: String
+    val picture: Int
+    val textHeader: Int
 }
 
 /*** App app navigation destinations*/
 object Baskets : ScreenDestination {
     override val icon = Icons.Filled.ShoppingBasket
     override val route = "baskets"
+    override val picture = R.drawable.bas
+    override val textHeader = R.string.baskets
 }
 
 object ProductsBasket : ScreenDestination {
@@ -26,16 +31,22 @@ object ProductsBasket : ScreenDestination {
     const val basketIdArg = "basket_type"
     val routeWithArgs = "${route}/{$basketIdArg}"
     val arguments = listOf(navArgument(basketIdArg) { type = NavType.LongType })
+    override val picture = R.drawable.fon3
+    override val textHeader = R.string.products_in_basket
 }
 
 object Articles : ScreenDestination {
     override val icon = Icons.Filled.Dashboard
     override val route = "article"
+    override val picture = R.drawable.fon5_1
+    override val textHeader = R.string.product
 }
 
 object Setting : ScreenDestination {
     override val icon = Icons.Filled.Settings
     override val route = "settings"
+    override val picture = R.drawable.bas
+    override val textHeader = R.string.settings_page
 }
 
 //object SingleAccount : ScreenDestination {

@@ -43,30 +43,37 @@ import com.example.basket.data.room.tables.ArticleDB
 import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Article
+import com.example.basket.entity.SizeElement
 import com.example.basket.entity.SortingBy
 import com.example.basket.entity.TypeText
+import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.components.*
 import com.example.basket.ui.components.dialog.EditArticleDialog
 import com.example.basket.ui.components.dialog.SelectSectionDialog
 import com.example.basket.ui.theme.SectionColor
+import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.DismissBackground
+import com.example.basket.utils.bottomBarAnimatedScroll
 import com.example.basket.utils.log
 import com.example.basket.utils.selectSectionWithArticle
 import com.example.basket.utils.selectUnitWithArticle
+import kotlin.math.roundToInt
 
 const val showLog = false
 @Composable
-fun ArticlesScreen( showBottomSheet: MutableState<Boolean>) {
+fun ArticlesScreen(showBottomSheet: MutableState<Boolean>,
+                   screen: ScreenDestination,) {
     val viewModel: ArticleViewModel = hiltViewModel()
     viewModel.getStateArticle()
 
-    ArticleScreenInitDate(viewModel = viewModel, showBottomSheet = showBottomSheet)
+    ArticleScreenInitDate(viewModel = viewModel, screen = screen,showBottomSheet = showBottomSheet)
 }
 
 @Composable
 fun ArticleScreenInitDate(
     viewModel: ArticleViewModel,
+    screen: ScreenDestination,
     showBottomSheet: MutableState<Boolean>,
 ) {
     log( showLog,"ArticleScreenInitDate")
@@ -78,6 +85,7 @@ fun ArticleScreenInitDate(
             onDismiss = { showBottomSheet.value = false})
     ArticleScreenLayout(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
+        screen = screen,
         uiState = viewModel.articleScreenState.collectAsState().value,
         changeArticle = { article -> viewModel.changeArticle(article, uiState.sorting) },
         doDeleteSelected = { articles -> viewModel.deleteSelected(articles, uiState.sorting) },
@@ -93,6 +101,7 @@ fun ArticleScreenInitDate(
 fun ArticleScreenLayout(
     modifier: Modifier = Modifier,
     uiState: ArticleScreenState,
+    screen: ScreenDestination,
     changeArticle: (Article) -> Unit,
     doChangeSectionSelected: (List<Article>, Long) -> Unit,
     doDeleteSelected: (List<Article>) -> Unit,
@@ -105,6 +114,7 @@ fun ArticleScreenLayout(
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
+    val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
 
     if (isSelectedId.value > 0L) {
         log( showLog,"LayoutArticleScreen if (isSelectedId.value > 0L) ${isSelectedId.value}")
@@ -135,10 +145,15 @@ fun ArticleScreenLayout(
             Column(
                 Modifier
                     .fillMaxHeight()
+                    .bottomBarAnimatedScroll(
+                        height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
+                        offsetHeightPx = bottomBarOffsetHeightPx)
                     .weight(1f)) {
                 ArticleLazyColumn(
                     uiState = uiState,
+                    screen = screen,
                     changeArticle = changeArticle,
+                    scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt(),
                     doSelected = { idItem -> isSelectedId.value = idItem },
                     doDelete = { items -> doDeleteSelected( items ) })
             }
@@ -161,6 +176,8 @@ fun ArticleScreenLayout(
 @Composable
 fun ArticleLazyColumn(
     uiState: ArticleScreenState,
+    screen: ScreenDestination,
+    scrollOffset:Int,
     changeArticle: (Article) -> Unit,
     doSelected: (Long) -> Unit,
     doDelete: (List<Article>) -> Unit
@@ -181,7 +198,11 @@ fun ArticleLazyColumn(
             }
         )
     }
-
+    CollapsingToolbar(
+        text = stringResource(screen.textHeader),
+        idImage = screen.picture,
+        scrollOffset = scrollOffset)
+    Spacer(modifier = Modifier.height(2.dp))
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -189,8 +210,8 @@ fun ArticleLazyColumn(
             .clip(RoundedCornerShape(8.dp))
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-        item {
-            HeaderImScreen(text = stringResource(R.string.product), R.drawable.fon5_1) }
+//        item {
+//            HeaderImScreen(text = stringResource(R.string.product), R.drawable.fon5_1) }
         items( items = uiState.article )
         { item ->
             Column( modifier = Modifier

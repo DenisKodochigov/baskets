@@ -69,6 +69,7 @@ import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Section
 import com.example.basket.entity.TypeText
 import com.example.basket.entity.UnitApp
+import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.components.ButtonCircle
 import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.HeaderSection
@@ -80,18 +81,23 @@ import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.log
 import thumb
 
-@Composable fun SettingsScreen(refreshScreen: MutableState<Boolean>) {
+@Composable fun SettingsScreen(refreshScreen: MutableState<Boolean>, screen: ScreenDestination)
+{
     val viewModel: SettingsViewModel = hiltViewModel()
-    SettingsScreenInit(viewModel, refreshScreen = refreshScreen)
+    SettingsScreenInit( viewModel, refreshScreen = refreshScreen, screen = screen )
 }
 
-@Composable fun SettingsScreenInit(viewModel: SettingsViewModel,
-                                   refreshScreen: MutableState<Boolean>){
+@Composable fun SettingsScreenInit(
+    viewModel: SettingsViewModel,
+    screen: ScreenDestination,
+    refreshScreen: MutableState<Boolean>)
+{
     val uiState by viewModel.settingScreenState.collectAsState()
 
     SettingsScreenLayout(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         uiState = uiState,
+        screen = screen,
         refreshScreen = refreshScreen,
         doChangeUnit = { unit -> viewModel.changeUnit(unit) },
         doDeleteUnits = { units -> viewModel.doDeleteUnits(units) },
@@ -104,6 +110,7 @@ import thumb
 @Composable fun SettingsScreenLayout(
     modifier: Modifier = Modifier,
     uiState: SettingsScreenState,
+    screen: ScreenDestination,
     refreshScreen: MutableState<Boolean>,
     doChangeUnit: (UnitApp) -> Unit,
     doDeleteUnits: (List<UnitApp>) -> Unit,
@@ -117,7 +124,7 @@ import thumb
             flingBehavior = null,
             reverseScrolling = false)
         ){
-        HeaderScreen(text = stringResource(R.string.settings_page), refreshScreen = refreshScreen)
+        HeaderScreen(text = stringResource(screen.textHeader), refreshScreen = refreshScreen)
         AddEditUnits(modifier, uiState, refreshScreen, doChangeUnit, doDeleteUnits)
         AddEditSection(modifier, uiState, refreshScreen, doChangeSection, doDeleteSelected)
         ChangeStyle(refreshScreen = refreshScreen)

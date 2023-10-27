@@ -35,6 +35,7 @@ fun AppNavHost(
                 targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }) {
             BasketsScreen(
                 showBottomSheet = showBottomSheet,
+                screen = Baskets,
                 onClickBasket = { navController.navigateToProducts(it) },
             )
         }
@@ -48,7 +49,7 @@ fun AppNavHost(
         { navBackStackEntry ->
             val basketId = navBackStackEntry.arguments?.getLong(ProductsBasket.basketIdArg)
             if (basketId != null) {
-                ProductsScreen(basketId = basketId, showBottomSheet = showBottomSheet,)
+                ProductsScreen(basketId = basketId, showBottomSheet = showBottomSheet, screen = ProductsBasket)
             }
         }
         composable(
@@ -58,7 +59,7 @@ fun AppNavHost(
             exitTransition = {
                 targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
         ) {
-            ArticlesScreen( showBottomSheet = showBottomSheet )
+            ArticlesScreen( showBottomSheet = showBottomSheet, screen = Articles )
         }
         composable(
             route = Setting.route,
@@ -67,7 +68,7 @@ fun AppNavHost(
             exitTransition = {
                 targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
         ) {
-            SettingsScreen(refreshScreen = refreshScreen)
+            SettingsScreen(refreshScreen = refreshScreen, screen = Setting)
         }
     }
 }

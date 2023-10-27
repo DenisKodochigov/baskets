@@ -1,6 +1,7 @@
 package com.example.basket.utils
 
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.basket.entity.Article
 import com.example.basket.entity.Product
@@ -108,4 +110,4 @@ fun DismissBackground(dismissState: DismissState) {
     return if (article != null) Pair(article.unitApp.idUnit, article.unitApp.nameUnit)
     else Pair(0L, "")
 }
-fun Int.hexToString() = String.format("#%06X", 0xFFFFFF and this)
+

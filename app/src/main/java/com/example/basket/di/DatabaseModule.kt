@@ -89,7 +89,7 @@ object DatabaseModule {
                 }
             })
             .build()
-//        database = Room.databaseBuilder( appContext, AppDatabase::class.java, "data.db").build()
+        database = Room.databaseBuilder( appContext, AppDatabase::class.java, "data.db").build()
         return database
     }
 

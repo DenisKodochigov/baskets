@@ -59,9 +59,9 @@ fun FabAnimation(show: Boolean, offset: Dp, icon: ImageVector, onClick: () -> Un
     val refreshScreen = remember{ mutableStateOf(true)}
     val offsetFAB by animateDpAsState(
         targetValue = if (isAnimated) {
-            if (show) offset else 220.dp
+            if (show) offset else sizeApp(SizeElement.HEIGHT_FAB_BOX)
         } else {
-            if (show) 220.dp else offset
+            if (show) sizeApp(SizeElement.HEIGHT_FAB_BOX) else offset
         },
         animationSpec = tween(durationMillis = 600), label = ""
     )

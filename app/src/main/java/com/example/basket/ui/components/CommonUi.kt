@@ -73,7 +73,25 @@ fun HeaderScreen(text: String, refreshScreen: MutableState<Boolean> = mutableSta
         TextApp(text = text, style = styleApp(nameStyle = TypeText.NAME_SCREEN))
     }
 }
-
+@Composable
+fun HeaderImScreen(text: String, idImage:ImageVector, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
+    Column( Modifier.fillMaxWidth() ){
+        Image(
+            imageVector = idImage,
+            contentDescription = "Photo",
+            contentScale = Crop,
+            modifier = Modifier.height(340.dp))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 4.dp)) {
+            val plug = refreshScreen.value
+            TextApp(
+                text = text,
+                style = styleApp(nameStyle = TypeText.NAME_SCREEN),
+                modifier = Modifier.align(alignment = Alignment.BottomCenter) )
+        }
+    }
+}
 @Composable
 fun HeaderImScreen(text: String, idImage:Int, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
     Column( Modifier.fillMaxWidth() ){
@@ -174,7 +192,6 @@ fun MyExposedDropdownMenuBox(
                     .verticalScroll(rememberScrollState()),
                 expanded = expandedLocal && enabled,
                 onDismissRequest = { expandedLocal = false }) {
-//                if (enteredText.isNotEmpty()) {
                     filteringOptions.forEach { item ->
                         DropdownMenuItem(
                             onClick = {
@@ -187,8 +204,6 @@ fun MyExposedDropdownMenuBox(
                                     style = styleApp(nameStyle = TypeText.EDIT_TEXT))}
                         )
                     }
-//                }
-
             }
         } else expandedLocal = false
     }
