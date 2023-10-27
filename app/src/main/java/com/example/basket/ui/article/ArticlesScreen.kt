@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +46,7 @@ import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Article
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.SortingBy
+import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.TypeText
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.components.*
@@ -342,7 +344,9 @@ fun AddEditArticleBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        modifier = Modifier.padding(horizontal = 12.dp),
+        modifier = Modifier
+            .testTag(TagsTesting.BASKETBOTTOMSHEET)
+            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor)),
         shape = MaterialTheme.shapes.small,
         containerColor = BottomSheetDefaults.ContainerColor,
         contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
@@ -369,14 +373,15 @@ fun AddEditArticleBottomSheet(
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 12.dp)
+                .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor),
+                    vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver))
                 .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.85).dp)
         ) {
             HeaderScreen(text = stringResource(R.string.add_product))
 //        Spacer(Modifier.height(24.dp))
             MyExposedDropdownMenuBox(
                 /** Select article*/
-                listItems = listArticle.map { Pair(it.idArticle, it.nameArticle) },
+                listItems = listArticle.map { Pair(it.idArticle, it.nameArticle) }.sortedBy { it.second },
                 label = stringResource(R.string.select_product),
                 modifier = Modifier.fillMaxWidth(),
                 enterValue = enterArticle,
@@ -387,11 +392,11 @@ fun AddEditArticleBottomSheet(
                 enterUnit.value = selectUnitWithArticle(enterArticle.value.first, listArticle)
                 enterValue.value = "1"
             }
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
                 MyExposedDropdownMenuBox(
                     /** Select section*/
-                    listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) },
+                    listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) }.sortedBy { it.second },
                     label = stringResource(R.string.section),
                     modifier = Modifier.weight(1f),
                     enterValue = enterSection,
@@ -400,14 +405,14 @@ fun AddEditArticleBottomSheet(
                 Spacer(Modifier.width(4.dp))
                 MyExposedDropdownMenuBox(
                     /** Select unit*/
-                    listItems = uiState.unitApp.map { Pair(it.idUnit, it.nameUnit) },
+                    listItems = uiState.unitApp.map { Pair(it.idUnit, it.nameUnit) }.sortedBy { it.second },
                     label = stringResource(R.string.units),
-                    modifier = Modifier.width(120.dp),
+                    modifier = Modifier.width(dimensionResource(id = R.dimen.bottom_sheet_unit_width)),
                     enterValue = enterUnit,
                     filtering = false
                 )
             }
-            Spacer(Modifier.height(36.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
 
             val article = ArticleDB(
                 idArticle = enterArticle.value.first,
@@ -428,7 +433,7 @@ fun AddEditArticleBottomSheet(
                     enterArticle.value = Pair(0, "")
                 }
             )
-            Spacer(Modifier.height(72.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_2)))
         }
     }
 }

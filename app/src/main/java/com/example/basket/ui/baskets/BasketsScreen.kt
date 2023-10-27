@@ -260,7 +260,9 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        modifier = Modifier.padding(horizontal = 56.dp).testTag(BASKETBOTTOMSHEET),
+        modifier = Modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor))
+            .testTag(BASKETBOTTOMSHEET),
         shape = MaterialTheme.shapes.small,
         containerColor = BottomSheetDefaults.ContainerColor,
         contentColor = contentColorFor(containerColor),
@@ -274,11 +276,11 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
             Modifier
                 .fillMaxWidth()
                 .heightIn((screenHeight * 0.35).dp, (screenHeight * 0.75).dp)
-                .padding(24.dp, 24.dp, 24.dp, 32.dp)
+                .padding(dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor))
         ) {
             Spacer(Modifier.height(1.dp))
             HeaderScreen(text = stringResource(R.string.add_basket))
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
             OutlinedTextField(
                 value = nameNewBasket,
                 singleLine = true,
@@ -297,14 +299,14 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
                     }
                 ),
             )
-            Spacer(Modifier.height(36.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
             TextButtonOK(
                 enabled = nameNewBasket != "",
                 onConfirm = {
                     onAddClick(nameNewBasket)
                     onDismiss()
                 })
-            Spacer(Modifier.height(36.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
         }
     }
 }

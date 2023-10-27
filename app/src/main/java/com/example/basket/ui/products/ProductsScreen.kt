@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -58,10 +59,10 @@ import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Product
 import com.example.basket.entity.SizeElement
+import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.TypeText
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.components.CollapsingToolbar
-import com.example.basket.ui.components.HeaderImScreen
 import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.HeaderSection
 import com.example.basket.ui.components.MyExposedDropdownMenuBox
@@ -169,11 +170,13 @@ fun ProductsScreenLayout(
     }
 
     Box( Modifier.fillMaxSize()) {
-        Column(Modifier
-            .fillMaxHeight()
-            .bottomBarAnimatedScroll(
-                height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
-                offsetHeightPx = bottomBarOffsetHeightPx), ) {
+        Column(
+            Modifier
+                .fillMaxHeight()
+                .bottomBarAnimatedScroll(
+                    height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
+                    offsetHeightPx = bottomBarOffsetHeightPx
+                ), ) {
             ProductLazyColumn(
                 uiState = uiState,
                 screen = screen,
@@ -230,12 +233,13 @@ fun ProductLazyColumn(
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
         items(items = uiState.products) { item ->
-            Column(modifier = Modifier.clip(RoundedCornerShape(8.dp))
+            Column(modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
                 .background(
 //                    if (uiState.products.size == 1 ) SectionColor
 //                    else {
-                        if (item[0].article.section.colorSection != 0L) Color(item[0].article.section.colorSection)
-                        else SectionColor
+                    if (item[0].article.section.colorSection != 0L) Color(item[0].article.section.colorSection)
+                    else SectionColor
 //                    }
                 )) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
@@ -293,10 +297,12 @@ fun SectionProduct(
 //    log( showLog,"ElementColum")
     val localDensity = LocalDensity.current
     var heightIs by remember { mutableStateOf(0.dp) }
-    Box(Modifier
-        .padding(horizontal = 6.dp)
-        .onGloballyPositioned { coordinates ->
-            heightIs = with(localDensity) { coordinates.size.height.toDp() } })
+    Box(
+        Modifier
+            .padding(horizontal = 6.dp)
+            .onGloballyPositioned { coordinates ->
+                heightIs = with(localDensity) { coordinates.size.height.toDp() }
+            })
     {
         Row(
             modifier = Modifier
@@ -393,7 +399,9 @@ fun AddEditProductBottomSheet(uiState: ProductsScreenState, onAddProduct: (Produ
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        modifier = Modifier.padding(horizontal = 12.dp),
+        modifier = Modifier
+            .testTag(TagsTesting.BASKETBOTTOMSHEET)
+            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor)),
         shape = MaterialTheme.shapes.small,
         containerColor = BottomSheetDefaults.ContainerColor,
         contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
@@ -403,22 +411,26 @@ fun AddEditProductBottomSheet(uiState: ProductsScreenState, onAddProduct: (Produ
         windowInsets = BottomSheetDefaults.windowInsets,
         sheetState = sheetState  ) {
 
-        Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor),
+                    vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver))) {
             HeaderScreen( text = stringResource(R.string.add_product))
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
             /** Select article*/
             MyExposedDropdownMenuBox(
-                listItems = uiState.articles.map { Pair(it.idArticle, it.nameArticle) },
+                listItems = uiState.articles.map { Pair(it.idArticle, it.nameArticle) }.sortedBy { it.second },
                 label = stringResource(R.string.select_product),
                 modifier = Modifier.fillMaxWidth(),
                 enterValue = enterArticle,
                 filtering = true
             )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
             /** Select section*/
             MyExposedDropdownMenuBox(
-                listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) },
+                listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) }.sortedBy { it.second },
                 label = stringResource(R.string.section),
                 modifier = Modifier.fillMaxWidth(),
                 enterValue = enterSection,
@@ -426,7 +438,7 @@ fun AddEditProductBottomSheet(uiState: ProductsScreenState, onAddProduct: (Produ
                 readOnly = enterArticle.value.first > 0,
                 enabled = enterArticle.value.first <= 0
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Bottom,
@@ -435,22 +447,22 @@ fun AddEditProductBottomSheet(uiState: ProductsScreenState, onAddProduct: (Produ
                 /** Value*/
                 MyOutlinedTextFieldWithoutIconClearing(
                     typeKeyboard = "digit",
-                    modifier = Modifier.width(90.dp),
+                    modifier = Modifier.width(dimensionResource(id = R.dimen.bottom_sheet_value_width)),
                     enterValue = enterValue
                 )
                 Spacer(Modifier.width(4.dp))
                 /** Select unit*/
                 MyExposedDropdownMenuBox(
-                    listItems = uiState.unitApp.map { Pair(it.idUnit, it.nameUnit) },
+                    listItems = uiState.unitApp.map { Pair(it.idUnit, it.nameUnit) }.sortedBy { it.second },
                     label = stringResource(R.string.units),
-                    modifier = Modifier.width(120.dp),
+                    modifier = Modifier.width(dimensionResource(id = R.dimen.bottom_sheet_unit_width)),
                     enterValue = enterUnit,
                     readOnly = true,
                     filtering = false,
                     enabled = enterArticle.value.first <= 0
                 )
             }
-            Spacer(Modifier.height(36.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
 
             TextButtonOK(
                 enabled = enterArticle.value.second != "",
@@ -476,7 +488,7 @@ fun AddEditProductBottomSheet(uiState: ProductsScreenState, onAddProduct: (Produ
                     enterArticle.value = Pair(0, "")
                     enterValue.value = "1"
                 })
-            Spacer(Modifier.height(36.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
         }
     }
 }
