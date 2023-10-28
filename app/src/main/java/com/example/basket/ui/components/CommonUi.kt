@@ -4,9 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,15 +22,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -41,7 +35,6 @@ import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -51,11 +44,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.basket.R
-import com.example.basket.entity.CustomTriangleShape
-import com.example.basket.entity.Direcions
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.SortingBy
 import com.example.basket.entity.TagsTesting.BUTTON_OK
@@ -63,7 +53,6 @@ import com.example.basket.entity.TypeText
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.log
-import kotlin.math.roundToInt
 
 @Composable
 fun HeaderScreen(text: String, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
@@ -73,45 +62,7 @@ fun HeaderScreen(text: String, refreshScreen: MutableState<Boolean> = mutableSta
         TextApp(text = text, style = styleApp(nameStyle = TypeText.NAME_SCREEN))
     }
 }
-@Composable
-fun HeaderImScreen(text: String, idImage:ImageVector, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
-    Column( Modifier.fillMaxWidth() ){
-        Image(
-            imageVector = idImage,
-            contentDescription = "Photo",
-            contentScale = Crop,
-            modifier = Modifier.height(340.dp))
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 4.dp)) {
-            val plug = refreshScreen.value
-            TextApp(
-                text = text,
-                style = styleApp(nameStyle = TypeText.NAME_SCREEN),
-                modifier = Modifier.align(alignment = Alignment.BottomCenter) )
-        }
-    }
-}
-@Composable
-fun HeaderImScreen(text: String, idImage:Int, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
-    Column( Modifier.fillMaxWidth() ){
-        Image(
-            painter = painterResource(id = idImage),
-            contentDescription = "Photo",
-            contentScale = Crop,
-            modifier = Modifier.height(340.dp)
-        )
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 4.dp)) {
-            val plug = refreshScreen.value
-            TextApp(
-                text = text,
-                style = styleApp(nameStyle = TypeText.NAME_SCREEN),
-                modifier = Modifier.align(alignment = Alignment.BottomCenter) )
-        }
-    }
-}
+
 @Composable
 fun HeaderSection(text: String, modifier: Modifier, refreshScreen: MutableState<Boolean> = mutableStateOf(false)) {
     Spacer(modifier = Modifier.height(12.dp))
@@ -407,63 +358,3 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
     }
 }
 
-@Composable fun SliderApp(
-    modifier: Modifier = Modifier,
-    position: Float,
-    valueRange: ClosedFloatingPointRange<Float>,
-    step: Int,
-    direction: Direcions,
-    onSelected: (Float)->Unit )
-{
-    SliderApp1(
-        modifier = modifier,
-        position = position,
-        valueRange = valueRange,
-        step = step,
-        direction = direction,
-        onSelected = onSelected)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable fun SliderApp1(
-    modifier: Modifier = Modifier,
-    position: Float,
-    valueRange: ClosedFloatingPointRange<Float>,
-    step: Int,
-    direction: Direcions,
-    onSelected: (Float)->Unit )
-{
-    val interactionSource = remember { MutableInteractionSource() }
-    val colors =  SliderDefaults.colors(
-                    thumbColor = Color(0xFF575757),
-                    activeTrackColor = Color(0xFFA2A2A2),
-                    activeTickColor = Color(0xFFA2A2A2),
-                    inactiveTrackColor = Color(0xFFA2A2A2),
-                    inactiveTickColor = Color(0xFFA2A2A2),
-                    disabledThumbColor = Color.Transparent,
-                    disabledActiveTrackColor = Color.Transparent,
-                    disabledActiveTickColor = Color.Transparent,
-                    disabledInactiveTrackColor = Color.Transparent,
-                    disabledInactiveTickColor = Color.Transparent,
-                )
-    Slider(
-        modifier = modifier,
-        value = position,
-        valueRange = valueRange,
-        steps = step,
-        onValueChange = { onSelected(it) },
-        thumb = {
-            SliderDefaults.Thumb(
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.tertiaryContainer,
-                        shape = CustomTriangleShape(direction)
-                    )
-                    .drawWithContent { },
-                interactionSource = interactionSource,
-                thumbSize = DpSize(34.dp,34.dp),
-                colors = colors
-            )
-        },
-    )
-}

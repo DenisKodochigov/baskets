@@ -1,7 +1,6 @@
 package com.example.basket.utils
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.basket.entity.Article
 import com.example.basket.entity.Product
@@ -47,7 +45,7 @@ fun createDoubleLisArticle(articles: List<Article>, sortingBy: SortingBy): List<
     val listArticle = mutableListOf<Article>()
     if (articles.isNotEmpty()) {
         when(sortingBy){
-            SortingBy.BY_NAME -> doubleList.add(articles.sortedBy { it.position }.toList())
+            SortingBy.BY_NAME -> doubleList.add(articles.sortedBy { it.nameArticle }.toList())
             SortingBy.BY_SECTION ->{
                 val articlesLocal = articles.sortedWith( compareBy ( {it.section.nameSection},
                     {it.nameArticle} ))

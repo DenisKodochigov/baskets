@@ -73,6 +73,7 @@ import com.example.basket.ui.components.dialog.EditQuantityDialog
 import com.example.basket.ui.components.dialog.SelectSectionDialog
 import com.example.basket.ui.components.showFABs
 import com.example.basket.ui.theme.SectionColor
+import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.bottomBarAnimatedScroll
@@ -222,7 +223,7 @@ fun ProductLazyColumn(
     }
     CollapsingToolbar(
         text = stringResource(screen.textHeader)+ " " + uiState.nameBasket ,
-        idImage = screen.picture,
+        idImage = getIdImage(screen),
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
     LazyColumn(

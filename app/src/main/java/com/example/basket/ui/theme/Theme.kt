@@ -22,6 +22,7 @@ import com.example.basket.AppBase
 import com.example.basket.R
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TypeText
+import com.example.basket.navigation.ScreenDestination
 
 val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -114,12 +115,12 @@ fun AppTheme(content: @Composable () -> Unit) {
         TypeText.NAME_SCREEN -> when (AppBase.scale){
             1-> typography.headlineSmall
             2 -> typography.titleMedium
-            else -> typography.headlineLarge //0
+            else -> typography.headlineMedium //0
         }
         TypeText.NAME_SECTION -> when (AppBase.scale){
             1-> typography.titleLarge
             2 -> typography.titleSmall
-            else -> typography.headlineMedium //0
+            else -> typography.headlineSmall //0
         }
         TypeText.TEXT_IN_LIST -> when (AppBase.scale){
             1-> typography.titleLarge
@@ -183,6 +184,10 @@ fun AppTheme(content: @Composable () -> Unit) {
             else -> dimensionResource(R.dimen.height_fab_box_large)
         }
     }
+}
+@Composable fun getIdImage(screen: ScreenDestination):Int{
+    val dayNight = isSystemInDarkTheme()
+    return if (dayNight) screen.pictureDay else screen.pictureNight
 }
 
 //#####################################################################################################

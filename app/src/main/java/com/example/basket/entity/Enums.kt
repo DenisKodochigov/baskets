@@ -23,14 +23,3 @@ enum class SizeElement{
     HEIGHT_FAB_BOX
 }
 
-enum class Direcions{
-    Top,
-    Bottom,
-    Left,
-    Right
-}
-enum class LabelSliderBarSize{
-    Large,
-    Medium,
-    Small,
-}

@@ -39,7 +39,7 @@ class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
         basket.nameBasket = (basket.nameBasket[0].uppercase()+basket.nameBasket.substring(1)).trim()
         val existBasket = getBasket(basket.nameBasket)
         if (existBasket == null ) {
-            dataDao.newBasket(basket as BasketDB)
+            dataDao.newBasket(basket)
         }
         return getListBasketCount()
     }

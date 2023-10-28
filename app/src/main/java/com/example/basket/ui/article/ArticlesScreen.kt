@@ -53,6 +53,7 @@ import com.example.basket.ui.components.*
 import com.example.basket.ui.components.dialog.EditArticleDialog
 import com.example.basket.ui.components.dialog.SelectSectionDialog
 import com.example.basket.ui.theme.SectionColor
+import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.DismissBackground
@@ -202,7 +203,7 @@ fun ArticleLazyColumn(
     }
     CollapsingToolbar(
         text = stringResource(screen.textHeader),
-        idImage = screen.picture,
+        idImage = getIdImage(screen),
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
     LazyColumn(
@@ -212,8 +213,6 @@ fun ArticleLazyColumn(
             .clip(RoundedCornerShape(8.dp))
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-//        item {
-//            HeaderImScreen(text = stringResource(R.string.product), R.drawable.fon5_1) }
         items( items = uiState.article )
         { item ->
             Column( modifier = Modifier
@@ -326,8 +325,7 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditArticleBottomSheet(
-    uiState: ArticleScreenState, onAddArticle: (Article) -> Unit, onDismiss:() -> Unit )
+fun AddEditArticleBottomSheet(uiState: ArticleScreenState, onAddArticle: (Article) -> Unit, onDismiss:() -> Unit )
 {
     log( showLog,"BottomSheetContentArticle")
     val sheetState = rememberModalBottomSheetState(

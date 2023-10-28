@@ -55,6 +55,7 @@ import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.dialog.EditBasketName
+import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.DismissBackground
@@ -104,7 +105,6 @@ fun BasketScreenCreateView(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BasketsScreenLayout(
     uiState: BasketScreenState,
@@ -158,7 +158,7 @@ fun BasketLazyColumn(
 
     CollapsingToolbar(
         text = stringResource(screen.textHeader),
-        idImage = screen.picture,
+        idImage = getIdImage(screen),
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
     LazyColumn(

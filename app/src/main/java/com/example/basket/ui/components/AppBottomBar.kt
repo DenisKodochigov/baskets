@@ -18,9 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +37,6 @@ import com.example.basket.navigation.appTabRowScreens
 import com.example.basket.ui.theme.TabFadeInAnimationDelay
 import com.example.basket.ui.theme.TabFadeInAnimationDuration
 import com.example.basket.ui.theme.TabFadeOutAnimationDuration
-import com.example.basket.utils.log
 
 @Composable
 fun AppBottomBar(currentScreen: ScreenDestination,
@@ -54,7 +51,7 @@ fun AppBottomBar(currentScreen: ScreenDestination,
             .testTag(BOTTOM_APP_BAR)
             .clip(shape = MaterialTheme.shapes.small)
     ) {
-        Row(modifier = Modifier.padding(top=14.dp),
+        Row(modifier = Modifier.padding(top=0.dp),
             verticalAlignment = Alignment.CenterVertically) {
             appTabRowScreens.forEachIndexed { index, screen ->
 

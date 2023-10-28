@@ -43,7 +43,7 @@ import com.example.basket.ui.theme.massColor
     }
 }
 fun downIntensityColor(item: Color): Int{
-    val x = 50f
+//    val x = 50f
 //    return Color(red = (item.red + (1f - item.red) * (1f - x / 255)) ,
 //        green = (item.green+ (1f - item.green) * (1f - x / 255)) ,
 //        blue = (item.blue+ (1f - item.blue) * (1f - x / 255)),

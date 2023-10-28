@@ -16,7 +16,7 @@ class MainActivity: ComponentActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+//        WindowCompat.setDecorFitsSystemWindows(window, false)
          sharedPreferences = EncryptedSharedPreferences.create(
             "preferences",
              MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),

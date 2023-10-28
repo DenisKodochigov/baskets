@@ -13,7 +13,8 @@ import com.example.basket.R
 interface ScreenDestination {
     val icon: ImageVector
     val route: String
-    val picture: Int
+    val pictureDay: Int
+    val pictureNight: Int
     val textHeader: Int
 }
 
@@ -21,7 +22,8 @@ interface ScreenDestination {
 object Baskets : ScreenDestination {
     override val icon = Icons.Filled.ShoppingBasket
     override val route = "baskets"
-    override val picture = R.drawable.bas
+    override val pictureDay = R.drawable.bas
+    override val pictureNight = R.drawable.bas
     override val textHeader = R.string.baskets
 }
 
@@ -31,21 +33,24 @@ object ProductsBasket : ScreenDestination {
     const val basketIdArg = "basket_type"
     val routeWithArgs = "${route}/{$basketIdArg}"
     val arguments = listOf(navArgument(basketIdArg) { type = NavType.LongType })
-    override val picture = R.drawable.fon3
+    override val pictureDay = R.drawable.fon1
+    override val pictureNight = R.drawable.fon1_1
     override val textHeader = R.string.products_in_basket
 }
 
 object Articles : ScreenDestination {
     override val icon = Icons.Filled.Dashboard
     override val route = "article"
-    override val picture = R.drawable.fon5_1
+    override val pictureDay = R.drawable.fon5
+    override val pictureNight = R.drawable.fon5_1
     override val textHeader = R.string.product
 }
 
 object Setting : ScreenDestination {
     override val icon = Icons.Filled.Settings
     override val route = "settings"
-    override val picture = R.drawable.bas
+    override val pictureDay = 0
+    override val pictureNight = 0
     override val textHeader = R.string.settings_page
 }
 

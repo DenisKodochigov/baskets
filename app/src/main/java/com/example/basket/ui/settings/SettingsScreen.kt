@@ -1,6 +1,5 @@
 package com.example.basket.ui.settings
 
-import CustomSlider
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,10 +36,8 @@ import androidx.compose.material.icons.filled.ChangeCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -54,11 +52,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,16 +71,19 @@ import com.example.basket.entity.TypeText
 import com.example.basket.entity.UnitApp
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.components.ButtonCircle
+import com.example.basket.ui.components.CollapsingToolbar
 import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.HeaderSection
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.dialog.ChangeColorSectionDialog
 import com.example.basket.ui.components.dialog.ChangeNameSectionDialog
 import com.example.basket.ui.components.dialog.EditUnitDialog
+import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.styleApp
-import com.example.basket.utils.log
-import thumb
 
+//import thumb
+
+private val ThumbSize = 30.dp
 @Composable fun SettingsScreen(refreshScreen: MutableState<Boolean>, screen: ScreenDestination)
 {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -117,18 +120,24 @@ import thumb
     doChangeSection: (Section) -> Unit,
     doDeleteSelected: (List<Section>) -> Unit,
 ){
-    Column (
-        Modifier.verticalScroll(
-            state = rememberScrollState(),
-            enabled = true,
-            flingBehavior = null,
-            reverseScrolling = false)
+    Column{
+        CollapsingToolbar(
+            text = stringResource(screen.textHeader),
+            idImage = getIdImage(screen),
+            refreshScreen = refreshScreen,
+            scrollOffset = 0)
+        Column (
+            Modifier.verticalScroll(
+                state = rememberScrollState(),
+                enabled = true,
+                flingBehavior = null,
+                reverseScrolling = false)
         ){
-        HeaderScreen(text = stringResource(screen.textHeader), refreshScreen = refreshScreen)
-        AddEditUnits(modifier, uiState, refreshScreen, doChangeUnit, doDeleteUnits)
-        AddEditSection(modifier, uiState, refreshScreen, doChangeSection, doDeleteSelected)
-        ChangeStyle(refreshScreen = refreshScreen)
-//        FontStyleView()
+//        HeaderScreen(text = stringResource(screen.textHeader), refreshScreen = refreshScreen)
+            AddEditUnits(modifier, uiState, refreshScreen, doChangeUnit, doDeleteUnits)
+            AddEditSection(modifier, uiState, refreshScreen, doChangeSection, doDeleteSelected)
+            ChangeStyle(refreshScreen = refreshScreen)
+        }
     }
 }
 
@@ -392,23 +401,9 @@ fun LazyColumnUnits(
         else -> stringResource(id = R.string.theme_2)
     }
 
-@Composable fun FontStyleView(){
-    Text(text = "displayLarge", style = MaterialTheme.typography.displayLarge)
-    Text(text = "displayMedium", style = MaterialTheme.typography.displayMedium)
-    Text(text = "displaySmall", style = MaterialTheme.typography.displaySmall)
-    Text(text = "headlineLarge", style = MaterialTheme.typography.headlineLarge)
-    Text(text = "headlineMedium", style = MaterialTheme.typography.headlineMedium)
-    Text(text = "headlineSmall", style = MaterialTheme.typography.headlineSmall)
-    Text(text = "titleLarge", style = MaterialTheme.typography.titleLarge)
-    Text(text = "titleMedium", style = MaterialTheme.typography.titleMedium)
-    Text(text = "titleSmall", style = MaterialTheme.typography.titleSmall)
-    Text(text = "bodyLarge", style = MaterialTheme.typography.bodyLarge)
-    Text(text = "bodyMedium", style = MaterialTheme.typography.bodyMedium)
-    Text(text = "bodySmall", style = MaterialTheme.typography.bodySmall)
-    Text(text = "labelLarge", style = MaterialTheme.typography.labelLarge)
-    Text(text = "labelMedium", style = MaterialTheme.typography.labelMedium)
-    Text(text = "labelSmall", style = MaterialTheme.typography.labelSmall)
-}
+
+fun Modifier.thumb(size: Dp = ThumbSize, shape: Shape = CircleShape) =
+    defaultMinSize(minWidth = size, minHeight = size).clip(shape)
 
 @Composable
 @Preview
