@@ -77,12 +77,10 @@ import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.bottomBarAnimatedScroll
-import com.example.basket.utils.log
 import com.example.basket.utils.selectSectionWithArticle
 import com.example.basket.utils.selectUnitWithArticle
 import kotlin.math.roundToInt
 
-const val showLog = false
 @Composable
 fun ProductsScreen(
     basketId: Long,
@@ -107,7 +105,6 @@ fun ProductScreenCreateView(
     showBottomSheet: MutableState<Boolean>,
 ){
     val uiState by viewModel.productsScreenState.collectAsState()
-    log( showLog,"ProductScreenCreateView. ${uiState.products.size}")
 
     if (showBottomSheet.value)
         AddEditProductBottomSheet(
@@ -145,7 +142,6 @@ fun ProductsScreenLayout(
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
     val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
 
-    log( showLog,"LayoutProductsScreen. ${uiState.products.size}")
 
     if (isSelectedId.value > 0L) {
         doSelected(isSelectedId.value)
@@ -206,7 +202,6 @@ fun ProductLazyColumn(
     changeProduct: (Product) -> Unit,
     doSelected: (Long) -> Unit
 ) {
-    log( showLog,"LazyColumnProduct. ${uiState.products.size}")
     val listState = rememberLazyListState()
     val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
 
@@ -263,7 +258,6 @@ fun ProductsLayoutColum(
     doSelected: (Long) -> Unit
 ) {
 
-    log( showLog,"LayoutColumProducts. ${products.size}")
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
@@ -295,7 +289,6 @@ fun SectionProduct(
     doSelected: (Long)->Unit,
     editProduct: (Product) -> Unit,
 ){
-//    log( showLog,"ElementColum")
     val localDensity = LocalDensity.current
     var heightIs by remember { mutableStateOf(0.dp) }
     Box(
@@ -311,7 +304,6 @@ fun SectionProduct(
                 .background(color = MaterialTheme.colorScheme.surface)
                 .fillMaxWidth()
         ) {
-//            log( showLog,"product:${item.article.nameArticle}, selected = ${item.isSelected}")
             Spacer(
                 modifier = Modifier
                     .width(8.dp)
@@ -368,7 +360,6 @@ fun SectionProduct(
 @Composable
 fun AddEditProductBottomSheet(uiState: ProductsScreenState, onAddProduct: (Product) -> Unit, onDismiss:() -> Unit) {
 
-    log( showLog, "LayoutAddEditProduct")
     val nameSection = stringResource(R.string.name_section)
     val unitStuff = stringResource(R.string.unit_st)
     val enterValue = remember { mutableStateOf("1") }

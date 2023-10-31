@@ -58,12 +58,10 @@ import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.DismissBackground
 import com.example.basket.utils.bottomBarAnimatedScroll
-import com.example.basket.utils.log
 import com.example.basket.utils.selectSectionWithArticle
 import com.example.basket.utils.selectUnitWithArticle
 import kotlin.math.roundToInt
 
-const val showLog = false
 @Composable
 fun ArticlesScreen(showBottomSheet: MutableState<Boolean>,
                    screen: ScreenDestination,) {
@@ -79,7 +77,6 @@ fun ArticleScreenInitDate(
     screen: ScreenDestination,
     showBottomSheet: MutableState<Boolean>,
 ) {
-    log( showLog,"ArticleScreenInitDate")
     val uiState by viewModel.articleScreenState.collectAsState()
     if (showBottomSheet.value)
         AddEditArticleBottomSheet(
@@ -111,7 +108,6 @@ fun ArticleScreenLayout(
     doChangeSortingBy: (SortingBy) -> Unit,
     doSelected: (Long) -> Unit
 ) {
-    log( showLog,"LayoutArticleScreen")
     val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -120,7 +116,6 @@ fun ArticleScreenLayout(
     val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
 
     if (isSelectedId.value > 0L) {
-        log( showLog,"LayoutArticleScreen if (isSelectedId.value > 0L) ${isSelectedId.value}")
         doSelected(isSelectedId.value)
         isSelectedId.value = 0
     }
@@ -160,7 +155,6 @@ fun ArticleScreenLayout(
                     doSelected = { idItem -> isSelectedId.value = idItem },
                     doDelete = { items -> doDeleteSelected( items ) })
             }
-            log(showLog,"LayoutArticleScreen.SwitcherButton")
             SwitcherButton(doChangeSortingBy)
         }
         startScreen = showFABs(
@@ -185,7 +179,6 @@ fun ArticleLazyColumn(
     doSelected: (Long) -> Unit,
     doDelete: (List<Article>) -> Unit
 ) {
-    log( showLog,"LazyColumnArticle")
     val listState = rememberLazyListState()
     val editArticle: MutableState<Article?> = remember { mutableStateOf(null) }
 
@@ -248,7 +241,6 @@ fun ArticleLayoutColum(
     doSelected: (Long) -> Unit,
     doDelete: (List<Article>) -> Unit
 ) {
-    log( showLog,"LayoutColumArticles")
 
     val show = remember { mutableStateOf(true) }
 
@@ -284,7 +276,6 @@ fun ArticleLayoutColum(
 
 @Composable
 fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
-    log( showLog,"ElementColum Articles")
     val localDensity = LocalDensity.current
     var heightIs by remember { mutableStateOf(0.dp) }
 //    val modifier = modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
@@ -327,7 +318,6 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
 @Composable
 fun AddEditArticleBottomSheet(uiState: ArticleScreenState, onAddArticle: (Article) -> Unit, onDismiss:() -> Unit )
 {
-    log( showLog,"BottomSheetContentArticle")
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { true },)

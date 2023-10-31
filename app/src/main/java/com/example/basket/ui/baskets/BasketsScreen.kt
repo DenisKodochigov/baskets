@@ -60,11 +60,8 @@ import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.DismissBackground
 import com.example.basket.utils.bottomBarAnimatedScroll
-import com.example.basket.utils.log
 import java.util.*
 import kotlin.math.roundToInt
-
-const val showLog = false
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -75,7 +72,6 @@ fun BasketsScreen(
 
     val viewModel: BasketViewModel = hiltViewModel()
     viewModel.getListBasket()
-    log(showLog, "BasketsScreen")
     BasketScreenCreateView(
         onClickBasket = onClickBasket,
         screen = screen,
@@ -92,7 +88,6 @@ fun BasketScreenCreateView(
     showBottomSheet: MutableState<Boolean>,
 ) {
     val uiState by viewModel.basketScreenState.collectAsState()
-    log(showLog, "BasketScreenCreateView ${uiState.baskets.size}")
     if (showBottomSheet.value)
         AddBasketBottomSheet(
             onAddClick = { viewModel.addBasket(it) }, onDismiss = { showBottomSheet.value = false })
@@ -114,7 +109,6 @@ fun BasketsScreenLayout(
     deleteBasket: (Long) -> Unit,
 ) {
     val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
-    log(showLog, "BasketsScreenLayout")
     Column(Modifier
         .fillMaxHeight()
         .bottomBarAnimatedScroll(
@@ -234,14 +228,12 @@ fun ElementColumBasket(basket: Basket, onClickBasket: (Long) -> Unit) {
             modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))
         )
     }
-    log(showLog, "ElementColumBasket ${basket.nameBasket}")
 }
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
 
-    log(showLog, "AddBasketBottomSheet")
     var nameNewBasket by remember {
         mutableStateOf(
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date().time)

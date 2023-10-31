@@ -1,7 +1,6 @@
 package com.example.basket.ui.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,11 +30,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -52,7 +49,6 @@ import com.example.basket.entity.TagsTesting.BUTTON_OK
 import com.example.basket.entity.TypeText
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
-import com.example.basket.utils.log
 
 @Composable
 fun HeaderScreen(text: String, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
@@ -94,7 +90,6 @@ fun MyExposedDropdownMenuBox(
     var enteredText by remember { mutableStateOf("") }
     val heightDropMenu: Dp = with(LocalDensity.current) {
         (styleApp(nameStyle = TypeText.EDIT_TEXT).fontSize * 1.2).toDp()}
-    log(true, "heightDropMenu = $heightDropMenu   fontSize = ${styleApp(nameStyle = TypeText.EDIT_TEXT).fontSize.value}")
     enteredText = if (enterValue != null && !focusItem) enterValue.value.second else ""
 
     ExposedDropdownMenuBox(

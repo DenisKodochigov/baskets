@@ -62,7 +62,6 @@ fun LayoutAddEditArticle(
     listUnit: List<UnitApp>,
     listSection: List<Section>)
 {
-//    Log.d("KDS", "LayoutAddEditArticle")
     val enterNameArticle = remember{ mutableStateOf( article.value.nameArticle )}
     val enterSection = remember{
         mutableStateOf( Pair(article.value.section.idSection,article.value.section.nameSection)) }

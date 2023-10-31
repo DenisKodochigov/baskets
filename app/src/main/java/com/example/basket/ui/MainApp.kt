@@ -60,6 +60,7 @@ fun MainApp() {
                     height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
                     offsetHeightPx = bottomBarOffsetHeightPx),
             bottomBar = {
+                bottomBarOffsetHeightPx.floatValue = 0f
                 AppBottomBar(
                     currentScreen = animCurrentScreen, //currentScreen,
                     modifier = Modifier
