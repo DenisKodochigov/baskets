@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "315053665130",
+    "project_id": "basket-8ea6f",
+    "storage_bucket": "basket-8ea6f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315053665130:android:e5f585ef3bcef3512bd313",
+        "android_client_info": {
+          "package_name": "com.example.basket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7wfSPlpsohfYATHjwY1pu5hRGkyqjqrY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

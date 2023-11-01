@@ -5,6 +5,8 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.devtools.ksp'
     id 'dagger.hilt.android.plugin'
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -101,6 +103,10 @@ dependencies {
     implementation 'com.squareup.moshi:moshi:1.15.0'
     implementation 'com.squareup.moshi:moshi-kotlin:1.15.0'
     ksp 'com.squareup.moshi:moshi-kotlin-codegen:1.15.0'
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics")
 //Testing
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
