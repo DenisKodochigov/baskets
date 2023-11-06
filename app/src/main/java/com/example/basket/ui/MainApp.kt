@@ -83,7 +83,7 @@ fun MainApp() {
             val plug = innerPadding
             AppNavHost(
                 navController = navController,
-                modifier = Modifier,
+                modifier = Modifier, //.padding(innerPadding),
                 refreshScreen = refreshScreen,
                 showBottomSheet = showBottomSheet)
         }

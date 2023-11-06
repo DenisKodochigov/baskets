@@ -95,6 +95,7 @@ fun BasketScreenCreateView(
         onClickBasket = onClickBasket,
         uiState = uiState,
         screen = screen,
+        showBottomSheet = showBottomSheet,
         changeNameBasket = { basket -> viewModel.changeNameBasket(basket) },
         deleteBasket = { basketId -> viewModel.deleteBasket(basketId) },
     )
@@ -104,22 +105,26 @@ fun BasketScreenCreateView(
 fun BasketsScreenLayout(
     uiState: BasketScreenState,
     screen: ScreenDestination,
+    showBottomSheet: MutableState<Boolean>,
     onClickBasket: (Long) -> Unit,
     changeNameBasket: (Basket) -> Unit,
     deleteBasket: (Long) -> Unit,
 ) {
     val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
-    Column(Modifier
-        .fillMaxHeight()
-        .bottomBarAnimatedScroll(
-            height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
-            offsetHeightPx = bottomBarOffsetHeightPx),) {
+    Column(
+        Modifier
+            .fillMaxHeight()
+            .bottomBarAnimatedScroll(
+                height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
+                offsetHeightPx = bottomBarOffsetHeightPx
+            ),) {
         BasketLazyColumn(
             uiState = uiState,
             screen = screen,
             onClickBasket = onClickBasket,
             deleteBasket = deleteBasket,
             changeNameBasket= changeNameBasket,
+            showBottomSheet = showBottomSheet,
             scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt())
     }
 }
@@ -131,6 +136,7 @@ fun BasketLazyColumn(
     uiState: BasketScreenState,
     screen: ScreenDestination,
     scrollOffset:Int,
+    showBottomSheet: MutableState<Boolean>,
     onClickBasket: (Long) -> Unit,
     deleteBasket: (Long) -> Unit,
     changeNameBasket: (Basket) -> Unit,
@@ -158,9 +164,14 @@ fun BasketLazyColumn(
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver)).testTag(BASKET_LAZY)
+        modifier = Modifier
+            .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+            .testTag(BASKET_LAZY)
     )
     {
+        if (uiState.baskets.isEmpty()) {
+           item { ItemAddBasketLazyColumn{ showBottomSheet.value = true }}
+        }
 //        item { HeaderImScreen(text = stringResource(R.string.baskets), idImage = R.drawable.bas) }
         items(items = uiState.baskets, key = { it.idBasket })
         { item ->
@@ -207,11 +218,15 @@ fun ElementColumBasket(basket: Basket, onClickBasket: (Long) -> Unit) {
             modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))
         ) {
             TextApp(
-                text = SimpleDateFormat("dd-MM", Locale.getDefault()).format(basket.dateB),
+                text =  if (basket.dateB != 0L) {
+                    SimpleDateFormat("dd-MM", Locale.getDefault()).format(basket.dateB)
+                } else "",
                 style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
             )
             TextApp(
-                text = SimpleDateFormat("yyyy", Locale.getDefault()).format(basket.dateB),
+                text = if (basket.dateB != 0L) {
+                    SimpleDateFormat("dd-yyyy", Locale.getDefault()).format(basket.dateB)
+                } else "",
                 style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL)
             )
         }
@@ -222,10 +237,31 @@ fun ElementColumBasket(basket: Basket, onClickBasket: (Long) -> Unit) {
             modifier = modifier.weight(1f)
         )
         TextApp(
-            text = basket.quantity.toString(),
+            text = if (basket.quantity != 0) { basket.quantity.toString() } else "",
             textAlign = TextAlign.Left,
             style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
             modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))
+        )
+    }
+}
+@Composable
+fun ItemAddBasketLazyColumn(onClick: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clip(shape = MaterialTheme.shapes.extraSmall)
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .background(color = MaterialTheme.colorScheme.surface),
+    )
+    {
+        TextApp(
+            text = stringResource(id = R.string.add_basket),
+            textAlign = TextAlign.Center,
+            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
+            modifier = Modifier.weight(1f)
+                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.small)
+                .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
         )
     }
 }
@@ -271,7 +307,7 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
                 .padding(dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor))
         ) {
             Spacer(Modifier.height(1.dp))
-            HeaderScreen(text = stringResource(R.string.add_basket))
+            HeaderScreen(text = stringResource(R.string.new_basket))
             Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
             OutlinedTextField(
                 value = nameNewBasket,
@@ -279,7 +315,9 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
                 textStyle = styleApp(nameStyle = TypeText.NAME_SECTION),
                 label = { Text(text = stringResource(R.string.new_name_basket)) },
                 onValueChange = { nameNewBasket = it },
-                modifier = Modifier.fillMaxWidth().testTag(BASKET_BS_INPUT_NAME),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(BASKET_BS_INPUT_NAME),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = {

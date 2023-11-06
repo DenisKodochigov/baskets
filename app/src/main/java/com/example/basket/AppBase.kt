@@ -13,7 +13,7 @@ class AppBase: Application()  {
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
     }
     companion object App{
-        var scale: Int = 0
+        var scale: Int = 1
 
     }
 }

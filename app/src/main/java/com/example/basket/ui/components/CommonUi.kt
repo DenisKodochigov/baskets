@@ -27,12 +27,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -49,6 +52,7 @@ import com.example.basket.entity.TagsTesting.BUTTON_OK
 import com.example.basket.entity.TypeText
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
+import com.example.basket.utils.log
 
 @Composable
 fun HeaderScreen(text: String, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
@@ -71,7 +75,6 @@ fun HeaderSection(text: String, modifier: Modifier, refreshScreen: MutableState<
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyExposedDropdownMenuBox(
@@ -90,14 +93,17 @@ fun MyExposedDropdownMenuBox(
     var enteredText by remember { mutableStateOf("") }
     val heightDropMenu: Dp = with(LocalDensity.current) {
         (styleApp(nameStyle = TypeText.EDIT_TEXT).fontSize * 1.2).toDp()}
+
     enteredText = if (enterValue != null && !focusItem) enterValue.value.second else ""
+
+    log(true, "$label: enteredText = ${enteredText}: enterValue = $enterValue: focusItem: $focusItem")
 
     ExposedDropdownMenuBox(
         expanded = expandedLocal && enabled,
         modifier = modifier,
         onExpandedChange = { expandedLocal = !expandedLocal }
     ) {
-        OutlinedTextField(
+        OutlinedTextField (
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth(1f)
@@ -113,6 +119,7 @@ fun MyExposedDropdownMenuBox(
                 focusItem = false
                 enterValue!!.value = Pair(0, it)
                 expandedLocal = true
+                log(true, "$label: ExposedDropdownMenuBox.onValueChange")
             },
             label = { if (label != null)
                 TextApp(text = label, style = styleApp(nameStyle = TypeText.EDIT_TEXT_TITLE)) },
@@ -121,15 +128,15 @@ fun MyExposedDropdownMenuBox(
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    localFocusManager.clearFocus()
+                    localFocusManager.moveFocus(FocusDirection.Next)
                     enterValue!!.value = Pair(0, enteredText)
                     expandedLocal = false
-                }
+                },
             ),
         )
-        var filteringOptions = listItems
-        if (filtering) filteringOptions =
-            listItems.filter { it.second.contains(enteredText, ignoreCase = true) }
+        val filteringOptions = if (filtering) listItems.filter {
+                it.second.contains(enteredText, ignoreCase = true) }
+            else listItems
         if (filteringOptions.isNotEmpty()) {
             ExposedDropdownMenu(
                 modifier = Modifier
@@ -137,23 +144,25 @@ fun MyExposedDropdownMenuBox(
                     .padding(8.dp)
                     .verticalScroll(rememberScrollState()),
                 expanded = expandedLocal && enabled,
-                onDismissRequest = { expandedLocal = false }) {
-                    filteringOptions.forEach { item ->
-                        DropdownMenuItem(
-                            onClick = {
-                                enteredText = item.second
-                                expandedLocal = false
-                                enterValue!!.value = item
-                                localFocusManager.clearFocus() },
-                            text = {
-                                TextApp(text = item.second,
-                                    style = styleApp(nameStyle = TypeText.EDIT_TEXT))}
-                        )
-                    }
+                onDismissRequest = { expandedLocal = false })
+            {
+                filteringOptions.forEach { item ->
+                    DropdownMenuItem(
+                        onClick = {
+//                            enteredText = item.second
+                            expandedLocal = false
+                            enterValue!!.value = item
+                            localFocusManager.moveFocus(FocusDirection.Next) },
+                        text = {
+                            TextApp(text = item.second, style = styleApp(nameStyle = TypeText.EDIT_TEXT))}
+                    )
+                }
             }
         } else expandedLocal = false
     }
 }
+
+
 @Composable fun TextApp(
     text: String,
     modifier: Modifier = Modifier,
@@ -195,6 +204,7 @@ fun TextButtonOK(onConfirm: () -> Unit, enabled: Boolean = true) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
     ) {
+        log(true, "TextButtonOK")
         TextButton(onClick = onConfirm, enabled = enabled) {
             TextApp(
                 text = stringResource(R.string.ok),
@@ -213,7 +223,7 @@ fun MyOutlinedTextFieldWithoutIcon(
     val localFocusManager = LocalFocusManager.current
     var enterText by remember { mutableStateOf(enterValue.value) }
     var keyboardOptions =
-        KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done)
+        KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Next)
     if (typeKeyboard == "text") keyboardOptions =
         KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
 
@@ -245,16 +255,14 @@ fun MyOutlinedTextFieldWithoutIconClearing(
     enterValue: MutableState<String>,
     typeKeyboard: String
 ) {
-
+    log(true, "VALUE: MyOutlinedTextFieldWithoutIconClearing")
     val localFocusManager = LocalFocusManager.current
     var focusItem by remember { mutableStateOf(false) }
     var enterText by remember { mutableStateOf("") }
     enterText = if (!focusItem) enterValue.value else ""
 //    val keyboardController = LocalSoftwareKeyboardController.current
-    var keyboardOptions =
-        KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done)
-    if (typeKeyboard == "text") keyboardOptions =
-        KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+    val keyboardOptions = if (typeKeyboard == "text") KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+        else KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done)
 
     OutlinedTextField(
         modifier = modifier
@@ -271,7 +279,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(
         keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(
             onDone = {
-                localFocusManager.clearFocus()
+                localFocusManager.moveFocus(FocusDirection.Next)
                 enterValue.value = enterText
 //                keyboardController?.hide()
             }
@@ -353,3 +361,40 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
     }
 }
 
+@Composable
+fun ItemAddProductLazyColumn (onClick: ()->Unit){
+    val localDensity = LocalDensity.current
+    var heightIs by remember { mutableStateOf(0.dp) }
+    Box(
+        Modifier
+            .padding(horizontal = 6.dp)
+            .onGloballyPositioned { coordinates ->
+                heightIs = with(localDensity) { coordinates.size.height.toDp() }
+            })
+    {
+        Row(
+            modifier = Modifier
+                .clip(shape = RoundedCornerShape(6.dp))
+                .background(color = MaterialTheme.colorScheme.surface)
+                .clickable { onClick() }
+                .fillMaxWidth()
+        ) {
+            TextApp (
+                text = stringResource(id = R.string.add_product),
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .background(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = MaterialTheme.shapes.small
+                    )
+                    .padding(
+                        start = dimensionResource(R.dimen.lazy_padding_hor),
+                        top = dimensionResource(R.dimen.lazy_padding_ver),
+                        bottom = dimensionResource(R.dimen.lazy_padding_ver)
+                    ),
+            )
+        }
+    }
+}

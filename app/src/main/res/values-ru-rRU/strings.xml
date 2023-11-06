@@ -24,7 +24,7 @@
     <string name="unit_kg">кг</string>
     <string name="unit_l">л</string>
     <string name="unit_gr">гр</string>
-    <string name="add_basket">Новая корзина</string>
+    <string name="new_basket">Новая корзина</string>
     <string name="settings_page">Настройки</string>
     <string name="change_unit">Изменить ед.изм.</string>
     <string name="add_unit">Добавить ед.изм.</string>
@@ -41,4 +41,5 @@
     <string name="theme_0">Крупный</string>
     <string name="theme_1">Средний</string>
     <string name="theme_2">Мелкий</string>
+    <string name="add_basket">Добавить корзину</string>
 </resources>

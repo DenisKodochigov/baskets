@@ -46,8 +46,8 @@
     <dimen name="bottom_sheet_item_padding_hor">24dp</dimen>
     <dimen name="bottom_sheet_item_padding_ver">12dp</dimen>
     <dimen name="bottom_sheet_spacer_height">12dp</dimen>
-    <dimen name="bottom_sheet_spacer_height_1">36dp</dimen>
-    <dimen name="bottom_sheet_spacer_height_2">72dp</dimen>
+    <dimen name="bottom_sheet_spacer_height_1">24dp</dimen>
+    <dimen name="bottom_sheet_spacer_height_2">36dp</dimen>
     <dimen name="bottom_sheet_unit_width">120dp</dimen>
     <dimen name="bottom_sheet_value_width">90dp</dimen>
 

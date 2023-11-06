@@ -86,6 +86,7 @@ fun ArticleScreenInitDate(
     ArticleScreenLayout(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         screen = screen,
+        showBottomSheet = showBottomSheet,
         uiState = viewModel.articleScreenState.collectAsState().value,
         changeArticle = { article -> viewModel.changeArticle(article, uiState.sorting) },
         doDeleteSelected = { articles -> viewModel.deleteSelected(articles, uiState.sorting) },
@@ -102,6 +103,7 @@ fun ArticleScreenLayout(
     modifier: Modifier = Modifier,
     uiState: ArticleScreenState,
     screen: ScreenDestination,
+    showBottomSheet: MutableState<Boolean>,
     changeArticle: (Article) -> Unit,
     doChangeSectionSelected: (List<Article>, Long) -> Unit,
     doDeleteSelected: (List<Article>) -> Unit,
@@ -151,6 +153,7 @@ fun ArticleScreenLayout(
                     uiState = uiState,
                     screen = screen,
                     changeArticle = changeArticle,
+                    showBottomSheet = showBottomSheet,
                     scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt(),
                     doSelected = { idItem -> isSelectedId.value = idItem },
                     doDelete = { items -> doDeleteSelected( items ) })
@@ -175,6 +178,7 @@ fun ArticleLazyColumn(
     uiState: ArticleScreenState,
     screen: ScreenDestination,
     scrollOffset:Int,
+    showBottomSheet: MutableState<Boolean>,
     changeArticle: (Article) -> Unit,
     doSelected: (Long) -> Unit,
     doDelete: (List<Article>) -> Unit
@@ -206,8 +210,10 @@ fun ArticleLazyColumn(
             .clip(RoundedCornerShape(8.dp))
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-        items( items = uiState.article )
-        { item ->
+        if (uiState.article.isEmpty()) {
+            item { ItemAddProductLazyColumn { showBottomSheet.value = true } }
+        }
+        items( items = uiState.article ) { item ->
             Column( modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .background(
@@ -361,8 +367,8 @@ fun AddEditArticleBottomSheet(uiState: ArticleScreenState, onAddArticle: (Articl
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor),
-                    vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver))
+                .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor))
+//                    vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver))
                 .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.85).dp)
         ) {
             HeaderScreen(text = stringResource(R.string.add_product))
