@@ -9,11 +9,10 @@
     <string name="new_name_basket">New name basket</string>
     <string name="change_name_basket">Edit name basket</string>
 
-    <string name="product">Product</string>
     <string name="select_product">Select product</string>
     <string name="products_in_basket">Products in basket:</string>
     <string name="add_product">Add product</string>
-    <string name="title_products">Products</string>
+    <string name="products">Products</string>
 
     <string name="change_article">Edit article</string>
 

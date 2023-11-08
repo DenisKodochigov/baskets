@@ -367,14 +367,13 @@ fun AddEditArticleBottomSheet(uiState: ArticleScreenState, onAddArticle: (Articl
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor))
-//                    vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver))
-                .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.85).dp)
+                .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor),vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver))
+//                .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.85).dp)
         ) {
             HeaderScreen(text = stringResource(R.string.add_product))
-//        Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+            /** Select article*/
             MyExposedDropdownMenuBox(
-                /** Select article*/
                 listItems = listArticle.map { Pair(it.idArticle, it.nameArticle) }.sortedBy { it.second },
                 label = stringResource(R.string.select_product),
                 modifier = Modifier.fillMaxWidth(),
@@ -387,43 +386,36 @@ fun AddEditArticleBottomSheet(uiState: ArticleScreenState, onAddArticle: (Articl
                 enterValue.value = "1"
             }
             Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-                MyExposedDropdownMenuBox(
-                    /** Select section*/
-                    listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) }.sortedBy { it.second },
-                    label = stringResource(R.string.section),
-                    modifier = Modifier.weight(1f),
-                    enterValue = enterSection,
-                    filtering = false
-                )
-                Spacer(Modifier.width(4.dp))
-                MyExposedDropdownMenuBox(
-                    /** Select unit*/
-                    listItems = uiState.unitApp.map { Pair(it.idUnit, it.nameUnit) }.sortedBy { it.second },
-                    label = stringResource(R.string.units),
-                    modifier = Modifier.width(dimensionResource(id = R.dimen.bottom_sheet_unit_width)),
-                    enterValue = enterUnit,
-                    filtering = false
-                )
-            }
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
+            /** Select section*/
+            ChipsSections(
+                edit = true,
+                listSection = uiState.sections,
+                sectionArticle = listArticle.find { it.idArticle == enterArticle.value.first }?.section,
+                onClick = { enterSection.value = Pair(it.idSection,it.nameSection)})
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+            ChipsUnit(
+                listUnit = uiState.unitApp,
+                edit = true,
+                unitArticle = listArticle.find { it.idArticle == enterArticle.value.first }?.unitApp,
+                onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
 
-            val article = ArticleDB(
-                idArticle = enterArticle.value.first,
-                nameArticle = enterArticle.value.second,
-                section = SectionDB(
-                    idSection = enterSection.value.first,
-                    nameSection = enterSection.value.second
-                ),
-                unitApp = UnitDB(enterUnit.value.first, enterUnit.value.second),
-                isSelected = false,
-                position = 0
-            )
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
 
             TextButtonOK(
                 enabled = enterArticle.value.second != "",
                 onConfirm = {
-                    onAddArticle(article)
+                    onAddArticle(
+                        ArticleDB(
+                            idArticle = enterArticle.value.first,
+                            nameArticle = enterArticle.value.second,
+                            section = SectionDB(
+                                idSection = enterSection.value.first,
+                                nameSection = enterSection.value.second),
+                            unitApp = UnitDB(enterUnit.value.first, enterUnit.value.second),
+                            isSelected = false,
+                            position = 0
+                        )
+                    )
                     enterArticle.value = Pair(0, "")
                 }
             )

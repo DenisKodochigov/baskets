@@ -4,11 +4,10 @@ buildscript {
         compose_version = '1.5.3'
         kotlin_version = '1.9.10'
         gradle_version = '8.1.2'
-        dagger_version = '2.46.1'
+        dagger_version = '2.48.1'
     }
     repositories {
         google()
-
         mavenCentral()
     }
     dependencies {

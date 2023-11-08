@@ -43,7 +43,7 @@ object Articles : ScreenDestination {
     override val route = "article"
     override val pictureDay = R.drawable.fon5
     override val pictureNight = R.drawable.fon5_1
-    override val textHeader = R.string.product
+    override val textHeader = R.string.products
 }
 
 object Setting : ScreenDestination {

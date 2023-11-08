@@ -59,11 +59,15 @@ import com.example.basket.data.room.tables.ProductDB
 import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Product
+import com.example.basket.entity.Section
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.TypeText
+import com.example.basket.entity.UnitApp
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.baskets.ElementColumBasket
+import com.example.basket.ui.components.ChipsSections
+import com.example.basket.ui.components.ChipsUnit
 import com.example.basket.ui.components.CollapsingToolbar
 import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.HeaderSection
@@ -423,14 +427,12 @@ fun ModalBottomSheetContent(uiState: ProductsScreenState, onAddProduct: (Product
         )
     }
 
-    log(true, "ModalBottomSheetContent")
     Column(
         Modifier.fillMaxWidth().padding(
                 horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor), vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
     {
         HeaderScreen( text = stringResource(R.string.add_product))
         Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
-        log(true, "Select product")
         /** Select product*/
         MyExposedDropdownMenuBox(
             listItems = uiState.articles.map { Pair(it.idArticle, it.nameArticle) }.sortedBy { it.second },
@@ -440,45 +442,34 @@ fun ModalBottomSheetContent(uiState: ProductsScreenState, onAddProduct: (Product
             filtering = true
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
-        /** Select section*/
-        log(true, "Select section")
-        MyExposedDropdownMenuBox(
-            listItems = uiState.sections.map { Pair(it.idSection, it.nameSection) }.sortedBy { it.second },
-            label = stringResource(R.string.section),
-            modifier = Modifier.fillMaxWidth(),
-            enterValue = enterSection,
-            filtering = true,
-            readOnly = enterArticle.value.first > 0,
-            enabled = enterArticle.value.first <= 0
-        )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
         Row(
             Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom,
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.Center,
         ) {
             /** Value*/
-            log(true, "Select value")
             MyOutlinedTextFieldWithoutIconClearing(
                 typeKeyboard = "digit",
-                modifier = Modifier.width(dimensionResource(id = R.dimen.bottom_sheet_value_width)),
+                modifier = Modifier.width(dimensionResource(id = R.dimen.bottom_sheet_value_width)).padding(top = 14.dp),
                 enterValue = enterValue
             )
             Spacer(Modifier.width(4.dp))
             /** Select unit*/
-            log(true, "Select unit")
-            MyExposedDropdownMenuBox(
-                listItems = uiState.unitApp.map { Pair(it.idUnit, it.nameUnit) }.sortedBy { it.second },
-                label = stringResource(R.string.units),
-                modifier = Modifier.width(dimensionResource(id = R.dimen.bottom_sheet_unit_width)),
-                enterValue = enterUnit,
-                readOnly = true,
-                filtering = false,
-                enabled = enterArticle.value.first <= 0
-            )
+            ChipsUnit(
+                edit = false,
+                listUnit = uiState.unitApp,
+                unitArticle = uiState.articles.find { it.idArticle == enterArticle.value.first }?.unitApp,
+                onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
         }
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
 
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
+        /** Select section*/
+        ChipsSections(
+            edit = false,
+            listSection = uiState.sections,
+            sectionArticle = uiState.articles.find { it.idArticle == enterArticle.value.first }?.section,
+            onClick = { enterSection.value = Pair(it.idSection,it.nameSection)})
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
         TextButtonOK(
             enabled = enterArticle.value.second != "",
             onConfirm = {
