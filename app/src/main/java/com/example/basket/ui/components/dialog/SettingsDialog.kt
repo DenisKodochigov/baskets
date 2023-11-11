@@ -134,6 +134,7 @@ fun ChangeColorSectionDialog(
 
     val itemLocal = remember { mutableStateOf(section) }
     AlertDialog(
+        modifier = Modifier.border(width = 1.dp, shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.primary),
         onDismissRequest = onDismiss,
         shape = MaterialTheme.shapes.small,
         confirmButton = { TextButtonOK( onConfirm = { onConfirm(itemLocal.value) } ) },
@@ -147,7 +148,7 @@ fun ChangeColorSectionDialog(
 @Composable fun ChangeColorSectionLayout(section: MutableState<Section>) {
     val selectColor = remember{ mutableStateOf(Color.Transparent)}
 
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Row {
             MyTextH2(text = section.value.nameSection)
             Spacer(Modifier.width(12.dp))
@@ -162,19 +163,14 @@ fun ChangeColorSectionDialog(
                 )
             )
         }
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-                .verticalScroll(ScrollState(0))) {
-            SelectColor(
-                doSelectedColor = { selectedColor ->
-                    selectColor.value = Color(selectedColor)
-                    section.value = SectionDB(
-                        idSection = section.value.idSection,
-                        nameSection = section.value.nameSection,
-                        colorSection = selectedColor.toLong())})
-            Spacer(Modifier.height(12.dp))
-        }
+
+        SelectColor(
+            doSelectedColor = { selectedColor ->
+                selectColor.value = Color(selectedColor)
+                section.value = SectionDB(
+                    idSection = section.value.idSection,
+                    nameSection = section.value.nameSection,
+                    colorSection = selectedColor.toLong())})
+
     }
 }

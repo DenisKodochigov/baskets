@@ -1,4 +1,4 @@
-package com.example.basket.ui.settings
+package com.example.basket.ui.screens.settings
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -42,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -68,6 +69,7 @@ import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Section
 import com.example.basket.entity.TypeText
+import com.example.basket.entity.UPDOWN
 import com.example.basket.entity.UnitApp
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.components.ButtonCircle
@@ -78,10 +80,10 @@ import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.dialog.ChangeColorSectionDialog
 import com.example.basket.ui.components.dialog.ChangeNameSectionDialog
 import com.example.basket.ui.components.dialog.EditUnitDialog
+import com.example.basket.ui.components.showArrowVer
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.styleApp
 
-//import thumb
 
 private val ThumbSize = 30.dp
 @Composable fun SettingsScreen(refreshScreen: MutableState<Boolean>, screen: ScreenDestination)
@@ -91,40 +93,30 @@ private val ThumbSize = 30.dp
 }
 
 @Composable fun SettingsScreenInit(
-    viewModel: SettingsViewModel,
-    screen: ScreenDestination,
-    refreshScreen: MutableState<Boolean>)
+    viewModel: SettingsViewModel, screen: ScreenDestination, refreshScreen: MutableState<Boolean>)
 {
     val uiState by viewModel.settingScreenState.collectAsState()
-
+    uiState.refreshScreen = refreshScreen
+    uiState.doChangeUnit = { unit -> viewModel.changeUnit(unit) }
+    uiState.doDeleteUnits = { units -> viewModel.doDeleteUnits(units) }
+    uiState.doChangeSection = { section -> viewModel.doChangeSection(section) }
+    uiState.doDeleteSections = { sections -> viewModel.doDeleteSections(sections) }
     SettingsScreenLayout(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         uiState = uiState,
         screen = screen,
-        refreshScreen = refreshScreen,
-        doChangeUnit = { unit -> viewModel.changeUnit(unit) },
-        doDeleteUnits = { units -> viewModel.doDeleteUnits(units) },
-        doChangeSection = { section -> viewModel.doChangeSection(section) },
-        doDeleteSelected = { sections -> viewModel.doDeleteSections(sections) },
     )
-    val plug = refreshScreen.value
+//    val plug = refreshScreen.value
 }
 @SuppressLint("UnrememberedMutableState")
 @Composable fun SettingsScreenLayout(
-    modifier: Modifier = Modifier,
-    uiState: SettingsScreenState,
-    screen: ScreenDestination,
-    refreshScreen: MutableState<Boolean>,
-    doChangeUnit: (UnitApp) -> Unit,
-    doDeleteUnits: (List<UnitApp>) -> Unit,
-    doChangeSection: (Section) -> Unit,
-    doDeleteSelected: (List<Section>) -> Unit,
-){
+    modifier: Modifier = Modifier, uiState: SettingsScreenState, screen: ScreenDestination, )
+{
     Column{
         CollapsingToolbar(
             text = stringResource(screen.textHeader),
             idImage = getIdImage(screen),
-            refreshScreen = refreshScreen,
+            refreshScreen = uiState.refreshScreen,
             scrollOffset = 0)
         Column (
             Modifier.verticalScroll(
@@ -133,58 +125,44 @@ private val ThumbSize = 30.dp
                 flingBehavior = null,
                 reverseScrolling = false)
         ){
-//        HeaderScreen(text = stringResource(screen.textHeader), refreshScreen = refreshScreen)
-            AddEditUnits(modifier, uiState, refreshScreen, doChangeUnit, doDeleteUnits)
-            AddEditSection(modifier, uiState, refreshScreen, doChangeSection, doDeleteSelected)
-            ChangeStyle(refreshScreen = refreshScreen)
+            HeaderScreen(text = stringResource(screen.textHeader), refreshScreen = uiState.refreshScreen)
+            AddEditUnits(modifier, uiState)
+            AddEditSection(modifier, uiState)
+            ChangeStyle(refreshScreen = uiState.refreshScreen)
         }
     }
 }
 
-@Composable fun AddEditSection(
-    modifier: Modifier = Modifier,
-    uiState: SettingsScreenState,
-    refreshScreen: MutableState<Boolean>,
-    doChangeSection: (Section) -> Unit,
-    doDeleteSelected: (List<Section>) -> Unit,){
-
+@Composable fun AddEditSection(modifier: Modifier = Modifier, uiState: SettingsScreenState, )
+{
     val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val itemList = uiState.section
     if (isSelectedId.value > 0L) {
         itemList.find { it.idSection == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
         isSelectedId.value = 0
     }
-    Box(
-        modifier
-            .fillMaxSize()
-            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+    Box(modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column{
 //            val plug = refreshScreen
-            HeaderSection(text = stringResource(R.string.edit_section_list), modifier, refreshScreen)
-            SectionLazyColumn( uiState = uiState,
-                doChangeSection = doChangeSection,
-                doDeleteSelected = doDeleteSelected,
-                doSelected = { idItem -> isSelectedId.value = idItem })
+            HeaderSection(text = stringResource(R.string.edit_section_list), modifier, uiState.refreshScreen)
+            SectionLazyColumn( uiState = uiState, doSelected = { idItem -> isSelectedId.value = idItem })
             Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 @Composable
-fun SectionLazyColumn(
-    uiState: SettingsScreenState,
-    doChangeSection: (Section) -> Unit,
-    doDeleteSelected: (List<Section>) -> Unit,
-    doSelected: (Long) -> Unit
-) {
+fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
+{
     val editNameSection: MutableState<Section?> = remember { mutableStateOf(null) }
     val changeColorSection: MutableState<Section?> = remember { mutableStateOf(null) }
+    val listState = rememberLazyListState()
 
     if (editNameSection.value != null) {
         ChangeNameSectionDialog(
             section = editNameSection.value!!,
             onDismiss = { editNameSection.value = null},
             onConfirm = {
-                doChangeSection(it)
+                uiState.doChangeSection(it)
                 editNameSection.value = null },)
     }
     if (changeColorSection.value != null) {
@@ -192,60 +170,33 @@ fun SectionLazyColumn(
             section = changeColorSection.value!!,
             onDismiss = { changeColorSection.value = null},
             onConfirm = {
-                doChangeSection(it)
+                uiState.doChangeSection(it)
                 changeColorSection.value = null },)
     }
-    Column() {
+
+    val showArrowUp = remember {
+        derivedStateOf { listState.layoutInfo.visibleItemsInfo.firstOrNull()?.index != 0 }}.value
+    val showArrowDown = remember {
+        derivedStateOf { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index !=
+                listState.layoutInfo.totalItemsCount - 1 } }.value
+    Column {
+        showArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.section.isNotEmpty(), drawLine = true)
         LazyColumn(
-            state = rememberLazyListState(),
+            state = listState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.heightIn(min = 0.dp, max = 300.dp)
         ) {
             items(items = uiState.section) {item ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clip(shape = RoundedCornerShape(6.dp))
-                        .fillMaxWidth()
-                        .background(color = MaterialTheme.colorScheme.surface)
-                        .clickable { doSelected(item.idSection) }
-                ) {
-                    TextApp(
-                        text = item.nameSection,
-                        style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),//   .h1,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1F)
-                            .clickable { editNameSection.value = item }
-                            .padding(
-                                horizontal = dimensionResource(R.dimen.lazy_padding_hor2),
-                                vertical = dimensionResource(R.dimen.lazy_padding_ver2)
-                            )
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Spacer(modifier = Modifier
-                        .size(size = 32.dp)
-                        .clip(shape = CircleShape)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outline,
-                            shape = CircleShape
-                        )
-                        .clickable { changeColorSection.value = item }
-                        .background(color = Color(item.colorSection), shape = CircleShape))
-                    Spacer(modifier = Modifier.width(24.dp))
-                    Icon( imageVector = Icons.Filled.Delete, null,
-                        tint = MaterialTheme.colorScheme.primary ,
-                        modifier = Modifier.clickable { doDeleteSelected(listOf(
-                            SectionDB(nameSection = item.nameSection,
-                                idSection = item.idSection,
-                                colorSection = item.colorSection,
-                                isSelected = true))) })
-                    Spacer(modifier = Modifier.width(12.dp))
-                }
+                ContextLazySection(
+                    item = item,
+                    editNameSection = editNameSection,
+                    changeColorSection = changeColorSection,
+                    doDeleteSelected = uiState.doDeleteSections,
+                    doSelected = doSelected
+                )
             }
         }
+        showArrowVer(direction = UPDOWN.DOWN, enable =  showArrowDown && uiState.section.isNotEmpty(), drawLine = true)
         Spacer(modifier = Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             ButtonCircle(Modifier.size(40.dp), Icons.Filled.AddCircle) { editNameSection.value = SectionDB() }
@@ -253,12 +204,59 @@ fun SectionLazyColumn(
         }
     }
 }
-@Composable fun AddEditUnits(
-    modifier: Modifier = Modifier,
-    uiState: SettingsScreenState,
-    refreshScreen: MutableState<Boolean>,
-    doChangeUnit: (UnitApp) -> Unit,
-    doDeleteUnits: (List<UnitApp>) -> Unit,)
+
+@Composable fun ContextLazySection(
+    item: Section,
+    editNameSection: MutableState<Section?>,
+    changeColorSection: MutableState<Section?>,
+    doDeleteSelected: (List<Section>) -> Unit,
+    doSelected: (Long) -> Unit
+){
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clip(shape = RoundedCornerShape(6.dp))
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surface)
+            .clickable { doSelected(item.idSection) }
+    ) {
+        TextApp(
+            text = item.nameSection,
+            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),//   .h1,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1F)
+                .clickable { editNameSection.value = item }
+                .padding(
+                    horizontal = dimensionResource(R.dimen.lazy_padding_hor2),
+                    vertical = dimensionResource(R.dimen.lazy_padding_ver2)
+                )
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier
+            .size(size = 32.dp)
+            .clip(shape = CircleShape)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline,
+                shape = CircleShape
+            )
+            .clickable { changeColorSection.value = item }
+            .background(color = Color(item.colorSection), shape = CircleShape))
+        Spacer(modifier = Modifier.width(24.dp))
+        Icon( imageVector = Icons.Filled.Delete, null,
+            tint = MaterialTheme.colorScheme.primary ,
+            modifier = Modifier.clickable { doDeleteSelected(listOf(
+                SectionDB(nameSection = item.nameSection,
+                    idSection = item.idSection,
+                    colorSection = item.colorSection,
+                    isSelected = true))) })
+        Spacer(modifier = Modifier.width(12.dp))
+    }
+}
+
+@Composable fun AddEditUnits(modifier: Modifier = Modifier, uiState: SettingsScreenState, )
 {
     val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val itemList = uiState.unitApp
@@ -266,18 +264,10 @@ fun SectionLazyColumn(
         itemList.find { it.idUnit == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
         isSelectedId.value = 0
     }
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+    Box( Modifier.fillMaxWidth().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column {
-            HeaderSection(text = stringResource(R.string.edit_unit_list), modifier, refreshScreen)
-
-            LazyColumnUnits(
-                uiState = uiState,
-                doDeleteSelected = doDeleteUnits,
-                changeUnit = doChangeUnit,
-                doSelected = { idItem -> isSelectedId.value = idItem })
+            HeaderSection(text = stringResource(R.string.edit_unit_list), modifier, uiState.refreshScreen)
+            LazyColumnUnits(uiState = uiState, doSelected = { idItem -> isSelectedId.value = idItem })
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
@@ -285,12 +275,8 @@ fun SectionLazyColumn(
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun LazyColumnUnits(
-    uiState: SettingsScreenState,
-    doDeleteSelected: (List<UnitApp>) -> Unit,
-    changeUnit: (UnitApp) -> Unit,
-    doSelected: (Long) -> Unit
-) {
+fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
+{
     val editUnit: MutableState<UnitApp?> = remember { mutableStateOf(null) }
 
     if (editUnit.value != null) {
@@ -298,7 +284,7 @@ fun LazyColumnUnits(
             unitApp = editUnit.value!!,
             onDismiss = { editUnit.value = null },
             onConfirm = {
-                changeUnit(it)
+                uiState.doChangeUnit(it)
                 editUnit.value = null
             }
         )
@@ -348,7 +334,7 @@ fun LazyColumnUnits(
                 uiState.unitApp.find { it.isSelected }?.let { editUnit.value = it } }
             Spacer(modifier = Modifier.width(12.dp))
             ButtonCircle(Modifier.size(40.dp), Icons.Filled.Delete) {
-                uiState.unitApp.find { it.isSelected }?.let { doDeleteSelected(uiState.unitApp) }
+                uiState.unitApp.find { it.isSelected }?.let { uiState.doDeleteUnits(uiState.unitApp) }
             }
         }
     }
@@ -408,5 +394,5 @@ fun Modifier.thumb(size: Dp = ThumbSize, shape: Shape = CircleShape) =
 @Composable
 @Preview
 fun LazyColumnUnitsPreview(){
-    LazyColumnUnits(SettingsScreenState(), {}, {}, {})
+    LazyColumnUnits(SettingsScreenState(), {})
 }

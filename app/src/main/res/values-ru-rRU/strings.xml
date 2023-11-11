@@ -45,4 +45,6 @@
     <string name="theme_0">Крупный</string>
     <string name="theme_1">Средний</string>
     <string name="theme_2">Мелкий</string>
+    <string name="quantity">Количество</string>
+    <string name="in_section">в отделе</string>
 </resources>

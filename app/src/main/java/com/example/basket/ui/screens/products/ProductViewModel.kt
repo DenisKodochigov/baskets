@@ -1,4 +1,4 @@
-package com.example.basket.ui.products
+package com.example.basket.ui.screens.products
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -115,7 +115,7 @@ class ProductViewModel  @Inject constructor(
         }
     }
 
-    fun changeSectionSelected(productList: List<Product>, idSection: Long){
+    fun changeSections(productList: List<Product>, idSection: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeSectionSelectedProduct(productList, idSection) }.fold(
                 onSuccess = {

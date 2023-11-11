@@ -22,4 +22,14 @@ enum class SizeElement{
     OFFSET_FAB,
     HEIGHT_FAB_BOX
 }
-
+enum class UPDOWN {
+    UP,
+    DOWN,
+    START,
+    END
+}
+enum class TypeKeyboard{
+    DIGIT,
+    TEXT,
+    OTHER
+}

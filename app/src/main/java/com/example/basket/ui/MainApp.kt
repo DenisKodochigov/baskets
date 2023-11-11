@@ -5,8 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
@@ -27,14 +25,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.basket.entity.SizeElement
 import com.example.basket.navigation.AppNavHost
-import com.example.basket.navigation.Baskets
+import com.example.basket.navigation.BasketsDestination
+import com.example.basket.navigation.SettingDestination
 import com.example.basket.navigation.appTabRowScreens
+import com.example.basket.navigation.listScreens
 import com.example.basket.navigation.navigateToScreen
 import com.example.basket.ui.components.AppBottomBar
-import com.example.basket.ui.components.FloatingActionButtonApp
+import com.example.basket.ui.components.ExtendedFAB
 import com.example.basket.ui.theme.AppTheme
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.utils.bottomBarAnimatedScroll
+import com.example.basket.utils.log
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
@@ -42,13 +43,11 @@ import kotlin.math.roundToInt
 @Composable
 fun MainApp() {
     AppTheme {
-        val showBottomSheet = remember { mutableStateOf(false) }
+
         val navController = rememberNavController()
         val currentBackStack by navController.currentBackStackEntryAsState()
         val currentDestination = currentBackStack?.destination
-        val animCurrentScreen = appTabRowScreens.find {
-            it.route == currentDestination?.route } ?: Baskets
-        val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
+        val offsetHeightPx = remember { mutableFloatStateOf(0f) }
         val refreshScreen = remember { mutableStateOf(true) }
 
         Scaffold(
@@ -56,27 +55,29 @@ fun MainApp() {
                 .padding(14.dp)
                 .semantics { testTagsAsResourceId = true }
                 .background(color = MaterialTheme.colorScheme.background)
-                .bottomBarAnimatedScroll(
-                    height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
-                    offsetHeightPx = bottomBarOffsetHeightPx),
+                .bottomBarAnimatedScroll( offsetHeightPx = offsetHeightPx,
+                    height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR)),
             bottomBar = {
-                bottomBarOffsetHeightPx.floatValue = 0f
+                offsetHeightPx.floatValue = 0f
                 AppBottomBar(
-                    currentScreen = animCurrentScreen, //currentScreen,
+                    currentScreen = appTabRowScreens.find {
+                        it.route == currentDestination?.route?.substringBefore("/") } ?: BasketsDestination,
                     modifier = Modifier
                         .height(sizeApp(SizeElement.HEIGHT_BOTTOM_BAR))
-                        .offset { IntOffset(x = 0, y = -bottomBarOffsetHeightPx.floatValue.roundToInt()) },
-                    onTabSelection = { newScreen -> navController.navigateToScreen(newScreen.route) })
+                        .offset { IntOffset(x = 0, y = -offsetHeightPx.floatValue.roundToInt())},
+                    onTabSelection = { newScreen -> navController.navigateToScreen(newScreen.route)})
             },
             floatingActionButton = {
-                val plug = refreshScreen.value
-                FloatingActionButtonApp(
-                    icon = Icons.Filled.Add,
-                    refreshScreen = refreshScreen,
-                    offset = sizeApp(SizeElement.OFFSET_FAB),
-                    modifier = Modifier
-                        .offset { IntOffset(x = 0, y = -bottomBarOffsetHeightPx.floatValue.roundToInt()) },
-                    onClick = { showBottomSheet.value = true } )
+                val currentScreen = listScreens.find { it.route ==
+                        currentDestination?.route?.substringBefore("/") } ?: BasketsDestination
+                if (currentScreen != SettingDestination ) {
+                    ExtendedFAB(
+                        text =  currentScreen.textFAB,
+                        onClick = currentScreen.onClickFAB,
+                        modifier = Modifier
+                            .offset { IntOffset(x = 0, y = -offsetHeightPx.floatValue.roundToInt()) }
+                    )
+                }
             },
             floatingActionButtonPosition = FabPosition.Center,
         ) { innerPadding ->
@@ -84,8 +85,7 @@ fun MainApp() {
             AppNavHost(
                 navController = navController,
                 modifier = Modifier, //.padding(innerPadding),
-                refreshScreen = refreshScreen,
-                showBottomSheet = showBottomSheet)
+                refreshScreen = refreshScreen)
         }
     }
 }

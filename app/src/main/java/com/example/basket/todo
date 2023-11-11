@@ -1,4 +1,23 @@
-3. передалать кнопку выбора отображения.
+
+1. После создания нового продкута. Если нажать на клавиатуре enter товар не добавляется и удаляется введенный текст.
+1.1 Добавлять новый товар через bottomsheet.
 2. После создания нового продкута обновить секции. Если в форме осталась секция без ID выполнить корректную работу.
-3. При редактировании артикула, без изменения данных при нажатии на ОК ни чего не происходит.
+
+4. При добавлении отдела через настройки первый символ не меняется.
+5. Окно ввода отдела подписано как "Изменить ед.изм."
+6. "Изменить ед.изм." не отцентровано.
+7. При смене отдела в артикулах, выбранный отдел не появляется в окне.
+8. Изменить алгоритм FAB
+9. Поставить подсказки начала конца списка
+https://stackoverflow.com/questions/68924018/jetpack-compose-scroll-to-bottom-listener-end-of-list
+    scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == scrollState.layoutInfo.totalItemsCount - 1
+    fun LazyListState.isScrolledToEnd() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+    // observer when reached end of list
+    val endOfListReached by remember { derivedStateOf {scrollState.isScrolledToEnd()} }
+    // act when end of list reached
+    LaunchedEffect(endOfListReached) {
+    // do your stuff
+    }
+10. Сделать подбор товара в артикулах с озданием корзины и помещением туда списка.
+
 В режиме продуктов, очень маленький ход при перемещении в корзину

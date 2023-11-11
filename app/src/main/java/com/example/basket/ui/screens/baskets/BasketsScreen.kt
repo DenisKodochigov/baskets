@@ -1,4 +1,4 @@
-package com.example.basket.ui.baskets
+package com.example.basket.ui.screens.baskets
 
 import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
@@ -49,12 +49,14 @@ import com.example.basket.entity.TagsTesting.BASKETBOTTOMSHEET
 import com.example.basket.entity.TagsTesting.BASKET_BS_INPUT_NAME
 import com.example.basket.entity.TagsTesting.BASKET_LAZY
 import com.example.basket.entity.TypeText
+import com.example.basket.entity.UPDOWN
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.components.CollapsingToolbar
 import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.dialog.EditBasketName
+import com.example.basket.ui.components.showArrowVer
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
@@ -65,19 +67,14 @@ import kotlin.math.roundToInt
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun BasketsScreen(
-    onClickBasket: (Long) -> Unit,
-    screen: ScreenDestination,
-    showBottomSheet: MutableState<Boolean>) {
-
+fun BasketsScreen(onClickBasket: (Long) -> Unit, screen: ScreenDestination,)
+{
     val viewModel: BasketViewModel = hiltViewModel()
     viewModel.getListBasket()
     BasketScreenCreateView(
         onClickBasket = onClickBasket,
         screen = screen,
-        viewModel = viewModel,
-        showBottomSheet = showBottomSheet,
-    )
+        viewModel = viewModel )
 }
 
 @Composable
@@ -85,35 +82,29 @@ fun BasketScreenCreateView(
     screen: ScreenDestination,
     onClickBasket: (Long) -> Unit,
     viewModel: BasketViewModel,
-    showBottomSheet: MutableState<Boolean>,
 ) {
     val uiState by viewModel.basketScreenState.collectAsState()
-    if (showBottomSheet.value)
-        AddBasketBottomSheet(
-            onAddClick = { viewModel.addBasket(it) }, onDismiss = { showBottomSheet.value = false })
-    BasketsScreenLayout(
-        onClickBasket = onClickBasket,
-        uiState = uiState,
-        screen = screen,
-        showBottomSheet = showBottomSheet,
-        changeNameBasket = { basket -> viewModel.changeNameBasket(basket) },
-        deleteBasket = { basketId -> viewModel.deleteBasket(basketId) },
-    )
+    uiState.changeNameBasket = { basket -> viewModel.changeNameBasket(basket) }
+    uiState.deleteBasket = { basketId -> viewModel.deleteBasket(basketId) }
+    uiState.onAddClick = { viewModel.addBasket(it) }
+    uiState.onDismiss = { uiState.triggerRunOnClickFAB.value = false }
+    screen.textFAB = stringResource(id = R.string.baskets)
+    screen.onClickFAB = { uiState.triggerRunOnClickFAB.value = true}
+
+    if (uiState.triggerRunOnClickFAB.value) AddBasketBottomSheet( uiState = uiState)
+
+    BasketsScreenLayout(onClickBasket = onClickBasket, uiState = uiState, screen = screen,)
 }
+
 
 @Composable
 fun BasketsScreenLayout(
     uiState: BasketScreenState,
     screen: ScreenDestination,
-    showBottomSheet: MutableState<Boolean>,
     onClickBasket: (Long) -> Unit,
-    changeNameBasket: (Basket) -> Unit,
-    deleteBasket: (Long) -> Unit,
 ) {
     val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
-    Column(
-        Modifier
-            .fillMaxHeight()
+    Column(Modifier.fillMaxHeight()
             .bottomBarAnimatedScroll(
                 height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
                 offsetHeightPx = bottomBarOffsetHeightPx
@@ -122,9 +113,6 @@ fun BasketsScreenLayout(
             uiState = uiState,
             screen = screen,
             onClickBasket = onClickBasket,
-            deleteBasket = deleteBasket,
-            changeNameBasket= changeNameBasket,
-            showBottomSheet = showBottomSheet,
             scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt())
     }
 }
@@ -136,21 +124,23 @@ fun BasketLazyColumn(
     uiState: BasketScreenState,
     screen: ScreenDestination,
     scrollOffset:Int,
-    showBottomSheet: MutableState<Boolean>,
     onClickBasket: (Long) -> Unit,
-    deleteBasket: (Long) -> Unit,
-    changeNameBasket: (Basket) -> Unit,
 ) {
     val listState = rememberLazyListState()
     val editBasket: MutableState<Basket?> = remember { mutableStateOf(null) }
     val show = remember { mutableStateOf(true) }
 
+    val showArrowUp = remember {
+        derivedStateOf { listState.layoutInfo.visibleItemsInfo.firstOrNull()?.index != 0 }}.value
+    val showArrowDown = remember {
+        derivedStateOf { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index !=
+            listState.layoutInfo.totalItemsCount - 1}}.value
     if (editBasket.value != null) {
         EditBasketName(
             basket = editBasket.value!! as BasketDB,
             onDismiss = { editBasket.value = null },
             onConfirm = {
-                changeNameBasket(editBasket.value!!)
+                uiState.changeNameBasket(editBasket.value!!)
                 editBasket.value = null
             },
         )
@@ -161,6 +151,7 @@ fun BasketLazyColumn(
         idImage = getIdImage(screen),
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
+    showArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.baskets.isNotEmpty(), drawLine = false)
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -169,17 +160,13 @@ fun BasketLazyColumn(
             .testTag(BASKET_LAZY)
     )
     {
-        if (uiState.baskets.isEmpty()) {
-           item { ItemAddBasketLazyColumn{ showBottomSheet.value = true }}
-        }
-//        item { HeaderImScreen(text = stringResource(R.string.baskets), idImage = R.drawable.bas) }
         items(items = uiState.baskets, key = { it.idBasket })
         { item ->
             val dismissState = rememberDismissState(
                 confirmValueChange = {
                     if (it == DismissValue.DismissedToStart) {
                         show.value = false
-                        deleteBasket(item.idBasket)
+                        uiState.deleteBasket(item.idBasket)
                     } else if (it == DismissValue.DismissedToEnd) {
                         editBasket.value = item
                     }
@@ -197,6 +184,7 @@ fun BasketLazyColumn(
             )
         }
     }
+    showArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.baskets.isNotEmpty(), drawLine = false)
 }
 
 @Composable
@@ -259,8 +247,12 @@ fun ItemAddBasketLazyColumn(onClick: () -> Unit) {
             text = stringResource(id = R.string.add_basket),
             textAlign = TextAlign.Center,
             style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
-            modifier = Modifier.weight(1f)
-                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.small)
+            modifier = Modifier
+                .weight(1f)
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = MaterialTheme.shapes.small
+                )
                 .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
         )
     }
@@ -268,7 +260,7 @@ fun ItemAddBasketLazyColumn(onClick: () -> Unit) {
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
+fun AddBasketBottomSheet(uiState: BasketScreenState) {
 
     var nameNewBasket by remember {
         mutableStateOf(
@@ -287,7 +279,7 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
     val windowInsets = if (edgeToEdgeEnabled) WindowInsets(0) else BottomSheetDefaults.windowInsets
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = uiState.onDismiss,
         modifier = Modifier
             .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor))
             .testTag(BASKETBOTTOMSHEET),
@@ -321,11 +313,11 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        onAddClick(nameNewBasket)
+                        uiState.onAddClick(nameNewBasket)
                         keyboardController?.hide()
                         nameNewBasket = ""
                         localFocusManager.clearFocus()
-                        onDismiss()
+                        uiState.onDismiss()
                     }
                 ),
             )
@@ -333,8 +325,8 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
             TextButtonOK(
                 enabled = nameNewBasket != "",
                 onConfirm = {
-                    onAddClick(nameNewBasket)
-                    onDismiss()
+                    uiState.onAddClick(nameNewBasket)
+                    uiState.onDismiss()
                 })
             Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
         }
@@ -345,5 +337,5 @@ fun AddBasketBottomSheet(onAddClick: (String) -> Unit, onDismiss: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun BottomSheetContentBasketPreview() {
-    AddBasketBottomSheet({}, {})
+    AddBasketBottomSheet(BasketScreenState())
 }

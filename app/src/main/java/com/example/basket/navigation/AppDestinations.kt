@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingBasket
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -13,45 +14,55 @@ import com.example.basket.R
 interface ScreenDestination {
     val icon: ImageVector
     val route: String
+    var textFAB: String
     val pictureDay: Int
     val pictureNight: Int
     val textHeader: Int
+    var onClickFAB: () -> Unit
 }
 
 /*** App app navigation destinations*/
-object Baskets : ScreenDestination {
+object BasketsDestination : ScreenDestination {
     override val icon = Icons.Filled.ShoppingBasket
     override val route = "baskets"
+    override var textFAB = ""
     override val pictureDay = R.drawable.bas
     override val pictureNight = R.drawable.bas
     override val textHeader = R.string.baskets
+    override var onClickFAB: () -> Unit = {  }
 }
 
-object ProductsBasket : ScreenDestination {
+object ProductsDestination : ScreenDestination {
     override val icon = Icons.Filled.Dashboard
     override val route = "products"
+    override var textFAB = ""
     const val basketIdArg = "basket_type"
     val routeWithArgs = "${route}/{$basketIdArg}"
     val arguments = listOf(navArgument(basketIdArg) { type = NavType.LongType })
     override val pictureDay = R.drawable.fon1
     override val pictureNight = R.drawable.fon1_1
     override val textHeader = R.string.products_in_basket
+    override var onClickFAB: () -> Unit = {  }
 }
 
-object Articles : ScreenDestination {
+object ArticlesDestination : ScreenDestination {
     override val icon = Icons.Filled.Dashboard
     override val route = "article"
+    override var textFAB = ""
     override val pictureDay = R.drawable.fon5
     override val pictureNight = R.drawable.fon5_1
     override val textHeader = R.string.products
+    override var onClickFAB: () -> Unit = {  }
 }
 
-object Setting : ScreenDestination {
+object SettingDestination : ScreenDestination {
     override val icon = Icons.Filled.Settings
     override val route = "settings"
+    override var textFAB = ""
     override val pictureDay = 0
     override val pictureNight = 0
     override val textHeader = R.string.settings_page
+    override var onClickFAB: () -> Unit = {  }
 }
 
 //object SingleAccount : ScreenDestination {
@@ -71,4 +82,5 @@ object Setting : ScreenDestination {
 //    override val route = "products"
 //}
 // Screens to be displayed in the top AppTabRow
-val appTabRowScreens = listOf(Baskets, Articles, Setting)
+val appTabRowScreens = listOf(BasketsDestination, ArticlesDestination, SettingDestination)
+val listScreens = listOf(BasketsDestination, ArticlesDestination, ProductsDestination, SettingDestination)

@@ -7,9 +7,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -25,13 +29,58 @@ import androidx.compose.ui.unit.dp
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TagsTesting.FAB_PLUS
 import com.example.basket.ui.theme.sizeApp
+import com.example.basket.utils.log
 
+
+@Composable fun ExtendedFAB(
+    icon: ImageVector = Icons.Filled.Add,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    refreshScreen:Boolean = true,
+    text: String
+){
+
+    val plug = refreshScreen
+    ExtendedFloatingActionButton(
+        modifier = modifier,
+        onClick = onClick,
+        icon = {
+            Icon(
+                icon, null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier
+                    .padding(sizeApp(SizeElement.PADDING_FAB))
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
+        },
+        text = { Text(text = text) },
+    )
+}
+
+@Composable fun ExtendedFAB_test(){
+    log(true, "ExtendedFAB_test")
+    ExtendedFloatingActionButton(
+        modifier = Modifier,
+        onClick = {  },
+        icon = {
+            Icon(
+                Icons.Filled.Add, null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier
+                    .padding(sizeApp(SizeElement.PADDING_FAB))
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            )
+        },
+        text = { Text(text = "Test") },
+    )
+}
 
 @Composable
 fun FloatingActionButtonApp( offset: Dp,
-                              refreshScreen: MutableState<Boolean>,
-                              modifier: Modifier = Modifier,
-                              icon: ImageVector, onClick: () -> Unit) {
+                             refreshScreen: MutableState<Boolean>,
+                             modifier: Modifier = Modifier,
+                             icon: ImageVector,
+                             onClick: () -> Unit) {
 
     val plug = refreshScreen.value
 

@@ -31,7 +31,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.basket.entity.TagsTesting.BOTTOM_APP_BAR
-import com.example.basket.navigation.Baskets
+import com.example.basket.navigation.BasketsDestination
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.navigation.appTabRowScreens
 import com.example.basket.ui.theme.TabFadeInAnimationDelay
@@ -116,5 +116,5 @@ private fun BottomTab(
 @Preview
 @Composable
 fun BottomBarAppPreview() {
-    AppBottomBar(currentScreen = Baskets, {})
+    AppBottomBar(currentScreen = BasketsDestination, {})
 }

@@ -1,4 +1,4 @@
-package com.example.basket.ui.article
+package com.example.basket.ui.screens.article
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
@@ -9,7 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
@@ -48,6 +47,7 @@ import com.example.basket.entity.SizeElement
 import com.example.basket.entity.SortingBy
 import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.TypeText
+import com.example.basket.entity.UPDOWN
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.components.*
 import com.example.basket.ui.components.dialog.EditArticleDialog
@@ -63,53 +63,39 @@ import com.example.basket.utils.selectUnitWithArticle
 import kotlin.math.roundToInt
 
 @Composable
-fun ArticlesScreen(showBottomSheet: MutableState<Boolean>,
-                   screen: ScreenDestination,) {
+fun ArticlesScreen( screen: ScreenDestination)
+{
     val viewModel: ArticleViewModel = hiltViewModel()
     viewModel.getStateArticle()
 
-    ArticleScreenInitDate(viewModel = viewModel, screen = screen,showBottomSheet = showBottomSheet)
+    ArticleScreenInitDate(viewModel = viewModel, screen = screen)
 }
 
 @Composable
-fun ArticleScreenInitDate(
-    viewModel: ArticleViewModel,
-    screen: ScreenDestination,
-    showBottomSheet: MutableState<Boolean>,
+fun ArticleScreenInitDate(viewModel: ArticleViewModel, screen: ScreenDestination,
 ) {
     val uiState by viewModel.articleScreenState.collectAsState()
-    if (showBottomSheet.value)
-        AddEditArticleBottomSheet(
-            uiState = uiState,
-            onAddArticle = { article -> viewModel.addArticle(article, uiState.sorting) },
-            onDismiss = { showBottomSheet.value = false})
-    ArticleScreenLayout(
-        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
-        screen = screen,
-        showBottomSheet = showBottomSheet,
-        uiState = viewModel.articleScreenState.collectAsState().value,
-        changeArticle = { article -> viewModel.changeArticle(article, uiState.sorting) },
-        doDeleteSelected = { articles -> viewModel.deleteSelected(articles, uiState.sorting) },
-        doChangeSortingBy = { sortingBy -> viewModel.doChangeSortingBy(sortingBy) },
-        doChangeSectionSelected = { articles, idSection ->
-            viewModel.changeSectionSelected(articles, idSection, uiState.sorting) },
-        doSelected = { articleId -> viewModel.changeSelected(articleId) },
-    )
+    uiState.onAddArticle = { article -> viewModel.addArticle(article, uiState.sorting) }
+    uiState.changeArticle = { article -> viewModel.changeArticle(article, uiState.sorting) }
+    uiState.doDeleteSelected = { articles -> viewModel.deleteSelected(articles, uiState.sorting) }
+    uiState.doChangeSortingBy = { sortingBy -> viewModel.doChangeSortingBy(sortingBy) }
+    uiState.doChangeSectionSelected = { articles, idSection ->
+        viewModel.changeSectionSelected(articles, idSection, uiState.sorting) }
+    uiState.doSelected = { articleId -> viewModel.changeSelected(articleId) }
+    uiState.onDismiss = { uiState.triggerRunOnClickFAB.value = false  }
+
+    screen.textFAB = stringResource(id = R.string.products)
+    screen.onClickFAB = { uiState.triggerRunOnClickFAB.value = true}
+
+    if (uiState.triggerRunOnClickFAB.value) BottomSheetArticleAdd(uiState = uiState)
+
+    ArticleScreenLayout(screen = screen, uiState = uiState)
 }
 
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Composable
-fun ArticleScreenLayout(
-    modifier: Modifier = Modifier,
-    uiState: ArticleScreenState,
-    screen: ScreenDestination,
-    showBottomSheet: MutableState<Boolean>,
-    changeArticle: (Article) -> Unit,
-    doChangeSectionSelected: (List<Article>, Long) -> Unit,
-    doDeleteSelected: (List<Article>) -> Unit,
-    doChangeSortingBy: (SortingBy) -> Unit,
-    doSelected: (Long) -> Unit
-) {
+fun ArticleScreenLayout(uiState: ArticleScreenState, screen: ScreenDestination)
+{
     val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -118,7 +104,7 @@ fun ArticleScreenLayout(
     val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
 
     if (isSelectedId.value > 0L) {
-        doSelected(isSelectedId.value)
+        uiState.doSelected(isSelectedId.value)
         isSelectedId.value = 0
     }
     if (unSelected.value) {
@@ -130,35 +116,37 @@ fun ArticleScreenLayout(
             listSection = uiState.sections,
             onDismiss = { changeSectionSelected.value = false },
             onConfirm = {
-                if (it != 0L) doChangeSectionSelected (uiState.article.flatten(), it)
+                if (it != 0L) uiState.doChangeSectionSelected (uiState.article.flatten(), it)
                 changeSectionSelected.value = false
             },
         )
     }
     if (deleteSelected.value) {
-        doDeleteSelected( uiState.article.flatten() )
+        uiState.doDeleteSelected( uiState.article.flatten() )
         deleteSelected.value = false
     }
 
-    Box( Modifier.fillMaxSize() ) {
-        Column(modifier.fillMaxHeight()) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(bottom = dimensionResource(R.dimen.screen_padding_hor)) ) {
+        Column(Modifier.fillMaxHeight()) {
             Column(
                 Modifier
                     .fillMaxHeight()
                     .bottomBarAnimatedScroll(
                         height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
-                        offsetHeightPx = bottomBarOffsetHeightPx)
+                        offsetHeightPx = bottomBarOffsetHeightPx
+                    )
                     .weight(1f)) {
                 ArticleLazyColumn(
                     uiState = uiState,
                     screen = screen,
-                    changeArticle = changeArticle,
-                    showBottomSheet = showBottomSheet,
                     scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt(),
                     doSelected = { idItem -> isSelectedId.value = idItem },
-                    doDelete = { items -> doDeleteSelected( items ) })
+                    doDelete = { items -> uiState.doDeleteSelected( items ) })
             }
-            SwitcherButton(doChangeSortingBy)
+            SwitcherButton(uiState.doChangeSortingBy)
         }
         startScreen = showFABs(
             startScreen = startScreen,
@@ -178,13 +166,17 @@ fun ArticleLazyColumn(
     uiState: ArticleScreenState,
     screen: ScreenDestination,
     scrollOffset:Int,
-    showBottomSheet: MutableState<Boolean>,
-    changeArticle: (Article) -> Unit,
     doSelected: (Long) -> Unit,
     doDelete: (List<Article>) -> Unit
 ) {
     val listState = rememberLazyListState()
     val editArticle: MutableState<Article?> = remember { mutableStateOf(null) }
+
+    val showArrowUp = remember {
+        derivedStateOf { listState.layoutInfo.visibleItemsInfo.firstOrNull()?.index != 0 }}.value
+    val showArrowDown = remember {
+        derivedStateOf { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index !=
+            listState.layoutInfo.totalItemsCount - 1 } }.value
 
     if (editArticle.value != null) {
         EditArticleDialog(
@@ -193,7 +185,7 @@ fun ArticleLazyColumn(
             listSection = uiState.sections,
             onDismiss = { editArticle.value = null },
             onConfirm = {
-                changeArticle(it)
+                uiState.changeArticle(it)
                 editArticle.value = null
             }
         )
@@ -203,6 +195,7 @@ fun ArticleLazyColumn(
         idImage = getIdImage(screen),
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
+    showArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.article.isNotEmpty(), drawLine = false)
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -210,14 +203,11 @@ fun ArticleLazyColumn(
             .clip(RoundedCornerShape(8.dp))
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-        if (uiState.article.isEmpty()) {
-            item { ItemAddProductLazyColumn { showBottomSheet.value = true } }
-        }
-        items( items = uiState.article ) { item ->
+        itemsIndexed( items = uiState.article ) { _,item ->
             Column( modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .background(
-                    if (uiState.article.size == 1 ) SectionColor
+                    if (uiState.article.size == 1) SectionColor
                     else {
                         if (item[0].section.colorSection != 0L) Color(item[0].section.colorSection)
                         else SectionColor
@@ -236,6 +226,7 @@ fun ArticleLazyColumn(
             }
         }
     }
+    showArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.article.isNotEmpty(), drawLine = false)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -286,10 +277,12 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
     var heightIs by remember { mutableStateOf(0.dp) }
 //    val modifier = modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     
-    Box (modifier
-        .padding(horizontal = 6.dp)
-        .onGloballyPositioned { coordinates ->
-            heightIs = with(localDensity) { coordinates.size.height.toDp() } })
+    Box (
+        modifier
+            .padding(horizontal = 6.dp)
+            .onGloballyPositioned { coordinates ->
+                heightIs = with(localDensity) { coordinates.size.height.toDp() }
+            })
     {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -307,29 +300,30 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit){
             )
             TextApp (text = item.nameArticle,
                 textAlign = TextAlign.Left,
-                modifier = modifier.weight(1f).padding(start = 6.dp).padding(vertical = 6.dp),
-                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SETTING)
+                modifier = modifier
+                    .weight(1f)
+                    .padding(start = 6.dp)
+                    .padding(vertical = 6.dp),
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST)
             )
             Spacer(modifier = modifier.width(4.dp))
             TextApp (text = item.unitApp.nameUnit,
                 textAlign = TextAlign.Left,
                 modifier = modifier.width(40.dp),
-                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SETTING)
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST)
             )
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddEditArticleBottomSheet(uiState: ArticleScreenState, onAddArticle: (Article) -> Unit, onDismiss:() -> Unit )
+@Composable fun BottomSheetArticleAdd(uiState: ArticleScreenState)
 {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { true },)
     val nameSection = stringResource(R.string.name_section)
     val stuff = stringResource(R.string.unit_st)
-    val screenHeight = LocalConfiguration.current.screenHeightDp
     val enterValue = remember { mutableStateOf("1") }
     val enterArticle = remember { mutableStateOf(Pair<Long, String>(0, "")) }
     val enterSection = remember { mutableStateOf(Pair<Long, String>(1, nameSection)) }
@@ -337,7 +331,7 @@ fun AddEditArticleBottomSheet(uiState: ArticleScreenState, onAddArticle: (Articl
     val listArticle = uiState.article.flatten()
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = uiState.onDismiss,
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
             .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor)),
@@ -367,14 +361,14 @@ fun AddEditArticleBottomSheet(uiState: ArticleScreenState, onAddArticle: (Articl
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor),vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver))
+                .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor))
 //                .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.85).dp)
         ) {
             HeaderScreen(text = stringResource(R.string.add_product))
             Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
             /** Select article*/
             MyExposedDropdownMenuBox(
-                listItems = listArticle.map { Pair(it.idArticle, it.nameArticle) }.sortedBy { it.second },
+                listItems = emptyList(), //listArticle.map { Pair(it.idArticle, it.nameArticle) }.sortedBy { it.second },
                 label = stringResource(R.string.select_product),
                 modifier = Modifier.fillMaxWidth(),
                 enterValue = enterArticle,
@@ -386,25 +380,23 @@ fun AddEditArticleBottomSheet(uiState: ArticleScreenState, onAddArticle: (Articl
                 enterValue.value = "1"
             }
             Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+            ChipsUnit(
+                listUnit = uiState.unitApp,
+                edit = true,
+                unitArticle = listArticle.find { it.idArticle == enterArticle.value.first }?.unitApp,
+                onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
             /** Select section*/
             ChipsSections(
                 edit = true,
                 listSection = uiState.sections,
                 sectionArticle = listArticle.find { it.idArticle == enterArticle.value.first }?.section,
                 onClick = { enterSection.value = Pair(it.idSection,it.nameSection)})
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
-            ChipsUnit(
-                listUnit = uiState.unitApp,
-                edit = true,
-                unitArticle = listArticle.find { it.idArticle == enterArticle.value.first }?.unitApp,
-                onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
-
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
 
             TextButtonOK(
                 enabled = enterArticle.value.second != "",
                 onConfirm = {
-                    onAddArticle(
+                    uiState.onAddArticle(
                         ArticleDB(
                             idArticle = enterArticle.value.first,
                             nameArticle = enterArticle.value.second,

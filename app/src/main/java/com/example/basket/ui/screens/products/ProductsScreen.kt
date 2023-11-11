@@ -1,4 +1,4 @@
-package com.example.basket.ui.products
+package com.example.basket.ui.screens.products
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -33,9 +33,11 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,31 +56,29 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.basket.R
 import com.example.basket.data.room.tables.ArticleDB
-import com.example.basket.data.room.tables.BasketDB
 import com.example.basket.data.room.tables.ProductDB
 import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Product
-import com.example.basket.entity.Section
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.TypeText
-import com.example.basket.entity.UnitApp
+import com.example.basket.entity.UPDOWN
 import com.example.basket.navigation.ScreenDestination
-import com.example.basket.ui.baskets.ElementColumBasket
 import com.example.basket.ui.components.ChipsSections
 import com.example.basket.ui.components.ChipsUnit
 import com.example.basket.ui.components.CollapsingToolbar
 import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.HeaderSection
-import com.example.basket.ui.components.ItemAddProductLazyColumn
 import com.example.basket.ui.components.MyExposedDropdownMenuBox
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIconClearing
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.dialog.EditQuantityDialog
 import com.example.basket.ui.components.dialog.SelectSectionDialog
+import com.example.basket.ui.components.showArrowVer
 import com.example.basket.ui.components.showFABs
+import com.example.basket.ui.bottomsheets.bottomSheetProductAdd.BottomSheetProductAddGeneral
 import com.example.basket.ui.theme.SectionColor
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
@@ -90,71 +90,51 @@ import com.example.basket.utils.selectUnitWithArticle
 import kotlin.math.roundToInt
 
 @Composable
-fun ProductsScreen(
-    basketId: Long,
-    screen: ScreenDestination,
-    showBottomSheet: MutableState<Boolean>) {
-
+fun ProductsScreen(basketId: Long, screen: ScreenDestination,)
+{
     val viewModel: ProductViewModel = hiltViewModel()
     viewModel.getStateProducts(basketId)
 
     ProductScreenCreateView(
         basketId = basketId,
         screen = screen,
-        viewModel = viewModel,
-        showBottomSheet = showBottomSheet,)
+        viewModel = viewModel)
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
-fun ProductScreenCreateView(
-    basketId: Long,
-    screen: ScreenDestination,
-    viewModel: ProductViewModel,
-    showBottomSheet: MutableState<Boolean>,
+fun ProductScreenCreateView(basketId: Long, screen: ScreenDestination, viewModel: ProductViewModel,
 ){
     val uiState by viewModel.productsScreenState.collectAsState()
+    uiState.putProductInBasket = { product -> viewModel.putProductInBasket(product, basketId) }
+    uiState.changeProduct = { product -> viewModel.changeProduct(product, basketId) }
+    uiState.doChangeSection = { productList, idSection ->
+        viewModel.changeSections(productList, idSection) }
+    uiState.doDeleteSelected = { productList -> viewModel.deleteSelectedProducts(productList) }
+    uiState.doSelected = { articleId -> viewModel.changeSelected(articleId) }
+    uiState.onAddProduct = { product: Product -> viewModel.addProduct(product, basketId) }
+    uiState.onDismiss = { uiState.triggerRunOnClickFAB.value = false}
 
-    if (showBottomSheet.value)
-        AddEditProductBottomSheet(
-            uiState = uiState,
-            onAddProduct = { product: Product -> viewModel.addProduct(product, basketId) },
-            onDismiss = { showBottomSheet.value = false})
-
-    ProductsScreenLayout(
-        uiState = uiState,
-        screen = screen,
-        showBottomSheet = showBottomSheet,
-        putProductInBasket = { product -> viewModel.putProductInBasket(product, basketId) },
-        changeProduct = { product -> viewModel.changeProduct(product, basketId) },
-        doChangeSectionSelected = { productList, idSection ->
-            viewModel.changeSectionSelected(productList, idSection) },
-        doDeleteSelected = { productList -> viewModel.deleteSelectedProducts(productList) },
-        doSelected = { articleId -> viewModel.changeSelected(articleId) },
-    )
+    screen.textFAB = stringResource(id = R.string.products)
+    screen.onClickFAB = { uiState.triggerRunOnClickFAB.value = true}
+//    if (uiState.triggerRunOnClickFAB.value) BottomSheetProductAddEdit( uiState = uiState)
+    if (uiState.triggerRunOnClickFAB.value) BottomSheetProductAddGeneral( uiStateP = uiState, {})
+    ProductsScreenLayout(uiState = uiState, screen = screen)
 }
 
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Composable
-fun ProductsScreenLayout(
-    uiState: ProductsScreenState,
-    screen: ScreenDestination,
-    showBottomSheet: MutableState<Boolean>,
-    putProductInBasket: (Product) -> Unit,
-    changeProduct: (Product) -> Unit,
-    doChangeSectionSelected: (List<Product>, Long) -> Unit,
-    doDeleteSelected: (List<Product>) -> Unit,
-    doSelected: (Long) -> Unit
-) {
-    val isSelectedId: MutableState<Long> = remember { mutableStateOf(0L) }
+fun ProductsScreenLayout(uiState: ProductsScreenState, screen: ScreenDestination,
+){
+    val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
     val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
 
-
     if (isSelectedId.value > 0L) {
-        doSelected(isSelectedId.value)
+        uiState.doSelected(isSelectedId.value)
         isSelectedId.value = 0
     }
     if (unSelected.value) {
@@ -166,13 +146,13 @@ fun ProductsScreenLayout(
             listSection = uiState.sections,
             onDismiss = { changeSectionSelected.value = false },
             onConfirm = {
-                if (it != 0L) doChangeSectionSelected( uiState.products.flatten(), it)
+                if (it != 0L) uiState.doChangeSection( uiState.products.flatten(), it)
                 changeSectionSelected.value = false
             },
         )
     }
     if (deleteSelected.value) {
-        doDeleteSelected(uiState.products.flatten())
+        uiState.doDeleteSelected(uiState.products.flatten())
         deleteSelected.value = false
     }
 
@@ -188,9 +168,6 @@ fun ProductsScreenLayout(
                 uiState = uiState,
                 screen = screen,
                 scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt(),
-                putProductInBasket = putProductInBasket,
-                changeProduct = changeProduct,
-                showBottomSheet = showBottomSheet,
                 doSelected = { idItem -> isSelectedId.value = idItem } )
         }
         startScreen = showFABs(
@@ -209,13 +186,16 @@ fun ProductLazyColumn(
     uiState: ProductsScreenState,
     screen: ScreenDestination,
     scrollOffset:Int,
-    showBottomSheet: MutableState<Boolean>,
-    putProductInBasket: (Product) -> Unit,
-    changeProduct: (Product) -> Unit,
     doSelected: (Long) -> Unit
 ) {
     val listState = rememberLazyListState()
     val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
+
+    val showArrowUp = remember {
+        derivedStateOf { listState.layoutInfo.visibleItemsInfo.firstOrNull()?.index != 0 }}.value
+    val showArrowDown = remember {
+        derivedStateOf { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index !=
+            listState.layoutInfo.totalItemsCount - 1 } }.value
 
     if (editProduct.value != null ) {
         EditQuantityDialog(
@@ -224,7 +204,7 @@ fun ProductLazyColumn(
             onDismiss = { editProduct.value = null },
             onConfirm = {
                 editProduct.value = null
-                changeProduct (it)
+                uiState.changeProduct (it)
             }
         )
     }
@@ -233,6 +213,7 @@ fun ProductLazyColumn(
         idImage = getIdImage(screen),
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
+    showArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.products.isNotEmpty(), drawLine = false)
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -240,28 +221,23 @@ fun ProductLazyColumn(
             .clip(RoundedCornerShape(8.dp))
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-        if (uiState.products.isEmpty()) {
-            item { ItemAddProductLazyColumn { showBottomSheet.value = true } }
-        }
         items(items = uiState.products) { item ->
             Column(modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .background(
-//                    if (uiState.products.size == 1 ) SectionColor
-//                    else {
                     if (item[0].article.section.colorSection != 0L) Color(item[0].article.section.colorSection)
                     else SectionColor
-//                    }
                 )) {
                 HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
                 ProductsLayoutColum(
                     products = item,
-                    putProductInBasket = putProductInBasket,
+                    putProductInBasket = uiState.putProductInBasket,
                     editProduct = { product -> editProduct.value = product },
                     doSelected = doSelected )
             }
         }
     }
+    showArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.products.isNotEmpty(), drawLine = false)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -373,17 +349,13 @@ fun SectionProduct(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditProductBottomSheet(
-    uiState: ProductsScreenState,
-    onAddProduct: (Product) -> Unit,
-    onDismiss:() -> Unit)
+fun BottomSheetProductAddEdit(uiState: ProductsScreenState,)
 {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { true },)
-    log(true, "AddEditProductBottomSheet")
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = uiState.onDismiss,
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
             .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor)),
@@ -395,11 +367,11 @@ fun AddEditProductBottomSheet(
         dragHandle = { BottomSheetDefaults.DragHandle() },
         windowInsets = BottomSheetDefaults.windowInsets,
         sheetState = sheetState,
-        content = { ModalBottomSheetContent(uiState, onAddProduct)})
+        content = { BottomSheetProductContent(uiState, uiState.onAddProduct) })
 }
 
 @Composable
-fun ModalBottomSheetContent(uiState: ProductsScreenState, onAddProduct: (Product) -> Unit)
+fun BottomSheetProductContent(uiState: ProductsScreenState, onAddProduct: (Product) -> Unit)
 {
     val nameSection = stringResource(R.string.name_section)
     val unitStuff = stringResource(R.string.unit_st)
@@ -428,8 +400,9 @@ fun ModalBottomSheetContent(uiState: ProductsScreenState, onAddProduct: (Product
     }
 
     Column(
-        Modifier.fillMaxWidth().padding(
-                horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor), vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor)))
     {
         HeaderScreen( text = stringResource(R.string.add_product))
         Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
@@ -447,19 +420,23 @@ fun ModalBottomSheetContent(uiState: ProductsScreenState, onAddProduct: (Product
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.Center,
         ) {
-            /** Value*/
-            MyOutlinedTextFieldWithoutIconClearing(
-                typeKeyboard = "digit",
-                modifier = Modifier.width(dimensionResource(id = R.dimen.bottom_sheet_value_width)).padding(top = 14.dp),
-                enterValue = enterValue
-            )
-            Spacer(Modifier.width(4.dp))
-            /** Select unit*/
-            ChipsUnit(
-                edit = false,
-                listUnit = uiState.unitApp,
-                unitArticle = uiState.articles.find { it.idArticle == enterArticle.value.first }?.unitApp,
-                onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
+        /** Value*/
+        MyOutlinedTextFieldWithoutIconClearing(
+            typeKeyboard = "digit",
+            title = stringResource(id = R.string.quantity),
+            enterValue = enterValue,
+            modifier = Modifier
+                .width(dimensionResource(id = R.dimen.bottom_sheet_value_width))
+//                .align(alignment = Alignment.CenterHorizontally)
+        )
+//        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+            Spacer(Modifier.width(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+        /** Select unit*/
+        ChipsUnit(
+            edit = false,
+            listUnit = uiState.unitApp,
+            unitArticle = uiState.articles.find { it.idArticle == enterArticle.value.first }?.unitApp,
+            onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
         }
 
         Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))

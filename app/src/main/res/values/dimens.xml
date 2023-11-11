@@ -49,6 +49,6 @@
     <dimen name="bottom_sheet_spacer_height_1">24dp</dimen>
     <dimen name="bottom_sheet_spacer_height_2">36dp</dimen>
     <dimen name="bottom_sheet_unit_width">120dp</dimen>
-    <dimen name="bottom_sheet_value_width">90dp</dimen>
+    <dimen name="bottom_sheet_value_width">100dp</dimen>
 
 </resources>

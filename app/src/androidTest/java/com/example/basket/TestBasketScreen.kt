@@ -25,7 +25,7 @@ import com.example.basket.entity.TagsTesting.BUTTON_OK
 import com.example.basket.entity.TagsTesting.DIALOG_EDIT_BASKET
 import com.example.basket.entity.TagsTesting.DIALOG_EDIT_BASKET_INPUT_NAME
 import com.example.basket.entity.TagsTesting.FAB_PLUS
-import com.example.basket.navigation.Baskets
+import com.example.basket.navigation.BasketsDestination
 import com.example.basket.ui.MainApp
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -98,8 +98,8 @@ class TestBasketScreen {
     fun existsBottomAppBar() {
         composeRule.onNodeWithTag(BOTTOM_APP_BAR).assertExists()
         composeRule.onNodeWithTag(BOTTOM_APP_BAR).assertIsDisplayed()
-        composeRule.onNodeWithTag(Baskets.route).assertExists()
-        composeRule.onNodeWithTag(Baskets.route).assertIsDisplayed()
+        composeRule.onNodeWithTag(BasketsDestination.route).assertExists()
+        composeRule.onNodeWithTag(BasketsDestination.route).assertIsDisplayed()
     }
 
     @Test
@@ -109,7 +109,7 @@ class TestBasketScreen {
         val basketN = hasText("9 basket") and hasClickAction()
         composeRule.onNodeWithTag(BASKET_LAZY).assertExists()
 
-        composeRule.onNodeWithTag(Baskets.route).performClick()
+        composeRule.onNodeWithTag(BasketsDestination.route).performClick()
         composeRule.waitUntil(timeoutMillis = 4000L, condition = { true })
 
         composeRule.onNodeWithTag(BASKET_LAZY).performTouchInput {
@@ -147,7 +147,7 @@ class TestBasketScreen {
         val basket0 = hasText("0 basket") and hasClickAction()
         val basketN = hasText(newBasketName) and hasClickAction()
 
-        composeRule.onNodeWithTag(Baskets.route).performClick()
+        composeRule.onNodeWithTag(BasketsDestination.route).performClick()
         composeRule.waitUntil(timeoutMillis = 4000L, condition = { true })
 
         composeRule.onNode(basket0).assertIsDisplayed()
@@ -168,7 +168,7 @@ class TestBasketScreen {
         val basketN = hasText("4 basket") and hasClickAction()
 
         // Refresh screen for view baskets
-        composeRule.onNodeWithTag(Baskets.route).performClick()
+        composeRule.onNodeWithTag(BasketsDestination.route).performClick()
         composeRule.waitUntil(timeoutMillis = 4000L, condition = { true })
         //Swipe for view all list basket
         composeRule.onNodeWithTag(BASKET_LAZY).performTouchInput { swipeUp(startY = bottom, endY = top)}

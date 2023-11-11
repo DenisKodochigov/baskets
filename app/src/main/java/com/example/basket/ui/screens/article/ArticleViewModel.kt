@@ -1,4 +1,4 @@
-package com.example.basket.ui.article
+package com.example.basket.ui.screens.article
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

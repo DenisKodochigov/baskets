@@ -2,6 +2,7 @@ package com.example.basket.navigation
 
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import com.example.basket.utils.log
 
 fun NavHostController.navigateToScreen(route: String) =
     this.navigate(route) {
@@ -12,5 +13,5 @@ fun NavHostController.navigateToScreen(route: String) =
     }
 
 fun NavHostController.navigateToProducts(basketId: Long) {
-    this.navigateToScreen("${ProductsBasket.route}/$basketId")
+    this.navigateToScreen("${ProductsDestination.route}/$basketId")
 }

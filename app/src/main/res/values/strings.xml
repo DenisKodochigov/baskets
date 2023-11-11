@@ -44,4 +44,6 @@
     <string name="theme_1">Medium</string>
     <string name="theme_2">Small</string>
     <string name="add_basket">Add basket</string>
+    <string name="quantity">Quantity</string>
+    <string name="in_section">in section</string>
 </resources>

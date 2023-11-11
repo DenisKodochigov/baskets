@@ -13,62 +13,60 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.basket.ui.article.ArticlesScreen
-import com.example.basket.ui.baskets.BasketsScreen
-import com.example.basket.ui.products.ProductsScreen
-import com.example.basket.ui.settings.SettingsScreen
+import com.example.basket.ui.screens.article.ArticlesScreen
+import com.example.basket.ui.screens.baskets.BasketsScreen
+import com.example.basket.ui.screens.products.ProductsScreen
+import com.example.basket.ui.screens.settings.SettingsScreen
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    showBottomSheet: MutableState<Boolean>,
     refreshScreen: MutableState<Boolean>,
 ){
 
     NavHost(
-        navController = navController, startDestination = Baskets.route, modifier = modifier ) {
-        composable(route = Baskets.route,
+        navController = navController, startDestination = BasketsDestination.route, modifier = modifier ) {
+        composable(route = BasketsDestination.route,
             enterTransition = {
-                targetState.destination.route?.let { enterTransition(Baskets.route, it) } },
+                targetState.destination.route?.let { enterTransition(BasketsDestination.route, it) } },
             exitTransition = {
-                targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }) {
+                targetState.destination.route?.let { exitTransition(BasketsDestination.route, it)  } }) {
             BasketsScreen(
-                showBottomSheet = showBottomSheet,
-                screen = Baskets,
+                screen = BasketsDestination,
                 onClickBasket = { navController.navigateToProducts(it) },
             )
         }
         composable(
-            route = ProductsBasket.routeWithArgs, arguments = ProductsBasket.arguments,
+            route = ProductsDestination.routeWithArgs, arguments = ProductsDestination.arguments,
             enterTransition = {
-                targetState.destination.route?.let { enterTransition(Baskets.route, it) } },
+                targetState.destination.route?.let { enterTransition(BasketsDestination.route, it) } },
             exitTransition = {
-                targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
+                targetState.destination.route?.let { exitTransition(BasketsDestination.route, it)  } }
         )
         { navBackStackEntry ->
-            val basketId = navBackStackEntry.arguments?.getLong(ProductsBasket.basketIdArg)
+            val basketId = navBackStackEntry.arguments?.getLong(ProductsDestination.basketIdArg)
             if (basketId != null) {
-                ProductsScreen(basketId = basketId, showBottomSheet = showBottomSheet, screen = ProductsBasket)
+                ProductsScreen(basketId = basketId, screen = ProductsDestination)
             }
         }
         composable(
-            route = Articles.route,
+            route = ArticlesDestination.route,
             enterTransition = {
-                targetState.destination.route?.let { enterTransition(Baskets.route, it) } },
+                targetState.destination.route?.let { enterTransition(BasketsDestination.route, it) } },
             exitTransition = {
-                targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
+                targetState.destination.route?.let { exitTransition(BasketsDestination.route, it)  } }
         ) {
-            ArticlesScreen( showBottomSheet = showBottomSheet, screen = Articles )
+            ArticlesScreen( screen = ArticlesDestination )
         }
         composable(
-            route = Setting.route,
+            route = SettingDestination.route,
             enterTransition = {
-                targetState.destination.route?.let { enterTransition(Baskets.route, it) } },
+                targetState.destination.route?.let { enterTransition(BasketsDestination.route, it) } },
             exitTransition = {
-                targetState.destination.route?.let { exitTransition(Baskets.route, it)  } }
+                targetState.destination.route?.let { exitTransition(BasketsDestination.route, it)  } }
         ) {
-            SettingsScreen(refreshScreen = refreshScreen, screen = Setting)
+            SettingsScreen(refreshScreen = refreshScreen, screen = SettingDestination)
         }
     }
 }

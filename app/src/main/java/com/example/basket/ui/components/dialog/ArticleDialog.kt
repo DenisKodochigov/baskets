@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.basket.R
@@ -24,6 +25,8 @@ import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Article
 import com.example.basket.entity.Section
 import com.example.basket.entity.UnitApp
+import com.example.basket.ui.components.ChipsSections
+import com.example.basket.ui.components.ChipsUnit
 import com.example.basket.ui.components.MyExposedDropdownMenuBox
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.basket.ui.components.MyTextH2
@@ -95,24 +98,37 @@ fun LayoutAddEditArticle(
 
     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
         MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameArticle, "text")
-        Spacer(Modifier.height(12.dp))
-        /** Select section*/
-        MyExposedDropdownMenuBox(
-            listItems = listSection.map{ Pair(it.idSection, it.nameSection) },
-            label = stringResource(R.string.section),
-            modifier = Modifier.fillMaxWidth(), //.weight(1f),
-            enterValue = enterSection,
-            filtering = true)
-        Spacer(Modifier.height(12.dp))
-        /** Select unit*/
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-            MyExposedDropdownMenuBox(
-                listItems = listUnit.map{ Pair(it.idUnit, it.nameUnit) },
-                label = stringResource(R.string.units),
-                modifier = Modifier.width(120.dp),
-                enterValue = enterUnit,
-                filtering = false,
-                readOnly = true)
+            /** Select unit*/
+//            MyExposedDropdownMenuBox(
+//                listItems = listUnit.map{ Pair(it.idUnit, it.nameUnit) },
+//                label = stringResource(R.string.units),
+//                modifier = Modifier.width(120.dp),
+//                enterValue = enterUnit,
+//                filtering = false,
+//                readOnly = true)
+            ChipsUnit(
+                listUnit = listUnit,
+                edit = true,
+                unitArticle = article.value.unitApp,
+                onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+
+            /** Select section*/
+            ChipsSections(
+                edit = true,
+                listSection = listSection,
+                sectionArticle = article.value.section,
+                onClick = { enterSection.value = Pair(it.idSection,it.nameSection)})
+//            /** Select section*/
+//            MyExposedDropdownMenuBox(
+//                listItems = listSection.map{ Pair(it.idSection, it.nameSection) },
+//                label = stringResource(R.string.section),
+//                modifier = Modifier.fillMaxWidth(), //.weight(1f),
+//                enterValue = enterSection,
+//                filtering = true)
+//            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
         }
     }
 }
