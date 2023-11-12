@@ -19,7 +19,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
     lateinit var database: AppDatabase
-    private const val mode: Int = 2
+    private const val mode: Int = 1
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase {
@@ -63,6 +63,22 @@ object DatabaseModule {
                                 database.dataDao().addArticle(ArticleDB(nameArticle = "product z-1", sectionId = 1, unitId = 2))
                                 database.dataDao().addArticle(ArticleDB(nameArticle = "product x-3", sectionId = 3, unitId = 2))
                                 database.dataDao().addArticle(ArticleDB(nameArticle = "product c-2", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product q-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product w-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product e-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product r-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product t-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product y-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product u-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product i-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product o-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product p-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product l-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product k-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product j-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product h-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product g-4", sectionId = 2, unitId = 2))
+                                database.dataDao().addArticle(ArticleDB(nameArticle = "product f-4", sectionId = 2, unitId = 2))
                                 database.dataDao().addProduct(ProductDB(articleId = 1, value = 1.0, basketId = 1))
                                 database.dataDao().addProduct(ProductDB(articleId = 2, value = 1.0, basketId = 1))
                                 database.dataDao().addProduct(ProductDB(articleId = 3, value = 1.0, basketId = 1))

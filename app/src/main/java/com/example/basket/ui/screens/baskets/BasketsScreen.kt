@@ -56,7 +56,7 @@ import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.dialog.EditBasketName
-import com.example.basket.ui.components.showArrowVer
+import com.example.basket.ui.components.ShowArrowVer
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
@@ -84,10 +84,10 @@ fun BasketScreenCreateView(
     viewModel: BasketViewModel,
 ) {
     val uiState by viewModel.basketScreenState.collectAsState()
-    uiState.changeNameBasket = { basket -> viewModel.changeNameBasket(basket) }
-    uiState.deleteBasket = { basketId -> viewModel.deleteBasket(basketId) }
-    uiState.onAddClick = { viewModel.addBasket(it) }
-    uiState.onDismiss = { uiState.triggerRunOnClickFAB.value = false }
+    uiState.changeNameBasket = remember { { basket -> viewModel.changeNameBasket(basket) }}
+    uiState.deleteBasket = remember {{ basketId -> viewModel.deleteBasket(basketId) }}
+    uiState.onAddClick = remember {{ viewModel.addBasket(it) }}
+    uiState.onDismiss = remember {{ uiState.triggerRunOnClickFAB.value = false }}
     screen.textFAB = stringResource(id = R.string.baskets)
     screen.onClickFAB = { uiState.triggerRunOnClickFAB.value = true}
 
@@ -151,7 +151,7 @@ fun BasketLazyColumn(
         idImage = getIdImage(screen),
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
-    showArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.baskets.isNotEmpty(), drawLine = false)
+    ShowArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.baskets.isNotEmpty(), drawLine = false)
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -184,7 +184,7 @@ fun BasketLazyColumn(
             )
         }
     }
-    showArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.baskets.isNotEmpty(), drawLine = false)
+    ShowArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.baskets.isNotEmpty(), drawLine = false)
 }
 
 @Composable

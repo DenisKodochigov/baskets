@@ -4,7 +4,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,10 +27,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
-import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.entity.UPDOWN
-import com.example.basket.ui.components.showArrowHor
-import com.example.basket.ui.components.showArrowVer
+import com.example.basket.ui.components.ShowArrowHor
 import com.example.basket.ui.theme.massColor
 
 @Composable fun SelectColor( doSelectedColor: (Int) -> Unit) {
@@ -52,7 +49,7 @@ import com.example.basket.ui.theme.massColor
                         lazyState.layoutInfo.totalItemsCount - 1 } }.value
             Spacer(modifier = Modifier.height(12.dp))
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                showArrowHor(direction = UPDOWN.START, enable = showArrowStart && list.isNotEmpty(), drawLine = false)
+                ShowArrowHor(direction = UPDOWN.START, enable = showArrowStart && list.isNotEmpty(), drawLine = false)
                 LazyRow(state = lazyState, modifier = Modifier.weight(1f)){
                     items(list){item ->
                         Spacer(modifier = Modifier.width(2.dp))
@@ -69,7 +66,7 @@ import com.example.basket.ui.theme.massColor
                         )
                     }
                 }
-                showArrowHor(direction = UPDOWN.END, enable = showArrowEnd && list.isNotEmpty(), drawLine = false)
+                ShowArrowHor(direction = UPDOWN.END, enable = showArrowEnd && list.isNotEmpty(), drawLine = false)
             }
         Spacer(Modifier.height(12.dp))
     }

@@ -1,4 +1,4 @@
-package com.example.basket.ui.bottomsheets.bottomSheetProductSelect
+package com.example.basket.ui.bottomsheets.bottomSheetSectionSelect
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,13 +44,13 @@ import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.TextFieldApp
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun BottomSheetProductSelect(uiState: BottomSheetInterface)
+@Composable fun BottomSheetSectionSelect(uiState: BottomSheetInterface)
 {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { true },)
     ModalBottomSheet(
-        onDismissRequest = uiState.onDismissSelectArticleProduct,
+        onDismissRequest = uiState.onDismissSelectSection,
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
             .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor1)),
@@ -62,13 +62,11 @@ import com.example.basket.ui.components.TextFieldApp
         dragHandle = { BottomSheetDefaults.DragHandle() },
         windowInsets = BottomSheetDefaults.windowInsets,
         sheetState = sheetState,
-        content = { BottomSheetProductSelectContent(uiState) })
+        content = { BottomSheetSectionSelectContent(uiState) })
 }
-@Composable fun BottomSheetProductSelectContent(uiState: BottomSheetInterface)
+@Composable fun BottomSheetSectionSelectContent(uiState: BottomSheetInterface)
 {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(
+    Column(modifier = Modifier.fillMaxWidth().padding(
             horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor),
             vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)
         ),
@@ -76,7 +74,7 @@ import com.example.basket.ui.components.TextFieldApp
     {
         FieldNameArticle(uiState)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
-        BoxExistingArticles(uiState)
+        BoxExistingSection(uiState)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
         ButtonConfirmText(uiState)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
@@ -90,19 +88,16 @@ import com.example.basket.ui.components.TextFieldApp
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp),
             textAlign = TextAlign.Start,
-            enterValue = uiState.enteredNameProduct,
+            enterValue = uiState.enteredNameSection,
             typeKeyboard = TypeKeyboard.TEXT)
     }
 }
-@Composable fun BoxExistingArticles(uiState: BottomSheetInterface)
+@Composable fun BoxExistingSection(uiState: BottomSheetInterface)
 {
-    val listItems = uiState.articles.filter {
-        if (uiState.selectedSection.value != null) {
-            it.section == uiState.selectedSection.value &&
-            it.nameArticle.contains(uiState.enteredNameSection.value, ignoreCase = true)
-        } else if (uiState.selectedProduct.value != null) {
-            it.nameArticle.contains(uiState.enteredNameProduct.value, ignoreCase = true)
-        } else true
+    val listItems = uiState.sections.filter {
+        if (uiState.enteredNameSection.value != null) {
+                    it.nameSection.contains(uiState.enteredNameSection.value, ignoreCase = true)
+       } else true
     }
 
     val listState = rememberLazyGridState()
@@ -119,20 +114,15 @@ import com.example.basket.ui.components.TextFieldApp
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             columns = GridCells.Adaptive(minSize = 90.dp),
             contentPadding = PaddingValues(8.dp),
-            modifier = Modifier
-                .height(150.dp)
-                .fillMaxWidth()
+            modifier = Modifier.height(70.dp).fillMaxWidth()
         ) {
-            items(listItems) { article ->
+            items(items = listItems) { section ->
                 Text(
-                    text = article.nameArticle,
+                    text = section.nameSection,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .clickable { uiState.enteredNameProduct.value = article.nameArticle
-                            uiState.selectedProduct.value = article
-                            uiState.selectedSection.value = article.section
-                            uiState.selectedUnit.value = article.unitApp
-                        }
+                        .clickable { uiState.enteredNameSection.value = section.nameSection
+                                        uiState.selectedSection.value = section}
                         .padding(4.dp)
                         .background(
                             shape = MaterialTheme.shapes.medium,
@@ -145,6 +135,6 @@ import com.example.basket.ui.components.TextFieldApp
 }
 
 @Preview
-@Composable fun BottomSheetProductSelectLayoutPreview(){
-    BottomSheetProductSelectContent(BottomSheetProductAddState())
+@Composable fun BottomSheetSectionSelectLayoutPreview(){
+    BottomSheetSectionSelectContent(BottomSheetProductAddState())
 }

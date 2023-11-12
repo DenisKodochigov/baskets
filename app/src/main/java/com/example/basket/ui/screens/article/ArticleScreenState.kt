@@ -8,17 +8,19 @@ import com.example.basket.entity.SortingBy
 import com.example.basket.entity.UnitApp
 
 data class ArticleScreenState(
-    val article: List<List<Article>> = emptyList(),
+    val articles: List<List<Article>> = emptyList(),
     val sections: List<Section> = emptyList(),
     val unitApp: List<UnitApp> = emptyList(),
-    val sorting: SortingBy = SortingBy.BY_NAME,
     var refresh: Boolean = true,
     var triggerRunOnClickFAB: MutableState<Boolean> = mutableStateOf(false),
     var onAddArticle: (Article) -> Unit = {},
     var changeArticle: (Article) -> Unit = {},
     var doChangeSectionSelected: (List<Article>, Long) -> Unit = {_,_->},
     var doDeleteSelected: (List<Article>) -> Unit = {},
-    var doChangeSortingBy: (SortingBy) -> Unit = {},
     var doSelected: (Long) -> Unit = {},
-    var onDismiss: () -> Unit = {},
+
+    var idImage: Int = 0,
+    var screenTextHeader: String = "",
+    val sorting: SortingBy = SortingBy.BY_NAME,
+    var doChangeSortingBy: (SortingBy) -> Unit = {},
 )

@@ -43,6 +43,7 @@
 
     //bottom sheet
     <dimen name="bottom_sheet_padding_hor">12dp</dimen>
+    <dimen name="bottom_sheet_padding_hor1">20dp</dimen>
     <dimen name="bottom_sheet_item_padding_hor">24dp</dimen>
     <dimen name="bottom_sheet_item_padding_ver">12dp</dimen>
     <dimen name="bottom_sheet_spacer_height">12dp</dimen>

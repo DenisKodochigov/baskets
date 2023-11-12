@@ -35,17 +35,16 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,7 +65,7 @@ import com.example.basket.utils.log
 @Composable
 fun HeaderScreen(text: String, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        val plug = refreshScreen.value
+//        val plug = refreshScreen.value
         TextApp(text = text, style = styleApp(nameStyle = TypeText.NAME_SCREEN))
     }
 }
@@ -385,88 +384,46 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
     }
 }
 
-@Composable
-fun ItemAddProductLazyColumn (onClick: ()->Unit){
-    val localDensity = LocalDensity.current
-    var heightIs by remember { mutableStateOf(0.dp) }
-    Box(
-        Modifier
-            .padding(horizontal = 6.dp)
-            .onGloballyPositioned { coordinates ->
-                heightIs = with(localDensity) { coordinates.size.height.toDp() }
-            })
-    {
-        Row(
-            modifier = Modifier
-                .clip(shape = RoundedCornerShape(6.dp))
-                .background(color = MaterialTheme.colorScheme.surface)
-                .clickable { onClick() }
-                .fillMaxWidth()
-        ) {
-            TextApp (
-                text = stringResource(id = R.string.add_product),
-                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .weight(1f)
-                    .background(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = MaterialTheme.shapes.small
-                    )
-                    .padding(
-                        start = dimensionResource(R.dimen.lazy_padding_hor),
-                        top = dimensionResource(R.dimen.lazy_padding_ver),
-                        bottom = dimensionResource(R.dimen.lazy_padding_ver)
-                    ),
-            )
-        }
-    }
-}
+@Composable fun ShowArrowVer(enable:Boolean, direction: UPDOWN, drawLine: Boolean){
 
-@Composable fun showArrowVer(enable:Boolean, direction: UPDOWN, drawLine: Boolean){
-    var id = R.drawable.baseline_keyboard_arrow_down_24
-    if (direction == UPDOWN.UP) id = R.drawable.baseline_keyboard_arrow_up_24
     Column(modifier = Modifier.fillMaxWidth()){
         if (direction == UPDOWN.UP && drawLine){
             Divider(color = MaterialTheme.colorScheme.primary, thickness = 1.dp)}
+
         Row(modifier = Modifier.fillMaxWidth(),  horizontalArrangement = Arrangement.Center) {
-            if(enable) Icon(painter = painterResource(id = id), contentDescription = "")
-            else Icon(painter = painterResource(id = R.drawable.baseline_keyboard_null_24), contentDescription = "")
+            if( enable ) {
+                if (direction == UPDOWN.UP) ArrowUp() else ArrowDown()
+            }
+            else ArrowNone()
         }
         if (direction == UPDOWN.DOWN && drawLine){
             Divider(color = MaterialTheme.colorScheme.primary, thickness = 1.dp)    }
     }
 }
-@Composable fun showArrowHor(enable:Boolean, direction: UPDOWN, drawLine: Boolean){
-    var id = R.drawable.baseline_keyboard_arrow_left_24
-    if (direction == UPDOWN.END) id = R.drawable.baseline_keyboard_arrow_right_24
+@Composable fun ShowArrowHor(enable:Boolean, direction: UPDOWN, drawLine: Boolean){
 
     Row(modifier = Modifier.fillMaxHeight(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically)
+        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically)
     {
         if (direction == UPDOWN.START && drawLine){
-            Divider(color = MaterialTheme.colorScheme.primary, modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp))}
-        if(enable) Icon(painter = painterResource(id = id), contentDescription = "")
-        else Icon(painter = painterResource(id = R.drawable.baseline_keyboard_null_24), contentDescription = "")
+            Divider(color = MaterialTheme.colorScheme.primary, modifier = Modifier.fillMaxHeight().width(1.dp))}
+
+        if( enable )  if (direction == UPDOWN.START) ArrowLeft() else ArrowRight()
+        else ArrowNone()
         if (direction == UPDOWN.END && drawLine){
-            Divider(color = MaterialTheme.colorScheme.primary, modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp))}
+            Divider(color = MaterialTheme.colorScheme.primary, modifier = Modifier.fillMaxHeight().width(1.dp))}
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable fun TextFieldApp(modifier: Modifier = Modifier, textAlign: TextAlign,
-                             enterValue: MutableState<String>, typeKeyboard: TypeKeyboard
-)
+                             enterValue: MutableState<String>, typeKeyboard: TypeKeyboard)
 {
     val keyboardController = LocalSoftwareKeyboardController.current
     val keyboardOptions = when (typeKeyboard){
         TypeKeyboard.TEXT -> {
-            KeyboardOptions(keyboardType = KeyboardType.Ascii).copy(imeAction = ImeAction.Done) }
+            KeyboardOptions(keyboardType = KeyboardType.Ascii,
+                capitalization = KeyboardCapitalization.Sentences).copy(imeAction = ImeAction.Done)}
         TypeKeyboard.DIGIT -> {
             KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done) }
         else -> { KeyboardOptions.Default.copy(imeAction = ImeAction.Done)}
@@ -476,9 +433,7 @@ fun ItemAddProductLazyColumn (onClick: ()->Unit){
         onValueChange = { enterValue.value = it },
         singleLine = true,
         maxLines = 1,
-        modifier = modifier
-            .width(80.dp)
-            .height(40.dp)
+        modifier = modifier.width(80.dp).height(40.dp)
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -488,7 +443,10 @@ fun ItemAddProductLazyColumn (onClick: ()->Unit){
             fontSize = 20.sp,
             fontWeight = FontWeight.Light,
             textAlign = textAlign),
-        decorationBox = { Row(verticalAlignment = Alignment.CenterVertically){ it() } },
+        decorationBox = {
+            Row( verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp)){ it() }
+        },
         keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     )

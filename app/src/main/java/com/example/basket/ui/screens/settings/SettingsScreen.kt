@@ -80,7 +80,7 @@ import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.dialog.ChangeColorSectionDialog
 import com.example.basket.ui.components.dialog.ChangeNameSectionDialog
 import com.example.basket.ui.components.dialog.EditUnitDialog
-import com.example.basket.ui.components.showArrowVer
+import com.example.basket.ui.components.ShowArrowVer
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.styleApp
 
@@ -180,11 +180,11 @@ fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
         derivedStateOf { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index !=
                 listState.layoutInfo.totalItemsCount - 1 } }.value
     Column {
-        showArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.section.isNotEmpty(), drawLine = true)
+        ShowArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.section.isNotEmpty(), drawLine = true)
         LazyColumn(
             state = listState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.heightIn(min = 0.dp, max = 300.dp)
+            modifier = Modifier.heightIn(min = 0.dp, max = 250.dp)
         ) {
             items(items = uiState.section) {item ->
                 ContextLazySection(
@@ -196,7 +196,7 @@ fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
                 )
             }
         }
-        showArrowVer(direction = UPDOWN.DOWN, enable =  showArrowDown && uiState.section.isNotEmpty(), drawLine = true)
+        ShowArrowVer(direction = UPDOWN.DOWN, enable =  showArrowDown && uiState.section.isNotEmpty(), drawLine = true)
         Spacer(modifier = Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             ButtonCircle(Modifier.size(40.dp), Icons.Filled.AddCircle) { editNameSection.value = SectionDB() }
@@ -292,13 +292,13 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
 
     Column {
         LazyVerticalGrid(
-            state = rememberLazyGridState(),
+                    state = rememberLazyGridState(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             columns = GridCells.Adaptive(minSize = 100.dp),
             contentPadding = PaddingValues(8.dp),
             modifier = Modifier.heightIn(min = 0.dp, max = 300.dp)
-        ) {
+            ) {
             items(uiState.unitApp) { item ->
                 Box {
                     Row(verticalAlignment = Alignment.CenterVertically,
@@ -379,14 +379,6 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
         },
     )
 }
-
-@Composable fun textThumb(sliderPosition:Float) =
-    when (sliderPosition){
-        0f -> stringResource(id = R.string.theme_0)
-        1f -> stringResource(id = R.string.theme_1)
-        else -> stringResource(id = R.string.theme_2)
-    }
-
 
 fun Modifier.thumb(size: Dp = ThumbSize, shape: Shape = CircleShape) =
     defaultMinSize(minWidth = size, minHeight = size).clip(shape)

@@ -1,4 +1,4 @@
-package com.example.basket.ui.bottomsheets.bottomSheetProductAdd
+package com.example.basket.ui.bottomsheets.bottomSheetArticle
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -8,7 +8,7 @@ import com.example.basket.entity.Product
 import com.example.basket.entity.Section
 import com.example.basket.entity.UnitApp
 
-class BottomSheetProductAddState: BottomSheetInterface {
+class BottomSheetArticleState() : BottomSheetInterface {
     override var articles: List<Article> = emptyList()
     override var sections: List<Section> = emptyList()
     override var unitApp: List<UnitApp> = emptyList()
@@ -22,10 +22,10 @@ class BottomSheetProductAddState: BottomSheetInterface {
     override val buttonDialogSelectArticleProduct: MutableState<Boolean> = mutableStateOf(false)
     override val buttonDialogSelectSection: MutableState<Boolean> = mutableStateOf(false)
     override val buttonDialogSelectUnit: MutableState<Boolean> = mutableStateOf(false)
-    override var onDismissSelectArticleProduct:() -> Unit = {}
-    override var onDismissSelectSection:() -> Unit = {}
-    override var onDismissSelectUnit:() -> Unit = {}
+    override var onDismissSelectArticleProduct: () -> Unit = {}
+    override var onDismissSelectSection: () -> Unit = {}
+    override var onDismissSelectUnit: () -> Unit = {}
     override val weightButton: Float = .4f
     override var onConfirmation: (Product) -> Unit = {}
-    var onDismiss:() -> Unit = {}
+    var onDismiss: () -> Unit = {}
 }

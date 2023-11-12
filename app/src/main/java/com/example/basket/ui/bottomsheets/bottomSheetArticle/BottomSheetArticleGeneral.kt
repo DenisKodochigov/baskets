@@ -1,19 +1,15 @@
-package com.example.basket.ui.bottomsheets.bottomSheetProductAdd
+package com.example.basket.ui.bottomsheets.bottomSheetArticle
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -22,22 +18,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.basket.R
-import com.example.basket.data.room.tables.ArticleDB
-import com.example.basket.data.room.tables.ProductDB
-import com.example.basket.data.room.tables.SectionDB
-import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.BottomSheetInterface
-import com.example.basket.entity.Product
 import com.example.basket.entity.TagsTesting
-import com.example.basket.entity.TypeKeyboard
 import com.example.basket.ui.bottomsheets.bottomSheetProductSelect.BottomSheetProductSelect
 import com.example.basket.ui.bottomsheets.bottomSheetSectionSelect.BottomSheetSectionSelect
 import com.example.basket.ui.bottomsheets.bottomSheetUnitSelect.BottomSheetUnitSelect
@@ -45,31 +31,29 @@ import com.example.basket.ui.bottomsheets.component.ButtonConfirm
 import com.example.basket.ui.bottomsheets.component.RowSelectedProduct
 import com.example.basket.ui.bottomsheets.component.RowSelectedSection
 import com.example.basket.ui.bottomsheets.component.RowSelectedUnit
-import com.example.basket.ui.components.TextFieldApp
-import com.example.basket.ui.screens.products.ProductsScreenState
+import com.example.basket.ui.screens.article.ArticleScreenState
+import com.example.basket.utils.createLisArticleFormDouble
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BottomSheetProductAddGeneral (uiStateP: ProductsScreenState)
+@Composable fun BottomSheetArticleGeneral (uiStateA: ArticleScreenState)
 {
-    val uiState by remember{ mutableStateOf(BottomSheetProductAddState()) }
+    val uiState by remember{ mutableStateOf( BottomSheetArticleState( )) }
     uiState.onConfirmation = {
-        uiStateP.onAddProduct(it)
-        uiStateP.triggerRunOnClickFAB.value = false
+        uiStateA.onAddArticle(it.article)
+        uiStateA.triggerRunOnClickFAB.value = false
     }
-    uiState.articles = uiStateP.articles
-    uiState.sections = uiStateP.sections
-    uiState.unitApp = uiStateP.unitApp
+    uiState.articles = createLisArticleFormDouble(uiStateA.articles)
+    uiState.sections = uiStateA.sections
+    uiState.unitApp = uiStateA.unitApp
     uiState.onDismissSelectArticleProduct = { uiState.buttonDialogSelectArticleProduct.value = false }
     uiState.onDismissSelectSection = { uiState.buttonDialogSelectSection.value = false }
     uiState.onDismissSelectUnit = { uiState.buttonDialogSelectUnit.value = false }
-
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { true },)
 
     ModalBottomSheet(
-        onDismissRequest = uiState.onDismiss,
+        onDismissRequest = { },
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
             .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor)),
@@ -81,14 +65,14 @@ fun BottomSheetProductAddGeneral (uiStateP: ProductsScreenState)
         dragHandle = { BottomSheetDefaults.DragHandle() },
         windowInsets = BottomSheetDefaults.windowInsets,
         sheetState = sheetState,
-        content = { BottomSheetProductAddGeneralLayOut(uiState) })
+        content = { BottomSheetPArticleLayOut(uiState) })
 
-    if (uiState.buttonDialogSelectArticleProduct.value) BottomSheetProductSelect(uiState)
-    if (uiState.buttonDialogSelectSection.value) BottomSheetSectionSelect(uiState)
-    if (uiState.buttonDialogSelectUnit.value) BottomSheetUnitSelect(uiState)
+    if (uiState.buttonDialogSelectArticleProduct.value) BottomSheetProductSelect(uiState as BottomSheetInterface)
+    if (uiState.buttonDialogSelectSection.value) BottomSheetSectionSelect(uiState as BottomSheetInterface)
+    if (uiState.buttonDialogSelectUnit.value) BottomSheetUnitSelect(uiState as BottomSheetInterface)
 }
 @Composable
-fun BottomSheetProductAddGeneralLayOut (uiState: BottomSheetProductAddState)
+fun BottomSheetPArticleLayOut (uiState: BottomSheetArticleState)
 {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally)
     {
@@ -98,7 +82,7 @@ fun BottomSheetProductAddGeneralLayOut (uiState: BottomSheetProductAddState)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
     }
 }
-@Composable fun GroupButtons(uiState: BottomSheetInterface)
+@Composable fun GroupButtons(uiState: BottomSheetArticleState)
 {
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -107,11 +91,6 @@ fun BottomSheetProductAddGeneralLayOut (uiState: BottomSheetProductAddState)
     {
         RowSelectedProduct(uiState)
         RowSelectedSection(uiState)
-        RowSelectedUnit(uiState)
+        RowSelectedUnit( uiState, false)
     }
-}
-
-@Preview
-@Composable fun BottomSheetProductSelectGeneralPreview(){
-    BottomSheetProductAddGeneralLayOut(BottomSheetProductAddState())
 }

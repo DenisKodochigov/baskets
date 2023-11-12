@@ -66,6 +66,18 @@ fun createDoubleLisArticle(articles: List<Article>, sortingBy: SortingBy): List<
     return doubleList
 }
 
+fun createLisArticleFormDouble(articles: List<List<Article>>): List<Article>{
+    val listArticle = mutableListOf<Article>()
+    if (articles.isNotEmpty()) {
+        articles.forEach { lists->
+            lists.forEach { listArticle.add(it) }
+        }
+        listArticle.sortBy { it.nameArticle }
+    }
+    return listArticle
+}
+
+
 fun log(showLog: Boolean, text: String){
     if (showLog)Log.d("KDS", text)
 }
