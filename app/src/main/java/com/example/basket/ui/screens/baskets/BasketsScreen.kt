@@ -88,19 +88,21 @@ fun BasketScreenCreateView(
     uiState.deleteBasket = remember {{ basketId -> viewModel.deleteBasket(basketId) }}
     uiState.onAddClick = remember {{ viewModel.addBasket(it) }}
     uiState.onDismiss = remember {{ uiState.triggerRunOnClickFAB.value = false }}
+    uiState.idImage = getIdImage(screen)
+    uiState.screenTextHeader = stringResource(screen.textHeader)
+
     screen.textFAB = stringResource(id = R.string.baskets)
     screen.onClickFAB = { uiState.triggerRunOnClickFAB.value = true}
 
     if (uiState.triggerRunOnClickFAB.value) AddBasketBottomSheet( uiState = uiState)
 
-    BasketsScreenLayout(onClickBasket = onClickBasket, uiState = uiState, screen = screen,)
+    BasketsScreenLayout(onClickBasket = onClickBasket, uiState = uiState)
 }
 
 
 @Composable
 fun BasketsScreenLayout(
     uiState: BasketScreenState,
-    screen: ScreenDestination,
     onClickBasket: (Long) -> Unit,
 ) {
     val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
@@ -111,7 +113,6 @@ fun BasketsScreenLayout(
             ),) {
         BasketLazyColumn(
             uiState = uiState,
-            screen = screen,
             onClickBasket = onClickBasket,
             scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt())
     }
@@ -122,7 +123,6 @@ fun BasketsScreenLayout(
 @Composable
 fun BasketLazyColumn(
     uiState: BasketScreenState,
-    screen: ScreenDestination,
     scrollOffset:Int,
     onClickBasket: (Long) -> Unit,
 ) {
@@ -147,8 +147,8 @@ fun BasketLazyColumn(
     }
 
     CollapsingToolbar(
-        text = stringResource(screen.textHeader),
-        idImage = getIdImage(screen),
+        text = uiState.screenTextHeader,
+        idImage = uiState.idImage,
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
     ShowArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.baskets.isNotEmpty(), drawLine = false)
@@ -171,7 +171,8 @@ fun BasketLazyColumn(
                         editBasket.value = item
                     }
                     false
-                }
+                },
+                positionalThreshold = { 250.dp.toPx() }
             )
             SwipeToDismiss(
                 state = dismissState,
@@ -180,7 +181,7 @@ fun BasketLazyColumn(
                     .animateItemPlacement(),
                 directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
                 background = { DismissBackground(dismissState) },
-                dismissContent = { ElementColumBasket(item, onClickBasket) }
+                dismissContent = { ElementColumBasket(item, onClickBasket, modifier = Modifier.animateItemPlacement()) }
             )
         }
     }
@@ -188,11 +189,11 @@ fun BasketLazyColumn(
 }
 
 @Composable
-fun ElementColumBasket(basket: Basket, onClickBasket: (Long) -> Unit) {
+fun ElementColumBasket(basket: Basket, onClickBasket: (Long) -> Unit, modifier: Modifier) {
 
     val modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(shape = MaterialTheme.shapes.extraSmall)
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.surface)
@@ -305,7 +306,7 @@ fun AddBasketBottomSheet(uiState: BasketScreenState) {
                 value = nameNewBasket,
                 singleLine = true,
                 textStyle = styleApp(nameStyle = TypeText.NAME_SECTION),
-                label = { Text(text = stringResource(R.string.new_name_basket)) },
+                label = { Text(text = stringResource(R.string.new_basket)) },
                 onValueChange = { nameNewBasket = it },
                 modifier = Modifier
                     .fillMaxWidth()

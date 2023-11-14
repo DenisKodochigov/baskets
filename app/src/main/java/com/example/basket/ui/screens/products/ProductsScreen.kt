@@ -1,6 +1,7 @@
 package com.example.basket.ui.screens.products
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,18 +50,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.basket.R
+import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.Product
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TypeText
 import com.example.basket.entity.UPDOWN
 import com.example.basket.navigation.ScreenDestination
-import com.example.basket.ui.bottomsheets.bottomSheetProductAdd.BottomSheetProductAddGeneral
+import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductAddGeneral
+import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductState
+import com.example.basket.ui.bottomsheets.bottomSheetSectionSelect.BottomSheetSectionSelect
 import com.example.basket.ui.components.CollapsingToolbar
 import com.example.basket.ui.components.HeaderSection
 import com.example.basket.ui.components.ShowArrowVer
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.dialog.EditQuantityDialog
-import com.example.basket.ui.components.dialog.SelectSectionDialog
 import com.example.basket.ui.components.showFABs
 import com.example.basket.ui.theme.SectionColor
 import com.example.basket.ui.theme.getIdImage
@@ -88,22 +91,24 @@ fun ProductScreenCreateView(basketId: Long, screen: ScreenDestination, viewModel
     val uiState by viewModel.productsScreenState.collectAsState()
     uiState.putProductInBasket = remember {{ product -> viewModel.putProductInBasket(product, basketId) }}
     uiState.changeProduct = remember {{ product -> viewModel.changeProduct(product, basketId) }}
-    uiState.doChangeSection = remember {{ productList, idSection ->
-        viewModel.changeSections(productList, idSection) }}
+    uiState.doChangeSectionSelected = remember {{ productList, idSection ->
+                                            viewModel.changeSections(productList, idSection) }}
     uiState.doDeleteSelected = remember {{ productList -> viewModel.deleteSelectedProducts(productList) }}
     uiState.doSelected = remember {{ articleId -> viewModel.changeSelected(articleId) }}
     uiState.onAddProduct = remember {{ product: Product -> viewModel.addProduct(product, basketId) }}
+    uiState.idImage = getIdImage(screen)
+    uiState.screenTextHeader = stringResource(screen.textHeader)
 
     screen.textFAB = stringResource(id = R.string.products)
     screen.onClickFAB = remember {{ uiState.triggerRunOnClickFAB.value = true}}
 
     if (uiState.triggerRunOnClickFAB.value) BottomSheetProductAddGeneral( uiStateP = uiState)
-    ProductsScreenLayout(uiState = uiState, screen = screen)
+    ProductsScreenLayout(uiState = uiState)
 }
 
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Composable
-fun ProductsScreenLayout(uiState: ProductsScreenState, screen: ScreenDestination,
+fun ProductsScreenLayout(uiState: ProductsScreenState
 ){
     val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val deleteSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -121,13 +126,19 @@ fun ProductsScreenLayout(uiState: ProductsScreenState, screen: ScreenDestination
         unSelected.value = false
     }
     if (changeSectionSelected.value) {
-        SelectSectionDialog(
-            listSection = uiState.sections,
-            onDismiss = { changeSectionSelected.value = false },
-            onConfirm = {
-                if (it != 0L) uiState.doChangeSection( uiState.products.flatten(), it)
-                changeSectionSelected.value = false
-            },
+        BottomSheetSectionSelect(
+            uiState = BottomSheetProductState(
+                onConfirmationSelectSection = {
+                    if (it.selectedSection.value?.idSection != 0L) {
+                        it.selectedSection.value?.idSection?.let { it1 ->
+                            uiState.doChangeSectionSelected (uiState.products.flatten(), it1) }
+                    }
+                    changeSectionSelected.value = false
+                },
+                onDismissSelectSection = { changeSectionSelected.value = false },
+                buttonDialogSelectSection = changeSectionSelected,
+                sections = uiState.sections,
+            ) as BottomSheetInterface
         )
     }
     if (deleteSelected.value) {
@@ -145,7 +156,6 @@ fun ProductsScreenLayout(uiState: ProductsScreenState, screen: ScreenDestination
                 ), ) {
             ProductLazyColumn(
                 uiState = uiState,
-                screen = screen,
                 scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt(),
                 doSelected = { idItem -> isSelectedId.value = idItem } )
         }
@@ -160,10 +170,10 @@ fun ProductsScreenLayout(uiState: ProductsScreenState, screen: ScreenDestination
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProductLazyColumn(
     uiState: ProductsScreenState,
-    screen: ScreenDestination,
     scrollOffset:Int,
     doSelected: (Long) -> Unit
 ) {
@@ -188,8 +198,8 @@ fun ProductLazyColumn(
         )
     }
     CollapsingToolbar(
-        text = stringResource(screen.textHeader)+ " " + uiState.nameBasket ,
-        idImage = getIdImage(screen),
+        text = uiState.screenTextHeader + " " + uiState.nameBasket ,
+        idImage = uiState.idImage,
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
     ShowArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.products.isNotEmpty(), drawLine = false)
@@ -203,6 +213,7 @@ fun ProductLazyColumn(
         items(items = uiState.products) { item ->
             Column(modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
+                .animateItemPlacement()
                 .background(
                     if (item[0].article.section.colorSection != 0L) Color(item[0].article.section.colorSection)
                     else SectionColor
@@ -238,8 +249,8 @@ fun ProductsLayoutColum(
                     confirmValueChange = {
                         if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
                             putProductInBasket( product ) }
-                        false
-                    }
+                        false }
+                    , positionalThreshold = { 250.dp.toPx() }
                 )
                 SwipeToDismiss(
                     state = dismissState,

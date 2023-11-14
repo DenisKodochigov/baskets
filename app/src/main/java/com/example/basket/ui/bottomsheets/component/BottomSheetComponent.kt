@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,10 +25,24 @@ import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.Product
+import com.example.basket.entity.Section
 import com.example.basket.entity.TypeKeyboard
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.TextFieldApp
+import com.example.basket.utils.log
 
+@Composable fun FieldName(uiState: BottomSheetInterface)
+{
+    Row(modifier = Modifier.fillMaxWidth()){
+        TextFieldApp(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            textAlign = TextAlign.Start,
+            enterValue = uiState.enteredNameSection,
+            typeKeyboard = TypeKeyboard.TEXT)
+    }
+}
 @Composable
 fun RowSelectedProduct(uiState: BottomSheetInterface)
 {
@@ -39,8 +54,9 @@ fun RowSelectedProduct(uiState: BottomSheetInterface)
                 .weight(uiState.weightButton)
                 .padding(end = 4.dp))
         Text(text = uiState.selectedProduct.value?.nameArticle ?:
-        if (uiState.enteredNameProduct.value != "") uiState.enteredNameProduct.value
-        else "Product not selected",
+                if (uiState.enteredNameProduct.value != "") uiState.enteredNameProduct.value
+                else stringResource(id = R.string.bs_product_not_selected),
+            maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1 - uiState.weightButton)
@@ -58,7 +74,7 @@ fun RowSelectedSection(uiState: BottomSheetInterface)
                 .fillMaxWidth())
         Text(text = uiState.selectedSection.value?.nameSection ?:
         if (uiState.enteredNameSection.value != "") uiState.enteredNameSection.value
-        else "Section not selected",
+        else stringResource(id = R.string.bs_section_not_selected),
             modifier = Modifier
                 .weight((1 - uiState.weightButton))
                 .padding(start = 12.dp)
@@ -68,7 +84,7 @@ fun RowSelectedSection(uiState: BottomSheetInterface)
 @Composable
 fun RowSelectedUnit(uiState: BottomSheetInterface, amount: Boolean = true)
 {
-    val weightFieldAmount = (1 - uiState.weightButton) * 0.3f
+    val weightFieldAmount = if (amount) (1 - uiState.weightButton) * 0.3f else 0f
     val weightText = 1 - uiState.weightButton - weightFieldAmount
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -76,15 +92,15 @@ fun RowSelectedUnit(uiState: BottomSheetInterface, amount: Boolean = true)
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(uiState.weightButton)
-                    .padding(end = 4.dp))
+                .padding(end = 4.dp))
         if (amount) FieldAmount(uiState, modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(weight = weightFieldAmount)
-                    .padding(start = 12.dp))
+        Modifier
+            .fillMaxWidth()
+            .weight(weight = weightFieldAmount)
+            .padding(start = 12.dp))
         Text(text = uiState.selectedUnit.value?.nameUnit ?:
         if (uiState.enteredNameUnit.value != "") uiState.enteredNameUnit.value
-        else "Unit not selected",
+        else stringResource(id = R.string.bs_unit_not_selected),
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(weightText)
@@ -126,7 +142,9 @@ fun ButtonDialogSelectUnit(uiState: BottomSheetInterface, modifier: Modifier)
 fun FieldAmount(uiState: BottomSheetInterface, modifier: Modifier)
 {
     TextFieldApp(
-        modifier = modifier,
+        modifier = modifier
+            .width(80.dp)
+            .height(40.dp),
         textAlign = TextAlign.Center,
         enterValue = uiState.enteredAmount,
         typeKeyboard = TypeKeyboard.DIGIT)
@@ -145,7 +163,7 @@ fun ButtonConfirm(uiState: BottomSheetInterface)
 @Composable fun ButtonConfirmText(uiState: BottomSheetInterface)
 {
     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
-    TextButtonOK(onConfirm = uiState.onDismissSelectSection)
+    TextButtonOK(onConfirm = { uiState.onConfirmationSelectSection.invoke(uiState) })
 }
 fun returnSelectedProduct(uiState: BottomSheetInterface): Product
 {

@@ -13,17 +13,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SwipeToDismiss
-import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberDismissState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +26,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,19 +34,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.basket.R
 import com.example.basket.data.room.tables.ArticleDB
-import com.example.basket.data.room.tables.SectionDB
-import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Article
+import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.SortingBy
-import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.TypeText
 import com.example.basket.entity.UPDOWN
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.bottomsheets.bottomSheetArticle.BottomSheetArticleGeneral
-import com.example.basket.ui.bottomsheets.bottomSheetProductAdd.BottomSheetProductAddGeneral
+import com.example.basket.ui.bottomsheets.bottomSheetArticle.BottomSheetArticleState
+import com.example.basket.ui.bottomsheets.bottomSheetSectionSelect.BottomSheetSectionSelect
 import com.example.basket.ui.components.*
-import com.example.basket.ui.components.dialog.EditArticleDialog
+import com.example.basket.ui.components.dialog.articuleDialog.EditArticleDialog
 import com.example.basket.ui.components.dialog.SelectSectionDialog
 import com.example.basket.ui.theme.SectionColor
 import com.example.basket.ui.theme.getIdImage
@@ -60,8 +53,6 @@ import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.DismissBackground
 import com.example.basket.utils.bottomBarAnimatedScroll
-import com.example.basket.utils.selectSectionWithArticle
-import com.example.basket.utils.selectUnitWithArticle
 import kotlin.math.roundToInt
 
 @Composable
@@ -113,14 +104,19 @@ fun ArticleScreenLayout(uiState: ArticleScreenState)
         unSelected.value = false
     }
     if (changeSectionSelected.value) {
-        SelectSectionDialog(
-            listSection = uiState.sections,
-            onDismiss = { changeSectionSelected.value = false },
-            onConfirm = {
-                if (it != 0L) uiState.doChangeSectionSelected (uiState.articles.flatten(), it)
+        BottomSheetSectionSelect(
+            uiState = BottomSheetArticleState(
+            onConfirmationSelectSection = {
+                if (it.selectedSection.value?.idSection != 0L) {
+                    it.selectedSection.value?.idSection?.let { it1 ->
+                        uiState.doChangeSectionSelected (uiState.articles.flatten(), it1) }
+                }
                 changeSectionSelected.value = false
             },
-        )
+            onDismissSelectSection = { changeSectionSelected.value = false },
+            buttonDialogSelectSection = changeSectionSelected,
+            sections = uiState.sections,
+        ) as BottomSheetInterface)
     }
     if (deleteSelected.value) {
         uiState.doDeleteSelected( uiState.articles.flatten() )
@@ -204,6 +200,7 @@ fun ArticleLazyColumn(
         itemsIndexed( items = uiState.articles ) { _,item ->
             Column( modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
+                .animateItemPlacement()
                 .background(
                     if (uiState.articles.size == 1) SectionColor
                     else {
@@ -235,8 +232,7 @@ fun ArticleLayoutColum(
     doSelected: (Long) -> Unit,
     doDelete: (List<Article>) -> Unit
 ) {
-
-    val show = remember { mutableStateOf(true) }
+    var show by remember { mutableStateOf(true) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -247,14 +243,14 @@ fun ArticleLayoutColum(
                 val dismissState = rememberDismissState(
                     confirmValueChange = {
                         if (it == DismissValue.DismissedToStart) {
-                            show.value = false
+                            show = false
                             article.isSelected = true
                             doDelete(mutableListOf(article))
                         } else if (it == DismissValue.DismissedToEnd) { editArticle( article ) }
                         false
-                    }
+                    }, positionalThreshold = { 250.dp.toPx() }
                 )
-                AnimatedVisibility( visible = show.value, exit = fadeOut(spring())) {
+                AnimatedVisibility( visible = show, exit = fadeOut(spring())) {
                     SwipeToDismiss(
                         state = dismissState,
                         modifier = modifier.padding(vertical = 1.dp),

@@ -1,11 +1,10 @@
-package com.example.basket.ui.components.dialog
+package com.example.basket.ui.components.dialog.articuleDialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,10 +23,10 @@ import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Article
 import com.example.basket.entity.Section
+import com.example.basket.entity.TypeKeyboard
 import com.example.basket.entity.UnitApp
 import com.example.basket.ui.components.ChipsSections
 import com.example.basket.ui.components.ChipsUnit
-import com.example.basket.ui.components.MyExposedDropdownMenuBox
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.basket.ui.components.MyTextH2
 import com.example.basket.ui.components.TextButtonOK
@@ -97,38 +96,24 @@ fun LayoutAddEditArticle(
 
 
     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
-        MyOutlinedTextFieldWithoutIcon(modifier = Modifier.fillMaxWidth(), enterValue = enterNameArticle, "text")
+        MyOutlinedTextFieldWithoutIcon(
+            modifier = Modifier.fillMaxWidth(), enterValue = enterNameArticle, TypeKeyboard.TEXT)
         Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             /** Select unit*/
-//            MyExposedDropdownMenuBox(
-//                listItems = listUnit.map{ Pair(it.idUnit, it.nameUnit) },
-//                label = stringResource(R.string.units),
-//                modifier = Modifier.width(120.dp),
-//                enterValue = enterUnit,
-//                filtering = false,
-//                readOnly = true)
             ChipsUnit(
                 listUnit = listUnit,
                 edit = true,
                 unitArticle = article.value.unitApp,
                 onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
             Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
-
             /** Select section*/
             ChipsSections(
                 edit = true,
                 listSection = listSection,
                 sectionArticle = article.value.section,
                 onClick = { enterSection.value = Pair(it.idSection,it.nameSection)})
-//            /** Select section*/
-//            MyExposedDropdownMenuBox(
-//                listItems = listSection.map{ Pair(it.idSection, it.nameSection) },
-//                label = stringResource(R.string.section),
-//                modifier = Modifier.fillMaxWidth(), //.weight(1f),
-//                enterValue = enterSection,
-//                filtering = true)
-//            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
         }
     }
 }

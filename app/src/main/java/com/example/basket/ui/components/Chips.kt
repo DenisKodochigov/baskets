@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -99,10 +100,11 @@ import com.example.basket.ui.theme.styleApp
             style = styleApp(TypeText.NAME_SLIDER),
             modifier = Modifier.padding(start = 12.dp)
         )
-        Box(modifier = Modifier.height(200.dp))
+        Box(modifier = Modifier)
         {
             Divider(color = MaterialTheme.colorScheme.primary, thickness = 1.dp)
             LazyVerticalStaggeredGrid(
+                modifier = Modifier.heightIn(min= 20.dp,max = 80.dp),
                 state = lazyState,
                 columns = StaggeredGridCells . Adaptive (80.dp),
                 verticalItemSpacing = 2.dp,

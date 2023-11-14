@@ -1,11 +1,11 @@
 package com.example.basket.ui.bottomsheets.bottomSheetProductSelect
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,18 +30,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.basket.R
 import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.TagsTesting
-import com.example.basket.entity.TypeKeyboard
 import com.example.basket.entity.UPDOWN
-import com.example.basket.ui.bottomsheets.bottomSheetProductAdd.BottomSheetProductAddState
+import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductState
 import com.example.basket.ui.bottomsheets.component.ButtonConfirmText
+import com.example.basket.ui.bottomsheets.component.FieldName
 import com.example.basket.ui.components.ShowArrowVer
-import com.example.basket.ui.components.TextButtonOK
-import com.example.basket.ui.components.TextFieldApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun BottomSheetProductSelect(uiState: BottomSheetInterface)
@@ -74,7 +73,7 @@ import com.example.basket.ui.components.TextFieldApp
         ),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
-        FieldNameArticle(uiState)
+        FieldName(uiState)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
         BoxExistingArticles(uiState)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
@@ -82,18 +81,8 @@ import com.example.basket.ui.components.TextFieldApp
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
     }
 }
-@Composable fun FieldNameArticle(uiState: BottomSheetInterface)
-{
-    Row(modifier = Modifier.fillMaxWidth()){
-        TextFieldApp(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            textAlign = TextAlign.Start,
-            enterValue = uiState.enteredNameProduct,
-            typeKeyboard = TypeKeyboard.TEXT)
-    }
-}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable fun BoxExistingArticles(uiState: BottomSheetInterface)
 {
     val listItems = uiState.articles.filter {
@@ -127,7 +116,10 @@ import com.example.basket.ui.components.TextFieldApp
                 Text(
                     text = article.nameArticle,
                     textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
+                        .animateItemPlacement()
                         .clickable { uiState.enteredNameProduct.value = article.nameArticle
                             uiState.selectedProduct.value = article
                             uiState.selectedSection.value = article.section
@@ -146,5 +138,5 @@ import com.example.basket.ui.components.TextFieldApp
 
 @Preview
 @Composable fun BottomSheetProductSelectLayoutPreview(){
-    BottomSheetProductSelectContent(BottomSheetProductAddState())
+    BottomSheetProductSelectContent(BottomSheetProductState())
 }

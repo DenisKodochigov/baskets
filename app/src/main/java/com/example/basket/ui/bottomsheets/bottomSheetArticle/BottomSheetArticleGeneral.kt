@@ -48,12 +48,16 @@ import com.example.basket.utils.createLisArticleFormDouble
     uiState.onDismissSelectArticleProduct = { uiState.buttonDialogSelectArticleProduct.value = false }
     uiState.onDismissSelectSection = { uiState.buttonDialogSelectSection.value = false }
     uiState.onDismissSelectUnit = { uiState.buttonDialogSelectUnit.value = false }
+    uiState.onConfirmationSelectArticleProduct = { uiState.buttonDialogSelectArticleProduct.value = false }
+    uiState.onConfirmationSelectSection = { uiState.buttonDialogSelectSection.value = false }
+    uiState.oConfirmationSelectUnit = { uiState.buttonDialogSelectUnit.value = false }
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { true },)
 
     ModalBottomSheet(
-        onDismissRequest = { },
+        onDismissRequest = {uiStateA.triggerRunOnClickFAB.value = false},
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
             .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor)),
@@ -65,14 +69,14 @@ import com.example.basket.utils.createLisArticleFormDouble
         dragHandle = { BottomSheetDefaults.DragHandle() },
         windowInsets = BottomSheetDefaults.windowInsets,
         sheetState = sheetState,
-        content = { BottomSheetPArticleLayOut(uiState) })
+        content = { BottomSheetArticleLayOut(uiState) })
 
     if (uiState.buttonDialogSelectArticleProduct.value) BottomSheetProductSelect(uiState as BottomSheetInterface)
     if (uiState.buttonDialogSelectSection.value) BottomSheetSectionSelect(uiState as BottomSheetInterface)
     if (uiState.buttonDialogSelectUnit.value) BottomSheetUnitSelect(uiState as BottomSheetInterface)
 }
 @Composable
-fun BottomSheetPArticleLayOut (uiState: BottomSheetArticleState)
+fun BottomSheetArticleLayOut (uiState: BottomSheetArticleState)
 {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally)
     {

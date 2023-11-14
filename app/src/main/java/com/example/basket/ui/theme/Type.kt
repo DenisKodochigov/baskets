@@ -18,7 +18,8 @@ val RobotoCondensed = FontFamily(
     Font(R.font.economica, FontWeight.Normal),
     Font(R.font.economica, FontWeight.Bold)
 )
-val typographyApp = Typography(
+val typApp = Typography(
+
     headlineSmall = TextStyle(
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
@@ -50,61 +51,3 @@ val typographyApp = Typography(
         letterSpacing = 0.5.sp
     )
 )
-//val typography = Typography(
-
-//    h1 = TextStyle(
-//        fontFamily = ScanFontFamily,
-//        fontWeight = FontWeight.W100,
-//        fontSize = 24.sp,
-//        letterSpacing = 1.5.sp
-//    ),
-//    h2 = TextStyle(
-////        fontWeight = FontWeight.SemiBold,
-//        fontSize = 20.sp,
-////        letterSpacing = 1.5.sp
-//    ),
-//    h3 = TextStyle(
-//        fontWeight = FontWeight.W400,
-//        fontSize = 16.sp
-//    ),
-//    h4 = TextStyle(
-//        fontWeight = FontWeight.W700,
-//        fontSize = 12.sp
-//    ),
-//    h5 = TextStyle(
-//        fontWeight = FontWeight.W700,
-//        fontSize = 8.sp
-//    ),
-//    h6 = TextStyle(
-//        fontWeight = FontWeight.Normal,
-//        fontSize = 6.sp,
-//        lineHeight = 20.sp,
-//        letterSpacing = 3.sp
-//    ),
-//
-//    body1 = TextStyle(
-//        fontWeight = FontWeight.Normal,
-//        fontSize = 16.sp,
-//        letterSpacing = 0.1.em
-//    ),
-//    body2 = TextStyle(
-//        fontWeight = FontWeight.Normal,
-//        fontSize = 14.sp,
-//        lineHeight = 20.sp,
-//        letterSpacing = 0.1.em
-//    ),
-//    button = TextStyle(
-//        fontWeight = FontWeight.Bold,
-//        fontSize = 14.sp,
-//        lineHeight = 16.sp,
-//        letterSpacing = 0.2.em
-//    ),
-//    caption = TextStyle(
-//        fontWeight = FontWeight.W500,
-//        fontSize = 12.sp
-//    ),
-//    overline = TextStyle(
-//        fontWeight = FontWeight.W500,
-//        fontSize = 10.sp
-//    )
-//)

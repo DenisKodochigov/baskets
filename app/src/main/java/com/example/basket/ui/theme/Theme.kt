@@ -113,44 +113,44 @@ fun AppTheme(content: @Composable () -> Unit) {
 
     return when( nameStyle ){
         TypeText.NAME_SCREEN -> when (AppBase.scale){
-            1-> typography.headlineSmall
-            2 -> typography.titleMedium
-            else -> typography.headlineMedium //0
+            0-> typography.headlineSmall
+            1 -> typography.headlineMedium
+            else -> typography.headlineLarge //0
         }
         TypeText.NAME_SECTION -> when (AppBase.scale){
-            1-> typography.titleLarge
-            2 -> typography.titleSmall
-            else -> typography.headlineSmall //0
+            0-> typography.titleSmall
+            1 -> typography.titleMedium
+            else -> typography.titleLarge //0
         }
         TypeText.TEXT_IN_LIST -> when (AppBase.scale){
-            1-> typography.titleLarge
-            2 -> typography.titleSmall
-            else -> typography.headlineSmall //0
+            0-> typography.bodySmall
+            1 -> typography.bodyMedium
+            else -> typography.bodyLarge //0
         }
         TypeText.TEXT_IN_LIST_SMALL -> when (AppBase.scale){
-            1-> typography.labelLarge
-            2 -> typography.labelMedium
-            else -> typography.bodyMedium //0
+            0-> typography.labelSmall
+            1 -> typography.labelMedium
+            else -> typography.labelLarge //0
         }
         TypeText.EDIT_TEXT -> when (AppBase.scale){
-            1-> typography.titleLarge
-            2 -> typography.titleSmall
-            else -> typography.headlineSmall //0
+            0-> typography.bodySmall
+            1 -> typography.bodyMedium
+            else -> typography.bodyLarge //0
         }
         TypeText.EDIT_TEXT_TITLE -> when (AppBase.scale){
-            1-> typography.labelLarge
-            2 -> typography.labelMedium
-            else -> typography.bodyMedium //0
+            0-> typography.titleSmall
+            1 -> typography.titleMedium
+            else -> typography.titleLarge //0
         }
         TypeText.TEXT_IN_LIST_SETTING -> when (AppBase.scale){
-            1-> typography.titleLarge
-            2 -> typography.titleSmall
-            else -> typography.headlineSmall //0
+            0-> typography.bodySmall
+            1 -> typography.bodyMedium
+            else -> typography.bodyLarge //0
         }
         TypeText.NAME_SLIDER -> when (AppBase.scale){
-            1-> typography.labelLarge
-            2 -> typography.labelMedium
-            else -> typography.bodyMedium //0
+            0-> typography.bodySmall
+            1 -> typography.bodyMedium
+            else -> typography.bodyLarge //0
         }
     }
 }
@@ -159,28 +159,28 @@ fun AppTheme(content: @Composable () -> Unit) {
 
     return when( sizeElement ){
         SizeElement.SIZE_FAB -> when (AppBase.scale){
+            0 ->dimensionResource(R.dimen.size_fab_small)
             1->dimensionResource(R.dimen.size_fab_medium)
-            2 ->dimensionResource(R.dimen.size_fab_small)
             else -> dimensionResource(R.dimen.size_fab_large)
         }
         SizeElement.HEIGHT_BOTTOM_BAR -> when (AppBase.scale){
+            0 ->dimensionResource(R.dimen.height_bottom_bar_small)
             1->dimensionResource(R.dimen.height_bottom_bar_medium)
-            2 ->dimensionResource(R.dimen.height_bottom_bar_small)
             else -> dimensionResource(R.dimen.height_bottom_bar_large)
         }
         SizeElement.PADDING_FAB -> when (AppBase.scale){
+            0 ->dimensionResource(R.dimen.padding_fab_small)
             1->dimensionResource(R.dimen.padding_fab_medium)
-            2 ->dimensionResource(R.dimen.padding_fab_small)
             else -> dimensionResource(R.dimen.padding_fab_large)
         }
         SizeElement.OFFSET_FAB -> when (AppBase.scale){
+            0 ->dimensionResource(R.dimen.offset_fab_small)
             1->dimensionResource(R.dimen.offset_fab_medium)
-            2 ->dimensionResource(R.dimen.offset_fab_small)
             else -> dimensionResource(R.dimen.offset_fab_large)
         }
         SizeElement.HEIGHT_FAB_BOX -> when (AppBase.scale){
+            0 ->dimensionResource(R.dimen.height_fab_box_small)
             1->dimensionResource(R.dimen.height_fab_box_medium)
-            2 ->dimensionResource(R.dimen.height_fab_box_small)
             else -> dimensionResource(R.dimen.height_fab_box_large)
         }
     }

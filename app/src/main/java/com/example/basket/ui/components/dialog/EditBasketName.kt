@@ -17,6 +17,7 @@ import com.example.basket.data.room.tables.BasketDB
 import com.example.basket.entity.Basket
 import com.example.basket.entity.TagsTesting.DIALOG_EDIT_BASKET
 import com.example.basket.entity.TagsTesting.DIALOG_EDIT_BASKET_INPUT_NAME
+import com.example.basket.entity.TypeKeyboard
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.basket.ui.components.MyTextH2
 import com.example.basket.ui.components.TextButtonOK
@@ -47,7 +48,7 @@ fun EditBasketName(
 fun EditBasketNameDialogLayout( enterValue: MutableState<String>){
     Column {
         Text(text = "")
-        MyOutlinedTextFieldWithoutIcon( enterValue = enterValue, typeKeyboard = "text",
+        MyOutlinedTextFieldWithoutIcon( enterValue = enterValue, typeKeyboard =  TypeKeyboard.TEXT,
             modifier = Modifier.fillMaxWidth().testTag(DIALOG_EDIT_BASKET_INPUT_NAME) )
     }
 }

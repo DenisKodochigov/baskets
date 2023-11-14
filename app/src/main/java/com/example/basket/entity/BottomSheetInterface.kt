@@ -3,6 +3,7 @@ package com.example.basket.entity
 import androidx.compose.runtime.MutableState
 
 interface BottomSheetInterface {
+
     var articles: List<Article>
     var sections: List<Section>
     var unitApp: List<UnitApp>
@@ -19,6 +20,9 @@ interface BottomSheetInterface {
     var onDismissSelectArticleProduct:() -> Unit
     var onDismissSelectSection:() -> Unit
     var onDismissSelectUnit:() -> Unit
+    var onConfirmationSelectArticleProduct:(BottomSheetInterface) -> Unit
+    var onConfirmationSelectSection:(BottomSheetInterface) -> Unit
+    var oConfirmationSelectUnit:(BottomSheetInterface) -> Unit
     val weightButton: Float
     var onConfirmation: (Product) -> Unit
 }

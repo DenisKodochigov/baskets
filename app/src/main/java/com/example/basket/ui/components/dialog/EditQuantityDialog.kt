@@ -22,7 +22,6 @@ import com.example.basket.data.room.tables.ProductDB
 import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Product
-import com.example.basket.entity.Section
 import com.example.basket.entity.UnitApp
 import com.example.basket.ui.components.MyExposedDropdownMenuBox
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIconClearing
@@ -104,39 +103,4 @@ fun EditQuantityDialogLayout(
 }
 
 
-@Composable
-fun SelectSectionDialog(
-    listSection: List<Section>,
-    onConfirm: (Long) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val enterSection = remember { mutableStateOf(Pair(listSection[0].idSection, listSection[0].nameSection)) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        shape = MaterialTheme.shapes.small,
-        title = { MyTextH2(stringResource(R.string.change_section)) },
-        text = { SelectSectionDialogLayout(enterSection, listSection) },
-        dismissButton = { },
-        confirmButton = { TextButtonOK(onConfirm = { onConfirm(enterSection.value.first) }) }
-    )
-}
-
-@Composable
-fun SelectSectionDialogLayout(
-    enterSection: MutableState<Pair<Long, String>>,
-    listSection: List<Section>
-) {
-
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        /** Select section*/
-        MyExposedDropdownMenuBox(
-            listItems = listSection.map { Pair(it.idSection, it.nameSection) },
-            label = stringResource(R.string.sections),
-            modifier = Modifier.fillMaxWidth(),
-            enterValue = enterSection,
-            filtering = false,
-            readOnly = true
-        )
-    }
-}

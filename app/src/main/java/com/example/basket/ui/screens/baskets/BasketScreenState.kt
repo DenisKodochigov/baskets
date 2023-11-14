@@ -12,4 +12,6 @@ data class BasketScreenState(
     var onAddClick: (String) -> Unit = {},
     var onDismiss: () -> Unit = {},
     var triggerRunOnClickFAB: MutableState<Boolean> = mutableStateOf(false),
+    var idImage: Int = 0,
+    var screenTextHeader: String = "",
 )

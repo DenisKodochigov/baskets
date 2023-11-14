@@ -1,11 +1,11 @@
 package com.example.basket.ui.bottomsheets.bottomSheetSectionSelect
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,25 +30,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.basket.R
 import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.TagsTesting
-import com.example.basket.entity.TypeKeyboard
 import com.example.basket.entity.UPDOWN
-import com.example.basket.ui.bottomsheets.bottomSheetProductAdd.BottomSheetProductAddState
+import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductState
 import com.example.basket.ui.bottomsheets.component.ButtonConfirmText
+import com.example.basket.ui.bottomsheets.component.FieldName
 import com.example.basket.ui.components.ShowArrowVer
-import com.example.basket.ui.components.TextButtonOK
-import com.example.basket.ui.components.TextFieldApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun BottomSheetSectionSelect(uiState: BottomSheetInterface)
 {
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { true },)
+        skipPartiallyExpanded = true, confirmValueChange = { true },)
     ModalBottomSheet(
         onDismissRequest = uiState.onDismissSelectSection,
         modifier = Modifier
@@ -72,26 +70,16 @@ import com.example.basket.ui.components.TextFieldApp
         ),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
-        FieldNameArticle(uiState)
+        FieldName(uiState)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
         BoxExistingSection(uiState)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
-        ButtonConfirmText(uiState)
+        ButtonConfirmText ( uiState )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
     }
 }
-@Composable fun FieldNameArticle(uiState: BottomSheetInterface)
-{
-    Row(modifier = Modifier.fillMaxWidth()){
-        TextFieldApp(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            textAlign = TextAlign.Start,
-            enterValue = uiState.enteredNameSection,
-            typeKeyboard = TypeKeyboard.TEXT)
-    }
-}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable fun BoxExistingSection(uiState: BottomSheetInterface)
 {
     val listItems = uiState.sections.filter {
@@ -119,10 +107,13 @@ import com.example.basket.ui.components.TextFieldApp
             items(items = listItems) { section ->
                 Text(
                     text = section.nameSection,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .clickable { uiState.enteredNameSection.value = section.nameSection
                                         uiState.selectedSection.value = section}
+                        .animateItemPlacement()
                         .padding(4.dp)
                         .background(
                             shape = MaterialTheme.shapes.medium,
@@ -136,5 +127,5 @@ import com.example.basket.ui.components.TextFieldApp
 
 @Preview
 @Composable fun BottomSheetSectionSelectLayoutPreview(){
-    BottomSheetSectionSelectContent(BottomSheetProductAddState())
+    BottomSheetSectionSelectContent(BottomSheetProductState())
 }

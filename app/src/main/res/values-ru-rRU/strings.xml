@@ -10,16 +10,16 @@
     <string name="errorUser">Ошибка операции</string>
     <string name="sections">Отделы</string>
     <string name="section">Отдел</string>
-    <string name="change_section">Новый отдел</string>
+    <string name="edit_section">Изменить имя отдел</string>
+    <string name="change_color">Выберите цвет</string>
 
-    <string name="products">Продукты</string>
-    <string name="add_product">Добавить продукт</string>
-    <string name="change_article">Изменить продукт</string>
-    <string name="select_product">Выберите продукт</string>
+    <string name="products">Товары</string>
+    <string name="add_product">Добавить товар</string>
+    <string name="change_article">Изменить товар</string>
+    <string name="select_product">Выберите товар</string>
 
     <string name="baskets">Корзины</string>
     <string name="products_in_basket">Корзина: </string>
-    <string name="new_name_basket">Имя корзины</string>
     <string name="new_basket">Новая корзина</string>
     <string name="change_name_basket">Переименовать корзину</string>
     <string name="add_basket">Добавить корзину</string>
@@ -37,14 +37,17 @@
     <string name="by_section">По отделу</string>
     <string name="all">Все</string>
     <string name="sorting">сортировка</string>
-    <string name="choise_color">Выберите цвет</string>
     <string name="edit_unit_list">Редактирование ед.измерений</string>
     <string name="edit_section_list">Редактирование отделов</string>
-    <string name="add_change_section">Добавить, изменить отдел</string>
+    <string name="add_section">Добавить, изменить отдел</string>
     <string name="font_size">Размер шрифта и элементов</string>
     <string name="theme_0">Крупный</string>
     <string name="theme_1">Средний</string>
     <string name="theme_2">Мелкий</string>
     <string name="quantity">Количество</string>
     <string name="in_section">в отделе</string>
+
+    <string name="bs_unit_not_selected">Ед.изм не выбрана</string>
+    <string name="bs_section_not_selected">Отдел не выбран</string>
+    <string name="bs_product_not_selected">ТОвар не выбран</string>
 </resources>

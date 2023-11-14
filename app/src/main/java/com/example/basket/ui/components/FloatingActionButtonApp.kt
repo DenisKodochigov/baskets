@@ -57,24 +57,6 @@ import com.example.basket.utils.log
     )
 }
 
-@Composable fun ExtendedFAB_test(){
-    log(true, "ExtendedFAB_test")
-    ExtendedFloatingActionButton(
-        modifier = Modifier,
-        onClick = {  },
-        icon = {
-            Icon(
-                Icons.Filled.Add, null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier
-                    .padding(sizeApp(SizeElement.PADDING_FAB))
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-            )
-        },
-        text = { Text(text = "Test") },
-    )
-}
-
 @Composable
 fun FloatingActionButtonApp( offset: Dp,
                              refreshScreen: MutableState<Boolean>,

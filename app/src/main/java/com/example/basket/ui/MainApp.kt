@@ -79,7 +79,7 @@ fun MainApp() {
                     )
                 }
             },
-            floatingActionButtonPosition = FabPosition.Center,
+            floatingActionButtonPosition = FabPosition.End,
         ) { innerPadding ->
             val plug = innerPadding
             AppNavHost(

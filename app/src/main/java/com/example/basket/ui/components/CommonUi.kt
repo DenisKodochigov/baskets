@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.basket.R
+import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.SortingBy
 import com.example.basket.entity.TagsTesting.BUTTON_OK
@@ -224,16 +225,20 @@ fun TextButtonOK(onConfirm: () -> Unit, enabled: Boolean = true) {
 
 @Composable
 fun MyOutlinedTextFieldWithoutIcon(
-    modifier: Modifier, enterValue: MutableState<String>, typeKeyboard: String
+    modifier: Modifier, enterValue: MutableState<String>, typeKeyboard: TypeKeyboard
 ) {
 
     val localFocusManager = LocalFocusManager.current
     var enterText by remember { mutableStateOf(enterValue.value) }
-    var keyboardOptions =
-        KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Next)
-    if (typeKeyboard == "text") keyboardOptions =
-        KeyboardOptions(keyboardType = KeyboardType.Ascii).copy(imeAction = ImeAction.Done)
 
+    val keyboardOptions = when (typeKeyboard) {
+        TypeKeyboard.TEXT -> {
+            KeyboardOptions(keyboardType = KeyboardType.Ascii,
+                capitalization = KeyboardCapitalization.Sentences).copy(imeAction = ImeAction.Done) }
+        TypeKeyboard.DIGIT -> {
+            KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done) }
+        else -> { KeyboardOptions.Default.copy(imeAction = ImeAction.Done) }
+    }
     OutlinedTextField(
         modifier = modifier.background(color = MaterialTheme.colorScheme.surface),
         value = enterText,
@@ -394,7 +399,7 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
             if( enable ) {
                 if (direction == UPDOWN.UP) ArrowUp() else ArrowDown()
             }
-            else ArrowNone()
+            else ArrowNoneVer()
         }
         if (direction == UPDOWN.DOWN && drawLine){
             Divider(color = MaterialTheme.colorScheme.primary, thickness = 1.dp)    }
@@ -408,8 +413,8 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
         if (direction == UPDOWN.START && drawLine){
             Divider(color = MaterialTheme.colorScheme.primary, modifier = Modifier.fillMaxHeight().width(1.dp))}
 
-        if( enable )  if (direction == UPDOWN.START) ArrowLeft() else ArrowRight()
-        else ArrowNone()
+        if( enable ) { if (direction == UPDOWN.START) ArrowLeft() else ArrowRight()}
+        else ArrowNoneHor()
         if (direction == UPDOWN.END && drawLine){
             Divider(color = MaterialTheme.colorScheme.primary, modifier = Modifier.fillMaxHeight().width(1.dp))}
     }
@@ -433,11 +438,11 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
         onValueChange = { enterValue.value = it },
         singleLine = true,
         maxLines = 1,
-        modifier = modifier.width(80.dp).height(40.dp)
+        modifier = modifier
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                shape = MaterialTheme.shapes.small
+                shape = MaterialTheme.shapes.extraSmall
             ),
         textStyle = TextStyle(
             fontSize = 20.sp,
@@ -445,7 +450,7 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
             textAlign = textAlign),
         decorationBox = {
             Row( verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 8.dp)){ it() }
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)){ it() }
         },
         keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })

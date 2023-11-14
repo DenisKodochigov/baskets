@@ -1,6 +1,7 @@
 package com.example.basket.ui.screens.settings
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -77,9 +78,9 @@ import com.example.basket.ui.components.CollapsingToolbar
 import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.HeaderSection
 import com.example.basket.ui.components.TextApp
-import com.example.basket.ui.components.dialog.ChangeColorSectionDialog
-import com.example.basket.ui.components.dialog.ChangeNameSectionDialog
-import com.example.basket.ui.components.dialog.EditUnitDialog
+import com.example.basket.ui.components.dialog.settingDialog.ChangeColorSectionDialog
+import com.example.basket.ui.components.dialog.settingDialog.ChangeNameSectionDialog
+import com.example.basket.ui.components.dialog.settingDialog.EditUnitDialog
 import com.example.basket.ui.components.ShowArrowVer
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.styleApp
@@ -96,27 +97,30 @@ private val ThumbSize = 30.dp
     viewModel: SettingsViewModel, screen: ScreenDestination, refreshScreen: MutableState<Boolean>)
 {
     val uiState by viewModel.settingScreenState.collectAsState()
-    uiState.refreshScreen = refreshScreen
-    uiState.doChangeUnit = { unit -> viewModel.changeUnit(unit) }
-    uiState.doDeleteUnits = { units -> viewModel.doDeleteUnits(units) }
-    uiState.doChangeSection = { section -> viewModel.doChangeSection(section) }
-    uiState.doDeleteSections = { sections -> viewModel.doDeleteSections(sections) }
+
+    uiState.refresh = refreshScreen
+    uiState.doChangeUnit = remember{{ unit -> viewModel.changeUnit(unit) }}
+    uiState.doDeleteUnits = remember{{ units -> viewModel.doDeleteUnits(units) }}
+    uiState.doChangeSection = remember{{ section -> viewModel.doChangeSection(section) }}
+    uiState.doDeleteSections = remember{{ sections -> viewModel.doDeleteSections(sections) }}
+    uiState.idImage = getIdImage(screen)
+    uiState.screenTextHeader = stringResource(screen.textHeader)
+
     SettingsScreenLayout(
         modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
         uiState = uiState,
-        screen = screen,
     )
 //    val plug = refreshScreen.value
 }
 @SuppressLint("UnrememberedMutableState")
 @Composable fun SettingsScreenLayout(
-    modifier: Modifier = Modifier, uiState: SettingsScreenState, screen: ScreenDestination, )
+    modifier: Modifier = Modifier, uiState: SettingsScreenState, )
 {
     Column{
         CollapsingToolbar(
-            text = stringResource(screen.textHeader),
-            idImage = getIdImage(screen),
-            refreshScreen = uiState.refreshScreen,
+            text = uiState.screenTextHeader,
+            idImage = uiState.idImage,
+            refreshScreen = uiState.refresh,
             scrollOffset = 0)
         Column (
             Modifier.verticalScroll(
@@ -125,10 +129,10 @@ private val ThumbSize = 30.dp
                 flingBehavior = null,
                 reverseScrolling = false)
         ){
-            HeaderScreen(text = stringResource(screen.textHeader), refreshScreen = uiState.refreshScreen)
             AddEditUnits(modifier, uiState)
             AddEditSection(modifier, uiState)
-            ChangeStyle(refreshScreen = uiState.refreshScreen)
+            ChangeStyle(uiState)
+            FontStyleView()
         }
     }
 }
@@ -144,12 +148,13 @@ private val ThumbSize = 30.dp
     Box(modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column{
 //            val plug = refreshScreen
-            HeaderSection(text = stringResource(R.string.edit_section_list), modifier, uiState.refreshScreen)
+            HeaderSection(text = stringResource(R.string.edit_section_list), modifier, uiState.refresh)
             SectionLazyColumn( uiState = uiState, doSelected = { idItem -> isSelectedId.value = idItem })
             Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
 {
@@ -192,7 +197,8 @@ fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
                     editNameSection = editNameSection,
                     changeColorSection = changeColorSection,
                     doDeleteSelected = uiState.doDeleteSections,
-                    doSelected = doSelected
+                    doSelected = doSelected,
+                    modifier = Modifier.animateItemPlacement()
                 )
             }
         }
@@ -210,11 +216,12 @@ fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
     editNameSection: MutableState<Section?>,
     changeColorSection: MutableState<Section?>,
     doDeleteSelected: (List<Section>) -> Unit,
-    doSelected: (Long) -> Unit
+    doSelected: (Long) -> Unit,
+    modifier: Modifier
 ){
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .clip(shape = RoundedCornerShape(6.dp))
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.surface)
@@ -266,13 +273,14 @@ fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
     }
     Box( Modifier.fillMaxWidth().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
         Column {
-            HeaderSection(text = stringResource(R.string.edit_unit_list), modifier, uiState.refreshScreen)
+            HeaderSection(text = stringResource(R.string.edit_unit_list), modifier, uiState.refresh)
             LazyColumnUnits(uiState = uiState, doSelected = { idItem -> isSelectedId.value = idItem })
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
@@ -300,7 +308,7 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
             modifier = Modifier.heightIn(min = 0.dp, max = 300.dp)
             ) {
             items(uiState.unitApp) { item ->
-                Box {
+                Box (modifier = Modifier.animateItemPlacement()){
                     Row(verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clip(shape = RoundedCornerShape(6.dp))
@@ -341,13 +349,13 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun ChangeStyle(refreshScreen: MutableState<Boolean>,){
+@Composable fun ChangeStyle(uiState: SettingsScreenState){
     var sliderPosition by remember{ mutableFloatStateOf(AppBase.scale.toFloat()) }
 
     HeaderSection(
         text = stringResource(R.string.font_size),
         modifier = Modifier,
-        refreshScreen = refreshScreen
+        refreshScreen = uiState.refresh
     )
     Slider(
         value = sliderPosition,
@@ -358,7 +366,7 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
         onValueChange = {
             sliderPosition = it
             AppBase.scale = sliderPosition.toInt()
-            refreshScreen.value = !refreshScreen.value
+            uiState.refresh.value = !uiState.refresh.value
         },
         thumb = {
             Box(
@@ -370,9 +378,9 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
                 Text(text = "A",
                     color = MaterialTheme.colorScheme.inversePrimary,
                     style = TextStyle(fontSize = when (sliderPosition) {
-                        0f -> 24.sp
+                        0f -> 12.sp
                         1f -> 18.sp
-                        else -> 12.sp
+                        else -> 24.sp
                     })
                 )
             }
@@ -382,6 +390,24 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
 
 fun Modifier.thumb(size: Dp = ThumbSize, shape: Shape = CircleShape) =
     defaultMinSize(minWidth = size, minHeight = size).clip(shape)
+@Composable fun FontStyleView(){
+    val tg =  MaterialTheme.typography
+    Text(text = "displayLarge ${tg.displayLarge.fontSize}", style = tg.displayLarge)
+    Text(text = "displayMedium ${tg.displayMedium.fontSize}", style = tg.displayMedium)
+    Text(text = "displaySmall ${tg.displaySmall.fontSize}", style = tg.displaySmall)
+    Text(text = "headlineLarge ${tg.headlineLarge.fontSize}", style = tg.headlineLarge)
+    Text(text = "headlineMedium ${tg.headlineMedium.fontSize}", style = tg.headlineMedium)
+    Text(text = "headlineSmall ${tg.headlineSmall.fontSize}", style = tg.headlineSmall)
+    Text(text = "titleLarge ${tg.titleLarge.fontSize}", style = tg.titleLarge)
+    Text(text = "titleMedium ${tg.titleMedium.fontSize}", style = tg.titleMedium)
+    Text(text = "titleSmall ${tg.titleSmall.fontSize}", style = tg.titleSmall)
+    Text(text = "bodyLarge ${tg.bodyLarge.fontSize}", style = tg.bodyLarge)
+    Text(text = "bodyMedium ${tg.bodyMedium.fontSize}", style = tg.bodyMedium)
+    Text(text = "bodySmall ${tg.bodySmall.fontSize}", style = tg.bodySmall)
+    Text(text = "labelLarge ${tg.labelLarge.fontSize}", style = tg.labelLarge)
+    Text(text = "labelMedium ${tg.labelMedium.fontSize}", style = tg.labelMedium)
+    Text(text = "labelSmall ${tg.labelSmall.fontSize}", style = tg.labelSmall)
+}
 
 @Composable
 @Preview
