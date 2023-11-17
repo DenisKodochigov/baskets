@@ -11,6 +11,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 
 fun Modifier.bottomBarAnimatedScroll(height: Dp = 56.dp, offsetHeightPx: MutableState<Float>): Modifier =
     composed {
@@ -26,3 +27,4 @@ fun Modifier.bottomBarAnimatedScroll(height: Dp = 56.dp, offsetHeightPx: Mutable
         }
         this.nestedScroll(connection)
     }
+

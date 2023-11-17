@@ -17,6 +17,7 @@ import com.example.basket.ui.screens.article.ArticlesScreen
 import com.example.basket.ui.screens.baskets.BasketsScreen
 import com.example.basket.ui.screens.products.ProductsScreen
 import com.example.basket.ui.screens.settings.SettingsScreen
+import com.example.basket.ui.screens.test.TestScreen
 
 @Composable
 fun AppNavHost(
@@ -67,6 +68,15 @@ fun AppNavHost(
                 targetState.destination.route?.let { exitTransition(BasketsDestination.route, it)  } }
         ) {
             SettingsScreen(refreshScreen = refreshScreen, screen = SettingDestination)
+        }
+        composable(
+            route = TestDestination.route,
+            enterTransition = {
+                targetState.destination.route?.let { enterTransition(BasketsDestination.route, it) } },
+            exitTransition = {
+                targetState.destination.route?.let { exitTransition(BasketsDestination.route, it)  } }
+        ) {
+            TestScreen( screen = TestDestination)
         }
     }
 }

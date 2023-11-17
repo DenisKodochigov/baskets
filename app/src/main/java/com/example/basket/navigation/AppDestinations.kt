@@ -2,6 +2,7 @@ package com.example.basket.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.runtime.Composable
@@ -64,6 +65,15 @@ object SettingDestination : ScreenDestination {
     override val textHeader = R.string.settings_page
     override var onClickFAB: () -> Unit = {  }
 }
+object TestDestination : ScreenDestination {
+    override val icon = Icons.Filled.Sailing
+    override val route = "test"
+    override var textFAB = ""
+    override val pictureDay = 0
+    override val pictureNight = 0
+    override val textHeader = R.string.settings_page
+    override var onClickFAB: () -> Unit = {  }
+}
 
 //object SingleAccount : ScreenDestination {
 //    // Added for simplicity, this icon will not in fact be used, as SingleAccount isn't
@@ -82,5 +92,5 @@ object SettingDestination : ScreenDestination {
 //    override val route = "products"
 //}
 // Screens to be displayed in the top AppTabRow
-val appTabRowScreens = listOf(BasketsDestination, ArticlesDestination, SettingDestination)
+val appTabRowScreens = listOf(BasketsDestination, ArticlesDestination, TestDestination, SettingDestination)
 val listScreens = listOf(BasketsDestination, ArticlesDestination, ProductsDestination, SettingDestination)

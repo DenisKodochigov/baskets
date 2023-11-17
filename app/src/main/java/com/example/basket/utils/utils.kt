@@ -1,24 +1,42 @@
 package com.example.basket.utils
 
 import android.util.Log
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.basket.entity.Article
 import com.example.basket.entity.Product
 import com.example.basket.entity.SortingBy
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 fun createDoubleListProduct(products: List<Product>): List<List<Product>>{
     val doubleList = mutableListOf<List<Product>>()
@@ -121,3 +139,52 @@ fun DismissBackground(dismissState: DismissState) {
     else Pair(0L, "")
 }
 
+@Composable fun itemSwipe(
+    frontFon:@Composable () -> Unit,
+    actionDragRight:()->Unit,
+    actionDragLeft:()->Unit,
+    iconLeft: ImageVector,
+    iconRight: ImageVector
+){
+    val offsetX = remember { Animatable(0f) }
+    val coroutineScope = rememberCoroutineScope()
+    val porogDraggable = 150.dp
+
+    Box(modifier = Modifier.fillMaxWidth()
+    ){
+        backFon(iconRight = iconRight,iconLeft = iconLeft)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset { IntOffset(offsetX.value.roundToInt(), 0) }
+                .draggable(
+                    state = rememberDraggableState { delta ->
+                        coroutineScope.launch { offsetX.snapTo(offsetX.value + delta) }
+                    },
+                    orientation = Orientation.Horizontal,
+                    onDragStopped = {
+                        coroutineScope.launch {
+                            if (Dp(offsetX.value) > porogDraggable) actionDragRight()
+                            if (Dp((-1) * offsetX.value) > porogDraggable) actionDragLeft()
+                            offsetX.animateTo(
+                                targetValue = 0f,
+                                animationSpec = tween(
+                                    durationMillis = 1000,
+                                    delayMillis = 0
+                                )
+                            )
+                        }
+                    }
+                )
+        ) {
+            frontFon()
+        }
+    }
+}
+@Composable fun backFon(iconLeft: ImageVector, iconRight: ImageVector){
+    Row(modifier = Modifier.fillMaxWidth(). padding(horizontal = 12.dp)) {
+        Icon(imageVector = iconLeft, contentDescription = "")
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(imageVector = iconRight, contentDescription = "")
+    }
+}

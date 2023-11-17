@@ -38,12 +38,11 @@ import com.example.basket.utils.bottomBarAnimatedScroll
 import com.example.basket.utils.log
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("RememberReturnType", "UnrememberedMutableState", "SuspiciousIndentation")
 @Composable
 fun MainApp() {
     AppTheme {
-
         val navController = rememberNavController()
         val currentBackStack by navController.currentBackStackEntryAsState()
         val currentDestination = currentBackStack?.destination

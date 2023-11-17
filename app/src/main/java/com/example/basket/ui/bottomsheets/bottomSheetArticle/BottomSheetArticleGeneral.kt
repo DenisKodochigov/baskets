@@ -42,7 +42,8 @@ import com.example.basket.utils.createLisArticleFormDouble
         uiStateA.onAddArticle(it.article)
         uiStateA.triggerRunOnClickFAB.value = false
     }
-    uiState.articles = createLisArticleFormDouble(uiStateA.articles)
+//    uiState.articles = createLisArticleFormDouble(uiStateA.articles)
+    uiState.articles = uiStateA.articles.flatten()
     uiState.sections = uiStateA.sections
     uiState.unitApp = uiStateA.unitApp
     uiState.onDismissSelectArticleProduct = { uiState.buttonDialogSelectArticleProduct.value = false }

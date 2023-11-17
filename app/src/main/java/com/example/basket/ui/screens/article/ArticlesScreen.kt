@@ -1,15 +1,12 @@
 package com.example.basket.ui.screens.article
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -53,6 +50,7 @@ import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.DismissBackground
 import com.example.basket.utils.bottomBarAnimatedScroll
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @Composable
@@ -139,8 +137,7 @@ fun ArticleScreenLayout(uiState: ArticleScreenState)
                 ArticleLazyColumn(
                     uiState = uiState,
                     scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt(),
-                    doSelected = { idItem -> isSelectedId.value = idItem },
-                    doDelete = { items -> uiState.doDeleteSelected( items ) })
+                    doSelected = { idItem -> isSelectedId.value = idItem },)
             }
             SwitcherButton(uiState.doChangeSortingBy)
         }
@@ -161,7 +158,6 @@ fun ArticleLazyColumn(
     uiState: ArticleScreenState,
     scrollOffset:Int,
     doSelected: (Long) -> Unit,
-    doDelete: (List<Article>) -> Unit
 ) {
     val listState = rememberLazyListState()
     val editArticle: MutableState<Article?> = remember { mutableStateOf(null) }
@@ -197,31 +193,31 @@ fun ArticleLazyColumn(
             .clip(RoundedCornerShape(8.dp))
             .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     ) {
-        itemsIndexed( items = uiState.articles ) { _,item ->
-            Column( modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .animateItemPlacement()
-                .background(
-                    if (uiState.articles.size == 1) SectionColor
-                    else {
-                        if (item[0].section.colorSection != 0L) Color(item[0].section.colorSection)
-                        else SectionColor
-                    }
-                )
-                .animateItemPlacement()) {//SectionColor
-                HeaderSection(
-                    text = if ( uiState.sorting == SortingBy.BY_SECTION) item[0].section.nameSection
-                    else stringResource(id = R.string.all), modifier = Modifier)
-                ArticleLayoutColum(
-                    modifier = Modifier,
-                    articles = item,
-                    editArticle = { article -> editArticle.value = article },
-                    doSelected = doSelected,
-                    doDelete = doDelete)
-            }
+        items( items = uiState.articles ) {item ->
+        Column( modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .animateItemPlacement()
+            .background(
+                if (uiState.articles.size == 1) SectionColor
+                else {
+                    if (item[0].section.colorSection != 0L) Color(item[0].section.colorSection)
+                    else SectionColor
+                }
+            )
+        ){//SectionColor
+            HeaderSection(
+                text = if ( uiState.sorting == SortingBy.BY_SECTION) item[0].section.nameSection
+                else stringResource(id = R.string.all), modifier = Modifier)
+            ArticleLayoutColum(
+                modifier = Modifier,
+                articles = item,
+                editArticle = { article -> editArticle.value = article },
+                doSelected = doSelected,
+                doDelete = { items -> uiState.doDeleteSelected( items ) })
         }
     }
-    ShowArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.articles.isNotEmpty(), drawLine = false)
+}
+ShowArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.articles.isNotEmpty(), drawLine = false)
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -246,19 +242,19 @@ fun ArticleLayoutColum(
                             show = false
                             article.isSelected = true
                             doDelete(mutableListOf(article))
-                        } else if (it == DismissValue.DismissedToEnd) { editArticle( article ) }
+                        } else if (it == DismissValue.DismissedToEnd) {
+                            editArticle( article )
+                        }
                         false
                     }, positionalThreshold = { 250.dp.toPx() }
                 )
-                AnimatedVisibility( visible = show, exit = fadeOut(spring())) {
-                    SwipeToDismiss(
-                        state = dismissState,
-                        modifier = modifier.padding(vertical = 1.dp),
-                        directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                        background = { DismissBackground(dismissState) },
-                        dismissContent = { ElementColum(modifier, article, doSelected ) }
-                    )
-                }
+                SwipeToDismiss(
+                    state = dismissState,
+                    modifier = modifier.padding(vertical = 1.dp),
+                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+                    background = { DismissBackground(dismissState) },
+                    dismissContent = { ElementColum(modifier, article, doSelected ) }
+                )
             }
         }
     }

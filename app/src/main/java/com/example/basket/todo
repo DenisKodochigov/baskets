@@ -1,7 +1,6 @@
 
-1. После создания нового продкута. Если нажать на клавиатуре enter товар не добавляется и удаляется введенный текст.
 2. После создания нового продкута обновить секции. Если в форме осталась секция без ID выполнить корректную работу.
-3. При удалении одного артикула со странице уходят все
+3. При удалении одного артикула через сваипе со странице уходят все
 
 https://stackoverflow.com/questions/68924018/jetpack-compose-scroll-to-bottom-listener-end-of-list
     scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == scrollState.layoutInfo.totalItemsCount - 1
@@ -12,6 +11,6 @@ https://stackoverflow.com/questions/68924018/jetpack-compose-scroll-to-bottom-li
     LaunchedEffect(endOfListReached) {
     // do your stuff
     }
-10. Сделать подбор товара в артикулах с озданием корзины и помещением туда списка.
+10. Сделать подбор товара в артикулах с созданием корзины и помещением туда списка.
 
 В режиме продуктов, очень маленький ход при перемещении в корзину

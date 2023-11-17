@@ -5,6 +5,8 @@ import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +14,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowCircleRight
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.material3.BottomAppBarDefaults.containerColor
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DismissDirection
@@ -30,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -39,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.basket.R
@@ -62,6 +71,8 @@ import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 import com.example.basket.utils.DismissBackground
 import com.example.basket.utils.bottomBarAnimatedScroll
+import com.example.basket.utils.itemSwipe
+import com.example.basket.utils.log
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -106,7 +117,9 @@ fun BasketsScreenLayout(
     onClickBasket: (Long) -> Unit,
 ) {
     val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
-    Column(Modifier.fillMaxHeight()
+    Column(
+        Modifier
+            .fillMaxHeight()
             .bottomBarAnimatedScroll(
                 height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
                 offsetHeightPx = bottomBarOffsetHeightPx
@@ -128,7 +141,6 @@ fun BasketLazyColumn(
 ) {
     val listState = rememberLazyListState()
     val editBasket: MutableState<Basket?> = remember { mutableStateOf(null) }
-    val show = remember { mutableStateOf(true) }
 
     val showArrowUp = remember {
         derivedStateOf { listState.layoutInfo.visibleItemsInfo.firstOrNull()?.index != 0 }}.value
@@ -162,26 +174,13 @@ fun BasketLazyColumn(
     {
         items(items = uiState.baskets, key = { it.idBasket })
         { item ->
-            val dismissState = rememberDismissState(
-                confirmValueChange = {
-                    if (it == DismissValue.DismissedToStart) {
-                        show.value = false
-                        uiState.deleteBasket(item.idBasket)
-                    } else if (it == DismissValue.DismissedToEnd) {
-                        editBasket.value = item
-                    }
-                    false
-                },
-                positionalThreshold = { 250.dp.toPx() }
-            )
-            SwipeToDismiss(
-                state = dismissState,
-                modifier = Modifier
-                    .padding(vertical = 1.dp)
-                    .animateItemPlacement(),
-                directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                background = { DismissBackground(dismissState) },
-                dismissContent = { ElementColumBasket(item, onClickBasket, modifier = Modifier.animateItemPlacement()) }
+            itemSwipe(
+                frontFon = { ElementColumBasket(
+                        item, onClickBasket, modifier = Modifier.animateItemPlacement()) },
+                actionDragLeft = { uiState.deleteBasket(item.idBasket)},
+                actionDragRight = { editBasket.value = item },
+                iconLeft = Icons.Default.Edit,
+                iconRight = Icons.Default.Delete
             )
         }
     }
@@ -191,7 +190,6 @@ fun BasketLazyColumn(
 @Composable
 fun ElementColumBasket(basket: Basket, onClickBasket: (Long) -> Unit, modifier: Modifier) {
 
-    val modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
     Row(
         modifier = modifier
             .clip(shape = MaterialTheme.shapes.extraSmall)
