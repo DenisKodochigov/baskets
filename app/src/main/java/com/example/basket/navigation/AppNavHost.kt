@@ -69,15 +69,15 @@ fun AppNavHost(
         ) {
             SettingsScreen(refreshScreen = refreshScreen, screen = SettingDestination)
         }
-        composable(
-            route = TestDestination.route,
-            enterTransition = {
-                targetState.destination.route?.let { enterTransition(BasketsDestination.route, it) } },
-            exitTransition = {
-                targetState.destination.route?.let { exitTransition(BasketsDestination.route, it)  } }
-        ) {
-            TestScreen( screen = TestDestination)
-        }
+//        composable(
+//            route = TestDestination.route,
+//            enterTransition = {
+//                targetState.destination.route?.let { enterTransition(BasketsDestination.route, it) } },
+//            exitTransition = {
+//                targetState.destination.route?.let { exitTransition(BasketsDestination.route, it)  } }
+//        ) {
+//            TestScreen( screen = TestDestination)
+//        }
     }
 }
 

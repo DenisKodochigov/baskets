@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -34,8 +35,7 @@ fun ChangeColorSectionDialog(
     section: Section,
     onConfirm: (Section) -> Unit,
     onDismiss: () -> Unit,
-) {
-
+){
     val itemLocal = remember { mutableStateOf(section) }
     AlertDialog(
         modifier = Modifier.border(width = 1.dp, shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.primary),
@@ -52,7 +52,7 @@ fun ChangeColorSectionLayout(section: MutableState<Section>) {
     val selectColor = remember{ mutableStateOf(Color.Transparent) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Row {
+        Row( verticalAlignment = Alignment.CenterVertically) {
             MyTextH2(text = stringResource(id = R.string.section) + ": " + section.value.nameSection)
             Spacer(Modifier.width(12.dp))
             Spacer(modifier = Modifier
@@ -74,7 +74,7 @@ fun ChangeColorSectionLayout(section: MutableState<Section>) {
                     idSection = section.value.idSection,
                     nameSection = section.value.nameSection,
                     colorSection = selectedColor.toLong())
-            })
-
+           }
+        )
     }
 }

@@ -28,12 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.basket.R
 import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.UPDOWN
@@ -41,6 +39,7 @@ import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductS
 import com.example.basket.ui.bottomsheets.component.ButtonConfirmText
 import com.example.basket.ui.bottomsheets.component.FieldName
 import com.example.basket.ui.components.ShowArrowVer
+import com.example.basket.ui.theme.Dimen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun BottomSheetProductSelect(uiState: BottomSheetInterface)
@@ -52,7 +51,7 @@ import com.example.basket.ui.components.ShowArrowVer
         onDismissRequest = uiState.onDismissSelectArticleProduct,
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
-            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor1)),
+            .padding(horizontal = Dimen.bsPaddingHor1),
         shape = MaterialTheme.shapes.small,
         containerColor = BottomSheetDefaults.ContainerColor,
         contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
@@ -67,18 +66,18 @@ import com.example.basket.ui.components.ShowArrowVer
 {
     Column(modifier = Modifier
         .fillMaxWidth()
-        .padding(
-            horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor),
-            vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)
-        ),
+        .padding( horizontal = Dimen.bsPaddingHor, vertical = Dimen.bsItemPaddingVer),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
-        FieldName(uiState)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
+        FieldName(uiState.enteredNameProduct)
+        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         BoxExistingArticles(uiState)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
-        ButtonConfirmText(uiState)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
+        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
+        ButtonConfirmText {
+            clearSelectedProduct(uiState)
+            uiState.onConfirmationSelectArticleProduct(uiState)
+        }
+        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
     }
 }
 
@@ -136,6 +135,13 @@ import com.example.basket.ui.components.ShowArrowVer
     }
 }
 
+fun clearSelectedProduct(uiState: BottomSheetInterface){
+    if (uiState.selectedProduct.value != null){
+        if (uiState.selectedProduct.value!!.nameArticle != uiState.enteredNameProduct.value){
+            uiState.selectedProduct.value = null
+        }
+    }
+}
 @Preview
 @Composable fun BottomSheetProductSelectLayoutPreview(){
     BottomSheetProductSelectContent(BottomSheetProductState())

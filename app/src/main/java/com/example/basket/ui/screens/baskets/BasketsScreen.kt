@@ -5,8 +5,6 @@ import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,40 +12,28 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowCircleRight
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.material3.BottomAppBarDefaults.containerColor
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.basket.R
@@ -62,23 +48,22 @@ import com.example.basket.entity.UPDOWN
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.components.CollapsingToolbar
 import com.example.basket.ui.components.HeaderScreen
+import com.example.basket.ui.components.ShowArrowVer
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.dialog.EditBasketName
-import com.example.basket.ui.components.ShowArrowVer
+import com.example.basket.ui.theme.Dimen
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
-import com.example.basket.utils.DismissBackground
-import com.example.basket.utils.bottomBarAnimatedScroll
-import com.example.basket.utils.itemSwipe
-import com.example.basket.utils.log
+import com.example.basket.utils.animatedScroll
+import com.example.basket.utils.ItemSwipe
 import java.util.*
 import kotlin.math.roundToInt
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun BasketsScreen(onClickBasket: (Long) -> Unit, screen: ScreenDestination,)
+fun BasketsScreen(onClickBasket: (Long) -> Unit, screen: ScreenDestination)
 {
     val viewModel: BasketViewModel = hiltViewModel()
     viewModel.getListBasket()
@@ -116,22 +101,22 @@ fun BasketsScreenLayout(
     uiState: BasketScreenState,
     onClickBasket: (Long) -> Unit,
 ) {
-    val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
+    val offsetHeightPx = remember { mutableFloatStateOf(0f) }
     Column(
         Modifier
             .fillMaxHeight()
-            .bottomBarAnimatedScroll(
+            .animatedScroll(
                 height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
-                offsetHeightPx = bottomBarOffsetHeightPx
-            ),) {
+                offsetHeightPx = offsetHeightPx ),
+     ){
         BasketLazyColumn(
             uiState = uiState,
             onClickBasket = onClickBasket,
-            scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt())
+            scrollOffset =-offsetHeightPx.floatValue.roundToInt())
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun BasketLazyColumn(
@@ -168,19 +153,17 @@ fun BasketLazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
-            .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+            .padding(vertical = Dimen.lazyPaddingVer)
             .testTag(BASKET_LAZY)
     )
     {
         items(items = uiState.baskets, key = { it.idBasket })
         { item ->
-            itemSwipe(
+            ItemSwipe(
                 frontFon = { ElementColumBasket(
                         item, onClickBasket, modifier = Modifier.animateItemPlacement()) },
                 actionDragLeft = { uiState.deleteBasket(item.idBasket)},
                 actionDragRight = { editBasket.value = item },
-                iconLeft = Icons.Default.Edit,
-                iconRight = Icons.Default.Delete
             )
         }
     }
@@ -188,71 +171,31 @@ fun BasketLazyColumn(
 }
 
 @Composable
-fun ElementColumBasket(basket: Basket, onClickBasket: (Long) -> Unit, modifier: Modifier) {
-
+fun ElementColumBasket(basket: Basket, onClickBasket: (Long) -> Unit, modifier: Modifier
+){
     Row(
         modifier = modifier
             .clip(shape = MaterialTheme.shapes.extraSmall)
+            .heightIn(min = 24.dp, max = 36.dp)
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.surface)
+            .padding(horizontal = Dimen.lazyPaddingHor)
             .clickable { onClickBasket(basket.idBasket) },
         verticalAlignment = Alignment.CenterVertically
     )
     {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))
-        ) {
-            TextApp(
-                text =  if (basket.dateB != 0L) {
-                    SimpleDateFormat("dd-MM", Locale.getDefault()).format(basket.dateB)
-                } else "",
-                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
-            )
-            TextApp(
-                text = if (basket.dateB != 0L) {
-                    SimpleDateFormat("dd-yyyy", Locale.getDefault()).format(basket.dateB)
-                } else "",
-                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL)
-            )
-        }
         TextApp(
             text = basket.nameBasket,
             textAlign = TextAlign.Left,
             style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
             modifier = modifier.weight(1f)
         )
+        Spacer(modifier = Modifier.weight(1f))
         TextApp(
-            text = if (basket.quantity != 0) { basket.quantity.toString() } else "",
+            text = if (basket.quantity != 0) { basket.quantity.toString() } else "0",
             textAlign = TextAlign.Left,
             style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
-            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.lazy_padding_hor))
-        )
-    }
-}
-@Composable
-fun ItemAddBasketLazyColumn(onClick: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .clip(shape = MaterialTheme.shapes.extraSmall)
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .background(color = MaterialTheme.colorScheme.surface),
-    )
-    {
-        TextApp(
-            text = stringResource(id = R.string.add_basket),
-            textAlign = TextAlign.Center,
-            style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL),
-            modifier = Modifier
-                .weight(1f)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = MaterialTheme.shapes.small
-                )
-                .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+            modifier = modifier.padding(horizontal = Dimen.lazyPaddingHor)
         )
     }
 }
@@ -280,7 +223,7 @@ fun AddBasketBottomSheet(uiState: BasketScreenState) {
     ModalBottomSheet(
         onDismissRequest = uiState.onDismiss,
         modifier = Modifier
-            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor))
+            .padding(horizontal = Dimen.bsPaddingHor)
             .testTag(BASKETBOTTOMSHEET),
         shape = MaterialTheme.shapes.small,
         containerColor = BottomSheetDefaults.ContainerColor,
@@ -295,11 +238,11 @@ fun AddBasketBottomSheet(uiState: BasketScreenState) {
             Modifier
                 .fillMaxWidth()
                 .heightIn((screenHeight * 0.35).dp, (screenHeight * 0.75).dp)
-                .padding(dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor))
+                .padding(Dimen.bsItemPaddingHor)
         ) {
             Spacer(Modifier.height(1.dp))
             HeaderScreen(text = stringResource(R.string.new_basket))
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+            Spacer(Modifier.height(Dimen.bsSpacerHeight))
             OutlinedTextField(
                 value = nameNewBasket,
                 singleLine = true,
@@ -320,14 +263,14 @@ fun AddBasketBottomSheet(uiState: BasketScreenState) {
                     }
                 ),
             )
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
+            Spacer(Modifier.height(Dimen.bsSpacerHeight1))
             TextButtonOK(
                 enabled = nameNewBasket != "",
                 onConfirm = {
                     uiState.onAddClick(nameNewBasket)
                     uiState.onDismiss()
                 })
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
+            Spacer(Modifier.height(Dimen.bsSpacerHeight1))
         }
     }
 }

@@ -55,7 +55,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -75,18 +74,18 @@ import com.example.basket.entity.UnitApp
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.components.ButtonCircle
 import com.example.basket.ui.components.CollapsingToolbar
-import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.HeaderSection
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.dialog.settingDialog.ChangeColorSectionDialog
 import com.example.basket.ui.components.dialog.settingDialog.ChangeNameSectionDialog
 import com.example.basket.ui.components.dialog.settingDialog.EditUnitDialog
 import com.example.basket.ui.components.ShowArrowVer
+import com.example.basket.ui.theme.Dimen
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.styleApp
 
 
-private val ThumbSize = 30.dp
+private val thumbSize = 30.dp
 @Composable fun SettingsScreen(refreshScreen: MutableState<Boolean>, screen: ScreenDestination)
 {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -107,10 +106,9 @@ private val ThumbSize = 30.dp
     uiState.screenTextHeader = stringResource(screen.textHeader)
 
     SettingsScreenLayout(
-        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.screen_padding_hor)),
+        modifier = Modifier.padding(bottom = Dimen.screenPaddingHor),
         uiState = uiState,
     )
-//    val plug = refreshScreen.value
 }
 @SuppressLint("UnrememberedMutableState")
 @Composable fun SettingsScreenLayout(
@@ -136,8 +134,7 @@ private val ThumbSize = 30.dp
         }
     }
 }
-
-@Composable fun AddEditSection(modifier: Modifier = Modifier, uiState: SettingsScreenState, )
+@Composable fun AddEditSection(modifier: Modifier = Modifier, uiState: SettingsScreenState)
 {
     val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val itemList = uiState.section
@@ -145,7 +142,7 @@ private val ThumbSize = 30.dp
         itemList.find { it.idSection == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
         isSelectedId.value = 0
     }
-    Box(modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+    Box(modifier.fillMaxSize().padding(horizontal = Dimen.screenPaddingHor)) {
         Column{
 //            val plug = refreshScreen
             HeaderSection(text = stringResource(R.string.edit_section_list), modifier, uiState.refresh)
@@ -236,8 +233,8 @@ fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
                 .weight(1F)
                 .clickable { editNameSection.value = item }
                 .padding(
-                    horizontal = dimensionResource(R.dimen.lazy_padding_hor2),
-                    vertical = dimensionResource(R.dimen.lazy_padding_ver2)
+                    horizontal = Dimen.lazyPaddingHor2,
+                    vertical = Dimen.lazyPaddingVer2
                 )
         )
         Spacer(modifier = Modifier.width(12.dp))
@@ -263,7 +260,7 @@ fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
     }
 }
 
-@Composable fun AddEditUnits(modifier: Modifier = Modifier, uiState: SettingsScreenState, )
+@Composable fun AddEditUnits(modifier: Modifier = Modifier, uiState: SettingsScreenState)
 {
     val isSelectedId: MutableState<Long> = remember { mutableLongStateOf(0L) }
     val itemList = uiState.unitApp
@@ -271,7 +268,7 @@ fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
         itemList.find { it.idUnit == isSelectedId.value }?.let { it.isSelected = !it.isSelected }
         isSelectedId.value = 0
     }
-    Box( Modifier.fillMaxWidth().padding(horizontal = dimensionResource(R.dimen.screen_padding_hor))) {
+    Box( Modifier.fillMaxWidth().padding(horizontal = Dimen.screenPaddingHor)) {
         Column {
             HeaderSection(text = stringResource(R.string.edit_unit_list), modifier, uiState.refresh)
             LazyColumnUnits(uiState = uiState, doSelected = { idItem -> isSelectedId.value = idItem })
@@ -388,7 +385,7 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
     )
 }
 
-fun Modifier.thumb(size: Dp = ThumbSize, shape: Shape = CircleShape) =
+fun Modifier.thumb(size: Dp = thumbSize, shape: Shape = CircleShape) =
     defaultMinSize(minWidth = size, minHeight = size).clip(shape)
 @Composable fun FontStyleView(){
     val tg =  MaterialTheme.typography

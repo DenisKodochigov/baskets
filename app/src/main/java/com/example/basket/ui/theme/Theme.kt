@@ -159,35 +159,35 @@ fun AppTheme(content: @Composable () -> Unit) {
 
     return when( sizeElement ){
         SizeElement.SIZE_FAB -> when (AppBase.scale){
-            0 ->dimensionResource(R.dimen.size_fab_small)
-            1->dimensionResource(R.dimen.size_fab_medium)
-            else -> dimensionResource(R.dimen.size_fab_large)
+            0 -> Dimen.sizeFabSmall
+            1 -> Dimen.sizeFabMedium
+            else -> Dimen.sizeFabLarge
         }
         SizeElement.HEIGHT_BOTTOM_BAR -> when (AppBase.scale){
-            0 ->dimensionResource(R.dimen.height_bottom_bar_small)
-            1->dimensionResource(R.dimen.height_bottom_bar_medium)
-            else -> dimensionResource(R.dimen.height_bottom_bar_large)
+            0 -> Dimen.heightBottomBarSmall
+            1 -> Dimen.heightBottomBarMedium
+            else -> Dimen.heightBottomBarLarge
         }
         SizeElement.PADDING_FAB -> when (AppBase.scale){
-            0 ->dimensionResource(R.dimen.padding_fab_small)
-            1->dimensionResource(R.dimen.padding_fab_medium)
-            else -> dimensionResource(R.dimen.padding_fab_large)
+            0 -> Dimen.paddingFabSmall
+            1 -> Dimen.paddingFabMedium
+            else ->  Dimen.paddingFabLarge
         }
         SizeElement.OFFSET_FAB -> when (AppBase.scale){
-            0 ->dimensionResource(R.dimen.offset_fab_small)
-            1->dimensionResource(R.dimen.offset_fab_medium)
-            else -> dimensionResource(R.dimen.offset_fab_large)
+            0 -> Dimen.offsetFabSmall
+            1-> Dimen.offsetFabMedium
+            else -> Dimen.offsetFabLarge
         }
         SizeElement.HEIGHT_FAB_BOX -> when (AppBase.scale){
-            0 ->dimensionResource(R.dimen.height_fab_box_small)
-            1->dimensionResource(R.dimen.height_fab_box_medium)
-            else -> dimensionResource(R.dimen.height_fab_box_large)
+            0 -> Dimen.heightFabBoxSmall
+            1 -> Dimen.heightFabBoxMedium
+            else -> Dimen.heightFabBoxLarge
         }
     }
 }
 @Composable fun getIdImage(screen: ScreenDestination):Int{
     val dayNight = isSystemInDarkTheme()
-    return if (dayNight) screen.pictureDay else screen.pictureNight
+    return if (dayNight) screen.pictureNight else screen.pictureDay
 }
 
 //#####################################################################################################

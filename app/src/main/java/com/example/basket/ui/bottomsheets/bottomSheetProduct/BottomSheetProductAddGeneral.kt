@@ -33,6 +33,7 @@ import com.example.basket.ui.bottomsheets.component.RowSelectedProduct
 import com.example.basket.ui.bottomsheets.component.RowSelectedSection
 import com.example.basket.ui.bottomsheets.component.RowSelectedUnit
 import com.example.basket.ui.screens.products.ProductsScreenState
+import com.example.basket.ui.theme.Dimen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +62,7 @@ fun BottomSheetProductAddGeneral (uiStateP: ProductsScreenState)
         onDismissRequest = {uiStateP.triggerRunOnClickFAB.value = false},
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
-            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor)),
+            .padding(horizontal = Dimen.bsPaddingHor),
         shape = MaterialTheme.shapes.small,
         containerColor = BottomSheetDefaults.ContainerColor,
         contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
@@ -81,10 +82,10 @@ fun BottomSheetProductAddGeneralLayOut (uiState: BottomSheetProductState)
 {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally)
     {
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
+        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         GroupButtons(uiState)
         ButtonConfirm(uiState)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
+        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
     }
 }
 @Composable fun GroupButtons(uiState: BottomSheetInterface)

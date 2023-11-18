@@ -41,6 +41,7 @@ import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductS
 import com.example.basket.ui.bottomsheets.component.ButtonConfirmText
 import com.example.basket.ui.bottomsheets.component.FieldName
 import com.example.basket.ui.components.ShowArrowVer
+import com.example.basket.ui.theme.Dimen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun BottomSheetSectionSelect(uiState: BottomSheetInterface)
@@ -51,7 +52,7 @@ import com.example.basket.ui.components.ShowArrowVer
         onDismissRequest = uiState.onDismissSelectSection,
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
-            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor1)),
+            .padding(horizontal = Dimen.bsPaddingHor1),
         shape = MaterialTheme.shapes.small,
         containerColor = BottomSheetDefaults.ContainerColor,
         contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
@@ -65,17 +66,17 @@ import com.example.basket.ui.components.ShowArrowVer
 @Composable fun BottomSheetSectionSelectContent(uiState: BottomSheetInterface)
 {
     Column(modifier = Modifier.fillMaxWidth().padding(
-            horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor),
-            vertical = dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)
+            horizontal = Dimen.bsPaddingHor,
+            vertical = Dimen.bsItemPaddingVer
         ),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
-        FieldName(uiState)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
+        FieldName(uiState.enteredNameSection)
+        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         BoxExistingSection(uiState)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
-        ButtonConfirmText ( uiState )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_item_padding_ver)))
+        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
+        ButtonConfirmText ( {uiState.onConfirmationSelectSection(uiState)} )
+        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
     }
 }
 

@@ -1,16 +1,4 @@
 
-2. После создания нового продкута обновить секции. Если в форме осталась секция без ID выполнить корректную работу.
-3. При удалении одного артикула через сваипе со странице уходят все
-
-https://stackoverflow.com/questions/68924018/jetpack-compose-scroll-to-bottom-listener-end-of-list
-    scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == scrollState.layoutInfo.totalItemsCount - 1
-    fun LazyListState.isScrolledToEnd() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
-    // observer when reached end of list
-    val endOfListReached by remember { derivedStateOf {scrollState.isScrolledToEnd()} }
-    // act when end of list reached
-    LaunchedEffect(endOfListReached) {
-    // do your stuff
-    }
 10. Сделать подбор товара в артикулах с созданием корзины и помещением туда списка.
+12. Настроить цвета кнопок в bottomSheet.
 
-В режиме продуктов, очень маленький ход при перемещении в корзину

@@ -17,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.example.basket.R
 import com.example.basket.data.room.tables.ArticleDB
@@ -30,6 +29,7 @@ import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.MyExposedDropdownMenuBox
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.screens.article.ArticleScreenState
+import com.example.basket.ui.theme.Dimen
 import com.example.basket.utils.selectSectionWithArticle
 import com.example.basket.utils.selectUnitWithArticle
 
@@ -52,7 +52,7 @@ fun BottomSheetArticleAdd(uiState: ArticleScreenState)
         onDismissRequest = {uiState.triggerRunOnClickFAB.value = false},
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
-            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor)),
+            .padding(horizontal = Dimen.bsPaddingHor),
         shape = MaterialTheme.shapes.small,
         containerColor = BottomSheetDefaults.ContainerColor,
         contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
@@ -79,11 +79,11 @@ fun BottomSheetArticleAdd(uiState: ArticleScreenState)
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor))
+                .padding(horizontal = Dimen.bsItemPaddingHor)
 //                .heightIn((screenHeight * 0.3).dp, (screenHeight * 0.85).dp)
         ) {
             HeaderScreen(text = stringResource(R.string.add_product))
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+            Spacer(Modifier.height(Dimen.bsSpacerHeight))
             /** Select article*/
             /** Select article*/
             /** Select article*/
@@ -100,13 +100,13 @@ fun BottomSheetArticleAdd(uiState: ArticleScreenState)
                 enterUnit.value = selectUnitWithArticle(enterArticle.value.first, listArticle)
                 enterValue.value = "1"
             }
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+            Spacer(Modifier.height(Dimen.bsSpacerHeight))
             ChipsUnit(
                 listUnit = uiState.unitApp,
                 edit = true,
                 unitArticle = listArticle.find { it.idArticle == enterArticle.value.first }?.unitApp,
                 onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+            Spacer(Modifier.height(Dimen.bsSpacerHeight))
             /** Select section*/
             /** Select section*/
             /** Select section*/
@@ -135,7 +135,7 @@ fun BottomSheetArticleAdd(uiState: ArticleScreenState)
                     enterArticle.value = Pair(0, "")
                 }
             )
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_2)))
+            Spacer(Modifier.height(Dimen.bsSpacerHeight2))
         }
     }
 }

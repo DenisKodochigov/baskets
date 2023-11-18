@@ -14,6 +14,5 @@ class AppBase: Application()  {
     }
     companion object App{
         var scale: Int = 1
-
     }
 }

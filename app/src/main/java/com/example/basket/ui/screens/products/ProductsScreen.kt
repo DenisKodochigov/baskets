@@ -19,13 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SwipeToDismiss
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -41,10 +36,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,11 +62,13 @@ import com.example.basket.ui.components.ShowArrowVer
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.dialog.EditQuantityDialog
 import com.example.basket.ui.components.showFABs
+import com.example.basket.ui.theme.Dimen
 import com.example.basket.ui.theme.SectionColor
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
-import com.example.basket.utils.bottomBarAnimatedScroll
+import com.example.basket.utils.ItemSwipe
+import com.example.basket.utils.animatedScroll
 import kotlin.math.roundToInt
 
 @Composable
@@ -150,7 +149,7 @@ fun ProductsScreenLayout(uiState: ProductsScreenState
         Column(
             Modifier
                 .fillMaxHeight()
-                .bottomBarAnimatedScroll(
+                .animatedScroll(
                     height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
                     offsetHeightPx = bottomBarOffsetHeightPx
                 ), ) {
@@ -208,7 +207,7 @@ fun ProductLazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+            .padding(vertical = Dimen.lazyPaddingVer)
     ) {
         items(items = uiState.products) { item ->
             Column(modifier = Modifier
@@ -230,7 +229,6 @@ fun ProductLazyColumn(
     ShowArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.products.isNotEmpty(), drawLine = false)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductsLayoutColum(
     products: List<Product> ,
@@ -241,23 +239,16 @@ fun ProductsLayoutColum(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+        modifier = Modifier.padding(vertical = Dimen.lazyPaddingVer)
     ) {
         for (product in products){
             key(product.idProduct){
-                val dismissState = rememberDismissState(
-                    confirmValueChange = {
-                        if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
-                            putProductInBasket( product ) }
-                        false }
-                    , positionalThreshold = { 250.dp.toPx() }
-                )
-                SwipeToDismiss(
-                    state = dismissState,
-                    modifier = Modifier.padding(vertical = 1.dp),
-                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                    background = {  },
-                    dismissContent = { SectionProduct(product, doSelected, editProduct) },
+                ItemSwipe(
+                    frontFon = { SectionProduct(product, doSelected, editProduct) },
+                    actionDragLeft = { putProductInBasket( product ) },
+                    actionDragRight = { putProductInBasket( product ) },
+                    iconLeft = ImageVector.vectorResource(id =  R.drawable.ic_null),
+                    iconRight = ImageVector.vectorResource(id =  R.drawable.ic_null),
                 )
             }
         }
@@ -298,9 +289,9 @@ fun SectionProduct(
                     .weight(1f)
                     .clickable { doSelected(sectionItems.idProduct) }
                     .padding(
-                        start = dimensionResource(R.dimen.lazy_padding_hor),
-                        top = dimensionResource(R.dimen.lazy_padding_ver),
-                        bottom = dimensionResource(R.dimen.lazy_padding_ver)
+                        start = Dimen.lazyPaddingHor,
+                        top = Dimen.lazyPaddingVer,
+                        bottom = Dimen.lazyPaddingVer
                     ),
                 style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
                 textAlign = TextAlign.Start
@@ -314,7 +305,7 @@ fun SectionProduct(
                 textAlign = TextAlign.End,
                 modifier = Modifier
                     .width(70.dp)
-                    .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+                    .padding(vertical = Dimen.lazyPaddingVer)
                     .clickable { editProduct(sectionItems) },
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -323,7 +314,7 @@ fun SectionProduct(
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .width(50.dp)
-                    .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+                    .padding(vertical = Dimen.lazyPaddingVer)
                     .clickable { doSelected(sectionItems.idProduct) }
             )
         }

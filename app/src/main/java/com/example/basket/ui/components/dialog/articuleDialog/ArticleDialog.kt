@@ -30,6 +30,7 @@ import com.example.basket.ui.components.ChipsUnit
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.basket.ui.components.MyTextH2
 import com.example.basket.ui.components.TextButtonOK
+import com.example.basket.ui.theme.Dimen
 
 @Composable
 fun EditArticleDialog(
@@ -98,7 +99,7 @@ fun LayoutAddEditArticle(
     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
         MyOutlinedTextFieldWithoutIcon(
             modifier = Modifier.fillMaxWidth(), enterValue = enterNameArticle, TypeKeyboard.TEXT)
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+        Spacer(Modifier.height(Dimen.bsSpacerHeight))
         Column(
             horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             /** Select unit*/
@@ -107,7 +108,7 @@ fun LayoutAddEditArticle(
                 edit = true,
                 unitArticle = article.value.unitApp,
                 onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+            Spacer(Modifier.height(Dimen.bsSpacerHeight))
             /** Select section*/
             ChipsSections(
                 edit = true,

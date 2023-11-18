@@ -10,12 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SwipeToDismiss
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,14 +38,13 @@ import com.example.basket.ui.bottomsheets.bottomSheetArticle.BottomSheetArticleS
 import com.example.basket.ui.bottomsheets.bottomSheetSectionSelect.BottomSheetSectionSelect
 import com.example.basket.ui.components.*
 import com.example.basket.ui.components.dialog.articuleDialog.EditArticleDialog
-import com.example.basket.ui.components.dialog.SelectSectionDialog
+import com.example.basket.ui.theme.Dimen
 import com.example.basket.ui.theme.SectionColor
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
-import com.example.basket.utils.DismissBackground
-import com.example.basket.utils.bottomBarAnimatedScroll
-import kotlinx.coroutines.delay
+import com.example.basket.utils.ItemSwipe
+import com.example.basket.utils.animatedScroll
 import kotlin.math.roundToInt
 
 @Composable
@@ -124,12 +118,12 @@ fun ArticleScreenLayout(uiState: ArticleScreenState)
     Box(
         Modifier
             .fillMaxSize()
-            .padding(bottom = dimensionResource(R.dimen.screen_padding_hor)) ) {
+            .padding(bottom = Dimen.screenPaddingHor) ) {
         Column(Modifier.fillMaxHeight()) {
             Column(
                 Modifier
                     .fillMaxHeight()
-                    .bottomBarAnimatedScroll(
+                    .animatedScroll(
                         height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
                         offsetHeightPx = bottomBarOffsetHeightPx
                     )
@@ -191,7 +185,7 @@ fun ArticleLazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+            .padding(vertical = Dimen.lazyPaddingVer)
     ) {
         items( items = uiState.articles ) {item ->
         Column( modifier = Modifier
@@ -219,7 +213,6 @@ fun ArticleLazyColumn(
 }
 ShowArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.articles.isNotEmpty(), drawLine = false)
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleLayoutColum(
     modifier: Modifier,
@@ -227,33 +220,19 @@ fun ArticleLayoutColum(
     editArticle: (Article) -> Unit,
     doSelected: (Long) -> Unit,
     doDelete: (List<Article>) -> Unit
-) {
-    var show by remember { mutableStateOf(true) }
-
+){
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
+        modifier = modifier.padding(vertical = Dimen.lazyPaddingVer)
     ) {
         for (article in articles){
             key(article.idArticle){
-                val dismissState = rememberDismissState(
-                    confirmValueChange = {
-                        if (it == DismissValue.DismissedToStart) {
-                            show = false
-                            article.isSelected = true
-                            doDelete(mutableListOf(article))
-                        } else if (it == DismissValue.DismissedToEnd) {
-                            editArticle( article )
-                        }
-                        false
-                    }, positionalThreshold = { 250.dp.toPx() }
-                )
-                SwipeToDismiss(
-                    state = dismissState,
-                    modifier = modifier.padding(vertical = 1.dp),
-                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                    background = { DismissBackground(dismissState) },
-                    dismissContent = { ElementColum(modifier, article, doSelected ) }
+                ItemSwipe(
+                    frontFon = { ElementColum(modifier, article, doSelected ) },
+                    actionDragLeft = {
+                        article.isSelected = true
+                        doDelete(mutableListOf(article))},
+                    actionDragRight = { editArticle( article ) },
                 )
             }
         }
@@ -264,8 +243,7 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit)
 {
     val localDensity = LocalDensity.current
     var heightIs by remember { mutableStateOf(0.dp) }
-//    val modifier = modifier.padding(vertical = dimensionResource(R.dimen.lazy_padding_ver))
-    
+
     Box (
         modifier
             .padding(horizontal = 6.dp)

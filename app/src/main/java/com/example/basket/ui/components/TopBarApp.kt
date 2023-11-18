@@ -21,17 +21,20 @@ import androidx.compose.ui.unit.max
 import com.example.basket.entity.ConstantApp
 import com.example.basket.entity.TypeText
 import com.example.basket.ui.theme.styleApp
+import com.example.basket.utils.log
 
 @Composable
 fun CollapsingToolbar(
     text: String,
     idImage:Int,
-    scrollOffset: Int,refreshScreen: MutableState<Boolean> = mutableStateOf(false)) {
+    scrollOffset: Int,
+    refreshScreen: MutableState<Boolean> = mutableStateOf(false)) {
 
-    val heightHeader = 340.dp
+    val heightHeader = 300.dp
     var so = (1.0 - scrollOffset/ConstantApp.MAX_OFFSET.toFloat()).toFloat()
     so = if (so < 0) 0F else so
     val plug = refreshScreen.value
+
     val imageSize by animateDpAsState(targetValue = max(0.dp,heightHeader * so), label = "")
 
     Column (modifier = Modifier.padding(top = 1.dp)){
@@ -39,7 +42,7 @@ fun CollapsingToolbar(
             Image(
                 painter =painterResource(id =  idImage ),
                 modifier = Modifier.height(imageSize),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.FillBounds,
                 contentDescription = "Photo"
             )
         }

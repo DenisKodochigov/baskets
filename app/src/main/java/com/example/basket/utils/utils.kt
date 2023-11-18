@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -84,18 +82,6 @@ fun createDoubleLisArticle(articles: List<Article>, sortingBy: SortingBy): List<
     return doubleList
 }
 
-fun createLisArticleFormDouble(articles: List<List<Article>>): List<Article>{
-    val listArticle = mutableListOf<Article>()
-    if (articles.isNotEmpty()) {
-        articles.forEach { lists->
-            lists.forEach { listArticle.add(it) }
-        }
-        listArticle.sortBy { it.nameArticle }
-    }
-    return listArticle
-}
-
-
 fun log(showLog: Boolean, text: String){
     if (showLog)Log.d("KDS", text)
 }
@@ -104,7 +90,7 @@ fun log(showLog: Boolean, text: String){
 @Composable
 fun DismissBackground(dismissState: DismissState) {
 
-    val direction = dismissState.dismissDirection ?: return@DismissBackground
+    val direction = dismissState.dismissDirection ?: return
     val alignment = when (direction) {
         DismissDirection.StartToEnd -> Alignment.CenterStart
         DismissDirection.EndToStart -> Alignment.CenterEnd
@@ -139,20 +125,20 @@ fun DismissBackground(dismissState: DismissState) {
     else Pair(0L, "")
 }
 
-@Composable fun itemSwipe(
+@Composable fun ItemSwipe(
     frontFon:@Composable () -> Unit,
     actionDragRight:()->Unit,
     actionDragLeft:()->Unit,
-    iconLeft: ImageVector,
-    iconRight: ImageVector
+    iconLeft: ImageVector = Icons.Default.Edit,
+    iconRight: ImageVector = Icons.Default.Delete
 ){
     val offsetX = remember { Animatable(0f) }
     val coroutineScope = rememberCoroutineScope()
-    val porogDraggable = 150.dp
+    val limitDraggable = 150.dp
 
     Box(modifier = Modifier.fillMaxWidth()
     ){
-        backFon(iconRight = iconRight,iconLeft = iconLeft)
+        BackFon(iconRight = iconRight,iconLeft = iconLeft)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -164,8 +150,8 @@ fun DismissBackground(dismissState: DismissState) {
                     orientation = Orientation.Horizontal,
                     onDragStopped = {
                         coroutineScope.launch {
-                            if (Dp(offsetX.value) > porogDraggable) actionDragRight()
-                            if (Dp((-1) * offsetX.value) > porogDraggable) actionDragLeft()
+                            if (Dp(offsetX.value) > limitDraggable) actionDragRight()
+                            if (Dp((-1) * offsetX.value) > limitDraggable) actionDragLeft()
                             offsetX.animateTo(
                                 targetValue = 0f,
                                 animationSpec = tween(
@@ -181,7 +167,7 @@ fun DismissBackground(dismissState: DismissState) {
         }
     }
 }
-@Composable fun backFon(iconLeft: ImageVector, iconRight: ImageVector){
+@Composable fun BackFon(iconLeft: ImageVector, iconRight: ImageVector){
     Row(modifier = Modifier.fillMaxWidth(). padding(horizontal = 12.dp)) {
         Icon(imageVector = iconLeft, contentDescription = "")
         Spacer(modifier = Modifier.weight(1f))

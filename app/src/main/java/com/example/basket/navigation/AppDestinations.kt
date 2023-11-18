@@ -5,7 +5,6 @@ import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingBasket
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -27,8 +26,8 @@ object BasketsDestination : ScreenDestination {
     override val icon = Icons.Filled.ShoppingBasket
     override val route = "baskets"
     override var textFAB = ""
-    override val pictureDay = R.drawable.bas
-    override val pictureNight = R.drawable.bas
+    override val pictureDay = R.drawable.basket_d
+    override val pictureNight = R.drawable.basket_n
     override val textHeader = R.string.baskets
     override var onClickFAB: () -> Unit = {  }
 }
@@ -40,8 +39,8 @@ object ProductsDestination : ScreenDestination {
     const val basketIdArg = "basket_type"
     val routeWithArgs = "${route}/{$basketIdArg}"
     val arguments = listOf(navArgument(basketIdArg) { type = NavType.LongType })
-    override val pictureDay = R.drawable.fon1
-    override val pictureNight = R.drawable.fon1_1
+    override val pictureDay = R.drawable.fon1_d
+    override val pictureNight = R.drawable.fon1_n
     override val textHeader = R.string.products_in_basket
     override var onClickFAB: () -> Unit = {  }
 }
@@ -50,8 +49,8 @@ object ArticlesDestination : ScreenDestination {
     override val icon = Icons.Filled.Dashboard
     override val route = "article"
     override var textFAB = ""
-    override val pictureDay = R.drawable.fon5
-    override val pictureNight = R.drawable.fon5_1
+    override val pictureDay = R.drawable.fon5_d
+    override val pictureNight = R.drawable.fon5_n
     override val textHeader = R.string.products
     override var onClickFAB: () -> Unit = {  }
 }
@@ -65,15 +64,15 @@ object SettingDestination : ScreenDestination {
     override val textHeader = R.string.settings_page
     override var onClickFAB: () -> Unit = {  }
 }
-object TestDestination : ScreenDestination {
-    override val icon = Icons.Filled.Sailing
-    override val route = "test"
-    override var textFAB = ""
-    override val pictureDay = 0
-    override val pictureNight = 0
-    override val textHeader = R.string.settings_page
-    override var onClickFAB: () -> Unit = {  }
-}
+//object TestDestination : ScreenDestination {
+//    override val icon = Icons.Filled.Sailing
+//    override val route = "test"
+//    override var textFAB = ""
+//    override val pictureDay = 0
+//    override val pictureNight = 0
+//    override val textHeader = R.string.settings_page
+//    override var onClickFAB: () -> Unit = {  }
+//}
 
 //object SingleAccount : ScreenDestination {
 //    // Added for simplicity, this icon will not in fact be used, as SingleAccount isn't
@@ -92,5 +91,5 @@ object TestDestination : ScreenDestination {
 //    override val route = "products"
 //}
 // Screens to be displayed in the top AppTabRow
-val appTabRowScreens = listOf(BasketsDestination, ArticlesDestination, TestDestination, SettingDestination)
+val appTabRowScreens = listOf(BasketsDestination, ArticlesDestination, SettingDestination) //, TestDestination)
 val listScreens = listOf(BasketsDestination, ArticlesDestination, ProductsDestination, SettingDestination)

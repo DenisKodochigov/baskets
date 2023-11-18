@@ -21,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.example.basket.R
 import com.example.basket.data.room.tables.ArticleDB
@@ -37,6 +36,7 @@ import com.example.basket.ui.components.MyExposedDropdownMenuBox
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIconClearing
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.screens.products.ProductsScreenState
+import com.example.basket.ui.theme.Dimen
 import com.example.basket.utils.selectSectionWithArticle
 import com.example.basket.utils.selectUnitWithArticle
 
@@ -52,7 +52,7 @@ fun BottomSheetProductAddEdit(uiState: ProductsScreenState,)
         onDismissRequest = {uiState.triggerRunOnClickFAB.value = false},
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
-            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_padding_hor)),
+            .padding(horizontal = Dimen.bsPaddingHor),
         shape = MaterialTheme.shapes.small,
         containerColor = BottomSheetDefaults.ContainerColor,
         contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
@@ -96,10 +96,10 @@ fun BottomSheetProductContent(uiState: ProductsScreenState, onAddProduct: (Produ
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_item_padding_hor)))
+            .padding(horizontal = Dimen.bsItemPaddingHor))
     {
         HeaderScreen( text = stringResource(R.string.add_product))
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+        Spacer(Modifier.height(Dimen.bsSpacerHeight))
         /** Select product*/
         MyExposedDropdownMenuBox(
             listItems = uiState.articles.map { Pair(it.idArticle, it.nameArticle) }.sortedBy { it.second },
@@ -108,7 +108,7 @@ fun BottomSheetProductContent(uiState: ProductsScreenState, onAddProduct: (Produ
             enterValue = enterArticle,
             filtering = true
         )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+        Spacer(Modifier.height(Dimen.bsSpacerHeight))
         Row(
             Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Top,
@@ -120,11 +120,10 @@ fun BottomSheetProductContent(uiState: ProductsScreenState, onAddProduct: (Produ
             title = stringResource(id = R.string.quantity),
             enterValue = enterValue,
             modifier = Modifier
-                .width(dimensionResource(id = R.dimen.bottom_sheet_value_width))
-//                .align(alignment = Alignment.CenterHorizontally)
+                .width(Dimen.bsValueWidth)
         )
-//        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
-            Spacer(Modifier.width(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+//        Spacer(Modifier.height(Dimen.bsSpacerHor))
+            Spacer(Modifier.width(Dimen.bsSpacerHeight))
         /** Select unit*/
         ChipsUnit(
             edit = false,
@@ -133,14 +132,14 @@ fun BottomSheetProductContent(uiState: ProductsScreenState, onAddProduct: (Produ
             onClick = { enterUnit.value = Pair(it.idUnit,it.nameUnit)})
         }
 
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
+        Spacer(Modifier.height(Dimen.bsSpacerHeight1))
         /** Select section*/
         ChipsSections(
             edit = false,
             listSection = uiState.sections,
             sectionArticle = uiState.articles.find { it.idArticle == enterArticle.value.first }?.section,
             onClick = { enterSection.value = Pair(it.idSection,it.nameSection)})
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height)))
+        Spacer(Modifier.height(Dimen.bsSpacerHeight))
         TextButtonOK(
             enabled = enterArticle.value.second != "",
             onConfirm = {
@@ -165,7 +164,7 @@ fun BottomSheetProductContent(uiState: ProductsScreenState, onAddProduct: (Produ
                 enterArticle.value = Pair(0, "")
                 enterValue.value = "1"
             })
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.bottom_sheet_spacer_height_1)))
+        Spacer(Modifier.height(Dimen.bsSpacerHeight1))
     }
 
 }
