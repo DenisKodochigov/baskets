@@ -1,7 +1,6 @@
 package com.example.basket.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -14,12 +13,10 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.core.view.WindowCompat
 import com.example.basket.AppBase
-import com.example.basket.R
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TypeText
 import com.example.basket.navigation.ScreenDestination
@@ -91,7 +88,7 @@ val DarkColorScheme = darkColorScheme(
 fun AppTheme(content: @Composable () -> Unit) {
 
     val darkTheme: Boolean = isSystemInDarkTheme()
-    val dynamicColor: Boolean = false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val dynamicColor: Boolean = false //&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val colorSchemeApp = when {
         dynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
         dynamicColor && !darkTheme -> dynamicLightColorScheme(LocalContext.current)

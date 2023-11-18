@@ -28,12 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.basket.R
 import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.UPDOWN
@@ -75,7 +73,7 @@ import com.example.basket.ui.theme.Dimen
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         BoxExistingSection(uiState)
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
-        ButtonConfirmText ( {uiState.onConfirmationSelectSection(uiState)} )
+        ButtonConfirmText { uiState.onConfirmationSelectSection(uiState) }
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
     }
 }
@@ -84,9 +82,7 @@ import com.example.basket.ui.theme.Dimen
 @Composable fun BoxExistingSection(uiState: BottomSheetInterface)
 {
     val listItems = uiState.sections.filter {
-        if (uiState.enteredNameSection.value != null) {
-                    it.nameSection.contains(uiState.enteredNameSection.value, ignoreCase = true)
-       } else true
+        it.nameSection.contains(uiState.enteredNameSection.value, ignoreCase = true)
     }
 
     val listState = rememberLazyGridState()

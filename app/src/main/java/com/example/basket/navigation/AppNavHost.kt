@@ -17,7 +17,6 @@ import com.example.basket.ui.screens.article.ArticlesScreen
 import com.example.basket.ui.screens.baskets.BasketsScreen
 import com.example.basket.ui.screens.products.ProductsScreen
 import com.example.basket.ui.screens.settings.SettingsScreen
-import com.example.basket.ui.screens.test.TestScreen
 
 @Composable
 fun AppNavHost(

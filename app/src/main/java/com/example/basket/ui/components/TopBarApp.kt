@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -21,7 +20,6 @@ import androidx.compose.ui.unit.max
 import com.example.basket.entity.ConstantApp
 import com.example.basket.entity.TypeText
 import com.example.basket.ui.theme.styleApp
-import com.example.basket.utils.log
 
 @Composable
 fun CollapsingToolbar(
