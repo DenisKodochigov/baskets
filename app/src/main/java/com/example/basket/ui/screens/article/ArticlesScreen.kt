@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +37,7 @@ import com.example.basket.ui.bottomsheets.bottomSheetSectionSelect.BottomSheetSe
 import com.example.basket.ui.components.*
 import com.example.basket.ui.components.dialog.articuleDialog.EditArticleDialog
 import com.example.basket.ui.theme.Dimen
-import com.example.basket.ui.theme.SectionColor
+import com.example.basket.ui.theme.colorApp
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
@@ -84,7 +83,7 @@ fun ArticleScreenLayout(uiState: ArticleScreenState)
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
-    val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
+    val offsetHeightPx = remember { mutableFloatStateOf(0f) }
 
     if (isSelectedId.value > 0L) {
         uiState.doSelected(isSelectedId.value)
@@ -114,22 +113,19 @@ fun ArticleScreenLayout(uiState: ArticleScreenState)
         deleteSelected.value = false
     }
 
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(bottom = Dimen.screenPaddingHor) ) {
+    Box(Modifier.fillMaxSize() ) {
         Column(Modifier.fillMaxHeight()) {
             Column(
                 Modifier
                     .fillMaxHeight()
                     .animatedScroll(
                         height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
-                        offsetHeightPx = bottomBarOffsetHeightPx
+                        offsetHeightPx = offsetHeightPx
                     )
                     .weight(1f)) {
                 ArticleLazyColumn(
                     uiState = uiState,
-                    scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt(),
+                    scrollOffset =-offsetHeightPx.floatValue.roundToInt(),
                     doSelected = { idItem -> isSelectedId.value = idItem },)
             }
             SwitcherButton(uiState.doChangeSortingBy)
@@ -182,25 +178,24 @@ fun ArticleLazyColumn(
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .padding(vertical = Dimen.lazyPaddingVer)
+        modifier = Modifier.clip(RoundedCornerShape(8.dp))
     ) {
         items( items = uiState.articles ) {item ->
         Column( modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
             .animateItemPlacement()
             .background(
-                if (uiState.articles.size == 1) SectionColor
+                if (uiState.articles.size == 1) colorApp.tertiaryContainer
                 else {
                     if (item[0].section.colorSection != 0L) Color(item[0].section.colorSection)
-                    else SectionColor
+                    else colorApp.tertiaryContainer
                 }
             )
         ){//SectionColor
             HeaderSection(
+                modifier = Modifier.padding(top = Dimen.lazyPaddingVer),
                 text = if ( uiState.sorting == SortingBy.BY_SECTION) item[0].section.nameSection
-                else stringResource(id = R.string.all), modifier = Modifier)
+                        else stringResource(id = R.string.all))
             ArticleLayoutColum(
                 modifier = Modifier,
                 articles = item,
@@ -227,7 +222,7 @@ fun ArticleLayoutColum(
         for (article in articles){
             key(article.idArticle){
                 ItemSwipe(
-                    frontFon = { ElementColum(modifier, article, doSelected ) },
+                    frontFon = { ElementColum( modifier, article, doSelected ) },
                     actionDragLeft = {
                         article.isSelected = true
                         doDelete(mutableListOf(article))},
@@ -244,22 +239,20 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit)
     var heightIs by remember { mutableStateOf(0.dp) }
 
     Box (
-        modifier
-            .padding(horizontal = 6.dp)
+        modifier.padding(horizontal = Dimen.lazyPaddingHor)
             .onGloballyPositioned { coordinates ->
-                heightIs = with(localDensity) { coordinates.size.height.toDp() }
-            })
+                heightIs = with(localDensity) { coordinates.size.height.toDp() } })
     {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier
                 .clip(shape = RoundedCornerShape(6.dp))
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.surface)
+                .background(color = colorApp.surface)
                 .clickable { doSelected(item.idArticle) }
         ) {
             Spacer( modifier = modifier
-                .width(8.dp)
+                .width(Dimen.widthIndicatorSelect)
                 .height(heightIs)
                 .background(if (item.isSelected) Color.Red else Color.LightGray)
                 .align(Alignment.CenterVertically)
@@ -268,8 +261,8 @@ fun ElementColum(modifier: Modifier, item: Article, doSelected: (Long)->Unit)
                 textAlign = TextAlign.Left,
                 modifier = modifier
                     .weight(1f)
-                    .padding(start = 6.dp)
-                    .padding(vertical = 6.dp),
+                    .padding(start = Dimen.lazyPaddingHor)
+                    .padding(vertical = Dimen.lazyPaddingVer),
                 style = styleApp(nameStyle = TypeText.TEXT_IN_LIST)
             )
             Spacer(modifier = modifier.width(4.dp))

@@ -53,7 +53,7 @@ package com.example.basket.ui.bottomsheets.bottomSheetsOld
 //        modifier = Modifier
 //            .testTag(TagsTesting.BASKETBOTTOMSHEET)
 //            .padding(horizontal = Dimen.bsPaddingHor),
-//        shape = MaterialTheme.shapes.small,
+//        shape = shapesApp.small,
 //        containerColor = BottomSheetDefaults.ContainerColor,
 //        contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
 //        tonalElevation = BottomSheetDefaults.Elevation,

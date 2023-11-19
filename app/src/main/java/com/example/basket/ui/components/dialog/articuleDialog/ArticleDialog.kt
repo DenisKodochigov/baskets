@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -23,13 +21,17 @@ import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Article
 import com.example.basket.entity.Section
 import com.example.basket.entity.TypeKeyboard
+import com.example.basket.entity.TypeText
 import com.example.basket.entity.UnitApp
 import com.example.basket.ui.components.ChipsSections
 import com.example.basket.ui.components.ChipsUnit
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.basket.ui.components.MyTextH2
+import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.theme.Dimen
+import com.example.basket.ui.theme.shapesApp
+import com.example.basket.ui.theme.styleApp
 
 @Composable
 fun EditArticleDialog(
@@ -42,7 +44,7 @@ fun EditArticleDialog(
     val articleLocal = remember{ mutableStateOf(article) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = MaterialTheme.shapes.small,
+        shape = shapesApp.small,
         confirmButton = { TextButtonOK( onConfirm = { onConfirm( articleLocal.value) } ) },
         text = { EditArticleDialogLayout( articleLocal, listUnit, listSection ) },
         title = {  MyTextH2(stringResource(R.string.change_article)) },
@@ -53,7 +55,7 @@ fun EditArticleDialog(
 fun EditArticleDialogLayout(
     article: MutableState<Article>, listUnit: List<UnitApp>, listSection: List<Section>,){
     Column {
-        Text(text = "")
+        TextApp(text = "", style = styleApp(nameStyle = TypeText.EDIT_TEXT))
         LayoutAddEditArticle(article = article, listUnit = listUnit, listSection = listSection)
     }
 }
@@ -95,7 +97,10 @@ fun LayoutAddEditArticle(
     )
 
 
-    Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)) {
         MyOutlinedTextFieldWithoutIcon(
             modifier = Modifier.fillMaxWidth(), enterValue = enterNameArticle, TypeKeyboard.TEXT)
         Spacer(Modifier.height(Dimen.bsSpacerHeight))

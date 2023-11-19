@@ -3,13 +3,12 @@ package com.example.basket.ui.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import com.example.basket.ui.theme.colorApp
 
 const val strokeWidth = 3f
 const val arrowWidthHor = 2f
@@ -24,7 +23,7 @@ const val  widthVer = 40f
 
 @Composable fun ArrowLeft()
 {
-    val colorLine = MaterialTheme.colorScheme.primary
+    val colorLine = colorApp.primary
     Canvas(modifier = Modifier.height(Dp(heightHor)).width(Dp(widthHor))) {
         drawLine(
             color = colorLine,
@@ -40,7 +39,7 @@ const val  widthVer = 40f
 }
 @Composable fun ArrowRight()
 {
-    val colorLine = MaterialTheme.colorScheme.primary
+    val colorLine = colorApp.primary
     Canvas(modifier = Modifier.height(Dp(heightHor)).width(Dp(widthHor))) {
         drawLine(
             color = colorLine,
@@ -56,7 +55,7 @@ const val  widthVer = 40f
 }
 @Composable fun ArrowUp()
 {
-    val colorLine = MaterialTheme.colorScheme.primary
+    val colorLine = colorApp.primary
     Canvas(modifier = Modifier.height(Dp(heightVer)).width(Dp(widthVer))) {
 
         drawLine(
@@ -74,7 +73,7 @@ const val  widthVer = 40f
 }
 @Composable fun ArrowDown()
 {
-    val colorLine = MaterialTheme.colorScheme.primary
+    val colorLine = colorApp.primary
     Canvas(modifier = Modifier.height(Dp(heightVer)).width(Dp(widthVer))) {
         drawLine(
             color = colorLine,
@@ -96,5 +95,5 @@ const val  widthVer = 40f
 }
 @Preview
 @Composable fun ArrowLeftPreview(){
-    ArrowLeft()
+    ArrowDown()
 }

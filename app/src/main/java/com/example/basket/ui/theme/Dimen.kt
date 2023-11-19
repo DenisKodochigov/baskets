@@ -4,12 +4,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object Dimen {
-    val lazyPaddingVer:Dp = 2.dp
+    val lazyPaddingVer:Dp = 8.dp
     val lazyPaddingHor:Dp = 12.dp
     val screenPaddingHor:Dp = 12.dp
     val lazyPaddingVer2:Dp = 4.dp
     val lazyPaddingHor2:Dp = 16.dp
-
+    val widthIndicatorSelect:Dp = 8.dp
     //Size icon
     val sizeFabSmall:Dp = 40.dp
     val sizeFabMedium:Dp = 50.dp
@@ -34,8 +34,6 @@ object Dimen {
     val bsItemPaddingVer = 12.dp
     val bsSpacerHeight = 12.dp
     val bsSpacerHeight1 = 24.dp
-    val bsSpacerHeight2 = 36.dp
-    val bsValueWidth = 100.dp
 }
 
 

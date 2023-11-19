@@ -81,6 +81,7 @@ import com.example.basket.ui.components.dialog.settingDialog.ChangeNameSectionDi
 import com.example.basket.ui.components.dialog.settingDialog.EditUnitDialog
 import com.example.basket.ui.components.ShowArrowVer
 import com.example.basket.ui.theme.Dimen
+import com.example.basket.ui.theme.colorApp
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.styleApp
 
@@ -221,7 +222,7 @@ fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
         modifier = modifier
             .clip(shape = RoundedCornerShape(6.dp))
             .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.surface)
+            .background(color = colorApp.surface)
             .clickable { doSelected(item.idSection) }
     ) {
         TextApp(
@@ -243,14 +244,14 @@ fun SectionLazyColumn(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
             .clip(shape = CircleShape)
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outline,
+                color = colorApp.outline,
                 shape = CircleShape
             )
             .clickable { changeColorSection.value = item }
             .background(color = Color(item.colorSection), shape = CircleShape))
         Spacer(modifier = Modifier.width(24.dp))
         Icon( imageVector = Icons.Filled.Delete, null,
-            tint = MaterialTheme.colorScheme.primary ,
+            tint = colorApp.primary ,
             modifier = Modifier.clickable { doDeleteSelected(listOf(
                 SectionDB(nameSection = item.nameSection,
                     idSection = item.idSection,
@@ -310,7 +311,7 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
                         modifier = Modifier
                             .clip(shape = RoundedCornerShape(6.dp))
                             .fillMaxWidth()
-                            .background(color = MaterialTheme.colorScheme.surface)
+                            .background(color = colorApp.surface)
                             .clickable { doSelected(item.idUnit) }
                     ) {
                         Spacer( modifier = Modifier
@@ -369,11 +370,11 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
             Box(
                 modifier = Modifier
                     .thumb(size = 20.dp, shape = CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(colorApp.primary)
                     .padding(8.dp),
             ){
-                Text(text = "A",
-                    color = MaterialTheme.colorScheme.inversePrimary,
+                TextApp(text = "A",
+//                    color = colorApp.inversePrimary,
                     style = TextStyle(fontSize = when (sliderPosition) {
                         0f -> 12.sp
                         1f -> 18.sp

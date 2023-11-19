@@ -17,9 +17,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -28,18 +26,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.TagsTesting
+import com.example.basket.entity.TypeText
 import com.example.basket.entity.UPDOWN
 import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductState
-import com.example.basket.ui.bottomsheets.component.ButtonConfirmText
+import com.example.basket.ui.bottomsheets.component.ButtonConfirm
 import com.example.basket.ui.bottomsheets.component.FieldName
 import com.example.basket.ui.components.ShowArrowVer
+import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.theme.Dimen
+import com.example.basket.ui.theme.colorApp
+import com.example.basket.ui.theme.shapesApp
+import com.example.basket.ui.theme.styleApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun BottomSheetProductSelect(uiState: BottomSheetInterface)
@@ -52,7 +53,7 @@ import com.example.basket.ui.theme.Dimen
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
             .padding(horizontal = Dimen.bsPaddingHor1),
-        shape = MaterialTheme.shapes.small,
+        shape = shapesApp.small,
         containerColor = BottomSheetDefaults.ContainerColor,
         contentColor = contentColorFor(BottomAppBarDefaults.containerColor),
         tonalElevation = BottomSheetDefaults.Elevation,
@@ -66,14 +67,15 @@ import com.example.basket.ui.theme.Dimen
 {
     Column(modifier = Modifier
         .fillMaxWidth()
-        .padding( horizontal = Dimen.bsPaddingHor, vertical = Dimen.bsItemPaddingVer),
+        .padding(horizontal = Dimen.bsPaddingHor, vertical = Dimen.bsItemPaddingVer),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
         FieldName(uiState.enteredNameProduct)
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         BoxExistingArticles(uiState)
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
-        ButtonConfirmText {
+
+        ButtonConfirm {
             clearSelectedProduct(uiState)
             uiState.onConfirmationSelectArticleProduct(uiState)
         }
@@ -112,22 +114,19 @@ import com.example.basket.ui.theme.Dimen
                 .fillMaxWidth()
         ) {
             items(listItems) { article ->
-                Text(
+                TextApp(
                     text = article.nameArticle,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    style = styleApp(nameStyle = TypeText.EDIT_TEXT),
                     modifier = Modifier
                         .animateItemPlacement()
-                        .clickable { uiState.enteredNameProduct.value = article.nameArticle
+                        .clickable {
+                            uiState.enteredNameProduct.value = article.nameArticle
                             uiState.selectedProduct.value = article
                             uiState.selectedSection.value = article.section
                             uiState.selectedUnit.value = article.unitApp
                         }
                         .padding(4.dp)
-                        .background(
-                            shape = MaterialTheme.shapes.medium,
-                            color = MaterialTheme.colorScheme.tertiaryContainer)
+                        .background(shape = shapesApp.medium, color = colorApp.surface)
                 )
             }
         }
@@ -142,6 +141,7 @@ fun clearSelectedProduct(uiState: BottomSheetInterface){
         }
     }
 }
+
 @Preview
 @Composable fun BottomSheetProductSelectLayoutPreview(){
     BottomSheetProductSelectContent(BottomSheetProductState())

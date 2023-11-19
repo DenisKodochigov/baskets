@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +31,7 @@ import com.example.basket.navigation.navigateToScreen
 import com.example.basket.ui.components.AppBottomBar
 import com.example.basket.ui.components.ExtendedFAB
 import com.example.basket.ui.theme.AppTheme
+import com.example.basket.ui.theme.colorApp
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.utils.animatedScroll
 import kotlin.math.roundToInt
@@ -51,7 +51,7 @@ fun MainApp() {
             modifier = Modifier
                 .padding(14.dp)
                 .semantics { testTagsAsResourceId = true }
-                .background(color = MaterialTheme.colorScheme.background)
+                .background(color = colorApp.background)
                 .animatedScroll( offsetHeightPx = offsetHeightPx,
                     height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR)),
             bottomBar = {

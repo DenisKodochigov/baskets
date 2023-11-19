@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -37,6 +36,8 @@ import com.example.basket.navigation.appTabRowScreens
 import com.example.basket.ui.theme.TabFadeInAnimationDelay
 import com.example.basket.ui.theme.TabFadeInAnimationDuration
 import com.example.basket.ui.theme.TabFadeOutAnimationDuration
+import com.example.basket.ui.theme.colorApp
+import com.example.basket.ui.theme.shapesApp
 
 @Composable
 fun AppBottomBar(currentScreen: ScreenDestination,
@@ -49,7 +50,7 @@ fun AppBottomBar(currentScreen: ScreenDestination,
         modifier = modifier
             .background(color = Color.Transparent)  //MaterialTheme.colorScheme.surface)
             .testTag(BOTTOM_APP_BAR)
-            .clip(shape = MaterialTheme.shapes.small)
+            .clip(shape = shapesApp.small)
     ) {
         Row(modifier = Modifier.padding(top=0.dp),
             verticalAlignment = Alignment.CenterVertically) {
@@ -84,15 +85,15 @@ private fun BottomTab(
     }
 
     val colorUnselected = Color(
-        MaterialTheme.colorScheme.primary.red,
-        MaterialTheme.colorScheme.primary.green,
-        MaterialTheme.colorScheme.primary.blue,
-        MaterialTheme.colorScheme.primary.alpha * 0.6f
+        colorApp.primary.red,
+        colorApp.primary.green,
+        colorApp.primary.blue,
+        colorApp.primary.alpha * 0.6f
     )
 
     val iconColor by animateColorAsState(
         label = "", animationSpec = animationSpec,
-        targetValue = if (selected) MaterialTheme.colorScheme.primary else colorUnselected,
+        targetValue = if (selected) colorApp.primary else colorUnselected,
     )
     Spacer(modifier = Modifier.width(12.dp))
     IconButton(

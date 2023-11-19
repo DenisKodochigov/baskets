@@ -9,23 +9,18 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -33,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.example.basket.entity.Article
 import com.example.basket.entity.Product
 import com.example.basket.entity.SortingBy
+import com.example.basket.ui.theme.colorApp
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -86,45 +82,6 @@ fun log(showLog: Boolean, text: String){
     if (showLog)Log.d("KDS", text)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DismissBackground(dismissState: DismissState) {
-
-    val direction = dismissState.dismissDirection ?: return
-    val alignment = when (direction) {
-        DismissDirection.StartToEnd -> Alignment.CenterStart
-        DismissDirection.EndToStart -> Alignment.CenterEnd
-    }
-    val icon = when (direction) {
-        DismissDirection.StartToEnd -> Icons.Default.Edit
-        DismissDirection.EndToStart -> Icons.Default.Delete
-    }
-    val colorIcon = when (direction) {
-        DismissDirection.StartToEnd -> Color.Green
-        DismissDirection.EndToStart -> Color.Red
-    }
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 12.dp), contentAlignment = alignment) {
-//        if (dismissState.progress.fraction != 1.0f)
-        Icon(icon, null, tint = colorIcon)
-    }
-}
-
-@Composable fun selectSectionWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
-    val article = listArticle.find { it.idArticle == id }
-    return if (article != null) {
-        Pair(article.section.idSection, article.section.nameSection)
-    } else Pair(0L, "")
-}
-
-@Composable fun selectUnitWithArticle(id: Long, listArticle: List<Article>): Pair<Long, String> {
-    val article = listArticle.find { it.idArticle == id }
-    return if (article != null) Pair(article.unitApp.idUnit, article.unitApp.nameUnit)
-    else Pair(0L, "")
-}
-
 @Composable fun ItemSwipe(
     frontFon:@Composable () -> Unit,
     actionDragRight:()->Unit,
@@ -138,7 +95,8 @@ fun DismissBackground(dismissState: DismissState) {
 
     Box(modifier = Modifier.fillMaxWidth()
     ){
-        BackFon(iconRight = iconRight,iconLeft = iconLeft)
+        BackFon(iconRight = iconRight,iconLeft = iconLeft,
+            modifier = Modifier.align(alignment = Alignment.Center))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,10 +125,16 @@ fun DismissBackground(dismissState: DismissState) {
         }
     }
 }
-@Composable fun BackFon(iconLeft: ImageVector, iconRight: ImageVector){
-    Row(modifier = Modifier.fillMaxWidth(). padding(horizontal = 12.dp)) {
-        Icon(imageVector = iconLeft, contentDescription = "")
+@Composable fun BackFon(iconLeft: ImageVector, iconRight: ImageVector, modifier: Modifier = Modifier){
+    Row(modifier = modifier.fillMaxWidth(). padding(horizontal = 12.dp)) {
+        Icon(imageVector = iconLeft,
+            contentDescription = "",
+            tint = colorApp.primary,
+            modifier = Modifier.padding(start = 8.dp))
         Spacer(modifier = Modifier.weight(1f))
-        Icon(imageVector = iconRight, contentDescription = "")
+        Icon(imageVector = iconRight,
+            contentDescription = "",
+            tint = colorApp.primary,
+            modifier = Modifier.padding(end = 8.dp))
     }
 }

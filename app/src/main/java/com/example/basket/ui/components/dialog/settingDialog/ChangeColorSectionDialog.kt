@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +27,8 @@ import com.example.basket.entity.Section
 import com.example.basket.ui.components.MyTextH1
 import com.example.basket.ui.components.MyTextH2
 import com.example.basket.ui.components.TextButtonOK
+import com.example.basket.ui.theme.colorApp
+import com.example.basket.ui.theme.shapesApp
 import com.example.basket.utils.SelectColor
 
 @Composable
@@ -38,9 +39,9 @@ fun ChangeColorSectionDialog(
 ){
     val itemLocal = remember { mutableStateOf(section) }
     AlertDialog(
-        modifier = Modifier.border(width = 1.dp, shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.primary),
+        modifier = Modifier.border(width = 1.dp, shape = shapesApp.small, color = colorApp.primary),
         onDismissRequest = onDismiss,
-        shape = MaterialTheme.shapes.small,
+        shape = shapesApp.small,
         confirmButton = { TextButtonOK( onConfirm = { onConfirm(itemLocal.value) } ) },
         title = { MyTextH1(stringResource(R.string.change_color), Modifier, TextAlign.Center) },
         text = { ChangeColorSectionLayout(itemLocal) },
@@ -61,7 +62,7 @@ fun ChangeColorSectionLayout(section: MutableState<Section>) {
                 .background(color = selectColor.value, shape = CircleShape)
                 .border(
                     width = 1.dp,
-                    color = MaterialTheme.colorScheme.outline,
+                    color = colorApp.outline,
                     shape = CircleShape
                 )
             )

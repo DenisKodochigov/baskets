@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -18,10 +16,14 @@ import androidx.compose.ui.unit.dp
 import com.example.basket.R
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.TypeKeyboard
+import com.example.basket.entity.TypeText
 import com.example.basket.entity.UnitApp
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIcon
 import com.example.basket.ui.components.MyTextH2
+import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.TextButtonOK
+import com.example.basket.ui.theme.shapesApp
+import com.example.basket.ui.theme.styleApp
 
 @Composable
 fun EditUnitDialog(
@@ -32,7 +34,7 @@ fun EditUnitDialog(
     val unitLocal = remember{ mutableStateOf(unitApp) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = MaterialTheme.shapes.small,
+        shape = shapesApp.small,
         confirmButton = { TextButtonOK( onConfirm = {
             onConfirm( unitLocal.value )
         } ) },
@@ -47,7 +49,7 @@ fun EditUnitDialog(
 @Composable
 fun EditUnitDialogLayout(unitApp: MutableState<UnitApp>){
     Column {
-        Text(text = "")
+        TextApp(text = "", style = styleApp(nameStyle = TypeText.EDIT_TEXT))
         LayoutAddEditUnit( unitApp = unitApp)
     }
 }

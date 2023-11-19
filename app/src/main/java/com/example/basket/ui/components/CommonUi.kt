@@ -15,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.RemoveDone
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,7 +24,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,12 +40,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,21 +51,23 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.basket.R
-import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.SortingBy
 import com.example.basket.entity.TagsTesting.BUTTON_OK
 import com.example.basket.entity.TypeKeyboard
 import com.example.basket.entity.TypeText
 import com.example.basket.entity.UPDOWN
+import com.example.basket.ui.theme.colorApp
+import com.example.basket.ui.theme.shapesApp
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
+import com.example.basket.utils.keyBoardOpt
 import com.example.basket.utils.log
 
 @Composable
 fun HeaderScreen(text: String, refreshScreen: MutableState<Boolean> = mutableStateOf(false) ) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-//        val plug = refreshScreen.value
+        val plug = refreshScreen.value
         TextApp(text = text, style = styleApp(nameStyle = TypeText.NAME_SCREEN))
     }
 }
@@ -114,7 +115,7 @@ fun MyExposedDropdownMenuBox(
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth(1f)
-                .background(color = MaterialTheme.colorScheme.surface)
+                .background(color = colorApp.surface)
                 .onFocusChanged { focusItem = it.isFocused },
             value = enteredText,
             singleLine = true,
@@ -132,7 +133,7 @@ fun MyExposedDropdownMenuBox(
                 TextApp(text = label, style = styleApp(nameStyle = TypeText.EDIT_TEXT_TITLE)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedLocal) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii).copy(imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text).copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
                     localFocusManager.moveFocus(FocusDirection.Next)
@@ -170,7 +171,6 @@ fun MyExposedDropdownMenuBox(
     }
 }
 
-
 @Composable fun TextApp(
     text: String,
     modifier: Modifier = Modifier,
@@ -186,7 +186,7 @@ fun MyExposedDropdownMenuBox(
         overflow = TextOverflow.Ellipsis,
         textAlign = textAlign,
         modifier = modifier,
-        color = MaterialTheme.colorScheme.onSurface
+        color = colorApp.onSurface
     )
 }
 @Composable
@@ -206,22 +206,7 @@ fun MyTextH2(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Composable
-fun TextButtonOK(onConfirm: () -> Unit, enabled: Boolean = true) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        log(true, "TextButtonOK")
-        TextButton(onClick = onConfirm, enabled = enabled) {
-            TextApp(
-                text = stringResource(R.string.ok),
-                modifier = Modifier.testTag(BUTTON_OK),
-                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST)
-            )
-        }
-    }
-}
+
 
 @Composable
 fun MyOutlinedTextFieldWithoutIcon(
@@ -231,16 +216,9 @@ fun MyOutlinedTextFieldWithoutIcon(
     val localFocusManager = LocalFocusManager.current
     var enterText by remember { mutableStateOf(enterValue.value) }
 
-    val keyboardOptions = when (typeKeyboard) {
-        TypeKeyboard.TEXT -> {
-            KeyboardOptions(keyboardType = KeyboardType.Ascii,
-                capitalization = KeyboardCapitalization.Sentences).copy(imeAction = ImeAction.Done) }
-        TypeKeyboard.DIGIT -> {
-            KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done) }
-        else -> { KeyboardOptions.Default.copy(imeAction = ImeAction.Done) }
-    }
+    val keyboardOptions = keyBoardOpt(typeKeyboard)
     OutlinedTextField(
-        modifier = modifier.background(color = MaterialTheme.colorScheme.surface),
+        modifier = modifier.background(color = colorApp.surface),
         value = enterText,
         singleLine = true,
         textStyle = styleApp(nameStyle = TypeText.EDIT_TEXT),
@@ -265,7 +243,7 @@ fun MyOutlinedTextFieldWithoutIcon(
 fun MyOutlinedTextFieldWithoutIconClearing(
     modifier: Modifier,
     enterValue: MutableState<String>,
-    typeKeyboard: String,
+    typeKeyboard: TypeKeyboard,
     title: String = ""
 ) {
     val localFocusManager = LocalFocusManager.current
@@ -273,10 +251,10 @@ fun MyOutlinedTextFieldWithoutIconClearing(
     var enterText by remember { mutableStateOf("") }
     enterText = if (!focusItem) enterValue.value else ""
 //    val keyboardController = LocalSoftwareKeyboardController.current
-    val keyboardOptions = if (typeKeyboard == "text") KeyboardOptions(keyboardType = KeyboardType.Ascii).copy(imeAction = ImeAction.Done)
-        else KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done)
+    val keyboardOptions = keyBoardOpt(typeKeyboard)
+
     Column(modifier = modifier) {
-        Text(
+        TextApp(
             text = title,
             style = styleApp(TypeText.NAME_SLIDER),
             modifier = Modifier.padding(start = 12.dp)
@@ -284,7 +262,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(
         OutlinedTextField(
             modifier = modifier
                 .onFocusChanged { focusItem = it.isFocused }
-                .background(color = MaterialTheme.colorScheme.surface),
+                .background(color = colorApp.surface),
             value = enterText,
             singleLine = true,
             textStyle = styleApp(nameStyle = TypeText.EDIT_TEXT),
@@ -304,17 +282,6 @@ fun MyOutlinedTextFieldWithoutIconClearing(
 //        leadingIcon = { enterText = onAddIconEditText(onNewArticle,enterText) },
 //        trailingIcon = { enterText = onAddIconEditText(onNewArticle,enterText) }
         )
-    }
-}
-
-@Composable fun ButtonCircle( modifier: Modifier, iconButton: ImageVector, onClick: () -> Unit) {
-    val radius = 25.dp
-    IconButton (
-        modifier = modifier
-            .clip(RoundedCornerShape(radius, radius, radius, radius))
-            .size(60.dp),
-        onClick = { onClick() }) {
-        Icon( imageVector = iconButton, null, tint = MaterialTheme.colorScheme.primary , modifier = Modifier.size(60.dp))
     }
 }
 
@@ -392,8 +359,7 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
 @Composable fun ShowArrowVer(enable:Boolean, direction: UPDOWN, drawLine: Boolean){
 
     Column(modifier = Modifier.fillMaxWidth()){
-        if (direction == UPDOWN.UP && drawLine){
-            Divider(color = MaterialTheme.colorScheme.primary, thickness = 1.dp)}
+        if (direction == UPDOWN.UP && drawLine) Divider(color = colorApp.primary, thickness = 1.dp)
 
         Row(modifier = Modifier.fillMaxWidth(),  horizontalArrangement = Arrangement.Center) {
             if( enable ) {
@@ -401,8 +367,7 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
             }
             else ArrowNoneVer()
         }
-        if (direction == UPDOWN.DOWN && drawLine){
-            Divider(color = MaterialTheme.colorScheme.primary, thickness = 1.dp)    }
+        if (direction == UPDOWN.DOWN && drawLine) Divider(color = colorApp.primary, thickness = 1.dp)
     }
 }
 @Composable fun ShowArrowHor(enable:Boolean, direction: UPDOWN, drawLine: Boolean){
@@ -411,12 +376,16 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
         horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically)
     {
         if (direction == UPDOWN.START && drawLine){
-            Divider(color = MaterialTheme.colorScheme.primary, modifier = Modifier.fillMaxHeight().width(1.dp))}
+            Divider(color = colorApp.primary, modifier = Modifier
+                .fillMaxHeight()
+                .width(1.dp))}
 
         if( enable ) { if (direction == UPDOWN.START) ArrowLeft() else ArrowRight()}
         else ArrowNoneHor()
         if (direction == UPDOWN.END && drawLine){
-            Divider(color = MaterialTheme.colorScheme.primary, modifier = Modifier.fillMaxHeight().width(1.dp))}
+            Divider(color = colorApp.primary, modifier = Modifier
+                .fillMaxHeight()
+                .width(1.dp))}
     }
 }
 
@@ -425,25 +394,14 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
                              enterValue: MutableState<String>, typeKeyboard: TypeKeyboard)
 {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val keyboardOptions = when (typeKeyboard){
-        TypeKeyboard.TEXT -> {
-            KeyboardOptions(keyboardType = KeyboardType.Ascii,
-                capitalization = KeyboardCapitalization.Sentences).copy(imeAction = ImeAction.Done)}
-        TypeKeyboard.DIGIT -> {
-            KeyboardOptions(keyboardType = KeyboardType.Decimal).copy(imeAction = ImeAction.Done) }
-        else -> { KeyboardOptions.Default.copy(imeAction = ImeAction.Done)}
-    }
+    val keyboardOptions = keyBoardOpt(typeKeyboard)
     BasicTextField(
         value = enterValue.value,
         onValueChange = { enterValue.value = it },
         singleLine = true,
         maxLines = 1,
         modifier = modifier
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                shape = MaterialTheme.shapes.extraSmall
-            ),
+            .border(width = 1.dp, color = colorApp.onPrimaryContainer, shape = shapesApp.extraSmall),
         textStyle = TextStyle(
             fontSize = 20.sp,
             fontWeight = FontWeight.Light,
@@ -455,4 +413,61 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
         keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     )
+}
+@Composable fun ButtonApp(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier =Modifier,
+    enabled: Boolean = true,
+){
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors (
+            containerColor= colorApp.secondaryContainer,
+            contentColor = colorApp.onSecondaryContainer,
+            disabledContainerColor = colorApp.surface,
+            disabledContentColor = colorApp.onSurface
+        ),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 6.dp,
+            pressedElevation = 0.dp,
+            focusedElevation = 8.dp,
+            hoveredElevation = 6.dp,
+            disabledElevation= 6.dp
+        ),
+        modifier = modifier
+    ) {
+        Text(text = text)
+    }
+}
+
+@Composable fun ButtonCircle( modifier: Modifier, iconButton: ImageVector, onClick: () -> Unit) {
+    val radius = 25.dp
+    IconButton (
+        modifier = modifier
+            .clip(RoundedCornerShape(radius, radius, radius, radius))
+            .size(60.dp),
+        onClick = { onClick() }) {
+        Icon(
+            imageVector = iconButton, null,
+            tint = colorApp.primary ,
+            modifier = Modifier.size(60.dp))
+    }
+}
+@Composable
+fun TextButtonOK(onConfirm: () -> Unit, enabled: Boolean = true) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        log(true, "TextButtonOK")
+        TextButton(onClick = onConfirm, enabled = enabled) {
+            TextApp(
+                text = stringResource(R.string.ok),
+                modifier = Modifier.testTag(BUTTON_OK),
+                style = styleApp(nameStyle = TypeText.TEXT_IN_LIST)
+            )
+        }
+    }
 }

@@ -12,8 +12,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -28,14 +26,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TagsTesting.FAB_PLUS
+import com.example.basket.entity.TypeText
+import com.example.basket.ui.theme.colorApp
 import com.example.basket.ui.theme.sizeApp
-import com.example.basket.utils.log
+import com.example.basket.ui.theme.styleApp
 
 
 @Composable fun ExtendedFAB(
+    modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Filled.Add,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     refreshScreen:Boolean = true,
     text: String
 ){
@@ -47,13 +47,13 @@ import com.example.basket.utils.log
         icon = {
             Icon(
                 icon, null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                tint = colorApp.onPrimaryContainer,
                 modifier = Modifier
                     .padding(sizeApp(SizeElement.PADDING_FAB))
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+                    .background(color = colorApp.primaryContainer)
             )
         },
-        text = { Text(text = text) },
+        text = { TextApp(text = text, style = styleApp(nameStyle = TypeText.EDIT_TEXT)) },
     )
 }
 
@@ -75,11 +75,11 @@ fun FloatingActionButtonApp( offset: Dp,
     {
         Icon(
             icon, null,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            tint = colorApp.onPrimaryContainer,
             modifier = Modifier
                 .padding(sizeApp(SizeElement.PADDING_FAB))
                 .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.primaryContainer)
+                .background(color = colorApp.primaryContainer)
         )
     }
 }

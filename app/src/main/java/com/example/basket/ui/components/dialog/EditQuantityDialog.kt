@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -22,11 +21,13 @@ import com.example.basket.data.room.tables.ProductDB
 import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Product
+import com.example.basket.entity.TypeKeyboard
 import com.example.basket.entity.UnitApp
 import com.example.basket.ui.components.MyExposedDropdownMenuBox
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIconClearing
 import com.example.basket.ui.components.MyTextH2
 import com.example.basket.ui.components.TextButtonOK
+import com.example.basket.ui.theme.shapesApp
 
 @Composable
 fun EditQuantityDialog(
@@ -41,7 +42,7 @@ fun EditQuantityDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = MaterialTheme.shapes.small,
+        shape = shapesApp.small,
         title = { MyTextH2(stringResource(R.string.change_quantity)) },
         text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
         confirmButton = {
@@ -83,7 +84,7 @@ fun EditQuantityDialogLayout(
         /** Value*/
         MyOutlinedTextFieldWithoutIconClearing(
             enterValue = enterValue,
-            typeKeyboard = "digit",
+            typeKeyboard = TypeKeyboard.TEXT,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .width(120.dp)

@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +28,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import com.example.basket.entity.UPDOWN
 import com.example.basket.ui.components.ShowArrowHor
+import com.example.basket.ui.theme.colorApp
 import com.example.basket.ui.theme.massColor
 
 @Composable fun SelectColor( doSelectedColor: (Int) -> Unit) {
@@ -60,7 +60,7 @@ import com.example.basket.ui.theme.massColor
                             .clickable { doSelectedColor(downIntensityColor(item)) }
                             .border(
                                 width = 1.dp,
-                                color = MaterialTheme.colorScheme.outline,
+                                color = colorApp.outline,
                                 shape = CircleShape
                             )
                         )

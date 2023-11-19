@@ -13,6 +13,7 @@
     <string name="edit_section">Изменить имя отдел</string>
     <string name="change_color">Выберите цвет</string>
 
+    <string name="product">Товар</string>
     <string name="products">Товары</string>
     <string name="add_product">Добавить товар</string>
     <string name="change_article">Изменить товар</string>
@@ -47,7 +48,6 @@
     <string name="quantity">Количество</string>
     <string name="in_section">в отделе</string>
 
-    <string name="bs_unit_not_selected">Ед.изм не выбрана</string>
-    <string name="bs_section_not_selected">Отдел не выбран</string>
-    <string name="bs_product_not_selected">ТОвар не выбран</string>
+    <string name="bs_unit_not_selected">Не выбрана</string>
+    <string name="bs_not_selected">Не выбран</string>
 </resources>

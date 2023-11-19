@@ -2,6 +2,7 @@ package com.example.basket.ui.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.darkColorScheme
@@ -84,12 +85,14 @@ val DarkColorScheme = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+lateinit var colorApp: ColorScheme
+
 @Composable
 fun AppTheme(content: @Composable () -> Unit) {
 
     val darkTheme: Boolean = isSystemInDarkTheme()
-    val dynamicColor: Boolean = false //&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val colorSchemeApp = when {
+    val dynamicColor = false //&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    colorApp = when {
         dynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
         dynamicColor && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
         darkTheme -> DarkColorScheme
@@ -99,11 +102,11 @@ fun AppTheme(content: @Composable () -> Unit) {
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorSchemeApp.primary.toArgb()
+            window.statusBarColor = colorApp.primary.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
-    MaterialTheme(colorScheme = colorSchemeApp, content = content, shapes = shapes)
+    MaterialTheme(colorScheme = colorApp, content = content, shapes = shapesApp)
 }
 
 @Composable fun styleApp(nameStyle: TypeText): TextStyle{
@@ -182,6 +185,7 @@ fun AppTheme(content: @Composable () -> Unit) {
         }
     }
 }
+
 @Composable fun getIdImage(screen: ScreenDestination):Int{
     val dayNight = isSystemInDarkTheme()
     return if (dayNight) screen.pictureNight else screen.pictureDay

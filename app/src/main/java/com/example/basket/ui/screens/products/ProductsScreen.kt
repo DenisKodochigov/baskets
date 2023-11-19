@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -62,7 +61,7 @@ import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.dialog.EditQuantityDialog
 import com.example.basket.ui.components.showFABs
 import com.example.basket.ui.theme.Dimen
-import com.example.basket.ui.theme.SectionColor
+import com.example.basket.ui.theme.colorApp
 import com.example.basket.ui.theme.getIdImage
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
@@ -113,7 +112,7 @@ fun ProductsScreenLayout(uiState: ProductsScreenState
     val unSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     val changeSectionSelected: MutableState<Boolean> = remember { mutableStateOf(false) }
     var startScreen by remember { mutableStateOf(false) } // Индикатор первого запуска окна
-    val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
+    val offsetHeightPx = remember { mutableFloatStateOf(0f) }
 
     if (isSelectedId.value > 0L) {
         uiState.doSelected(isSelectedId.value)
@@ -150,11 +149,11 @@ fun ProductsScreenLayout(uiState: ProductsScreenState
                 .fillMaxHeight()
                 .animatedScroll(
                     height = sizeApp(SizeElement.HEIGHT_BOTTOM_BAR),
-                    offsetHeightPx = bottomBarOffsetHeightPx
+                    offsetHeightPx = offsetHeightPx
                 ), ) {
             ProductLazyColumn(
                 uiState = uiState,
-                scrollOffset =-bottomBarOffsetHeightPx.floatValue.roundToInt(),
+                scrollOffset =-offsetHeightPx.floatValue.roundToInt(),
                 doSelected = { idItem -> isSelectedId.value = idItem } )
         }
         startScreen = showFABs(
@@ -204,9 +203,7 @@ fun ProductLazyColumn(
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .padding(vertical = Dimen.lazyPaddingVer)
+        modifier = Modifier.clip(RoundedCornerShape(8.dp))
     ) {
         items(items = uiState.products) { item ->
             Column(modifier = Modifier
@@ -214,9 +211,10 @@ fun ProductLazyColumn(
                 .animateItemPlacement()
                 .background(
                     if (item[0].article.section.colorSection != 0L) Color(item[0].article.section.colorSection)
-                    else SectionColor
+                    else colorApp.tertiaryContainer
                 )) {
-                HeaderSection(text = item[0].article.section.nameSection, modifier = Modifier)
+                HeaderSection(text = item[0].article.section.nameSection,
+                    modifier = Modifier.padding(top = Dimen.lazyPaddingVer))
                 ProductsLayoutColum(
                     products = item,
                     putProductInBasket = uiState.putProductInBasket,
@@ -234,12 +232,10 @@ fun ProductsLayoutColum(
     putProductInBasket: (Product) -> Unit,
     editProduct: (Product) -> Unit,
     doSelected: (Long) -> Unit
-) {
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+){
+    Column( verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(vertical = Dimen.lazyPaddingVer)
-    ) {
+    ){
         for (product in products){
             key(product.idProduct){
                 ItemSwipe(
@@ -262,22 +258,20 @@ fun SectionProduct(
 ){
     val localDensity = LocalDensity.current
     var heightIs by remember { mutableStateOf(0.dp) }
-    Box(
-        Modifier
-            .padding(horizontal = 6.dp)
+    Box( Modifier.padding(horizontal = Dimen.lazyPaddingHor)
             .onGloballyPositioned { coordinates ->
-                heightIs = with(localDensity) { coordinates.size.height.toDp() }
-            })
+                heightIs = with(localDensity) { coordinates.size.height.toDp() } })
     {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(6.dp))
-                .background(color = MaterialTheme.colorScheme.surface)
+                .background(color = colorApp.surface)
                 .fillMaxWidth()
-        ) {
+        ){
             Spacer(
                 modifier = Modifier
-                    .width(8.dp)
+                    .width(Dimen.widthIndicatorSelect)
                     .background(if (sectionItems.isSelected) Color.Red else Color.LightGray)
                     .height(heightIs)
                     .align(Alignment.CenterVertically)
@@ -296,33 +290,26 @@ fun SectionProduct(
                 textAlign = TextAlign.Start
             )
             Spacer(modifier = Modifier.width(4.dp))
+
             val num = if (sectionItems.value.rem(1).equals(0.0)) sectionItems.value.toInt()
             else sectionItems.value
 
             TextApp (text = num.toString(),
                 style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
                 textAlign = TextAlign.End,
-                modifier = Modifier
-                    .width(70.dp)
-                    .padding(vertical = Dimen.lazyPaddingVer)
-                    .clickable { editProduct(sectionItems) },
+                modifier = Modifier.width(70.dp).clickable { editProduct(sectionItems) },
             )
             Spacer(modifier = Modifier.width(4.dp))
             TextApp (text = sectionItems.article.unitApp.nameUnit,
                 style = styleApp(nameStyle = TypeText.TEXT_IN_LIST),
                 textAlign = TextAlign.Start,
-                modifier = Modifier
-                    .width(50.dp)
-                    .padding(vertical = Dimen.lazyPaddingVer)
-                    .clickable { doSelected(sectionItems.idProduct) }
+                modifier = Modifier.width(50.dp).clickable { doSelected(sectionItems.idProduct) }
             )
         }
         if ( sectionItems.putInBasket ) Divider(
-            color = MaterialTheme.colorScheme.onSurface,
+            color = colorApp.onSurface,
             thickness = 1.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = heightIs / 2, start = 8.dp, end = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = heightIs / 2, start = 8.dp, end = 8.dp)
         )
     }
 }
