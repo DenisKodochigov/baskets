@@ -87,7 +87,9 @@ fun BottomSheetProductAddGeneralLayOut (uiState: BottomSheetProductState)
     {
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         GroupButtons(uiState)
-        ButtonConfirm(onConfirm = {uiState.onConfirmation(returnSelectedProduct(uiState))})
+        ButtonConfirm( onConfirm = {
+            uiState.onConfirmation(returnSelectedProduct(uiState))
+        })
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
     }
 }
@@ -134,6 +136,12 @@ fun returnSelectedProduct(uiState: BottomSheetInterface): Product
         )
     }
 
+    uiState.selectedProduct.value = null
+    uiState.selectedSection.value = null
+    uiState.selectedUnit.value = null
+    uiState.enteredNameProduct.value = ""
+    uiState.enteredNameSection.value = ""
+    uiState.enteredNameUnit.value = ""
     return ProductDB(
         value = if (uiState.enteredAmount.value.isEmpty()) 1.0
         else uiState.enteredAmount.value.toDouble(),
