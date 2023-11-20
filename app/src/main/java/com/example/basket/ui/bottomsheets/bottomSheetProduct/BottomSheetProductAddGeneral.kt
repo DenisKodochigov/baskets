@@ -87,10 +87,8 @@ fun BottomSheetProductAddGeneralLayOut (uiState: BottomSheetProductState)
     {
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         GroupButtons(uiState)
-        ButtonConfirm( onConfirm = {
-            uiState.onConfirmation(returnSelectedProduct(uiState))
-        })
-        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
+        ButtonConfirm( onConfirm = { uiState.onConfirmation(returnSelectedProduct(uiState)) })
+        Spacer(modifier = Modifier.height(Dimen.bsSpacerHeight1))
     }
 }
 @Composable fun GroupButtons(uiState: BottomSheetInterface)
@@ -137,8 +135,10 @@ fun returnSelectedProduct(uiState: BottomSheetInterface): Product
     }
 
     uiState.selectedProduct.value = null
-    uiState.selectedSection.value = null
-    uiState.selectedUnit.value = null
+    if (uiState.selectedSection.value != null){
+        if (uiState.selectedSection.value!!.idSection == 0L) uiState.selectedSection.value = null }
+    if (uiState.selectedUnit.value != null){
+        if (uiState.selectedUnit.value!!.idUnit == 0L) uiState.selectedUnit.value = null }
     uiState.enteredNameProduct.value = ""
     uiState.enteredNameSection.value = ""
     uiState.enteredNameUnit.value = ""

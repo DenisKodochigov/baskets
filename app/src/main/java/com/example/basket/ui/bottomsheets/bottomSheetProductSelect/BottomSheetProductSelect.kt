@@ -87,13 +87,7 @@ import com.example.basket.ui.theme.styleApp
 @Composable fun BoxExistingArticles(uiState: BottomSheetInterface)
 {
     val listItems = uiState.articles.filter {
-        if (uiState.selectedSection.value != null) {
-            it.section == uiState.selectedSection.value &&
-            it.nameArticle.contains(uiState.enteredNameSection.value, ignoreCase = true)
-        } else if (uiState.selectedProduct.value != null) {
-            it.nameArticle.contains(uiState.enteredNameProduct.value, ignoreCase = true)
-        } else true
-    }
+            it.nameArticle.contains(uiState.enteredNameProduct.value, ignoreCase = true) }
 
     val listState = rememberLazyGridState()
     val showArrowUp = remember {
@@ -110,7 +104,7 @@ import com.example.basket.ui.theme.styleApp
             columns = GridCells.Adaptive(minSize = 90.dp),
             contentPadding = PaddingValues(8.dp),
             modifier = Modifier
-                .height(150.dp)
+                .height(250.dp)
                 .fillMaxWidth()
         ) {
             items(listItems) { article ->

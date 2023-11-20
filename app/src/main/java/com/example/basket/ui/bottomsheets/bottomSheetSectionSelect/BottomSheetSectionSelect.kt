@@ -103,7 +103,7 @@ import com.example.basket.ui.theme.styleApp
             columns = GridCells.Adaptive(minSize = 90.dp),
             contentPadding = PaddingValues(8.dp),
             modifier = Modifier
-                .height(70.dp)
+                .height(250.dp)
                 .fillMaxWidth()
         ) {
             items(items = listItems) { section ->
