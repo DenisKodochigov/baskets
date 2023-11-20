@@ -84,4 +84,22 @@ data class ArticleDB(
         this.section = section
         this.unitApp = unitApp
     }
+    @Ignore constructor(
+        nameArticle: String,
+        section: SectionDB,
+        unitApp: UnitDB
+    ): this(
+        idArticle= 0,
+        nameArticle = "",
+        position = 0,
+        sectionId= 0,
+        unitId= 0,
+        isSelected = false,
+        section = SectionDB(),
+        unitApp = UnitDB(0, "", false)
+    ){
+        this.nameArticle = nameArticle
+        this.section = section
+        this.unitApp = unitApp
+    }
 }

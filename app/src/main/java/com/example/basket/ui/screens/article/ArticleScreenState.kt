@@ -13,6 +13,7 @@ data class ArticleScreenState(
     val unitApp: List<UnitApp> = emptyList(),
     var refresh: Boolean = true,
     var triggerRunOnClickFAB: MutableState<Boolean> = mutableStateOf(false),
+    val editArticle: MutableState<Article?> = mutableStateOf(null),
     var onAddArticle: (Article) -> Unit = {},
     var changeArticle: (Article) -> Unit = {},
     var doChangeSectionSelected: (List<Article>, Long) -> Unit = {_,_->},

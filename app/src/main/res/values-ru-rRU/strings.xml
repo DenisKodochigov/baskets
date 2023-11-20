@@ -50,4 +50,6 @@
 
     <string name="bs_unit_not_selected">Не выбрана</string>
     <string name="bs_not_selected">Не выбран</string>
+    <string name="basket_text_fab">корзину</string>
+    <string name="product_text_fab">товар</string>
 </resources>

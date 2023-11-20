@@ -96,8 +96,8 @@ fun ProductScreenCreateView(basketId: Long, screen: ScreenDestination, viewModel
     uiState.idImage = getIdImage(screen)
     uiState.screenTextHeader = stringResource(screen.textHeader)
 
-    screen.textFAB = stringResource(id = R.string.products)
-    screen.onClickFAB = remember {{ uiState.triggerRunOnClickFAB.value = true}}
+    screen.textFAB = stringResource(id = R.string.product_text_fab)
+    screen.onClickFAB = remember {{ uiState.triggerRunOnClickFAB.value = true }}
 
     if (uiState.triggerRunOnClickFAB.value) BottomSheetProductAddGeneral( uiStateP = uiState)
     ProductsScreenLayout(uiState = uiState)
@@ -186,7 +186,6 @@ fun ProductLazyColumn(
     if (editProduct.value != null ) {
         EditQuantityDialog(
             product = editProduct.value!!,
-            listUnit = uiState.unitApp,
             onDismiss = { editProduct.value = null },
             onConfirm = {
                 editProduct.value = null

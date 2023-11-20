@@ -17,10 +17,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.InputChip
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -37,28 +35,21 @@ import com.example.basket.ui.theme.styleApp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable fun ChipsUnit(
+    edit: Boolean = true,
     listUnit: List<UnitApp>,
-    edit: Boolean,
-    onClick: (UnitApp) -> Unit,
-    unitArticle: UnitApp? )
+    unitArticle: UnitApp?,
+    onClick: (UnitApp) -> Unit, )
 {
-    var selectedUnit by remember { mutableStateOf<UnitApp>(UnitDB())}
-    if (unitArticle != null) selectedUnit = unitArticle
+    val selectedUnit = if (unitArticle != null) remember { mutableStateOf(unitArticle)}
+                        else remember { mutableStateOf(UnitDB() as UnitApp)}
 
     Column{
         TextApp(text = stringResource(id = R.string.units),
             style = styleApp(TypeText.NAME_SLIDER),
             modifier = Modifier.padding(start = 12.dp))
-        Box(
-            modifier = Modifier
-                .padding(top = 0.dp)
-                .border(
-                    width = 1.dp,
-                    color = colorApp.primary,
-                    shape = shapesApp.small
-                )
-        ) {
-
+        Box(modifier = Modifier.padding(top = 0.dp).border(width = 1.dp,
+                    color = colorApp.primary, shape = shapesApp.small)
+        ){
             FlowRow(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -66,14 +57,14 @@ import com.example.basket.ui.theme.styleApp
                 listUnit.forEach { unit ->
                     InputChip(
                         modifier = Modifier.padding(start = 4.dp),
-                        selected = unit == selectedUnit,
+                        selected = unit == selectedUnit.value,
                         label = {
                             TextApp(text = unit.nameUnit, textAlign = TextAlign.Center,
                                 style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL)) },
                         onClick = {
-                            if (unitArticle == null || (unitArticle != null && edit) ){
-                                selectedUnit = unit
-                                onClick(selectedUnit)
+                            if (edit){
+                                selectedUnit.value = unit
+                                onClick(selectedUnit.value)
                             }
                         },
                     )
@@ -85,14 +76,14 @@ import com.example.basket.ui.theme.styleApp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable fun ChipsSections(
-    edit: Boolean,
+    edit: Boolean = true,
     listSection: List<Section>,
     sectionArticle: Section?,
-    onClick: (Section) -> Unit) {
-
+    onClick: (Section) -> Unit)
+{
     val lazyState = rememberLazyStaggeredGridState()
-    var selectedSection by remember { mutableStateOf<Section>(SectionDB())}
-    if (sectionArticle != null) selectedSection = sectionArticle
+    val selectedSection = if (sectionArticle == null) remember { mutableStateOf(SectionDB() as Section)}
+                            else remember { mutableStateOf(sectionArticle)}
     Column {
         TextApp(
             text = stringResource(id = R.string.sections),
@@ -112,14 +103,14 @@ import com.example.basket.ui.theme.styleApp
                 items(listSection){ section ->
                     InputChip(
                         modifier = Modifier.padding(start = 2.dp, end =2.dp),
-                        selected = section == selectedSection,
+                        selected = section == selectedSection.value,
                         label = {
                             TextApp(text = section.nameSection,
                                     style = styleApp(nameStyle = TypeText.TEXT_IN_LIST_SMALL)) },
                         onClick = {
-                            if (sectionArticle == null || (sectionArticle != null && edit)){
-                                selectedSection = section
-                                onClick(selectedSection)
+                            if (edit){
+                                selectedSection.value = section
+                                onClick(selectedSection.value)
                             }
                         }
                     )

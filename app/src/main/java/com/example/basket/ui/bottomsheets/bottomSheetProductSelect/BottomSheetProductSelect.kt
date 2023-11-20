@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -104,7 +105,7 @@ import com.example.basket.ui.theme.styleApp
             columns = GridCells.Adaptive(minSize = 90.dp),
             contentPadding = PaddingValues(8.dp),
             modifier = Modifier
-                .height(250.dp)
+                .heightIn(min = 50.dp, max = 250.dp)
                 .fillMaxWidth()
         ) {
             items(listItems) { article ->

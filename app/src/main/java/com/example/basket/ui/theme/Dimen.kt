@@ -29,6 +29,7 @@ object Dimen {
 
     //Bottom sheet
     val bsPaddingHor = 12.dp
+    val bsPaddingVer = 12.dp
     val bsPaddingHor1 = 20.dp
     val bsItemPaddingHor = 24.dp
     val bsItemPaddingVer = 12.dp

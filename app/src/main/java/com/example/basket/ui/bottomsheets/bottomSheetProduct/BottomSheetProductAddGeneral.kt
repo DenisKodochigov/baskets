@@ -107,13 +107,13 @@ fun returnSelectedProduct(uiState: BottomSheetInterface): Product
 {
     val section = if (uiState.selectedSection.value != null) {
         if (uiState.selectedSection.value!!.nameSection == uiState.enteredNameSection.value){
-            uiState.selectedSection.value!!
+            uiState.selectedSection.value!! as SectionDB
         } else SectionDB(nameSection = uiState.enteredNameSection.value)
     } else SectionDB(nameSection = uiState.enteredNameSection.value)
 
     val unitA = if (uiState.selectedUnit.value != null) {
         if (uiState.selectedUnit.value!!.nameUnit == uiState.enteredNameUnit.value){
-            uiState.selectedUnit.value!!
+            uiState.selectedUnit.value!! as UnitDB
         } else UnitDB(nameUnit = uiState.enteredNameUnit.value)
     } else UnitDB(nameUnit = uiState.enteredNameUnit.value)
 
@@ -121,16 +121,15 @@ fun returnSelectedProduct(uiState: BottomSheetInterface): Product
         if (uiState.selectedProduct.value!!.nameArticle != uiState.enteredNameProduct.value){
             ArticleDB(
                 nameArticle = uiState.enteredNameProduct.value,
-                sectionId = section.idSection,
-                unitId = unitA.idUnit
+                section = section,
+                unitApp = unitA
             )
-        } else { uiState.selectedProduct.value!!  as ArticleDB
-        }
+        } else { uiState.selectedProduct.value!! as ArticleDB }
     } else {
         ArticleDB(
             nameArticle = uiState.enteredNameProduct.value,
-            sectionId = section.idSection,
-            unitId = unitA.idUnit
+            section = section,
+            unitApp = unitA
         )
     }
 

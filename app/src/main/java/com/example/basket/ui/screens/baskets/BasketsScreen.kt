@@ -87,7 +87,7 @@ fun BasketScreenCreateView(
     uiState.idImage = getIdImage(screen)
     uiState.screenTextHeader = stringResource(screen.textHeader)
 
-    screen.textFAB = stringResource(id = R.string.baskets)
+    screen.textFAB = stringResource(id = R.string.basket_text_fab)
     screen.onClickFAB = { uiState.triggerRunOnClickFAB.value = true}
 
     if (uiState.triggerRunOnClickFAB.value) AddBasketBottomSheet( uiState = uiState)

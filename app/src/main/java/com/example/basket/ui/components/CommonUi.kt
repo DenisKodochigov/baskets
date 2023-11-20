@@ -251,7 +251,6 @@ fun MyOutlinedTextFieldWithoutIconClearing(
     var enterText by remember { mutableStateOf("") }
     enterText = if (!focusItem) enterValue.value else ""
 //    val keyboardController = LocalSoftwareKeyboardController.current
-    val keyboardOptions = keyBoardOpt(typeKeyboard)
 
     Column(modifier = modifier) {
         TextApp(
@@ -271,7 +270,7 @@ fun MyOutlinedTextFieldWithoutIconClearing(
                 enterText = it
                 enterValue.value = it
             },
-            keyboardOptions = keyboardOptions,
+            keyboardOptions = keyBoardOpt(typeKeyboard),
             keyboardActions = KeyboardActions(
                 onDone = {
                     localFocusManager.moveFocus(FocusDirection.Next)
@@ -279,8 +278,6 @@ fun MyOutlinedTextFieldWithoutIconClearing(
 //                keyboardController?.hide()
                 }
             ),
-//        leadingIcon = { enterText = onAddIconEditText(onNewArticle,enterText) },
-//        trailingIcon = { enterText = onAddIconEditText(onNewArticle,enterText) }
         )
     }
 }
@@ -394,23 +391,27 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
                              enterValue: MutableState<String>, typeKeyboard: TypeKeyboard)
 {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val keyboardOptions = keyBoardOpt(typeKeyboard)
+    var focusItem by remember { mutableStateOf(false) }
+    enterValue.value = if (!focusItem) enterValue.value else ""
+
     BasicTextField(
         value = enterValue.value,
-        onValueChange = { enterValue.value = it },
+        onValueChange = {
+            focusItem = false
+            enterValue.value = it },
         singleLine = true,
         maxLines = 1,
-        modifier = modifier
+        modifier = modifier.onFocusChanged { focusItem = it.isFocused }
             .border(width = 1.dp, color = colorApp.onPrimaryContainer, shape = shapesApp.extraSmall),
         textStyle = TextStyle(
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Light,
             textAlign = textAlign),
         decorationBox = {
             Row( verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)){ it() }
         },
-        keyboardOptions = keyboardOptions,
+        keyboardOptions = keyBoardOpt(typeKeyboard),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     )
 }

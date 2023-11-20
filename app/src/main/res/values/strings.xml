@@ -51,4 +51,6 @@
 
     <string name="bs_not_selected">Not selected</string>
     <string name="bs_unit_not_selected">Not selected</string>
+    <string name="basket_text_fab">basket</string>
+    <string name="product_text_fab">product</string>
 </resources>

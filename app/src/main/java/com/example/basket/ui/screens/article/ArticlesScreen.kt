@@ -29,13 +29,12 @@ import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.SortingBy
 import com.example.basket.entity.TypeText
-import com.example.basket.entity.UPDOWN
 import com.example.basket.navigation.ScreenDestination
 import com.example.basket.ui.bottomsheets.bottomSheetArticle.BottomSheetArticleGeneral
 import com.example.basket.ui.bottomsheets.bottomSheetArticle.BottomSheetArticleState
+import com.example.basket.ui.bottomsheets.bottomSheetArticleEdit.BottomSheetArticleEdit
 import com.example.basket.ui.bottomsheets.bottomSheetSectionSelect.BottomSheetSectionSelect
 import com.example.basket.ui.components.*
-import com.example.basket.ui.components.dialog.articuleDialog.EditArticleDialog
 import com.example.basket.ui.theme.Dimen
 import com.example.basket.ui.theme.colorApp
 import com.example.basket.ui.theme.getIdImage
@@ -67,7 +66,7 @@ fun ArticleScreenInitDate(viewModel: ArticleViewModel, screen: ScreenDestination
     uiState.idImage = getIdImage(screen)
     uiState.screenTextHeader = stringResource(screen.textHeader)
 
-    screen.textFAB = stringResource(id = R.string.products)
+    screen.textFAB = stringResource(id = R.string.product_text_fab)
     screen.onClickFAB = { uiState.triggerRunOnClickFAB.value = true}
 
     if (uiState.triggerRunOnClickFAB.value) BottomSheetArticleGeneral(uiStateA = uiState)
@@ -149,37 +148,19 @@ fun ArticleLazyColumn(
     doSelected: (Long) -> Unit,
 ) {
     val listState = rememberLazyListState()
-    val editArticle: MutableState<Article?> = remember { mutableStateOf(null) }
 
-    val showArrowUp = remember {
-        derivedStateOf { listState.layoutInfo.visibleItemsInfo.firstOrNull()?.index != 0 }}.value
-    val showArrowDown = remember {
-        derivedStateOf { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index !=
-            listState.layoutInfo.totalItemsCount - 1 } }.value
+    if (uiState.editArticle.value != null) BottomSheetArticleEdit(uiState)
 
-    if (editArticle.value != null) {
-        EditArticleDialog(
-            article = editArticle.value!!,
-            listUnit = uiState.unitApp,
-            listSection = uiState.sections,
-            onDismiss = { editArticle.value = null },
-            onConfirm = {
-                uiState.changeArticle(it)
-                editArticle.value = null
-            }
-        )
-    }
     CollapsingToolbar(
         text = uiState.screenTextHeader,
         idImage = uiState.idImage,
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
-    ShowArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.articles.isNotEmpty(), drawLine = false)
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
-    ) {
+    ){
         items( items = uiState.articles ) {item ->
         Column( modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
@@ -199,19 +180,18 @@ fun ArticleLazyColumn(
             ArticleLayoutColum(
                 modifier = Modifier,
                 articles = item,
-                editArticle = { article -> editArticle.value = article },
+                doEditArticle = { article -> uiState.editArticle.value = article },
                 doSelected = doSelected,
                 doDelete = { items -> uiState.doDeleteSelected( items ) })
+            }
         }
     }
-}
-ShowArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.articles.isNotEmpty(), drawLine = false)
 }
 @Composable
 fun ArticleLayoutColum(
     modifier: Modifier,
     articles: List<Article>,
-    editArticle: (Article) -> Unit,
+    doEditArticle: (Article) -> Unit,
     doSelected: (Long) -> Unit,
     doDelete: (List<Article>) -> Unit
 ){
@@ -226,7 +206,7 @@ fun ArticleLayoutColum(
                     actionDragLeft = {
                         article.isSelected = true
                         doDelete(mutableListOf(article))},
-                    actionDragRight = { editArticle( article ) },
+                    actionDragRight = { doEditArticle( article ) },
                 )
             }
         }

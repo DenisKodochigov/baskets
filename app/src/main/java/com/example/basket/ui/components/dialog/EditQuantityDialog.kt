@@ -22,8 +22,6 @@ import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Product
 import com.example.basket.entity.TypeKeyboard
-import com.example.basket.entity.UnitApp
-import com.example.basket.ui.components.MyExposedDropdownMenuBox
 import com.example.basket.ui.components.MyOutlinedTextFieldWithoutIconClearing
 import com.example.basket.ui.components.MyTextH2
 import com.example.basket.ui.components.TextButtonOK
@@ -32,7 +30,6 @@ import com.example.basket.ui.theme.shapesApp
 @Composable
 fun EditQuantityDialog(
     product: Product,
-    listUnit: List<UnitApp>,
     onConfirm: (Product) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -44,7 +41,7 @@ fun EditQuantityDialog(
         onDismissRequest = onDismiss,
         shape = shapesApp.small,
         title = { MyTextH2(stringResource(R.string.change_quantity)) },
-        text = { EditQuantityDialogLayout(enterValue, enterUnit, listUnit) },
+        text = { EditQuantityDialogLayout(enterValue) },
         confirmButton = {
             TextButtonOK(
                 onConfirm = {
@@ -74,32 +71,16 @@ fun EditQuantityDialog(
 }
 
 @Composable
-fun EditQuantityDialogLayout(
-    enterValue: MutableState<String>,
-    enterUnit: MutableState<Pair<Long, String>>,
-    listUnit: List<UnitApp>
-) {
-
+fun EditQuantityDialogLayout( enterValue: MutableState<String>
+){
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         /** Value*/
         MyOutlinedTextFieldWithoutIconClearing(
             enterValue = enterValue,
             typeKeyboard = TypeKeyboard.TEXT,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .width(120.dp)
-                .padding(top = 8.dp),
+            modifier = Modifier.align(Alignment.CenterVertically).width(120.dp).padding(top = 8.dp),
         )
         Spacer(Modifier.width(4.dp))
-        /** Select unit*/
-        MyExposedDropdownMenuBox(
-            listItems = listUnit.map { Pair(it.idUnit, it.nameUnit) },
-            label = stringResource(R.string.units),
-            modifier = Modifier.width(120.dp),
-            enterValue = enterUnit,
-            filtering = false,
-            readOnly = true
-        )
     }
 }
 
