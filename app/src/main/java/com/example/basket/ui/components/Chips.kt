@@ -94,7 +94,7 @@ import com.example.basket.ui.theme.styleApp
         {
             Divider(color = colorApp.primary, thickness = 1.dp)
             LazyVerticalStaggeredGrid(
-                modifier = Modifier.heightIn(min= 20.dp,max = 80.dp),
+                modifier = Modifier.heightIn(min= 30.dp,max = 100.dp),
                 state = lazyState,
                 columns = StaggeredGridCells . Adaptive (80.dp),
                 verticalItemSpacing = 2.dp,

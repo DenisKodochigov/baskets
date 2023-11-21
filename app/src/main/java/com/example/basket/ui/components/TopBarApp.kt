@@ -35,11 +35,12 @@ fun CollapsingToolbar(
 
     val imageSize by animateDpAsState(targetValue = max(0.dp,heightHeader * so), label = "")
 
-    Column (modifier = Modifier.padding(top = 1.dp)){
+    Column (  horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(top = 1.dp)){
         if (idImage > 0) {
             Image(
                 painter =painterResource(id =  idImage ),
-                modifier = Modifier.height(imageSize),
+                modifier = Modifier.height(imageSize).fillMaxWidth(),
                 contentScale = ContentScale.FillBounds,
                 contentDescription = "Photo"
             )

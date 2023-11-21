@@ -1,4 +1,4 @@
-package com.example.basket.ui.bottomsheets.bottomSheetSectionSelect
+package com.example.basket.ui.bottomsheets.unitSelect
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -33,7 +33,7 @@ import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.TypeText
 import com.example.basket.entity.UPDOWN
-import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductState
+import com.example.basket.ui.bottomsheets.productAdd.BottomSheetProductState
 import com.example.basket.ui.bottomsheets.component.ButtonConfirm
 import com.example.basket.ui.bottomsheets.component.FieldName
 import com.example.basket.ui.components.ShowArrowVer
@@ -44,12 +44,14 @@ import com.example.basket.ui.theme.shapesApp
 import com.example.basket.ui.theme.styleApp
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun BottomSheetSectionSelect(uiState: BottomSheetInterface)
+@Composable
+fun BottomSheetUnitSelect(uiState: BottomSheetInterface)
 {
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true, confirmValueChange = { true },)
+        skipPartiallyExpanded = true,
+        confirmValueChange = { true },)
     ModalBottomSheet(
-        onDismissRequest = uiState.onDismissSelectSection,
+        onDismissRequest = uiState.onDismissSelectUnit,
         modifier = Modifier
             .testTag(TagsTesting.BASKETBOTTOMSHEET)
             .padding(horizontal = Dimen.bsPaddingHor1),
@@ -61,9 +63,10 @@ import com.example.basket.ui.theme.styleApp
         dragHandle = { BottomSheetDefaults.DragHandle() },
         windowInsets = BottomSheetDefaults.windowInsets,
         sheetState = sheetState,
-        content = { BottomSheetSectionSelectContent(uiState) })
+        content = { BottomSheetUnitSelectContent(uiState) })
 }
-@Composable fun BottomSheetSectionSelectContent(uiState: BottomSheetInterface)
+@Composable
+fun BottomSheetUnitSelectContent(uiState: BottomSheetInterface)
 {
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -73,20 +76,21 @@ import com.example.basket.ui.theme.styleApp
         ),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
-        FieldName(uiState.enteredNameSection)
+        FieldName(uiState.enteredNameUnit)
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
-        BoxExistingSection(uiState)
+        BoxExistingUnit(uiState)
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
-        ButtonConfirm { uiState.onConfirmationSelectSection(uiState) }
+        ButtonConfirm { uiState.oConfirmationSelectUnit(uiState) }
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-@Composable fun BoxExistingSection(uiState: BottomSheetInterface)
+@Composable
+fun BoxExistingUnit(uiState: BottomSheetInterface)
 {
-    val listItems = uiState.sections.filter {
-        it.nameSection.contains(uiState.enteredNameSection.value, ignoreCase = true)
+    val listItems = uiState.unitApp.value.filter {
+        it.nameUnit.contains(uiState.enteredNameUnit.value, ignoreCase = true)
     }
 
     val listState = rememberLazyGridState()
@@ -107,17 +111,16 @@ import com.example.basket.ui.theme.styleApp
                 .heightIn(min = 50.dp, max = 250.dp)
                 .fillMaxWidth()
         ) {
-            items(items = listItems) { section ->
+            items(items = listItems) { unit ->
                 TextApp(
-                    text = section.nameSection,
+                    text = unit.nameUnit,
                     style = styleApp(nameStyle = TypeText.EDIT_TEXT),
                     modifier = Modifier
-                        .clickable {
-                            uiState.enteredNameSection.value = section.nameSection
-                            uiState.selectedSection.value = section }
-                        .animateItemPlacement()
                         .padding(4.dp)
+                        .animateItemPlacement()
                         .background(shape = shapesApp.medium, color = colorApp.surface)
+                        .clickable { uiState.enteredNameUnit.value = unit.nameUnit
+                            uiState.selectedUnit.value = unit}
                 )
             }
         }
@@ -126,6 +129,7 @@ import com.example.basket.ui.theme.styleApp
 }
 
 @Preview
-@Composable fun BottomSheetSectionSelectLayoutPreview(){
-    BottomSheetSectionSelectContent(BottomSheetProductState())
+@Composable
+fun BottomSheetUnitSelectLayoutPreview(){
+    BottomSheetUnitSelectContent(BottomSheetProductState())
 }

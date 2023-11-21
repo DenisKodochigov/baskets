@@ -1,8 +1,7 @@
-package com.example.basket.ui.bottomsheets.bottomSheetArticle
+package com.example.basket.ui.bottomsheets.articleAdd
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.example.basket.data.room.tables.SectionDB
 import com.example.basket.entity.Article
 import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.Product
@@ -11,9 +10,9 @@ import com.example.basket.entity.UnitApp
 
 class BottomSheetArticleState(
 
-    override var articles: List<Article> = emptyList(),
-    override var sections: List<Section> = emptyList(),
-    override var unitApp: List<UnitApp> = emptyList(),
+    override val articles: MutableState<List<Article>> = mutableStateOf(emptyList()),
+    override val sections: MutableState<List<Section>> = mutableStateOf(emptyList()),
+    override val unitApp: MutableState<List<UnitApp>> = mutableStateOf(emptyList()),
     override val selectedProduct: MutableState<Article?> = mutableStateOf(null),
     override val enteredNameProduct: MutableState<String> = mutableStateOf(""),
     override var selectedSection: MutableState<Section?> = mutableStateOf(null),

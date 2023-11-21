@@ -208,30 +208,40 @@ fun MyTextH2(text: String, modifier: Modifier = Modifier) {
 
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MyOutlinedTextFieldWithoutIcon(
-    modifier: Modifier, enterValue: MutableState<String>, typeKeyboard: TypeKeyboard
+    modifier: Modifier,
+    enterValue: MutableState<String>,
+    typeKeyboard: TypeKeyboard,
+    label:  @Composable (() -> Unit)? = null,
+    keyboardActionsOnDone: (() -> Unit)? = null
 ) {
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
     var enterText by remember { mutableStateOf(enterValue.value) }
 
-    val keyboardOptions = keyBoardOpt(typeKeyboard)
     OutlinedTextField(
         modifier = modifier.background(color = colorApp.surface),
         value = enterText,
         singleLine = true,
         textStyle = styleApp(nameStyle = TypeText.EDIT_TEXT),
+        label = label,
         onValueChange = {
             enterText = it
             enterValue.value = it
         },
-        keyboardOptions = keyboardOptions,
+        keyboardOptions = keyBoardOpt(typeKeyboard),
         keyboardActions = KeyboardActions(
-            onDone = {
+            onDone =
+            {
                 localFocusManager.clearFocus()
                 enterValue.value = enterText
-//                keyboardController?.hide()
+                enterText = ""
+                if (keyboardActionsOnDone != null) {
+                    keyboardActionsOnDone.invoke()
+                }
+                keyboardController?.hide()
             }
         ),
 //        leadingIcon = { enterText = onAddIconEditText(onNewArticle,enterText) },

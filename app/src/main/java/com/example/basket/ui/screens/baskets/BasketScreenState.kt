@@ -7,6 +7,7 @@ import com.example.basket.entity.Basket
 data class BasketScreenState(
     val baskets: List<Basket> = emptyList(),
     var refresh: Boolean = true,
+    val enteredName: MutableState<String> = mutableStateOf(""),
     var changeNameBasket: (Basket) -> Unit = {},
     var deleteBasket: (Long) -> Unit = {},
     var onAddClick: (String) -> Unit = {},

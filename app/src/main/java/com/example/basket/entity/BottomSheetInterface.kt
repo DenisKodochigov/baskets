@@ -4,9 +4,9 @@ import androidx.compose.runtime.MutableState
 
 interface BottomSheetInterface {
 
-    var articles: List<Article>
-    var sections: List<Section>
-    var unitApp: List<UnitApp>
+    val articles: MutableState<List<Article>>
+    val sections: MutableState<List<Section>>
+    val unitApp: MutableState<List<UnitApp>>
     val selectedProduct: MutableState<Article?>
     val enteredNameProduct: MutableState<String>
     val selectedSection: MutableState<Section?>

@@ -1,5 +1,6 @@
 package com.example.basket.ui.screens.article
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.basket.data.DataRepository
@@ -36,7 +37,7 @@ class ArticleViewModel @Inject constructor(
                 dataRepository.getListArticle(sortingBy) }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState ->
-                        currentState.copy(articles = it, refresh = !currentState.refresh) } },
+                        currentState.copy(articles = mutableStateOf(it), refresh = !currentState.refresh) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
             getSections()
@@ -49,7 +50,7 @@ class ArticleViewModel @Inject constructor(
             kotlin.runCatching { dataRepository.getSections() }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState ->
-                        currentState.copy(sections = it, refresh = !currentState.refresh) } },
+                        currentState.copy(sections = mutableStateOf(it), refresh = !currentState.refresh) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -60,7 +61,7 @@ class ArticleViewModel @Inject constructor(
             kotlin.runCatching { dataRepository.getUnits() }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState ->
-                        currentState.copy( unitApp = it, refresh = !currentState.refresh)}},
+                        currentState.copy( unitApp = mutableStateOf(it), refresh = !currentState.refresh)}},
                 onFailure = { errorApp.errorApi(it.message!!) }
             )
         }
@@ -71,7 +72,7 @@ class ArticleViewModel @Inject constructor(
             kotlin.runCatching { dataRepository.addArticle(article, sortingBy) }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState ->
-                    currentState.copy( articles = it , refresh = !currentState.refresh) }},
+                    currentState.copy( articles = mutableStateOf(it) , refresh = !currentState.refresh) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
             getSections()
@@ -83,7 +84,7 @@ class ArticleViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.changeArticle(article, sortingBy) }.fold(
                 onSuccess = { _articleScreenState.update { currentState ->
-                    currentState.copy( articles = it , refresh = !currentState.refresh) } },
+                    currentState.copy( articles = mutableStateOf(it), refresh = !currentState.refresh) } },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
             getSections()
@@ -97,7 +98,7 @@ class ArticleViewModel @Inject constructor(
                 dataRepository.changeSectionSelectedArticle(articles, idSection, sortingBy) }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState -> currentState.copy(
-                        articles = it, refresh = !currentState.refresh) }
+                        articles = mutableStateOf(it), refresh = !currentState.refresh) }
                 },
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
@@ -110,7 +111,7 @@ class ArticleViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.deleteSelectedArticle(articles, sortingBy) }.fold(
                 onSuccess = {_articleScreenState.update { currentState ->
-                    currentState.copy( articles = it , refresh = !currentState.refresh) }},
+                    currentState.copy( articles = mutableStateOf(it), refresh = !currentState.refresh) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
@@ -121,7 +122,7 @@ class ArticleViewModel @Inject constructor(
             kotlin.runCatching { dataRepository.getListArticle( sortingBy ) }.fold(
                 onSuccess = {
                     _articleScreenState.update { currentState ->
-                        currentState.copy( articles = it , refresh = !currentState.refresh, sorting = sortingBy) }
+                        currentState.copy( articles = mutableStateOf(it), refresh = !currentState.refresh, sorting = sortingBy) }
 //                    _articleScreenState.update { currentState -> currentState.copy( sorting = sortingBy ) }
                 },
                 onFailure = { errorApp.errorApi(it.message!!)}
@@ -130,7 +131,7 @@ class ArticleViewModel @Inject constructor(
     }
     fun changeSelected(articleId: Long){
 
-        _articleScreenState.value.articles.forEach {listArticles ->
+        _articleScreenState.value.articles.value.forEach {listArticles ->
             listArticles.forEach {
                 if (it.idArticle == articleId){
                     it.isSelected = !it.isSelected

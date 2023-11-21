@@ -23,7 +23,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
@@ -49,14 +48,12 @@ import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.Product
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.TypeText
-import com.example.basket.entity.UPDOWN
 import com.example.basket.navigation.ScreenDestination
-import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductAddGeneral
-import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductState
-import com.example.basket.ui.bottomsheets.bottomSheetSectionSelect.BottomSheetSectionSelect
+import com.example.basket.ui.bottomsheets.productAdd.BottomSheetProductAddGeneral
+import com.example.basket.ui.bottomsheets.productAdd.BottomSheetProductState
+import com.example.basket.ui.bottomsheets.sectionSelect.BottomSheetSectionSelect
 import com.example.basket.ui.components.CollapsingToolbar
 import com.example.basket.ui.components.HeaderSection
-import com.example.basket.ui.components.ShowArrowVer
 import com.example.basket.ui.components.TextApp
 import com.example.basket.ui.components.dialog.EditQuantityDialog
 import com.example.basket.ui.components.showFABs
@@ -97,7 +94,7 @@ fun ProductScreenCreateView(basketId: Long, screen: ScreenDestination, viewModel
     uiState.screenTextHeader = stringResource(screen.textHeader)
 
     screen.textFAB = stringResource(id = R.string.product_text_fab)
-    screen.onClickFAB = remember {{ uiState.triggerRunOnClickFAB.value = true }}
+    screen.onClickFAB = { uiState.triggerRunOnClickFAB.value = true }
 
     if (uiState.triggerRunOnClickFAB.value) BottomSheetProductAddGeneral( uiStateP = uiState)
     ProductsScreenLayout(uiState = uiState)
@@ -119,7 +116,7 @@ fun ProductsScreenLayout(uiState: ProductsScreenState
         isSelectedId.value = 0
     }
     if (unSelected.value) {
-        uiState.products.forEach { productList -> productList.forEach { it.isSelected = false } }
+        uiState.products.value.forEach { productList -> productList.forEach { it.isSelected = false } }
         unSelected.value = false
     }
     if (changeSectionSelected.value) {
@@ -128,7 +125,7 @@ fun ProductsScreenLayout(uiState: ProductsScreenState
                 onConfirmationSelectSection = {
                     if (it.selectedSection.value?.idSection != 0L) {
                         it.selectedSection.value?.idSection?.let { it1 ->
-                            uiState.doChangeSectionSelected (uiState.products.flatten(), it1) }
+                            uiState.doChangeSectionSelected (uiState.products.value.flatten(), it1) }
                     }
                     changeSectionSelected.value = false
                 },
@@ -139,7 +136,7 @@ fun ProductsScreenLayout(uiState: ProductsScreenState
         )
     }
     if (deleteSelected.value) {
-        uiState.doDeleteSelected(uiState.products.flatten())
+        uiState.doDeleteSelected(uiState.products.value.flatten())
         deleteSelected.value = false
     }
 
@@ -158,7 +155,7 @@ fun ProductsScreenLayout(uiState: ProductsScreenState
         }
         startScreen = showFABs(
             startScreen = startScreen,
-            isSelected = uiState.products.flatten().find { it.isSelected } != null,
+            isSelected = uiState.products.value.flatten().find { it.isSelected } != null,
             doDeleted = { deleteSelected.value = true },
             doChangeSection = { changeSectionSelected.value = true },
             doUnSelected = { unSelected.value = true },
@@ -176,13 +173,7 @@ fun ProductLazyColumn(
 ) {
     val listState = rememberLazyListState()
     val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
-
-    val showArrowUp = remember {
-        derivedStateOf { listState.layoutInfo.visibleItemsInfo.firstOrNull()?.index != 0 }}.value
-    val showArrowDown = remember {
-        derivedStateOf { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index !=
-            listState.layoutInfo.totalItemsCount - 1 } }.value
-
+    val listItems:List<List<Product>> = uiState.products.value
     if (editProduct.value != null ) {
         EditQuantityDialog(
             product = editProduct.value!!,
@@ -198,13 +189,12 @@ fun ProductLazyColumn(
         idImage = uiState.idImage,
         scrollOffset = scrollOffset)
     Spacer(modifier = Modifier.height(2.dp))
-    ShowArrowVer(direction = UPDOWN.UP, enable = showArrowUp && uiState.products.isNotEmpty(), drawLine = false)
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
     ) {
-        items(items = uiState.products) { item ->
+        items(items = listItems) { item ->
             Column(modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .animateItemPlacement()
@@ -222,7 +212,6 @@ fun ProductLazyColumn(
             }
         }
     }
-    ShowArrowVer(direction = UPDOWN.DOWN, enable = showArrowDown && uiState.products.isNotEmpty(), drawLine = false)
 }
 
 @Composable

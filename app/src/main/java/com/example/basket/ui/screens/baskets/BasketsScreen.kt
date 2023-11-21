@@ -1,7 +1,6 @@
 package com.example.basket.ui.screens.baskets
 
 import android.annotation.SuppressLint
-import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,27 +8,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material3.BottomAppBarDefaults.containerColor
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.contentColorFor
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,17 +23,14 @@ import com.example.basket.R
 import com.example.basket.data.room.tables.BasketDB
 import com.example.basket.entity.Basket
 import com.example.basket.entity.SizeElement
-import com.example.basket.entity.TagsTesting.BASKETBOTTOMSHEET
-import com.example.basket.entity.TagsTesting.BASKET_BS_INPUT_NAME
 import com.example.basket.entity.TagsTesting.BASKET_LAZY
 import com.example.basket.entity.TypeText
 import com.example.basket.entity.UPDOWN
 import com.example.basket.navigation.ScreenDestination
+import com.example.basket.ui.bottomsheets.basketAdd.BottomSheetBasketAdd
 import com.example.basket.ui.components.CollapsingToolbar
-import com.example.basket.ui.components.HeaderScreen
 import com.example.basket.ui.components.ShowArrowVer
 import com.example.basket.ui.components.TextApp
-import com.example.basket.ui.components.TextButtonOK
 import com.example.basket.ui.components.dialog.EditBasketName
 import com.example.basket.ui.theme.Dimen
 import com.example.basket.ui.theme.colorApp
@@ -90,12 +72,10 @@ fun BasketScreenCreateView(
     screen.textFAB = stringResource(id = R.string.basket_text_fab)
     screen.onClickFAB = { uiState.triggerRunOnClickFAB.value = true}
 
-    if (uiState.triggerRunOnClickFAB.value) AddBasketBottomSheet( uiState = uiState)
+    if (uiState.triggerRunOnClickFAB.value) BottomSheetBasketAdd( uiState = uiState)
 
     BasketsScreenLayout(onClickBasket = onClickBasket, uiState = uiState)
 }
-
-
 @Composable
 fun BasketsScreenLayout(
     uiState: BasketScreenState,
@@ -116,7 +96,6 @@ fun BasketsScreenLayout(
             scrollOffset =-offsetHeightPx.floatValue.roundToInt())
     }
 }
-
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -198,88 +177,9 @@ fun ElementColumBasket(basket: Basket, onClickBasket: (Long) -> Unit, modifier: 
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun AddBasketBottomSheet(uiState: BasketScreenState) {
-
-    var nameNewBasket by remember {
-        mutableStateOf(
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date().time)
-        )
-    }
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val localFocusManager = LocalFocusManager.current
-    val screenHeight = LocalConfiguration.current.screenHeightDp
-    val edgeToEdgeEnabled by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { true },
-    )
-
-    val windowInsets = if (edgeToEdgeEnabled) WindowInsets(0) else BottomSheetDefaults.windowInsets
-
-    ModalBottomSheet(
-        onDismissRequest = uiState.onDismiss,
-        modifier = Modifier
-            .padding(horizontal = Dimen.bsPaddingHor)
-            .testTag(BASKETBOTTOMSHEET),
-        shape = shapesApp.small,
-        containerColor = BottomSheetDefaults.ContainerColor,
-        contentColor = contentColorFor(containerColor),
-        tonalElevation = BottomSheetDefaults.Elevation,
-        scrimColor = BottomSheetDefaults.ScrimColor,
-        dragHandle = { BottomSheetDefaults.DragHandle() },
-        windowInsets = windowInsets,
-        sheetState = sheetState
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .heightIn((screenHeight * 0.35).dp, (screenHeight * 0.75).dp)
-                .padding(Dimen.bsItemPaddingHor)
-        ) {
-            Spacer(Modifier.height(1.dp))
-            HeaderScreen(text = stringResource(R.string.new_basket))
-            Spacer(Modifier.height(Dimen.bsSpacerHeight))
-            OutlinedTextField(
-                value = nameNewBasket,
-                singleLine = true,
-                textStyle = styleApp(nameStyle = TypeText.NAME_SECTION),
-                label = {
-                    TextApp(
-                        text = stringResource(R.string.new_basket),
-                        style = styleApp( nameStyle = TypeText.NAME_SECTION))
-                },
-                onValueChange = { nameNewBasket = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag(BASKET_BS_INPUT_NAME),
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        uiState.onAddClick(nameNewBasket)
-                        keyboardController?.hide()
-                        nameNewBasket = ""
-                        localFocusManager.clearFocus()
-                        uiState.onDismiss()
-                    }
-                ),
-            )
-            Spacer(Modifier.height(Dimen.bsSpacerHeight1))
-            TextButtonOK(
-                enabled = nameNewBasket != "",
-                onConfirm = {
-                    uiState.onAddClick(nameNewBasket)
-                    uiState.onDismiss()
-                })
-            Spacer(Modifier.height(Dimen.bsSpacerHeight1))
-        }
-    }
-}
-
 @SuppressLint("UnrememberedMutableState")
 @Preview(showBackground = true)
 @Composable
 fun BottomSheetContentBasketPreview() {
-    AddBasketBottomSheet(BasketScreenState())
+//    AddBasketBottomSheet(BasketScreenState())
 }

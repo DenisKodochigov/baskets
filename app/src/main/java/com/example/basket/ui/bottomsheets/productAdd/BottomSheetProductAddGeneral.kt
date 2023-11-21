@@ -1,4 +1,4 @@
-package com.example.basket.ui.bottomsheets.bottomSheetProduct
+package com.example.basket.ui.bottomsheets.productAdd
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,20 +20,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.basket.data.room.tables.ArticleDB
 import com.example.basket.data.room.tables.ProductDB
-import com.example.basket.data.room.tables.SectionDB
-import com.example.basket.data.room.tables.UnitDB
+import com.example.basket.domain.logicBottomSheet.choiceArticle
+import com.example.basket.domain.logicBottomSheet.choiceSection
+import com.example.basket.domain.logicBottomSheet.choiceUnit
 import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.Product
 import com.example.basket.entity.TagsTesting
-import com.example.basket.ui.bottomsheets.bottomSheetProductSelect.BottomSheetProductSelect
-import com.example.basket.ui.bottomsheets.bottomSheetSectionSelect.BottomSheetSectionSelect
-import com.example.basket.ui.bottomsheets.bottomSheetUnitSelect.BottomSheetUnitSelect
 import com.example.basket.ui.bottomsheets.component.ButtonConfirm
 import com.example.basket.ui.bottomsheets.component.RowSelectedProduct
 import com.example.basket.ui.bottomsheets.component.RowSelectedSection
 import com.example.basket.ui.bottomsheets.component.RowSelectedUnit
+import com.example.basket.ui.bottomsheets.productSelect.BottomSheetProductSelect
+import com.example.basket.ui.bottomsheets.sectionSelect.BottomSheetSectionSelect
+import com.example.basket.ui.bottomsheets.unitSelect.BottomSheetUnitSelect
 import com.example.basket.ui.screens.products.ProductsScreenState
 import com.example.basket.ui.theme.Dimen
 import com.example.basket.ui.theme.shapesApp
@@ -47,9 +47,9 @@ fun BottomSheetProductAddGeneral (uiStateP: ProductsScreenState)
         uiStateP.onAddProduct(it)
 //        uiStateP.triggerRunOnClickFAB.value = false
     }
-    uiState.articles = uiStateP.articles
-    uiState.sections = uiStateP.sections
-    uiState.unitApp = uiStateP.unitApp
+    uiState.articles.value = uiStateP.articles.value
+    uiState.sections.value = uiStateP.sections.value
+    uiState.unitApp.value = uiStateP.unitApp.value
     uiState.onDismissSelectArticleProduct = { uiState.buttonDialogSelectArticleProduct.value = false }
     uiState.onDismissSelectSection = { uiState.buttonDialogSelectSection.value = false }
     uiState.onDismissSelectUnit = { uiState.buttonDialogSelectUnit.value = false }
@@ -105,33 +105,19 @@ fun BottomSheetProductAddGeneralLayOut (uiState: BottomSheetProductState)
 }
 fun returnSelectedProduct(uiState: BottomSheetInterface): Product
 {
-    val section = if (uiState.selectedSection.value != null) {
-        if (uiState.selectedSection.value!!.nameSection == uiState.enteredNameSection.value){
-            uiState.selectedSection.value!! as SectionDB
-        } else SectionDB(nameSection = uiState.enteredNameSection.value)
-    } else SectionDB(nameSection = uiState.enteredNameSection.value)
 
-    val unitA = if (uiState.selectedUnit.value != null) {
-        if (uiState.selectedUnit.value!!.nameUnit == uiState.enteredNameUnit.value){
-            uiState.selectedUnit.value!! as UnitDB
-        } else UnitDB(nameUnit = uiState.enteredNameUnit.value)
-    } else UnitDB(nameUnit = uiState.enteredNameUnit.value)
+    val unitA = choiceUnit(unt = uiState.selectedUnit.value,
+        enterNameUnit = uiState.enteredNameUnit.value,
+        unit0 = uiState.unitApp.value[0])
 
-    val article = if (uiState.selectedProduct.value != null){
-        if (uiState.selectedProduct.value!!.nameArticle != uiState.enteredNameProduct.value){
-            ArticleDB(
-                nameArticle = uiState.enteredNameProduct.value,
-                section = section,
-                unitApp = unitA
-            )
-        } else { uiState.selectedProduct.value!! as ArticleDB }
-    } else {
-        ArticleDB(
-            nameArticle = uiState.enteredNameProduct.value,
-            section = section,
-            unitApp = unitA
-        )
-    }
+    val section = choiceSection(section = uiState.selectedSection.value,
+        enterNameSection = uiState.enteredNameSection.value,
+        section0 = uiState.sections.value[0] )
+
+    val article = choiceArticle(article = uiState.selectedProduct.value,
+        enterNAmeArticle = uiState.enteredNameProduct.value,
+        section = section,
+        unt = unitA)
 
     uiState.selectedProduct.value = null
     if (uiState.selectedSection.value != null){

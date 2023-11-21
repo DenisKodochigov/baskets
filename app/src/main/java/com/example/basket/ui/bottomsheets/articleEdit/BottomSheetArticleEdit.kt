@@ -1,4 +1,4 @@
-package com.example.basket.ui.bottomsheets.bottomSheetArticleEdit
+package com.example.basket.ui.bottomsheets.articleEdit
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +27,7 @@ import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.entity.Product
 import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.TypeText
-import com.example.basket.ui.bottomsheets.bottomSheetArticle.BottomSheetArticleState
+import com.example.basket.ui.bottomsheets.articleAdd.BottomSheetArticleState
 import com.example.basket.ui.bottomsheets.component.ButtonConfirm
 import com.example.basket.ui.bottomsheets.component.FieldName
 import com.example.basket.ui.components.ChipsSections
@@ -46,8 +46,8 @@ import com.example.basket.ui.theme.styleApp
         uiStateA.changeArticle(it.article)
         uiStateA.editArticle.value = null
     }
-    uiState.sections = uiStateA.sections
-    uiState.unitApp = uiStateA.unitApp
+    uiState.sections.value = uiStateA.sections.value
+    uiState.unitApp.value = uiStateA.unitApp.value
     uiState.selectedProduct.value = uiStateA.editArticle.value
     uiState.enteredNameProduct.value = uiStateA.editArticle.value?.nameArticle ?: ""
     uiState.onDismissSelectArticleProduct = { uiStateA.editArticle.value = null }
@@ -95,14 +95,14 @@ import com.example.basket.ui.theme.styleApp
 @Composable fun SelectorSections(uiState: BottomSheetArticleState)
 { /** Select section*/
     ChipsSections(
-        listSection = uiState.sections,
+        listSection = uiState.sections.value,
         sectionArticle = uiState.selectedProduct.value?.section ?: SectionDB(),
         onClick = { uiState.selectedSection.value = it})
 }
 @Composable fun SelectorUnits(uiState: BottomSheetArticleState)
 { /** Select unit*/
     ChipsUnit(
-        listUnit = uiState.unitApp,
+        listUnit = uiState.unitApp.value,
         unitArticle = uiState.selectedProduct.value?.unitApp ?: UnitDB(),
         onClick = {  uiState.selectedUnit.value = it })
 }

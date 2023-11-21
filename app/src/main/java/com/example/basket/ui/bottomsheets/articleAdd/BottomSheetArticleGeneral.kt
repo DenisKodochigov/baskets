@@ -1,4 +1,4 @@
-package com.example.basket.ui.bottomsheets.bottomSheetArticle
+package com.example.basket.ui.bottomsheets.articleAdd
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,10 +21,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.TagsTesting
-import com.example.basket.ui.bottomsheets.bottomSheetProduct.returnSelectedProduct
-import com.example.basket.ui.bottomsheets.bottomSheetProductSelect.BottomSheetProductSelect
-import com.example.basket.ui.bottomsheets.bottomSheetSectionSelect.BottomSheetSectionSelect
-import com.example.basket.ui.bottomsheets.bottomSheetUnitSelect.BottomSheetUnitSelect
+import com.example.basket.ui.bottomsheets.productAdd.returnSelectedProduct
+import com.example.basket.ui.bottomsheets.productSelect.BottomSheetProductSelect
+import com.example.basket.ui.bottomsheets.sectionSelect.BottomSheetSectionSelect
+import com.example.basket.ui.bottomsheets.unitSelect.BottomSheetUnitSelect
 import com.example.basket.ui.bottomsheets.component.ButtonConfirm
 import com.example.basket.ui.bottomsheets.component.RowSelectedProduct
 import com.example.basket.ui.bottomsheets.component.RowSelectedSection
@@ -42,9 +42,9 @@ import com.example.basket.ui.theme.shapesApp
         uiStateA.triggerRunOnClickFAB.value = false
     }
 //    uiState.articles = createLisArticleFormDouble(uiStateA.articles)
-    uiState.articles = uiStateA.articles.flatten()
-    uiState.sections = uiStateA.sections
-    uiState.unitApp = uiStateA.unitApp
+    uiState.articles.value = uiStateA.articles.value.flatten()
+    uiState.sections.value = uiStateA.sections.value
+    uiState.unitApp.value = uiStateA.unitApp.value
     uiState.onDismissSelectArticleProduct = { uiState.buttonDialogSelectArticleProduct.value = false }
     uiState.onDismissSelectSection = { uiState.buttonDialogSelectSection.value = false }
     uiState.onDismissSelectUnit = { uiState.buttonDialogSelectUnit.value = false }

@@ -8,9 +8,9 @@ import com.example.basket.entity.SortingBy
 import com.example.basket.entity.UnitApp
 
 data class ArticleScreenState(
-    val articles: List<List<Article>> = emptyList(),
-    val sections: List<Section> = emptyList(),
-    val unitApp: List<UnitApp> = emptyList(),
+    val articles: MutableState<List<List<Article>>> = mutableStateOf(emptyList()),
+    val sections: MutableState<List<Section>> = mutableStateOf(emptyList()),
+    val unitApp: MutableState<List<UnitApp>> = mutableStateOf(emptyList()),
     var refresh: Boolean = true,
     var triggerRunOnClickFAB: MutableState<Boolean> = mutableStateOf(false),
     val editArticle: MutableState<Article?> = mutableStateOf(null),

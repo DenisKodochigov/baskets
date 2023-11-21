@@ -26,14 +26,15 @@ import com.example.basket.R
 import com.example.basket.data.room.tables.ArticleDB
 import com.example.basket.entity.Article
 import com.example.basket.entity.BottomSheetInterface
+import com.example.basket.entity.Product
 import com.example.basket.entity.SizeElement
 import com.example.basket.entity.SortingBy
 import com.example.basket.entity.TypeText
 import com.example.basket.navigation.ScreenDestination
-import com.example.basket.ui.bottomsheets.bottomSheetArticle.BottomSheetArticleGeneral
-import com.example.basket.ui.bottomsheets.bottomSheetArticle.BottomSheetArticleState
-import com.example.basket.ui.bottomsheets.bottomSheetArticleEdit.BottomSheetArticleEdit
-import com.example.basket.ui.bottomsheets.bottomSheetSectionSelect.BottomSheetSectionSelect
+import com.example.basket.ui.bottomsheets.articleAdd.BottomSheetArticleGeneral
+import com.example.basket.ui.bottomsheets.articleAdd.BottomSheetArticleState
+import com.example.basket.ui.bottomsheets.articleEdit.BottomSheetArticleEdit
+import com.example.basket.ui.bottomsheets.sectionSelect.BottomSheetSectionSelect
 import com.example.basket.ui.components.*
 import com.example.basket.ui.theme.Dimen
 import com.example.basket.ui.theme.colorApp
@@ -89,7 +90,7 @@ fun ArticleScreenLayout(uiState: ArticleScreenState)
         isSelectedId.value = 0
     }
     if (unSelected.value) {
-        uiState.articles.forEach { articles -> articles.forEach { it.isSelected = false } }
+        uiState.articles.value.forEach { articles -> articles.forEach { it.isSelected = false } }
         unSelected.value = false
     }
     if (changeSectionSelected.value) {
@@ -98,17 +99,17 @@ fun ArticleScreenLayout(uiState: ArticleScreenState)
             onConfirmationSelectSection = {
                 if (it.selectedSection.value?.idSection != 0L) {
                     it.selectedSection.value?.idSection?.let { it1 ->
-                        uiState.doChangeSectionSelected (uiState.articles.flatten(), it1) }
+                        uiState.doChangeSectionSelected (uiState.articles.value.flatten(), it1) }
                 }
                 changeSectionSelected.value = false
             },
             onDismissSelectSection = { changeSectionSelected.value = false },
             buttonDialogSelectSection = changeSectionSelected,
-            sections = uiState.sections,
+            sections = mutableStateOf( uiState.sections.value),
         ) as BottomSheetInterface)
     }
     if (deleteSelected.value) {
-        uiState.doDeleteSelected( uiState.articles.flatten() )
+        uiState.doDeleteSelected( uiState.articles.value.flatten() )
         deleteSelected.value = false
     }
 
@@ -131,7 +132,7 @@ fun ArticleScreenLayout(uiState: ArticleScreenState)
         }
         startScreen = showFABs(
             startScreen = startScreen,
-            isSelected =  uiState.articles.flatten().find { it.isSelected } != null,
+            isSelected =  uiState.articles.value.flatten().find { it.isSelected } != null,
             modifier = Modifier.align(alignment = Alignment.BottomCenter),
             doDeleted = { deleteSelected.value = true },
             doChangeSection = { changeSectionSelected.value = true },
@@ -150,7 +151,7 @@ fun ArticleLazyColumn(
     val listState = rememberLazyListState()
 
     if (uiState.editArticle.value != null) BottomSheetArticleEdit(uiState)
-
+    val listItems:List<List<Article>> = uiState.articles.value
     CollapsingToolbar(
         text = uiState.screenTextHeader,
         idImage = uiState.idImage,
@@ -161,12 +162,12 @@ fun ArticleLazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
     ){
-        items( items = uiState.articles ) {item ->
+        items( items = listItems ) {item ->
         Column( modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
             .animateItemPlacement()
             .background(
-                if (uiState.articles.size == 1) colorApp.tertiaryContainer
+                if (uiState.articles.value.size == 1) colorApp.tertiaryContainer
                 else {
                     if (item[0].section.colorSection != 0L) Color(item[0].section.colorSection)
                     else colorApp.tertiaryContainer

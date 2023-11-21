@@ -1,4 +1,4 @@
-package com.example.basket.ui.bottomsheets.bottomSheetProductSelect
+package com.example.basket.ui.bottomsheets.productSelect
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -33,7 +33,7 @@ import com.example.basket.entity.BottomSheetInterface
 import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.TypeText
 import com.example.basket.entity.UPDOWN
-import com.example.basket.ui.bottomsheets.bottomSheetProduct.BottomSheetProductState
+import com.example.basket.ui.bottomsheets.productAdd.BottomSheetProductState
 import com.example.basket.ui.bottomsheets.component.ButtonConfirm
 import com.example.basket.ui.bottomsheets.component.FieldName
 import com.example.basket.ui.components.ShowArrowVer
@@ -87,8 +87,9 @@ import com.example.basket.ui.theme.styleApp
 @OptIn(ExperimentalFoundationApi::class)
 @Composable fun BoxExistingArticles(uiState: BottomSheetInterface)
 {
-    val listItems = uiState.articles.filter {
-            it.nameArticle.contains(uiState.enteredNameProduct.value, ignoreCase = true) }
+    val listItems = uiState.articles.value
+        .filter { it.nameArticle.contains(uiState.enteredNameProduct.value, ignoreCase = true) }
+        .sortedBy { it.nameArticle }
 
     val listState = rememberLazyGridState()
     val showArrowUp = remember {
