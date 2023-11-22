@@ -127,6 +127,7 @@ fun returnSelectedProduct(uiState: BottomSheetInterface): Product
     uiState.enteredNameProduct.value = ""
     uiState.enteredNameSection.value = ""
     uiState.enteredNameUnit.value = ""
+    uiState.enteredAmount.value = "1"
     return ProductDB(
         value = if (uiState.enteredAmount.value.isEmpty()) 1.0
         else uiState.enteredAmount.value.toDouble(),

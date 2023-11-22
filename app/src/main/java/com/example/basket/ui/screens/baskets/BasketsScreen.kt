@@ -105,6 +105,7 @@ fun BasketLazyColumn(
     onClickBasket: (Long) -> Unit,
 ) {
     val listState = rememberLazyListState()
+    val listItems = uiState.baskets
     val editBasket: MutableState<Basket?> = remember { mutableStateOf(null) }
 
     val showArrowUp = remember {
@@ -135,7 +136,7 @@ fun BasketLazyColumn(
         modifier = Modifier.testTag(BASKET_LAZY)
     )
     {
-        items(items = uiState.baskets, key = { it.idBasket })
+        items(items = listItems, key = { it.idBasket })
         { item ->
             ItemSwipe(
                 frontFon = { ElementColumBasket(

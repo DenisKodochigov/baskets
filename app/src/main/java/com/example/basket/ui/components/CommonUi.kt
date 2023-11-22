@@ -176,7 +176,8 @@ fun MyExposedDropdownMenuBox(
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Center,
     style: TextStyle,
-    fontWeight: FontWeight = FontWeight.Normal
+    fontWeight: FontWeight = FontWeight.Normal,
+    color: Color = colorApp.onSurface
 ) {
     Text(
         text = text,
@@ -186,7 +187,7 @@ fun MyExposedDropdownMenuBox(
         overflow = TextOverflow.Ellipsis,
         textAlign = textAlign,
         modifier = modifier,
-        color = colorApp.onSurface
+        color = color
     )
 }
 @Composable
@@ -205,8 +206,6 @@ fun MyTextH2(text: String, modifier: Modifier = Modifier) {
         style = styleApp(nameStyle = TypeText.TEXT_IN_LIST)
     )
 }
-
-
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -363,8 +362,8 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
     }
 }
 
-@Composable fun ShowArrowVer(enable:Boolean, direction: UPDOWN, drawLine: Boolean){
-
+@Composable fun ShowArrowVer(enable:Boolean, direction: UPDOWN, drawLine: Boolean)
+{
     Column(modifier = Modifier.fillMaxWidth()){
         if (direction == UPDOWN.UP && drawLine) Divider(color = colorApp.primary, thickness = 1.dp)
 
@@ -377,8 +376,8 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
         if (direction == UPDOWN.DOWN && drawLine) Divider(color = colorApp.primary, thickness = 1.dp)
     }
 }
-@Composable fun ShowArrowHor(enable:Boolean, direction: UPDOWN, drawLine: Boolean){
-
+@Composable fun ShowArrowHor(enable:Boolean, direction: UPDOWN, drawLine: Boolean)
+{
     Row(modifier = Modifier.fillMaxHeight(),
         horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically)
     {
@@ -435,8 +434,8 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
         onClick = onClick,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors (
-            containerColor= colorApp.secondaryContainer,
-            contentColor = colorApp.onSecondaryContainer,
+            containerColor= colorApp.tertiaryContainer,
+            contentColor = colorApp.onTertiaryContainer ,
             disabledContainerColor = colorApp.surface,
             disabledContentColor = colorApp.onSurface
         ),

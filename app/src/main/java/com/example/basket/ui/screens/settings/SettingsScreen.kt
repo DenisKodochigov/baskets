@@ -131,7 +131,7 @@ private val thumbSize = 30.dp
             AddEditUnits(modifier, uiState)
             AddEditSection(modifier, uiState)
             ChangeStyle(uiState)
-            FontStyleView()
+//            FontStyleView()
         }
     }
 }
@@ -374,7 +374,7 @@ fun LazyColumnUnits(uiState: SettingsScreenState, doSelected: (Long) -> Unit)
                     .padding(8.dp),
             ){
                 TextApp(text = "A",
-//                    color = colorApp.inversePrimary,
+                    color = colorApp.inversePrimary,
                     style = TextStyle(fontSize = when (sliderPosition) {
                         0f -> 12.sp
                         1f -> 18.sp

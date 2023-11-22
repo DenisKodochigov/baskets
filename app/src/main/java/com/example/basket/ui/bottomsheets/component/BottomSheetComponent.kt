@@ -74,7 +74,7 @@ fun RowSelectedSection(uiState: BottomSheetInterface)
 @Composable
 fun RowSelectedUnit(uiState: BottomSheetInterface, amount: Boolean = true)
 {
-    val weightFieldAmount = if (amount) (1 - uiState.weightButton) * 0.3f else 0f
+    val weightFieldAmount = if (amount) (1 - uiState.weightButton) * 0.4f else 0f
     val weightText = 1 - uiState.weightButton - weightFieldAmount
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -135,7 +135,7 @@ fun FieldAmount(uiState: BottomSheetInterface, modifier: Modifier)
 {
     TextFieldApp(
         modifier = modifier
-            .width(80.dp)
+            .width(120.dp)
             .height(40.dp),
         textAlign = TextAlign.Center,
         enterValue = uiState.enteredAmount,
