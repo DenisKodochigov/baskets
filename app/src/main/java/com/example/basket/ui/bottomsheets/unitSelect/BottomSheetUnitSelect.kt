@@ -108,7 +108,7 @@ fun BoxExistingUnit(uiState: BottomSheetInterface)
             columns = GridCells.Adaptive(minSize = 90.dp),
             contentPadding = PaddingValues(8.dp),
             modifier = Modifier
-                .heightIn(min = 50.dp, max = 250.dp)
+                .heightIn(min = Dimen.bsHeightMintList, max = Dimen.bsHeightMaxList)
                 .fillMaxWidth()
         ) {
             items(items = listItems) { unit ->

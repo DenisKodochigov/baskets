@@ -5,12 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Dns
@@ -18,10 +15,6 @@ import androidx.compose.material.icons.filled.RemoveDone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -36,18 +29,14 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.basket.R
@@ -83,93 +72,6 @@ fun HeaderSection(text: String, modifier: Modifier, refreshScreen: MutableState<
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MyExposedDropdownMenuBox(
-    listItems: List<Pair<Long, String>>,
-    label: String?,
-    modifier: Modifier,
-    filtering: Boolean,
-    enterValue: MutableState<Pair<Long, String>>?,
-    readOnly: Boolean = false,
-    enabled: Boolean = true
-) {
-
-    var focusItem by remember { mutableStateOf(false) }
-    val localFocusManager = LocalFocusManager.current
-    var expandedLocal by remember { mutableStateOf(false) }
-    var enteredText by remember { mutableStateOf("") }
-    val heightDropMenu: Dp = with(LocalDensity.current) {
-        (styleApp(nameStyle = TypeText.EDIT_TEXT).fontSize * 1.2).toDp()}
-
-    enteredText = if (enterValue != null && !focusItem) enterValue.value.second else ""
-
-    log(true, "$label: enteredText = ${enteredText}: enterValue = $enterValue: focusItem: $focusItem")
-
-    ExposedDropdownMenuBox(
-        expanded = expandedLocal && enabled,
-        modifier = modifier,
-        onExpandedChange = { expandedLocal = !expandedLocal }
-    ) {
-        OutlinedTextField (
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth(1f)
-                .background(color = colorApp.surface)
-                .onFocusChanged { focusItem = it.isFocused },
-            value = enteredText,
-            singleLine = true,
-            enabled = enabled,
-            readOnly = readOnly,
-            textStyle = styleApp(nameStyle = TypeText.EDIT_TEXT),
-            onValueChange = {
-                enteredText = it
-                focusItem = false
-                enterValue!!.value = Pair(0, it)
-                expandedLocal = true
-                log(true, "$label: ExposedDropdownMenuBox.onValueChange")
-            },
-            label = { if (label != null)
-                TextApp(text = label, style = styleApp(nameStyle = TypeText.EDIT_TEXT_TITLE)) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedLocal) },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text).copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    localFocusManager.moveFocus(FocusDirection.Next)
-                    enterValue!!.value = Pair(0, enteredText)
-                    expandedLocal = false
-                },
-            ),
-        )
-        val filteringOptions = if (filtering) listItems.filter {
-                it.second.contains(enteredText, ignoreCase = true) }
-            else listItems
-        if (filteringOptions.isNotEmpty()) {
-
-            ExposedDropdownMenu(
-                modifier = Modifier
-                    .height(heightDropMenu * 8)
-                    .padding(8.dp)
-                    .verticalScroll(rememberScrollState()),
-                expanded = expandedLocal && enabled,
-                onDismissRequest = { expandedLocal = false })
-            {
-                filteringOptions.forEach { item ->
-                    DropdownMenuItem(
-                        onClick = {
-                            enteredText = item.second
-                            expandedLocal = false
-                            enterValue!!.value = item
-                            localFocusManager.moveFocus(FocusDirection.Next) },
-                        text = {
-                            TextApp(text = item.second, style = styleApp(nameStyle = TypeText.EDIT_TEXT))}
-                    )
-                }
-            }
-        } else expandedLocal = false
-    }
-}
 
 @Composable fun TextApp(
     text: String,
@@ -481,3 +383,91 @@ fun TextButtonOK(onConfirm: () -> Unit, enabled: Boolean = true) {
         }
     }
 }
+
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun MyExposedDropdownMenuBox(
+//    listItems: List<Pair<Long, String>>,
+//    label: String?,
+//    modifier: Modifier,
+//    filtering: Boolean,
+//    enterValue: MutableState<Pair<Long, String>>?,
+//    readOnly: Boolean = false,
+//    enabled: Boolean = true
+//) {
+//
+//    var focusItem by remember { mutableStateOf(false) }
+//    val localFocusManager = LocalFocusManager.current
+//    var expandedLocal by remember { mutableStateOf(false) }
+//    var enteredText by remember { mutableStateOf("") }
+//    val heightDropMenu: Dp = with(LocalDensity.current) {
+//        (styleApp(nameStyle = TypeText.EDIT_TEXT).fontSize * 1.2).toDp()}
+//
+//    enteredText = if (enterValue != null && !focusItem) enterValue.value.second else ""
+//
+//    log(true, "$label: enteredText = ${enteredText}: enterValue = $enterValue: focusItem: $focusItem")
+//
+//    ExposedDropdownMenuBox(
+//        expanded = expandedLocal && enabled,
+//        modifier = modifier,
+//        onExpandedChange = { expandedLocal = !expandedLocal }
+//    ) {
+//        OutlinedTextField (
+//            modifier = Modifier
+//                .menuAnchor()
+//                .fillMaxWidth(1f)
+//                .background(color = colorApp.surface)
+//                .onFocusChanged { focusItem = it.isFocused },
+//            value = enteredText,
+//            singleLine = true,
+//            enabled = enabled,
+//            readOnly = readOnly,
+//            textStyle = styleApp(nameStyle = TypeText.EDIT_TEXT),
+//            onValueChange = {
+//                enteredText = it
+//                focusItem = false
+//                enterValue!!.value = Pair(0, it)
+//                expandedLocal = true
+//                log(true, "$label: ExposedDropdownMenuBox.onValueChange")
+//            },
+//            label = { if (label != null)
+//                TextApp(text = label, style = styleApp(nameStyle = TypeText.EDIT_TEXT_TITLE)) },
+//            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedLocal) },
+//            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text).copy(imeAction = ImeAction.Done),
+//            keyboardActions = KeyboardActions(
+//                onDone = {
+//                    localFocusManager.moveFocus(FocusDirection.Next)
+//                    enterValue!!.value = Pair(0, enteredText)
+//                    expandedLocal = false
+//                },
+//            ),
+//        )
+//        val filteringOptions = if (filtering) listItems.filter {
+//                it.second.contains(enteredText, ignoreCase = true) }
+//            else listItems
+//        if (filteringOptions.isNotEmpty()) {
+//
+//            ExposedDropdownMenu(
+//                modifier = Modifier
+//                    .height(heightDropMenu * 8)
+//                    .padding(8.dp)
+//                    .verticalScroll(rememberScrollState()),
+//                expanded = expandedLocal && enabled,
+//                onDismissRequest = { expandedLocal = false })
+//            {
+//                filteringOptions.forEach { item ->
+//                    DropdownMenuItem(
+//                        onClick = {
+//                            enteredText = item.second
+//                            expandedLocal = false
+//                            enterValue!!.value = item
+//                            localFocusManager.moveFocus(FocusDirection.Next) },
+//                        text = {
+//                            TextApp(text = item.second, style = styleApp(nameStyle = TypeText.EDIT_TEXT))}
+//                    )
+//                }
+//            }
+//        } else expandedLocal = false
+//    }
+//}

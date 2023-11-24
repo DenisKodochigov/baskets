@@ -46,8 +46,8 @@ import com.example.basket.ui.theme.styleApp
         uiStateA.changeArticle(it.article)
         uiStateA.editArticle.value = null
     }
-    uiState.sections.value = uiStateA.sections.value
-    uiState.unitApp.value = uiStateA.unitApp.value
+    uiState.sections.value = uiStateA.sections
+    uiState.unitApp.value = uiStateA.unitApp
     uiState.selectedProduct.value = uiStateA.editArticle.value
     uiState.enteredNameProduct.value = uiStateA.editArticle.value?.nameArticle ?: ""
     uiState.onDismissSelectArticleProduct = { uiStateA.editArticle.value = null }

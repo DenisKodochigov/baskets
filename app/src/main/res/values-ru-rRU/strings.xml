@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="name_section">Все</string>
-    <string name="app_name">basket</string>
+    <string name="app_name">Список покупок</string>
     <string name="change_quantity">Изменить количество</string>
     <string name="exit">ВЫХОД</string>
     <string name="ok">ОК</string>

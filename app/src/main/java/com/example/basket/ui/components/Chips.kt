@@ -74,7 +74,7 @@ import com.example.basket.ui.theme.styleApp
     }
  }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable fun ChipsSections(
     edit: Boolean = true,
     listSection: List<Section>,

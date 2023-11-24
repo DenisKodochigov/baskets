@@ -35,6 +35,8 @@ object Dimen {
     val bsItemPaddingVer = 12.dp
     val bsSpacerHeight = 12.dp
     val bsSpacerHeight1 = 24.dp
+    val bsHeightMintList = 30.dp
+    val bsHeightMaxList = 250.dp
 }
 
 

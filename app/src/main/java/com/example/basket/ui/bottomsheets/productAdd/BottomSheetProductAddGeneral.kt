@@ -21,6 +21,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.basket.data.room.tables.ProductDB
+import com.example.basket.data.room.tables.SectionDB
+import com.example.basket.data.room.tables.UnitDB
 import com.example.basket.domain.logicBottomSheet.choiceArticle
 import com.example.basket.domain.logicBottomSheet.choiceSection
 import com.example.basket.domain.logicBottomSheet.choiceUnit
@@ -47,9 +49,9 @@ fun BottomSheetProductAddGeneral (uiStateP: ProductsScreenState)
         uiStateP.onAddProduct(it)
 //        uiStateP.triggerRunOnClickFAB.value = false
     }
-    uiState.articles.value = uiStateP.articles.value
-    uiState.sections.value = uiStateP.sections.value
-    uiState.unitApp.value = uiStateP.unitApp.value
+    uiState.articles.value = uiStateP.articles
+    uiState.sections.value = uiStateP.sections
+    uiState.unitApp.value = uiStateP.unitApp
     uiState.onDismissSelectArticleProduct = { uiState.buttonDialogSelectArticleProduct.value = false }
     uiState.onDismissSelectSection = { uiState.buttonDialogSelectSection.value = false }
     uiState.onDismissSelectUnit = { uiState.buttonDialogSelectUnit.value = false }
@@ -105,14 +107,13 @@ fun BottomSheetProductAddGeneralLayOut (uiState: BottomSheetProductState)
 }
 fun returnSelectedProduct(uiState: BottomSheetInterface): Product
 {
-
     val unitA = choiceUnit(unt = uiState.selectedUnit.value,
         enterNameUnit = uiState.enteredNameUnit.value,
-        unit0 = uiState.unitApp.value[0])
+        unit0 = if (uiState.unitApp.value.isEmpty()) UnitDB() else uiState.unitApp.value[0])
 
     val section = choiceSection(section = uiState.selectedSection.value,
         enterNameSection = uiState.enteredNameSection.value,
-        section0 = uiState.sections.value[0] )
+        section0 = if (uiState.sections.value.isEmpty()) SectionDB() else uiState.sections.value[0])
 
     val article = choiceArticle(article = uiState.selectedProduct.value,
         enterNAmeArticle = uiState.enteredNameProduct.value,
@@ -128,6 +129,7 @@ fun returnSelectedProduct(uiState: BottomSheetInterface): Product
     uiState.enteredNameSection.value = ""
     uiState.enteredNameUnit.value = ""
     uiState.enteredAmount.value = "1"
+
     return ProductDB(
         value = if (uiState.enteredAmount.value.isEmpty()) 1.0
         else uiState.enteredAmount.value.toDouble(),

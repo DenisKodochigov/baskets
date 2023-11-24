@@ -13,10 +13,8 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -31,7 +29,6 @@ import com.example.basket.ui.theme.colorApp
 import com.example.basket.ui.theme.sizeApp
 import com.example.basket.ui.theme.styleApp
 
-
 @Composable fun ExtendedFAB(
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Filled.Add,
@@ -39,7 +36,6 @@ import com.example.basket.ui.theme.styleApp
     refreshScreen:Boolean = true,
     text: String
 ){
-
     val plug = refreshScreen
     ExtendedFloatingActionButton(
         modifier = modifier,
@@ -59,13 +55,10 @@ import com.example.basket.ui.theme.styleApp
 
 @Composable
 fun FloatingActionButtonApp( offset: Dp,
-                             refreshScreen: MutableState<Boolean>,
                              modifier: Modifier = Modifier,
                              icon: ImageVector,
-                             onClick: () -> Unit) {
-
-    val plug = refreshScreen.value
-
+                             onClick: () -> Unit
+){
     FloatingActionButton(
         onClick = onClick,
         modifier = modifier
@@ -83,11 +76,9 @@ fun FloatingActionButtonApp( offset: Dp,
         )
     }
 }
-@Composable
-fun FabAnimation(show: Boolean, offset: Dp, icon: ImageVector, onClick: () -> Unit) {
-
+@Composable fun FabAnimation(show: Boolean, offset: Dp, icon: ImageVector, onClick: () -> Unit
+){
     var isAnimated by rememberSaveable { mutableStateOf(false) }
-    val refreshScreen = remember{ mutableStateOf(true)}
     val offsetFAB by animateDpAsState(
         targetValue = if (isAnimated) {
             if (show) offset else sizeApp(SizeElement.HEIGHT_FAB_BOX)
@@ -97,6 +88,6 @@ fun FabAnimation(show: Boolean, offset: Dp, icon: ImageVector, onClick: () -> Un
         animationSpec = tween(durationMillis = 600), label = ""
     )
 
-    FloatingActionButtonApp(offset = offsetFAB,icon = icon, onClick = onClick, refreshScreen = refreshScreen)
+    FloatingActionButtonApp(offset = offsetFAB,icon = icon, onClick = onClick)
     isAnimated = true
 }

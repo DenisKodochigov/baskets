@@ -116,7 +116,7 @@ fun ProductsScreenLayout(uiState: ProductsScreenState
         isSelectedId.value = 0
     }
     if (unSelected.value) {
-        uiState.products.value.forEach { productList -> productList.forEach { it.isSelected = false } }
+        uiState.products.forEach { productList -> productList.forEach { it.isSelected = false } }
         unSelected.value = false
     }
     if (changeSectionSelected.value) {
@@ -125,18 +125,18 @@ fun ProductsScreenLayout(uiState: ProductsScreenState
                 onConfirmationSelectSection = {
                     if (it.selectedSection.value?.idSection != 0L) {
                         it.selectedSection.value?.idSection?.let { it1 ->
-                            uiState.doChangeSectionSelected (uiState.products.value.flatten(), it1) }
+                            uiState.doChangeSectionSelected (uiState.products.flatten(), it1) }
                     }
                     changeSectionSelected.value = false
                 },
                 onDismissSelectSection = { changeSectionSelected.value = false },
                 buttonDialogSelectSection = changeSectionSelected,
-                sections = uiState.sections,
+                sections = mutableStateOf(uiState.sections),
             ) as BottomSheetInterface
         )
     }
     if (deleteSelected.value) {
-        uiState.doDeleteSelected(uiState.products.value.flatten())
+        uiState.doDeleteSelected(uiState.products.flatten())
         deleteSelected.value = false
     }
 
@@ -155,7 +155,7 @@ fun ProductsScreenLayout(uiState: ProductsScreenState
         }
         startScreen = showFABs(
             startScreen = startScreen,
-            isSelected = uiState.products.value.flatten().find { it.isSelected } != null,
+            isSelected = uiState.products.flatten().find { it.isSelected } != null,
             doDeleted = { deleteSelected.value = true },
             doChangeSection = { changeSectionSelected.value = true },
             doUnSelected = { unSelected.value = true },
@@ -173,7 +173,6 @@ fun ProductLazyColumn(
 ) {
     val listState = rememberLazyListState()
     val editProduct: MutableState<Product?> = remember { mutableStateOf(null) }
-    val listItems:List<List<Product>> = uiState.products.value
     if (editProduct.value != null ) {
         EditQuantityDialog(
             product = editProduct.value!!,
@@ -194,7 +193,7 @@ fun ProductLazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
     ) {
-        items(items = listItems) { item ->
+        items(items = uiState.products) { item ->
             Column(modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .animateItemPlacement()
