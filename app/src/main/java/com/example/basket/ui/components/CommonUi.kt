@@ -313,8 +313,10 @@ fun SwitcherButton(doChangeSorting: (SortingBy) -> Unit) {
         singleLine = true,
         maxLines = 1,
         modifier = modifier.onFocusChanged { focusItem = it.isFocused }
+            .background(color = colorApp.surfaceVariant, shape = shapesApp.extraSmall)
             .border(width = 1.dp, color = colorApp.onPrimaryContainer, shape = shapesApp.extraSmall),
         textStyle = TextStyle(
+            color = colorApp.onSurfaceVariant,
             fontSize = 18.sp,
             fontWeight = FontWeight.Light,
             textAlign = textAlign),
