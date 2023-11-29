@@ -65,7 +65,7 @@ fun BottomSheetBasketAdd(uiState: BasketScreenState)
         FieldNameBasket(uiState)
         Spacer(Modifier.height(Dimen.bsSpacerHeight))
         ButtonOK(uiState)
-        Spacer(Modifier.height(Dimen.bsSpacerHeight))
+        Spacer(Modifier.height(Dimen.bsSpacerBottomHeight))
     }
 }
 

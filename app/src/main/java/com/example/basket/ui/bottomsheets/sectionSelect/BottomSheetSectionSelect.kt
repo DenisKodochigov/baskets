@@ -78,7 +78,7 @@ import com.example.basket.ui.theme.styleApp
         BoxExistingSection(uiState)
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         ButtonConfirm { uiState.onConfirmationSelectSection(uiState) }
-        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
+        Spacer(modifier = Modifier.height(Dimen.bsSpacerBottomHeight))
     }
 }
 

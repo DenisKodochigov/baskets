@@ -82,7 +82,7 @@ fun BottomSheetArticleLayOut (uiState: BottomSheetArticleState)
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         GroupButtons(uiState)
         ButtonConfirm(onConfirm = {uiState.onConfirmation(returnSelectedProduct(uiState))})
-        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
+        Spacer(modifier = Modifier.height(Dimen.bsSpacerBottomHeight))
     }
 }
 @Composable fun GroupButtons(uiState: BottomSheetArticleState)

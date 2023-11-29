@@ -80,7 +80,7 @@ import com.example.basket.ui.theme.styleApp
             clearSelectedProduct(uiState)
             uiState.onConfirmationSelectArticleProduct(uiState)
         }
-        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
+        Spacer(modifier = Modifier.height(Dimen.bsSpacerBottomHeight))
     }
 }
 

@@ -28,6 +28,7 @@ object Dimen {
     val heightFabBoxSmall:Dp = 200.dp
 
     //Bottom sheet
+    val bsSpacerBottomHeight = 50.dp
     val bsPaddingHor = 12.dp
     val bsPaddingVer = 12.dp
     val bsPaddingHor1 = 20.dp

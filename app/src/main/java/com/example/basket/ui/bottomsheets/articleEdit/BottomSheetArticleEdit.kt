@@ -84,7 +84,7 @@ import com.example.basket.ui.theme.styleApp
         SelectorUnits(uiState)
         Spacer(Modifier.height(Dimen.bsSpacerHeight))
         ButtonConfirm( onConfirm = { uiState.onConfirmation(returnEditArticle(uiState)) })
-        Spacer(Modifier.height(Dimen.bsSpacerHeight))
+        Spacer(Modifier.height(Dimen.bsSpacerBottomHeight))
     }
 }
 

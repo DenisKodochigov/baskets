@@ -16,7 +16,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DataSourceDB  @Inject constructor(private val dataDao:DataDao){
+class DataSourceDB @Inject constructor(private val dataDao:DataDao){
 
     /** Manage position product */
 
