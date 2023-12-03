@@ -131,7 +131,6 @@ fun ArticleLazyColumn(
 ) {
     val listState = rememberLazyListState()
     if (uiState.editArticle.value != null) BottomSheetArticleEdit(uiState)
-    val listItems:List<List<Article>> = uiState.articles.value
 
     CollapsingToolbar(
         text = uiState.screenTextHeader,
@@ -143,7 +142,7 @@ fun ArticleLazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
     ){
-        items( items = listItems ) {item ->
+        items( items = uiState.articles.value ) {item ->
             Column( modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .animateItemPlacement()

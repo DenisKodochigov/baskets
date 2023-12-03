@@ -35,7 +35,7 @@ class ArticleViewModel @Inject constructor(
         templateMy (sorting = sortingBy)
             { dataRepository.changeSectionSelectedArticle(articles, idSection, sortingBy)} }
     fun deleteSelected(articles: List<Article>, sortingBy: SortingBy){
-        templateMy (sorting = sortingBy){ dataRepository.deleteSelectedArticle(articles, sortingBy)} }
+        templateMy(sorting = sortingBy){ dataRepository.deleteSelectedArticle(articles, sortingBy)}}
     fun doChangeSortingBy(sortingBy: SortingBy){
         templateMy (sorting = sortingBy){ dataRepository.getListArticle( sortingBy )} }
     fun changeSelected(productId: Long){
