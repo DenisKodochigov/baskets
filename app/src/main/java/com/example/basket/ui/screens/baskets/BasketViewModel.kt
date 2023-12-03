@@ -23,42 +23,16 @@ class BasketViewModel @Inject constructor(
     private val _basketScreenState = MutableStateFlow(BasketScreenState())
     val basketScreenState: StateFlow<BasketScreenState> = _basketScreenState.asStateFlow()
 
-    fun getListBasket() {
+    fun getListBasket() { templateMy{dataRepository.getListBasket()} }
+    fun changeNameBasket(basket: Basket){ templateMy{dataRepository.changeNameBasket(basket)} }
+    fun deleteBasket(basketId: Long){ templateMy{dataRepository.deleteBasket(basketId)} }
+    fun addBasket(basketName: String){ templateMy{dataRepository.addBasket(basketName)} }
+    private fun templateMy(funDataRepository:() -> List<Basket> ){
         viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.getListBasket() }.fold(
+            kotlin.runCatching { funDataRepository() }.fold(
                 onSuccess = { _basketScreenState.update { currentState ->
                     currentState.copy(baskets = it ) } },
                 onFailure = { errorApp.errorApi(it.message!!) }
-            )
-        }
-    }
-
-    fun changeNameBasket(basket: Basket){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.changeNameBasket(basket) }.fold(
-                onSuccess = { _basketScreenState.update { currentState ->
-                    currentState.copy(baskets = it ) } },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-        }
-    }
-
-    fun deleteBasket(basketId: Long){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.deleteBasket(basketId) }.fold(
-                onSuccess = { _basketScreenState.update { currentState ->
-                    currentState.copy( baskets = it ) } },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-        }
-    }
-
-    fun addBasket(basketName: String){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.addBasket(basketName) }.fold(
-                onSuccess = {_basketScreenState.update { currentState ->
-                    currentState.copy( baskets = it ) }},
-                onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
     }

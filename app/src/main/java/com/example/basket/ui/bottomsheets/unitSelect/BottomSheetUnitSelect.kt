@@ -79,7 +79,7 @@ fun BottomSheetUnitSelectContent(uiState: BottomSheetInterface)
         FieldName(uiState.enteredNameUnit)
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         BoxExistingUnit(uiState)
-        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
+        Spacer(modifier = Modifier.height(Dimen.bsConfirmationButtonTopHeight))
         ButtonConfirm { uiState.oConfirmationSelectUnit(uiState) }
         Spacer(modifier = Modifier.height(Dimen.bsSpacerBottomHeight))
     }

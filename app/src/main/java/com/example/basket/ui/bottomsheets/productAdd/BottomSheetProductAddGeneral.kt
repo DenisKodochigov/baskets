@@ -49,9 +49,9 @@ fun BottomSheetProductAddGeneral (uiStateP: ProductsScreenState)
         uiStateP.onAddProduct(it)
 //        uiStateP.triggerRunOnClickFAB.value = false
     }
-    uiState.articles.value = uiStateP.articles
-    uiState.sections.value = uiStateP.sections
-    uiState.unitApp.value = uiStateP.unitApp
+    uiState.articles.value = uiStateP.articles.value
+    uiState.sections.value = uiStateP.sections.value
+    uiState.unitApp.value = uiStateP.unitApp.value
     uiState.onDismissSelectArticleProduct = { uiState.buttonDialogSelectArticleProduct.value = false }
     uiState.onDismissSelectSection = { uiState.buttonDialogSelectSection.value = false }
     uiState.onDismissSelectUnit = { uiState.buttonDialogSelectUnit.value = false }
@@ -89,6 +89,7 @@ fun BottomSheetProductAddGeneralLayOut (uiState: BottomSheetProductState)
     {
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         GroupButtons(uiState)
+        Spacer(modifier = Modifier.height(Dimen.bsConfirmationButtonTopHeight))
         ButtonConfirm( onConfirm = { uiState.onConfirmation(returnSelectedProduct(uiState)) })
         Spacer(modifier = Modifier.height(Dimen.bsSpacerBottomHeight))
     }

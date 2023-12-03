@@ -1,5 +1,6 @@
 package com.example.basket.ui.screens.products
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.basket.data.DataRepository
@@ -25,139 +26,84 @@ class ProductViewModel  @Inject constructor(
 
     fun getStateProducts(basketId: Long){
         getProductsOnStart(basketId)
-        getArticles()
-        getSections()
-        getUnits()
         getNameBasket(basketId)
     }
 
     private fun getProductsOnStart(basketId: Long) {
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.getListProducts(basketId) }.fold(
-                onSuccess = { _productsScreenState.update { currentState ->
-                    currentState.copy( products = it, refresh = !currentState.refresh ) } },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-        }
-    }
-
-    private fun getArticles() {
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.getListArticle() }.fold(
-                onSuccess = { _productsScreenState.update { currentState ->
-                    currentState.copy( articles = it, refresh = !currentState.refresh) } },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-        }
-    }
-
-    private fun getSections() {
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.getSections() }.fold(
-                onSuccess = { _productsScreenState.update { currentState ->
-                    currentState.copy( sections = it, refresh = !currentState.refresh) } },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-        }
-    }
-
-    private fun getUnits() {
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.getUnits() }.fold(
-                onSuccess = {
-                    _productsScreenState.update { currentState ->
-                        currentState.copy( unitApp = it, refresh = !currentState.refresh) } },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-        }
-    }
+        templateMy( { dataRepository.getListProducts(basketId) },
+            getArticles =true, getUnit = true, getSection = true )}
 
     private fun getNameBasket(basketId: Long){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching { dataRepository.getNameBasket(basketId) }.fold(
                 onSuccess = {_productsScreenState.update { currentState ->
-                    currentState.copy(nameBasket = it , refresh = !currentState.refresh) }},
+                    currentState.copy(nameBasket = it) }},
                 onFailure = { errorApp.errorApi(it.message!!)}
             )
         }
     }
 
     fun addProduct(product: Product, basketId: Long){
+        templateMy( { dataRepository.addProduct(product, basketId) },
+            getArticles =true, getUnit = true, getSection = true ) }
+    fun putProductInBasket(product: Product, basketId: Long){
+        templateMy( { dataRepository.putProductInBasket(product, basketId) } )}
+    fun changeProduct(product: Product, basketId: Long){
+        templateMy ({ dataRepository.changeProductInBasket(product, basketId) },
+            getArticles =true, getUnit = true, getSection = true) }
+    fun changeSections(productList: List<Product>, idSection: Long){
+        templateMy({ dataRepository.changeSectionSelectedProduct(productList, idSection)},
+            getArticles =true)}
+    fun deleteSelectedProducts(productList: List<Product>){
+        templateMy( { dataRepository.deleteSelectedProduct(productList) } )}
+    fun changeSelected(productId: Long){
+        templateSelection { if (it.idProduct == productId) it.isSelected = !it.isSelected } }
+    fun unSelected(){
+        templateSelection { it.isSelected = false } }
+    private fun templateSelection( impl: (Product) -> Unit ){
         viewModelScope.launch(Dispatchers.IO) {
             kotlin.runCatching {
-                dataRepository.addProduct(product, basketId) }.fold(
-                onSuccess = {
-                    _productsScreenState.update { currentState ->
-                    currentState.copy(products = it, refresh = !currentState.refresh) } },
-                onFailure = { errorApp.errorApi(it.message!!)}
-            )
-            kotlin.runCatching { dataRepository.getListArticle() }.fold(
-                onSuccess = { _productsScreenState.update { currentState ->
-                    currentState.copy( articles = it, refresh = !currentState.refresh) } },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-            kotlin.runCatching { dataRepository.getSections() }.fold(
-                onSuccess = { _productsScreenState.update { currentState ->
-                    currentState.copy( sections = it, refresh = !currentState.refresh) } },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-            kotlin.runCatching { dataRepository.getUnits() }.fold(
-                onSuccess = {
-                    _productsScreenState.update { currentState ->
-                        currentState.copy( unitApp = it, refresh = !currentState.refresh) } },
-                onFailure = { errorApp.errorApi(it.message!!) }
-            )
-        }
-    }
-
-    fun putProductInBasket(product: Product, basketId: Long){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.putProductInBasket(product, basketId) }.fold(
-                onSuccess = {_productsScreenState.update { currentState ->
-                    currentState.copy(products = it, refresh = !currentState.refresh ) }},
-                onFailure = { errorApp.errorApi(it.message!!)}
-            )
-        }
-    }
-
-    fun changeProduct(product: Product, basketId: Long){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.changeProductInBasket(product, basketId) }.fold(
-                onSuccess = {_productsScreenState.update { currentState ->
-                    currentState.copy(products = it, refresh = !currentState.refresh) } },
-                onFailure = { errorApp.errorApi(it.message!!)}
-            )
-        }
-    }
-
-    fun changeSections(productList: List<Product>, idSection: Long){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.changeSectionSelectedProduct(productList, idSection) }.fold(
-                onSuccess = {
-                    _productsScreenState.update{ currentState ->
-                        currentState.copy(products = it, refresh = !currentState.refresh) }},
-                onFailure = { errorApp.errorApi(it.message!!)}
-            )
-        }
-        getArticles()
-    }
-
-    fun deleteSelectedProducts(productList: List<Product>){
-        viewModelScope.launch(Dispatchers.IO) {
-            kotlin.runCatching { dataRepository.deleteSelectedProduct(productList) }.fold(
-                onSuccess = {_productsScreenState.update { currentState ->
-                    currentState.copy(products = it, refresh = !currentState.refresh) }},
-                onFailure = {
-                    errorApp.errorApi(it.message!!)}
-            )
-        }
-    }
-    fun changeSelected(productId: Long){
-        _productsScreenState.value.products.forEach {listArticles ->
-            listArticles.forEach {
-                if (it.idProduct == productId){
-                    it.isSelected = !it.isSelected
+                val listItems = productsScreenState.value.products.value
+                listItems.forEach { list -> list.forEach { product -> impl(product) } }
+                _productsScreenState.update { currentState ->
+                    currentState.copy(products = mutableStateOf(listItems))
                 }
+            }
+        }
+    }
+    private fun templateMy(
+        funDataRepository:() -> List<List<Product>>,
+        getArticles: Boolean = false,
+        getUnit: Boolean = false,
+        getSection: Boolean = false )
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            kotlin.runCatching { funDataRepository() }.fold(
+                onSuccess = { _productsScreenState.update { currentState ->
+                    currentState.copy(products = mutableStateOf(it) ) } },
+                onFailure = { errorApp.errorApi(it.message!!) }
+            )
+            if (getArticles){
+                kotlin.runCatching { dataRepository.getListArticle() }.fold(
+                    onSuccess = { _productsScreenState.update { currentState ->
+                        currentState.copy( articles = mutableStateOf(it)) } },
+                    onFailure = { errorApp.errorApi(it.message!!) }
+                )
+            }
+            if (getSection){
+                kotlin.runCatching { dataRepository.getSections() }.fold(
+                    onSuccess = { _productsScreenState.update { currentState ->
+                        currentState.copy( sections = mutableStateOf(it)) } },
+                    onFailure = { errorApp.errorApi(it.message!!) }
+                )
+            }
+            if (getUnit){
+                kotlin.runCatching { dataRepository.getUnits() }.fold(
+                    onSuccess = {
+                        _productsScreenState.update { currentState ->
+                            currentState.copy( unitApp = mutableStateOf(it)) } },
+                    onFailure = { errorApp.errorApi(it.message!!) }
+                )
             }
         }
     }

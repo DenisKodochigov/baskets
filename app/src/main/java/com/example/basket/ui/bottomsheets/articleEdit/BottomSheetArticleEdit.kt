@@ -46,8 +46,8 @@ import com.example.basket.ui.theme.styleApp
         uiStateA.changeArticle(it.article)
         uiStateA.editArticle.value = null
     }
-    uiState.sections.value = uiStateA.sections
-    uiState.unitApp.value = uiStateA.unitApp
+    uiState.sections.value = uiStateA.sections.value
+    uiState.unitApp.value = uiStateA.unitApp.value
     uiState.selectedProduct.value = uiStateA.editArticle.value
     uiState.enteredNameProduct.value = uiStateA.editArticle.value?.nameArticle ?: ""
     uiState.onDismissSelectArticleProduct = { uiStateA.editArticle.value = null }
@@ -82,7 +82,7 @@ import com.example.basket.ui.theme.styleApp
         SelectorSections(uiState)
         Spacer(Modifier.height(Dimen.bsSpacerHeight))
         SelectorUnits(uiState)
-        Spacer(Modifier.height(Dimen.bsSpacerHeight))
+        Spacer(modifier = Modifier.height(Dimen.bsConfirmationButtonTopHeight))
         ButtonConfirm( onConfirm = { uiState.onConfirmation(returnEditArticle(uiState)) })
         Spacer(Modifier.height(Dimen.bsSpacerBottomHeight))
     }

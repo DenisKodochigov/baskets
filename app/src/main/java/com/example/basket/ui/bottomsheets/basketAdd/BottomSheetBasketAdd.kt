@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.BottomSheetDefaults
@@ -15,10 +14,8 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.example.basket.R
 import com.example.basket.entity.TagsTesting
 import com.example.basket.entity.TypeKeyboard
@@ -63,7 +60,7 @@ fun BottomSheetBasketAdd(uiState: BasketScreenState)
         HeaderScreen(text = stringResource(R.string.new_basket))
         Spacer(Modifier.height(Dimen.bsSpacerHeight))
         FieldNameBasket(uiState)
-        Spacer(Modifier.height(Dimen.bsSpacerHeight))
+        Spacer(modifier = Modifier.height(Dimen.bsConfirmationButtonTopHeight))
         ButtonOK(uiState)
         Spacer(Modifier.height(Dimen.bsSpacerBottomHeight))
     }

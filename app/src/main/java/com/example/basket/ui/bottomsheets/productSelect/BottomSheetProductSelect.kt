@@ -74,8 +74,7 @@ import com.example.basket.ui.theme.styleApp
         FieldName(uiState.enteredNameProduct)
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         BoxExistingArticles(uiState)
-        Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
-
+        Spacer(modifier = Modifier.height(Dimen.bsConfirmationButtonTopHeight))
         ButtonConfirm {
             clearSelectedProduct(uiState)
             uiState.onConfirmationSelectArticleProduct(uiState)

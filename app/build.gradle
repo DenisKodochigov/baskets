@@ -17,8 +17,8 @@ android {
         applicationId 'com.example.basket'
         minSdk 26
         targetSdk 34
-        versionCode 112
-        versionName '1.12'
+        versionCode 113
+        versionName '1.13'
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner 'com.example.basket.di.HiltTestRunner'
     }
@@ -90,10 +90,10 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
     implementation 'androidx.fragment:fragment-ktx:1.6.2'
     // Room
-    implementation 'androidx.room:room-runtime:2.6.0'
-    implementation 'androidx.room:room-ktx:2.6.0'
-    implementation 'androidx.room:room-rxjava2:2.6.0'
-    ksp 'androidx.room:room-compiler:2.6.0'
+    implementation 'androidx.room:room-runtime:2.6.1'
+    implementation 'androidx.room:room-ktx:2.6.1'
+    implementation 'androidx.room:room-rxjava2:2.6.1'
+    ksp 'androidx.room:room-compiler:2.6.1'
     // Hilt dependencies
     implementation "com.google.dagger:hilt-android:$dagger_version"
     implementation 'androidx.hilt:hilt-navigation-compose:1.1.0'

@@ -41,9 +41,9 @@ import com.example.basket.ui.theme.shapesApp
         uiStateA.onAddArticle(it.article)
         uiStateA.triggerRunOnClickFAB.value = false
     }
-    uiState.articles.value = uiStateA.articles.flatten()
-    uiState.sections.value = uiStateA.sections
-    uiState.unitApp.value = uiStateA.unitApp
+    uiState.articles.value = uiStateA.articles.value.flatten()
+    uiState.sections.value = uiStateA.sections.value
+    uiState.unitApp.value = uiStateA.unitApp.value
     uiState.onDismissSelectArticleProduct = { uiState.buttonDialogSelectArticleProduct.value = false }
     uiState.onDismissSelectSection = { uiState.buttonDialogSelectSection.value = false }
     uiState.onDismissSelectUnit = { uiState.buttonDialogSelectUnit.value = false }
@@ -81,6 +81,7 @@ fun BottomSheetArticleLayOut (uiState: BottomSheetArticleState)
     {
         Spacer(modifier = Modifier.height(Dimen.bsItemPaddingVer))
         GroupButtons(uiState)
+        Spacer(modifier = Modifier.height(Dimen.bsConfirmationButtonTopHeight))
         ButtonConfirm(onConfirm = {uiState.onConfirmation(returnSelectedProduct(uiState))})
         Spacer(modifier = Modifier.height(Dimen.bsSpacerBottomHeight))
     }
